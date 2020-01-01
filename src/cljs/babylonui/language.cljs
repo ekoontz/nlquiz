@@ -7,13 +7,7 @@
    [cljslog.core :as log]
    [dag_unify.core :as u]))
 
-(defn deserialize-lexicon [map-with-serializations]
-  (zipmap
-   (keys map-with-serializations)
-   (map (fn [serializations]
-          (vec (map dag_unify.serialization/deserialize
-                    serializations)))
-        (vals map-with-serializations))))
+(declare deserialize-lexicon)
 
 (def en-lexicon (deserialize-lexicon (en/read-compiled-lexicon)))
 (def nl-lexicon (deserialize-lexicon (nl/read-compiled-lexicon)))
@@ -27,3 +21,12 @@
     (log/info (str "showing noun-type rule: " (u/get-in rule [:rule])))
     rule))
 
+
+;; auxiliary functions:
+(defn deserialize-lexicon [map-with-serializations]
+  (zipmap
+   (keys map-with-serializations)
+   (map (fn [serializations]
+          (vec (map dag_unify.serialization/deserialize
+                    serializations)))
+        (vals map-with-serializations))))
