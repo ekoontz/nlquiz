@@ -43,38 +43,38 @@
     (log/info (str "showing entry: " key))
     (swap! lexeme-atom (fn [] value))
     [:div
-     [:b {:style {:font-size "200%"}} key ] " " value]))
+     [:b key ] " " value]))
 
 (defn show-a-rule [grammar]
   (let [rule (first (shuffle grammar))]
     (log/info (str "showing rule: " (u/get-in rule [:rule])))
     [:div
-     [:b {:style {:font-size "200%"}} (u/get-in rule [:rule])] " " rule]))
+     [:b (u/get-in rule [:rule])] " " rule]))
 
 (defn generate-a-np [grammar lexicon]
   (let [rule (first (shuffle (filter #(= :noun (u/get-in % [:cat]))
                                      grammar)))]
     (log/info (str "showing noun-type rule: " (u/get-in rule [:rule])))
     [:div
-     [:b {:style {:font-size "200%"}} (u/get-in rule [:rule])] " " rule]))
+     [:b (u/get-in rule [:rule])] " " rule]))
 
 (defn home-page []
   (fn []
     [:div.main
      [:h1 "babylon UI"]
-     [:div.expression
-      [:input {:type "button" :value "NL lexeme"
-               :on-click #(swap! nl-lexical-div-contents
-                                 (fn [] (show-a-lexeme l/nl-lexicon nl-lexeme)))}]
-      [:div.behind-the-scenes
-       @nl-lexical-div-contents]]
-
 
      [:div.expression
       [:input {:type "button" :value "NL NP"
                :on-click #(swap! nl-np-contents (fn [] (generate-a-np l/nl-grammar l/nl-lexicon)))}]
       [:div.behind-the-scenes
        @nl-np-contents]]
+
+     [:div.expression
+      [:input {:type "button" :value "NL lexeme"
+               :on-click #(swap! nl-lexical-div-contents
+                                 (fn [] (show-a-lexeme l/nl-lexicon nl-lexeme)))}]
+      [:div.behind-the-scenes
+       @nl-lexical-div-contents]]
 
      [:div.expression
       [:input {:type "button" :value "NL rule"

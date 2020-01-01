@@ -9,4 +9,9 @@ div.behind-the-scenes {
     border: 2px solid #edd;
     padding: 1em;
     background:#eee;
+    font-size:small;
+}
+
+div.behind-the-scenes b {
+    font-size:100%;
 }
