@@ -1,0 +1,12 @@
+div.language {
+    float:left;
+    width:45%;
+    margin:1%;
+}
+
+div.lexeme {
+    font-family: monospace;
+    border: 2px solid #edd;
+    padding: 1em;
+    background:#eee;
+}
