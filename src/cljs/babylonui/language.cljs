@@ -16,3 +16,7 @@
 (def en-lexicon (deserialize-lexicon (en/read-compiled-lexicon)))
 (def nl-lexicon (deserialize-lexicon (nl/read-compiled-lexicon)))
 
+(def nl-grammar (->> (nl/read-compiled-grammar)
+                     (map dag_unify.serialization/deserialize)))
+
+                            
