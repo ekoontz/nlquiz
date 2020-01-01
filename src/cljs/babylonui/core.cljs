@@ -38,6 +38,12 @@
     (log/info (str "loading entry: " key))
     [:div
      [:b {:style {:font-size "200%"}} key ] " " (first (shuffle (get lexicon key)))]))
+(defn generate-a-np [grammar lexicon]
+  (let [rule (first (shuffle (filter #(= :noun (u/get-in % [:cat]))
+                                     grammar)))]
+    (log/info (str "showing noun-type rule: " (u/get-in rule [:rule])))
+    [:div
+     [:b {:style {:font-size "200%"}} (u/get-in rule [:rule])] " " rule]))
 
 (defn home-page []
   (fn []
@@ -50,6 +56,11 @@
        @nl-lexical-entry]]
 
      [:div.language
+     [:div.expression
+      [:input {:type "button" :value "NL NP"
+               :on-click #(swap! nl-np-contents (fn [] (generate-a-np l/nl-grammar l/nl-lexicon)))}]
+      [:div.behind-the-scenes
+       @nl-np-contents]]
       [:input {:type "button" :value "EN lexeme"
                :on-click #(swap! en-lexical-entry (fn [] (load-an-entry l/en-lexicon)))}]
       [:div.lexeme
