@@ -1,1 +1,1 @@
-web: java $JVM_OPTS -cp target/myproject.jar clojure.main -m myproject.server
+web: java $JVM_OPTS -cp target/babylonui.jar clojure.main -m babylonui.server

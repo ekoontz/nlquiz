@@ -1,6 +1,6 @@
-# myproject
+# babylonui
 
-This is the myproject project.
+This is the babylonui project.
 
 ## Development mode
 
