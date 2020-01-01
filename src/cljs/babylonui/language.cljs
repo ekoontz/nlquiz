@@ -3,7 +3,9 @@
                    [babylon.nederlands])
   (:require
    [babylon.english :as en]
-   [babylon.nederlands :as nl]))
+   [babylon.nederlands :as nl]
+   [cljslog.core :as log]
+   [dag_unify.core :as u]))
 
 (defn deserialize-lexicon [map-with-serializations]
   (zipmap
@@ -19,4 +21,9 @@
 (def nl-grammar (->> (nl/read-compiled-grammar)
                      (map dag_unify.serialization/deserialize)))
 
-                            
+(defn generate-a-np [grammar lexicon]                            
+  (let [rule (first (shuffle (filter #(= :noun (u/get-in % [:cat]))
+                                     grammar)))]
+    (log/info (str "showing noun-type rule: " (u/get-in rule [:rule])))
+    rule))
+

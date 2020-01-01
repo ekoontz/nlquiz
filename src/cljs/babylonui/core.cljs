@@ -3,7 +3,6 @@
    [accountant.core :as accountant]
    [clerk.core :as clerk]
    [cljslog.core :as log]
-   [clojure.core :as c]
    [dag_unify.core :as u]
    [babylonui.language :as l]
    [reagent.core :as reagent]
@@ -52,11 +51,10 @@
      [:b (u/get-in rule [:rule])] " " rule]))
 
 (defn generate-a-np [grammar lexicon]
-  (let [rule (first (shuffle (filter #(= :noun (u/get-in % [:cat]))
-                                     grammar)))]
-    (log/info (str "showing noun-type rule: " (u/get-in rule [:rule])))
+  (let [np (l/generate-a-np grammar lexicon)]
+    (log/info (str "showing noun phrase: " (u/get-in np [:rule])))
     [:div
-     [:b (u/get-in rule [:rule])] " " rule]))
+     [:b (u/get-in np [:rule])] " " np]))
 
 (defn home-page []
   (fn []
