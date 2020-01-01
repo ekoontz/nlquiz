@@ -1,11 +1,11 @@
-(ns myproject.core
+(ns babylonui.core
   (:require
    [accountant.core :as accountant]
    [clerk.core :as clerk]
    [cljslog.core :as log]
    [clojure.core :as c]
    [dag_unify.core :as u]
-   [myproject.language :as l]
+   [babylonui.language :as l]
    [reagent.core :as reagent]
    [reagent.session :as session]
    [reitit.frontend :as reitit]))

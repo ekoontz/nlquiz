@@ -1,4 +1,4 @@
-(ns myproject.middleware
+(ns babylonui.middleware
   (:require
    [ring.middleware.content-type :refer [wrap-content-type]]
    [ring.middleware.params :refer [wrap-params]]

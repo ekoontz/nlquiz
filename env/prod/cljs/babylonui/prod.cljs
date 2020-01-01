@@ -1,5 +1,5 @@
-(ns myproject.prod
-  (:require [myproject.core :as core]))
+(ns babylonui.prod
+  (:require [babylonui.core :as core]))
 
 ;;ignore println statements in prod
 (set! *print-fn* (fn [& _]))

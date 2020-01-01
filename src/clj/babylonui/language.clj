@@ -1,4 +1,4 @@
-(ns myproject.language
+(ns babylonui.language
   (:require [babylon.english :as en]
             [babylon.nederlands :as nl]))
 

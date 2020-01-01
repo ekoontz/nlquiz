@@ -1,6 +1,6 @@
-(ns ^:figwheel-no-load myproject.dev
+(ns ^:figwheel-no-load babylonui.dev
   (:require
-    [myproject.core :as core]
+    [babylonui.core :as core]
     [devtools.core :as devtools]))
 
 (extend-protocol IPrintWithWriter

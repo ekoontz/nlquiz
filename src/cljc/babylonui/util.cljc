@@ -1,4 +1,4 @@
-(ns myproject.util)
+(ns babylonui.util)
 
 (defn foo-cljc [x]
   "I don't do a whole lot."

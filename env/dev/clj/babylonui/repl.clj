@@ -1,5 +1,5 @@
-(ns myproject.repl
-  (:use myproject.handler
+(ns babylonui.repl
+  (:use babylonui.handler
         figwheel-sidecar.repl-api
         ring.server.standalone
         [ring.middleware file-info file]))

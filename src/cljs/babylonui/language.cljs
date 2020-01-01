@@ -1,4 +1,4 @@
-(ns myproject.language
+(ns babylonui.language
   (:require-macros [babylon.english]
                    [babylon.nederlands])
   (:require
