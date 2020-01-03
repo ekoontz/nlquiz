@@ -59,7 +59,7 @@
 
 (defn generate-a-np-nl-2 []
   [:div
-   [:b nlui/foo ]])
+   [:b (str (nlui/foo2)) ]])
 
 (defn home-page []
   (fn []
