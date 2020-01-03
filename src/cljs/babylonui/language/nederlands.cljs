@@ -25,13 +25,14 @@
         true
         lexicon-vals))
 
-(defn gen2 [lexicon-fn]
+;; move to babylon
+(defn generate-tiny [grammar lexicon-fn]
   (let [phrase
         (u/unify
          (first (shuffle (filter #(and
                                    (= :noun (u/get-in % [:cat]))
                                    (empty? (u/get-in % [:subcat])))
-                                 nl-grammar)))
+                                 grammar)))
          {:head {:phrasal false}
           :comp {:phrasal false}
           :babylon.generate/started? true})
@@ -43,22 +44,9 @@
              {:comp det})))
 
 (defn noun-phrase []
-  (let [np-attempt (gen2 nl-index-fn)]
+  (let [np-attempt (generate-tiny nl-grammar nl-index-fn)]
     (if (= :fail np-attempt)
       (do
         (log/info (str "retry.."))
         (noun-phrase))
       (nl/syntax-tree np-attempt))))
-
-(defn generate []
-  (let [rule
-        (u/unify
-         (first (shuffle (filter #(and
-                                    (= :noun (u/get-in % [:cat]))
-                                    (empty? (u/get-in % [:subcat])))
-                                 nl-grammar)))
-         {:head {:phrasal false}
-          :comp {:phrasal false}
-          :babylon.generate/started? true})]
-    (log/info (str "rule: " (u/get-in rule [:rule])))
-    (u/get-in rule [:rule])))

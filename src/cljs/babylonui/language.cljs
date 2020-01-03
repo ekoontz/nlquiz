@@ -1,5 +1,6 @@
 (ns babylonui.language)
 
+;; move to babylon
 (defn deserialize-lexicon [map-with-serializations]
   (zipmap
    (keys map-with-serializations)
