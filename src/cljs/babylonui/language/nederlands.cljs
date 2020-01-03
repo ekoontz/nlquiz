@@ -24,12 +24,20 @@
           :comp {:phrasal false}
           :babylon.generate/started? true})
 
-        hond (first (get nl-lexicon "hond"))
-        de (first (get nl-lexicon "de"))]
+        noun (first (->> nl-lexicon
+                         vals
+                         flatten
+                         (filter #(= :noun (u/get-in % [:cat])))
+                         shuffle))
+        det (first (->> nl-lexicon
+                         vals
+                         flatten
+                         (filter #(= :det (u/get-in % [:cat])))
+                         shuffle))]
     (nl/syntax-tree
      (u/unify phrase
-              {:head hond}
-              {:comp de}))))
+              {:head noun}
+              {:comp det}))))
 
 (defn generate []
   (let [rule
