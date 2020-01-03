@@ -11,8 +11,6 @@
                      (map dag_unify.serialization/deserialize)))
 (def nl-lexicon (lang/deserialize-lexicon (nl/read-compiled-lexicon)))
 
-(def foo (* 3 (count nl-grammar)))
-
 (defn foo2 []
   (let [phrase
         (u/unify

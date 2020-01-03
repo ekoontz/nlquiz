@@ -55,7 +55,7 @@
   (let [np (l/generate-a-np l/nl-grammar l/nl-lexicon l/nl-index-fn)]
     (log/info (str "showing noun phrase: " np))
     [:div
-     [:b nlui/foo (:rule np) " " "\"" (:surface np) "\""]]))
+     [:b (:rule np) " " "\"" (:surface np) "\""]]))
 
 (defn generate-a-np-nl-2 []
   [:div
