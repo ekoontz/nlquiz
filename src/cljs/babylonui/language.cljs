@@ -21,19 +21,6 @@
 (def nl-grammar (->> (nl/read-compiled-grammar)
                      (map dag_unify.serialization/deserialize)))
 (def nl-lexicon (deserialize-lexicon (nl/read-compiled-lexicon)))
-(defn nl-index-fn [spec]
-  ;; for now a very bad index function: simply returns all the lexemes
-  ;; no matter what the spec is.
-  (let [vals (flatten (vals nl-lexicon))]
-    (shuffle
-      (cond (= :noun (u/get-in spec [:cat]))
-            (filter #(= :noun (u/get-in spec [:cat]))
-                    vals)
-            (= :det (u/get-in spec [:cat]))
-            (filter #(= :det (u/get-in spec [:cat]))
-                    vals)
-            true
-            vals))))
 
 (defn generate-a-np [grammar lexicon index-fn]                            
   (let [rule

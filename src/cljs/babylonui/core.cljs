@@ -51,15 +51,9 @@
     [:div
      [:b (u/get-in rule [:rule])] " " rule]))
 
-(defn generate-a-np-nl []
-  (let [np (l/generate-a-np l/nl-grammar l/nl-lexicon l/nl-index-fn)]
-    (log/info (str "showing noun phrase: " np))
-    [:div
-     [:b (:rule np) " " "\"" (:surface np) "\""]]))
-
 (defn generate-a-np-nl-2 []
   [:div
-   [:b (str (nlui/foo2)) ]])
+   [:b (str (nlui/noun-phrase))]])
 
 (defn home-page []
   (fn []

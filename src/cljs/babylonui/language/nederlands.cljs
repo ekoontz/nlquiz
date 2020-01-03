@@ -11,7 +11,21 @@
                      (map dag_unify.serialization/deserialize)))
 (def nl-lexicon (lang/deserialize-lexicon (nl/read-compiled-lexicon)))
 
-(defn foo2 []
+(def lexicon-vals (flatten (vals nl-lexicon)))
+
+(defn nl-index-fn [spec]
+  ;; for now a very bad index function: simply returns all the lexemes
+  ;; no matter what the spec is.
+  (cond (= :noun (u/get-in spec [:cat]))
+        (filter #(= :noun (u/get-in % [:cat]))
+                lexicon-vals)
+        (= :det (u/get-in spec [:cat]))
+        (filter #(= :det (u/get-in % [:cat]))
+                lexicon-vals)
+        true
+        lexicon-vals))
+
+(defn gen2 [lexicon-fn]
   (let [phrase
         (u/unify
          (first (shuffle (filter #(and
@@ -22,20 +36,15 @@
           :comp {:phrasal false}
           :babylon.generate/started? true})
 
-        noun (first (->> nl-lexicon
-                         vals
-                         flatten
-                         (filter #(= :noun (u/get-in % [:cat])))
-                         shuffle))
-        det (first (->> nl-lexicon
-                         vals
-                         flatten
-                         (filter #(= :det (u/get-in % [:cat])))
-                         shuffle))]
-    (nl/syntax-tree
-     (u/unify phrase
-              {:head noun}
-              {:comp det}))))
+        noun (first (shuffle (lexicon-fn {:cat :noun})))
+        det (first (shuffle (lexicon-fn {:cat :det})))]
+    (u/unify phrase
+             {:head noun}
+             {:comp det})))
+
+(defn noun-phrase []
+  (let [np-attempt (gen2 nl-index-fn)]
+    (nl/syntax-tree np-attempt)))
 
 (defn generate []
   (let [rule
