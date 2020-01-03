@@ -29,14 +29,8 @@
 (defn generate-tiny [grammar lexicon-fn]
   (let [phrase
         (u/unify
-         (first (shuffle (filter #(and
-                                   (= :noun (u/get-in % [:cat]))
-                                   (empty? (u/get-in % [:subcat])))
-                                 grammar)))
-         {:head {:phrasal false}
-          :comp {:phrasal false}
-          :babylon.generate/started? true})
-
+         (first (shuffle grammar))
+         {:babylon.generate/started? true})
         noun (first (shuffle (lexicon-fn {:cat :noun})))
         det (first (shuffle (lexicon-fn {:cat :det})))]
     (u/unify phrase
