@@ -44,7 +44,11 @@
 
 (defn noun-phrase []
   (let [np-attempt (gen2 nl-index-fn)]
-    (nl/syntax-tree np-attempt)))
+    (if (= :fail np-attempt)
+      (do
+        (log/info (str "retry.."))
+        (noun-phrase))
+      (nl/syntax-tree np-attempt))))
 
 (defn generate []
   (let [rule
