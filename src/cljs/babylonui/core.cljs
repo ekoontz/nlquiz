@@ -64,37 +64,16 @@
       [:input {:type "button" :value "NL NP"
                :on-click #(swap! nl-np-contents (fn [] (generate-a-np-nl-2)))}]
       [:div.behind-the-scenes
-       @nl-np-contents]]
-
-     [:div.expression
-      [:input {:type "button" :value "NL lexeme"
-               :on-click #(swap! nl-lexical-div-contents
-                                 (fn [] (show-a-lexeme l/nl-lexicon nl-lexeme)))}]
-      [:div.behind-the-scenes
-       @nl-lexical-div-contents]]
-
-     [:div.expression
-      [:input {:type "button" :value "NL rule"
-               :on-click #(swap! nl-grammar-rule-div-contents (fn [] (show-a-rule l/nl-grammar)))}]
-      [:div.behind-the-scenes
-       @nl-grammar-rule-div-contents]]
-     
-     [:div.expression
-      [:input {:type "button" :value "EN lexeme"
-               :on-click #(swap! en-lexical-div-contents
-                                 (fn [] (show-a-lexeme l/en-lexicon en-lexeme)))}]
-      [:div.behind-the-scenes
-       @en-lexical-div-contents]]]))
-
+       @nl-np-contents]]]))
 
 (defn items-page []
-(fn []
-  [:span.main
-   [:h1 "The items of babylonUI"]
-   [:ul (map (fn [item-id]
-               [:li {:name (str "item-" item-id) :key (str "item-" item-id)}
-                [:a {:href (path-for :item {:item-id item-id})} "Item: " item-id]])
-             (range 1 60))]]))
+  (fn []
+    [:span.main
+     [:h1 "The items of babylonUI"]
+     [:ul (map (fn [item-id]
+                 [:li {:name (str "item-" item-id) :key (str "item-" item-id)}
+                  [:a {:href (path-for :item {:item-id item-id})} "Item: " item-id]])
+               (range 1 60))]]))
 
 
 (defn item-page []
