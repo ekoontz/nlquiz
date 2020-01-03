@@ -1,12 +1,4 @@
-(ns babylonui.language
-  (:require-macros [babylon.english]
-                   [babylon.nederlands])
-  (:require
-   [babylon.english :as en]
-   [babylon.generate :as g]
-   [babylon.nederlands :as nl]
-   [cljslog.core :as log]
-   [dag_unify.core :as u]))
+(ns babylonui.language)
 
 (defn deserialize-lexicon [map-with-serializations]
   (zipmap
