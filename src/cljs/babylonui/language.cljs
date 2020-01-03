@@ -3,6 +3,7 @@
                    [babylon.nederlands])
   (:require
    [babylon.english :as en]
+   [babylon.generate :as g]
    [babylon.nederlands :as nl]
    [cljslog.core :as log]
    [dag_unify.core :as u]))
@@ -23,11 +24,38 @@
 (defn nl-index-fn [spec]
   ;; for now a very bad index function: simply returns all the lexemes
   ;; no matter what the spec is.
-  (vals nl-lexicon))
+  (let [vals (flatten (vals nl-lexicon))]
+    (shuffle
+      (cond (= :noun (u/get-in spec [:cat]))
+            (filter #(= :noun (u/get-in spec [:cat]))
+                    vals)
+            (= :det (u/get-in spec [:cat]))
+            (filter #(= :det (u/get-in spec [:cat]))
+                    vals)
+            true
+            vals))))
 
-(defn generate-a-np [grammar lexicon]                            
-  (let [rule (first (shuffle (filter #(= :noun (u/get-in % [:cat]))
-                                     grammar)))]
-    (log/info (str "showing noun-type rule: " (u/get-in rule [:rule])))
-    rule))
+(defn generate-a-np [grammar lexicon index-fn]                            
+  (let [rule
+        (u/unify
+         (first (shuffle (filter #(and
+                                    (= :noun (u/get-in % [:cat]))
+                                    (empty? (u/get-in % [:subcat])))
+                                 grammar)))
+         {:head {:phrasal false}
+          :comp {:phrasal false}
+          :babylon.generate/started? true})
+        syntax-tree nl/syntax-tree
+        morph nl/morph]
+    (log/debug (str "showing noun-type rule: " (u/get-in rule [:rule])))
+    (let [phrase
+          (first
+           (-> rule
+               (g/add grammar index-fn syntax-tree)
+               (g/add grammar index-fn syntax-tree)))]
+      (log/debug (str "after add: " (syntax-tree phrase)))
+      (log/debug (str "head: " (u/get-in phrase [:head])))
+      {:tree (syntax-tree phrase)
+       :rule (u/get-in phrase [:rule])
+       :surface (morph phrase)})))
 

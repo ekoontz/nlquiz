@@ -5,6 +5,7 @@
    [cljslog.core :as log]
    [dag_unify.core :as u]
    [babylonui.language :as l]
+   [babylonui.language.nederlands :as nlui]
    [reagent.core :as reagent]
    [reagent.session :as session]
    [reitit.frontend :as reitit]))
@@ -50,11 +51,15 @@
     [:div
      [:b (u/get-in rule [:rule])] " " rule]))
 
-(defn generate-a-np [grammar lexicon]
-  (let [np (l/generate-a-np grammar lexicon)]
-    (log/info (str "showing noun phrase: " (u/get-in np [:rule])))
+(defn generate-a-np-nl []
+  (let [np (l/generate-a-np l/nl-grammar l/nl-lexicon l/nl-index-fn)]
+    (log/info (str "showing noun phrase: " np))
     [:div
-     [:b (u/get-in np [:rule])] " " np]))
+     [:b nlui/foo (:rule np) " " "\"" (:surface np) "\""]]))
+
+(defn generate-a-np-nl-2 []
+  [:div
+   [:b nlui/foo ]])
 
 (defn home-page []
   (fn []
@@ -63,7 +68,7 @@
 
      [:div.expression
       [:input {:type "button" :value "NL NP"
-               :on-click #(swap! nl-np-contents (fn [] (generate-a-np l/nl-grammar l/nl-lexicon)))}]
+               :on-click #(swap! nl-np-contents (fn [] (generate-a-np-nl-2)))}]
       [:div.behind-the-scenes
        @nl-np-contents]]
 
