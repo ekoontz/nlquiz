@@ -7,13 +7,16 @@
    [cljslog.core :as log]
    [dag_unify.core :as u]))
 
-(def nl-grammar (->> (nl/read-compiled-grammar)
-                     (map dag_unify.serialization/deserialize)))
-(def lexicon (-> (nl/deserialize-lexicon (nl/read-compiled-lexicon))
-                 vals
-                 flatten))
+(def grammar (->> (nl/read-compiled-grammar)
+                  (map dag_unify.serialization/deserialize)))
 
-(defn nl-index-fn [spec]
+(def lexicon
+  (-> (nl/read-compiled-lexicon)
+      babylon.lexiconfn/deserialize-lexicon              
+      vals
+      flatten))
+
+(defn index-fn [spec]
   ;; for now a very bad index function: simply returns all the lexemes
   ;; no matter what the spec is.
   (filter #(or
@@ -21,12 +24,10 @@
                     (u/get-in spec [:cat]))
                  (not (= :fail (u/unify spec %))))
             (= ::unspec (u/get-in % [:cat] ::unspec)))
-          (-> (nl/deserialize-lexicon (nl/read-compiled-lexicon))
-              vals
-              flatten)))
+          lexicon))
 
 (defn noun-phrase []
-  (let [np-attempt (g/generate-tiny nl-grammar nl-index-fn)]
+  (let [np-attempt (g/generate-tiny grammar index-fn)]
     (if (= :fail np-attempt)
       (do
         (log/info (str "retry.."))
