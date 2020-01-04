@@ -4,8 +4,7 @@
    [clerk.core :as clerk]
    [cljslog.core :as log]
    [dag_unify.core :as u]
-   [babylonui.language :as l]
-   [babylonui.language.nederlands :as nlui]
+   [babylonui.language.nederlands :as nl]
    [reagent.core :as reagent]
    [reagent.session :as session]
    [reitit.frontend :as reitit]))
@@ -51,10 +50,13 @@
     [:div
      [:b (u/get-in rule [:rule])] " " rule]))
 
-(defn generate-a-np-nl-2 []
+(defn generate-nl [spec]
   [:div
-   [:b (str (nlui/noun-phrase))]])
+   [:b (str (nl/generate spec))]])
 
+(def target-spec
+  {:subcat []})
+  
 (defn home-page []
   (fn []
     [:div.main
@@ -62,7 +64,7 @@
 
      [:div.expression
       [:input {:type "button" :value "NL NP"
-               :on-click #(swap! nl-np-contents (fn [] (generate-a-np-nl-2)))}]
+               :on-click #(swap! nl-np-contents (fn [] (generate-nl target-spec)))}]
       [:div.behind-the-scenes
        @nl-np-contents]]]))
 

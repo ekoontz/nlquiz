@@ -10,11 +10,7 @@
 (def grammar (->> (nl/read-compiled-grammar)
                   (map dag_unify.serialization/deserialize)))
 
-(def lexicon
-  (-> (nl/read-compiled-lexicon)
-      babylon.lexiconfn/deserialize-lexicon              
-      vals
-      flatten))
+(def lexicon (atom nil))
 
 (defn index-fn [spec]
   ;; for now a very bad index function: simply returns all the lexemes
@@ -24,12 +20,20 @@
                     (u/get-in spec [:cat]))
                  (not (= :fail (u/unify spec %))))
             (= ::unspec (u/get-in % [:cat] ::unspec)))
-          lexicon))
+          (if (nil? @lexicon)
+            (do (swap! lexicon
+                       (fn []
+                         (-> (nl/read-compiled-lexicon)
+                             babylon.lexiconfn/deserialize-lexicon              
+                             vals
+                             flatten)))
+                @lexicon)
+            @lexicon)))
 
-(defn noun-phrase []
-  (let [np-attempt (g/generate-tiny grammar index-fn)]
-    (if (= :fail np-attempt)
+(defn generate [spec]
+  (let [attempt (g/generate-tiny spec grammar index-fn nl/syntax-tree)]
+    (if (= :fail attempt)
       (do
         (log/info (str "retry.."))
-        (noun-phrase))
-      (nl/syntax-tree np-attempt))))
+        (generate))
+      (nl/syntax-tree attempt))))
