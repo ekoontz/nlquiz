@@ -23,20 +23,8 @@
             (= ::unspec (u/get-in % [:cat] ::unspec)))
           lexicon-vals))
 
-;; move to babylon
-(defn generate-tiny [grammar lexicon-fn]
-  (let [phrase
-        (u/unify
-         (first (shuffle grammar))
-         {:babylon.generate/started? true})
-        noun (first (shuffle (lexicon-fn {:cat :noun})))
-        det (first (shuffle (lexicon-fn {:cat :det})))]
-    (u/unify phrase
-             {:head noun}
-             {:comp det})))
-
 (defn noun-phrase []
-  (let [np-attempt (generate-tiny nl-grammar nl-index-fn)]
+  (let [np-attempt (g/generate-tiny nl-grammar nl-index-fn)]
     (if (= :fail np-attempt)
       (do
         (log/info (str "retry.."))
