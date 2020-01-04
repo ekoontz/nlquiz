@@ -16,14 +16,12 @@
 (defn nl-index-fn [spec]
   ;; for now a very bad index function: simply returns all the lexemes
   ;; no matter what the spec is.
-  (cond (= :noun (u/get-in spec [:cat]))
-        (filter #(= :noun (u/get-in % [:cat]))
-                lexicon-vals)
-        (= :det (u/get-in spec [:cat]))
-        (filter #(= :det (u/get-in % [:cat]))
-                lexicon-vals)
-        true
-        lexicon-vals))
+  (filter #(or
+            (and (= (u/get-in % [:cat])
+                    (u/get-in spec [:cat]))
+                 (not (= :fail (u/unify spec %))))
+            (= ::unspec (u/get-in % [:cat] ::unspec)))
+          lexicon-vals))
 
 ;; move to babylon
 (defn generate-tiny [grammar lexicon-fn]
