@@ -10,6 +10,8 @@ div.behind-the-scenes {
     padding: 1em;
     background:#eee;
     font-size:small;
+    border-radius: 5px;
+    min-height: 1.5em;
 }
 
 div.behind-the-scenes b {

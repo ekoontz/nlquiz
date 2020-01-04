@@ -44,10 +44,10 @@
   (fn []
     [:div.main
      [:div.expression
-      [:input {:type "button" :value "Generate NL phrase"
-               :on-click #(swap! nl-contents (fn [] (generate-nl target-spec)))}]
       [:div.behind-the-scenes
-       @nl-contents]]]))
+       @nl-contents]
+      [:input {:type "button" :value "Generate NL phrase"
+               :on-click #(swap! nl-contents (fn [] (generate-nl target-spec)))}]]]))
 
 (defn items-page []
   (fn []

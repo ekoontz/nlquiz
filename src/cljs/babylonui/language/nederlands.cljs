@@ -64,15 +64,16 @@
                                                   (shuffle (index-fn spec)))
                                  syntax-tree)]
     (cond
-       (and (< times 5)
-            (= :fail attempt))
-       (do
-         (log/info (str "retry.." times))
-         (generate spec (if (nil? times) 1 (+ 1 times))))
-       (= :fail attempt)
-       (log/error (str "giving up generating after 5 times; sorry."))
-       true
-       {:structure attempt
-        :syntax-tree (syntax-tree attempt)
-        :surface (morph attempt)})))
+      (and (not (nil? times))
+           (< times 5)
+           (= :fail attempt))
+      (do
+        (log/info (str "retry.." times))
+        (generate spec (if (nil? times) 1 (+ 1 times))))
+      (= :fail attempt)
+      (log/error (str "giving up generating after 5 times; sorry."))
+      true
+      {:structure attempt
+       :syntax-tree (syntax-tree attempt)
+       :surface (morph attempt)})))
 
