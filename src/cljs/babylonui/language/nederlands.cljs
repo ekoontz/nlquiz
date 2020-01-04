@@ -34,11 +34,27 @@
                 @lexicon)
             @lexicon)))
 
+(defn morph
+  ([tree]
+   (cond
+     (map? (u/get-in tree [:syntax-tree]))
+     (s/morph (u/get-in tree [:syntax-tree]) morphology)
+
+     true
+     (s/morph tree morphology)))
+
+  ([tree & {:keys [sentence-punctuation?]}]
+   (if sentence-punctuation?
+     (-> tree
+         morph
+         (nl/sentence-punctuation (u/get-in tree [:sem :mood] :decl))))))
+
 (defn generate [spec]
   (let [attempt (g/generate-tiny spec grammar index-fn syntax-tree)]
     (if (= :fail attempt)
       (do
         (log/info (str "retry.."))
         (generate))
-      (syntax-tree attempt))))
-
+      {:structure attempt
+       :syntax-tree (syntax-tree attempt)
+       :surface (morph attempt)})))

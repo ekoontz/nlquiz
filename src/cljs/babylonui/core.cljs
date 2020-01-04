@@ -29,12 +29,15 @@
 (def nl-contents (reagent/atom ""))
 
 (defn generate-nl [spec]
-  [:div
-   [:b (str (nl/generate spec))]])
+  (let [expression-tuple (nl/generate spec)]
+    [:div
+     [:i (str (:surface expression-tuple))]
+     " " 
+     [:div {:style {:float "right"}}
+      [:b (str (:syntax-tree expression-tuple))]]]))
 
 (def target-spec
-  {:cat :noun
-   :subcat []})
+  :top)
   
 (defn home-page []
   (fn []
@@ -42,7 +45,7 @@
      [:h1 "babylon UI"]
 
      [:div.expression
-      [:input {:type "button" :value "NL NP"
+      [:input {:type "button" :value "Generate NL phrase"
                :on-click #(swap! nl-contents (fn [] (generate-nl target-spec)))}]
       [:div.behind-the-scenes
        @nl-contents]]]))
