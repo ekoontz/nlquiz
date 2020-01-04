@@ -37,3 +37,9 @@ footer {
     float:left;
     width:100%;
 }
+
+input {
+    padding:0.5em;
+    margin:0.5em;
+    border-radius: 5px;
+}
