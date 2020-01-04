@@ -22,7 +22,7 @@
   (filter #(or
             (and (= (u/get-in % [:cat])
                     (u/get-in spec [:cat]))
-                 (not (= :fail (u/unify spec %))))
+                 (or true (not (= :fail (u/unify spec %)))))
             (= ::unspec (u/get-in % [:cat] ::unspec)))
           (if (nil? @lexicon)
             (do (swap! lexicon
