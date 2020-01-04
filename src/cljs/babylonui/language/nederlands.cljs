@@ -50,7 +50,9 @@
          (nl/sentence-punctuation (u/get-in tree [:sem :mood] :decl))))))
 
 (defn generate [spec]
-  (let [attempt (g/generate-tiny spec grammar index-fn syntax-tree)]
+  (let [attempt (g/generate-tiny spec grammar (fn [spec]
+                                                (shuffle (index-fn spec)))
+                                 syntax-tree)]
     (if (= :fail attempt)
       (do
         (log/info (str "retry.."))
