@@ -26,36 +26,15 @@
     (:path (reitit/match-by-name router route))))
 
 (path-for :about)
-
-(def en-lexeme (clojure.core/atom nil))
-(def nl-lexeme (clojure.core/atom nil))
-(def nl-np (clojure.core/atom nil))
-
-(def en-lexical-div-contents (reagent/atom en-lexeme))
-(def nl-lexical-div-contents (reagent/atom nl-lexeme))
-(def nl-grammar-rule-div-contents (reagent/atom ""))
-(def nl-np-contents (reagent/atom ""))
-
-(defn show-a-lexeme [lexicon lexeme-atom]
-  (let [key (first (shuffle (keys lexicon)))
-        value (first (shuffle (get lexicon key)))]
-    (log/info (str "showing entry: " key))
-    (swap! lexeme-atom (fn [] value))
-    [:div
-     [:b key ] " " value]))
-
-(defn show-a-rule [grammar]
-  (let [rule (first (shuffle grammar))]
-    (log/info (str "showing rule: " (u/get-in rule [:rule])))
-    [:div
-     [:b (u/get-in rule [:rule])] " " rule]))
+(def nl-contents (reagent/atom ""))
 
 (defn generate-nl [spec]
   [:div
    [:b (str (nl/generate spec))]])
 
 (def target-spec
-  {:subcat []})
+  {:cat :noun
+   :subcat []})
   
 (defn home-page []
   (fn []
@@ -64,9 +43,9 @@
 
      [:div.expression
       [:input {:type "button" :value "NL NP"
-               :on-click #(swap! nl-np-contents (fn [] (generate-nl target-spec)))}]
+               :on-click #(swap! nl-contents (fn [] (generate-nl target-spec)))}]
       [:div.behind-the-scenes
-       @nl-np-contents]]]))
+       @nl-contents]]]))
 
 (defn items-page []
   (fn []
