@@ -61,17 +61,16 @@
 
 
 (defn item-page []
-(fn []
-  (let [routing-data (session/get :route)
-        item (get-in routing-data [:route-params :item-id])]
-    [:span.main
-     [:h1 (str "Item " item " of babylon UI")]
-     [:p [:a {:href (path-for :items)} "Back to the list of items"]]])))
-
+  (fn []
+    (let [routing-data (session/get :route)
+          item (get-in routing-data [:route-params :item-id])]
+      [:span.main
+       [:h1 (str "Item " item " of babylon UI")]
+       [:p [:a {:href (path-for :items)} "Back to the list of items"]]])))
 
 (defn about-page []
-(fn [] [:span.main
-        [:h1 "About babylon UI"]]))
+  (fn [] [:span.main
+          [:h1 "About babylon UI"]]))
 
 
 ;; -------------------------
