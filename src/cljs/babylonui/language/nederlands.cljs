@@ -9,9 +9,9 @@
 
 (def nl-grammar (->> (nl/read-compiled-grammar)
                      (map dag_unify.serialization/deserialize)))
-(def nl-lexicon (lang/deserialize-lexicon (nl/read-compiled-lexicon)))
-
-(def lexicon-vals (flatten (vals nl-lexicon)))
+(def lexicon (-> (nl/deserialize-lexicon (nl/read-compiled-lexicon))
+                 vals
+                 flatten))
 
 (defn nl-index-fn [spec]
   ;; for now a very bad index function: simply returns all the lexemes
@@ -21,7 +21,9 @@
                     (u/get-in spec [:cat]))
                  (not (= :fail (u/unify spec %))))
             (= ::unspec (u/get-in % [:cat] ::unspec)))
-          lexicon-vals))
+          (-> (nl/deserialize-lexicon (nl/read-compiled-lexicon))
+              vals
+              flatten)))
 
 (defn noun-phrase []
   (let [np-attempt (g/generate-tiny nl-grammar nl-index-fn)]
