@@ -8,40 +8,50 @@
    [cljslog.core :as log]
    [dag_unify.core :as u]))
 
-(def grammar (->> (nl/read-compiled-grammar)
-                  (map dag_unify.serialization/deserialize)))
-(def lexicon (atom nil))
-(def morphology (nl/compile-morphology))
+(def grammar-atom (atom nil))
+(def lexicon-atom (atom nil))
+(def morphology-atom (atom nil))
+
+(defn grammar []
+  (->> (nl/read-compiled-grammar)
+       (map dag_unify.serialization/deserialize)))
+
+(defn morphology []
+  (or @morphology-atom
+      (do (swap! morphology-atom (fn [] (nl/compile-morphology)))
+          @morphology-atom)))
+
+(defn lexicon []
+  (if (nil? @lexicon-atom)
+    (do (swap! lexicon-atom
+               (fn []
+                 (-> (nl/read-compiled-lexicon)
+                     babylon.lexiconfn/deserialize-lexicon              
+                     vals
+                     flatten)))
+        @lexicon-atom)
+    @lexicon-atom))
 
 (defn syntax-tree [tree]
-  (s/syntax-tree tree morphology))
+  (s/syntax-tree tree (morphology)))
 
 (defn index-fn [spec]
-  ;; for now a very bad index function: simply returns all the lexemes
-  ;; no matter what the spec is.
-  (filter #(or
-            (and (= (u/get-in % [:cat])
-                    (u/get-in spec [:cat]))
-                 (or true (not (= :fail (u/unify spec %)))))
-            (= ::unspec (u/get-in % [:cat] ::unspec)))
-          (if (nil? @lexicon)
-            (do (swap! lexicon
-                       (fn []
-                         (-> (nl/read-compiled-lexicon)
-                             babylon.lexiconfn/deserialize-lexicon              
-                             vals
-                             flatten)))
-                @lexicon)
-            @lexicon)))
+  ;; for now a somewhat bad index function: simply returns
+  ;; lexemes which match the spec's :cat, or, if the :cat isn't
+  ;; defined, just return all the lexemes.
+  (let [lexicon (lexicon)]
+    (filter #(= (u/get-in % [:cat] :top)
+                (u/get-in spec [:cat] :top))
+            lexicon)))
 
 (defn morph
   ([tree]
    (cond
      (map? (u/get-in tree [:syntax-tree]))
-     (s/morph (u/get-in tree [:syntax-tree]) morphology)
+     (s/morph (u/get-in tree [:syntax-tree]) (morphology))
 
      true
-     (s/morph tree morphology)))
+     (s/morph tree (morphology))))
 
   ([tree & {:keys [sentence-punctuation?]}]
    (if sentence-punctuation?
@@ -49,14 +59,20 @@
          morph
          (nl/sentence-punctuation (u/get-in tree [:sem :mood] :decl))))))
 
-(defn generate [spec]
-  (let [attempt (g/generate-tiny spec grammar (fn [spec]
-                                                (shuffle (index-fn spec)))
+(defn generate [spec & [times]]
+  (let [attempt (g/generate-tiny spec (grammar) (fn [spec]
+                                                  (shuffle (index-fn spec)))
                                  syntax-tree)]
-    (if (= :fail attempt)
-      (do
-        (log/info (str "retry.."))
-        (generate))
-      {:structure attempt
-       :syntax-tree (syntax-tree attempt)
-       :surface (morph attempt)})))
+    (cond
+       (and (< times 5)
+            (= :fail attempt))
+       (do
+         (log/info (str "retry.." times))
+         (generate spec (if (nil? times) 1 (+ 1 times))))
+       (= :fail attempt)
+       (log/error (str "giving up generating after 5 times; sorry."))
+       true
+       {:structure attempt
+        :syntax-tree (syntax-tree attempt)
+        :surface (morph attempt)})))
+
