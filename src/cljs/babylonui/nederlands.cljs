@@ -1,4 +1,4 @@
-(ns babylonui.language.nederlands
+(ns babylonui.nederlands
   (:require-macros [babylon.nederlands])
   (:require
    [babylon.generate :as g]

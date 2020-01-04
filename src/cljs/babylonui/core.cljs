@@ -3,8 +3,7 @@
    [accountant.core :as accountant]
    [clerk.core :as clerk]
    [cljslog.core :as log]
-   [dag_unify.core :as u]
-   [babylonui.language.nederlands :as nl]
+   [babylonui.nederlands :as nl]
    [reagent.core :as reagent]
    [reagent.session :as session]
    [reitit.frontend :as reitit]))
