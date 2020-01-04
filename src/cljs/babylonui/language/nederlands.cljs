@@ -3,14 +3,18 @@
   (:require
    [babylon.generate :as g]
    [babylon.nederlands :as nl]
+   [babylon.serialization :as s]
    [babylonui.language :as lang]
    [cljslog.core :as log]
    [dag_unify.core :as u]))
 
 (def grammar (->> (nl/read-compiled-grammar)
                   (map dag_unify.serialization/deserialize)))
-
 (def lexicon (atom nil))
+(def morphology (nl/compile-morphology))
+
+(defn syntax-tree [tree]
+  (s/syntax-tree tree morphology))
 
 (defn index-fn [spec]
   ;; for now a very bad index function: simply returns all the lexemes
@@ -31,9 +35,10 @@
             @lexicon)))
 
 (defn generate [spec]
-  (let [attempt (g/generate-tiny spec grammar index-fn nl/syntax-tree)]
+  (let [attempt (g/generate-tiny spec grammar index-fn syntax-tree)]
     (if (= :fail attempt)
       (do
         (log/info (str "retry.."))
         (generate))
-      (nl/syntax-tree attempt))))
+      (syntax-tree attempt))))
+
