@@ -42,8 +42,6 @@
 (defn home-page []
   (fn []
     [:div.main
-     [:h1 "babylon UI"]
-
      [:div.expression
       [:input {:type "button" :value "Generate NL phrase"
                :on-click #(swap! nl-contents (fn [] (generate-nl target-spec)))}]
