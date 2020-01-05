@@ -36,8 +36,8 @@
       [:b (str (:syntax-tree expression-tuple))]]]))
 
 (def target-spec
-  (nth (nl/expressions) 3))
-  
+  (nth (nl/expressions) 8))
+
 (defn home-page []
   (fn []
     [:div.main
