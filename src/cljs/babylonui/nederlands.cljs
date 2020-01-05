@@ -52,6 +52,7 @@
 (def grammar-atom (atom nil))
 (def lexicon-atom (atom nil))
 (def morphology-atom (atom nil))
+(def expressions-atom (atom nil))
 
 (defn grammar []
   (->> (nl/read-compiled-grammar)
@@ -61,6 +62,10 @@
   (or @morphology-atom
       (do (swap! morphology-atom (fn [] (nl/compile-morphology)))
           @morphology-atom)))
+
+(defn expressions []
+  (or @expressions-atom
+      (do (swap! expressions-atom (fn [] (nl/read-expressions))))))
 
 (defn lexicon []
   (if (nil? @lexicon-atom)

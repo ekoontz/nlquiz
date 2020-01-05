@@ -36,10 +36,7 @@
       [:b (str (:syntax-tree expression-tuple))]]]))
 
 (def target-spec
-  {:cat :noun
-   :phrasal true
-   :head {:phrasal true}
-   :subcat []})
+  (nth (nl/expressions) 3))
   
 (defn home-page []
   (fn []
