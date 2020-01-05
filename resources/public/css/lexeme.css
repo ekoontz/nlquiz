@@ -22,3 +22,7 @@ div.behind-the-scenes i {
     font-family: sans-serif;
     font-size:large;
 }
+
+div.syntax-tree {
+    display:none;
+}

@@ -32,7 +32,7 @@
     [:div
      [:i (str (:surface expression-tuple))]
      " " 
-     [:div {:style {:float "right"}}
+     [:div.syntax-tree {:style {:float "right"}}
       [:b (str (:syntax-tree expression-tuple))]]]))
 
 (def target-spec
