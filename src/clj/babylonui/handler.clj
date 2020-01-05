@@ -24,7 +24,8 @@
    (head)
    [:body {:class "body-container"}
     mount-target
-    (include-js "/js/app.js")]))
+    ;; this value must be the same as in: project.clj:cljsbuild:builds:min:compiler:output-to.
+    (include-js "/js/app-optimized.js")]))
 
 
 (defn index-handler

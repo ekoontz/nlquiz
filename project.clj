@@ -20,12 +20,18 @@
                   :exclusions [org.clojure/tools.reader]]
                  [cljslog "0.1.0"]
                  [dag_unify "1.7.5"]
-                 [babylon "0.0.1-SNAPSHOT"]]
+                 [babylon "0.0.1-SNAPSHOT"]
+
+                 [ring/ring-core "1.7.1"]
+                 [ring/ring-defaults "0.3.2"]
+                 [ring/ring-devel "1.7.1"]
+                 [ring/ring-jetty-adapter "1.7.1"]]
   
   :plugins [[lein-environ "1.1.0"]
             [lein-cljsbuild "1.1.7"]
             [lein-asset-minifier "0.4.6"
-             :exclusions [org.clojure/clojure]]]
+             :exclusions [org.clojure/clojure]]
+            [lein-ring "0.12.5"]]
 
   :ring {:handler babylonui.handler/app
          :uberwar-name "babylonui.war"}
@@ -48,10 +54,14 @@
           :target "resources/public/css/lexeme.min.css"}]]
 
   :cljsbuild
-  {:builds {:min
+  {:builds {;; lein cljsbuild auto min
+            :min
             {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
              :compiler
-             {:output-to        "target/cljsbuild/public/js/app.js"
+
+             ;; this value must be the same as what is used in: src/clj/babylonui/handler.clj:(defn loading-page).
+             {:output-to        "target/cljsbuild/public/js/app-optimized.js"
+
               :output-dir       "target/cljsbuild/public/js"
               :source-map       "target/cljsbuild/public/js/app.js.map"
               :optimizations :advanced
@@ -74,12 +84,10 @@
   {:http-server-root "public"
    :server-port 3449
    :nrepl-port 7002
-   :nrepl-middleware [cider.piggieback/wrap-cljs-repl
-                      ]
+   :nrepl-middleware [cider.piggieback/wrap-cljs-repl]
+   
    :css-dirs ["resources/public/css"]
    :ring-handler babylonui.handler/app}
-
-
 
   :profiles {:dev {:repl-options {:init-ns babylonui.repl}
                    :dependencies [[cider/piggieback "0.4.2"]
@@ -89,13 +97,13 @@
                                   [prone "2019-07-08"]
                                   [figwheel-sidecar "0.5.19"]
                                   [nrepl "0.6.0"]
-                                  [pjstadig/humane-test-output "0.10.0"]
-                                  
-                                  ]
+                                  [pjstadig/humane-test-output "0.10.0"]]
+                   
+                   
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.19"]
-                             ]
+                   :plugins [[lein-figwheel "0.5.19"]]
+                   
 
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
