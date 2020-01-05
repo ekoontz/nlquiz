@@ -7,6 +7,48 @@
    [cljslog.core :as log]
    [dag_unify.core :as u]))
 
+(declare grammar)
+(declare index-fn)
+(declare morph)
+(declare syntax-tree)
+
+(defn generate [spec & [times]]
+  (let [attempt (g/generate spec
+                            (grammar)
+                            (fn [spec]
+                              (shuffle (index-fn spec)))
+                            syntax-tree)]
+    (cond
+      (and (not (nil? times))
+           (< times 5)
+           (= :fail attempt))
+      (do
+        (log/info (str "retry.." times))
+        (generate spec (if (nil? times) 1 (+ 1 times))))
+      (= :fail attempt)
+      (log/error (str "giving up generating after 5 times; sorry."))
+      true
+      {:structure attempt
+       :syntax-tree (syntax-tree attempt)
+       :surface (morph attempt)})))
+
+(declare morphology)
+
+(defn morph
+  ([tree]
+   (cond
+     (map? (u/get-in tree [:syntax-tree]))
+     (s/morph (u/get-in tree [:syntax-tree]) (morphology))
+
+     true
+     (s/morph tree (morphology))))
+
+  ([tree & {:keys [sentence-punctuation?]}]
+   (if sentence-punctuation?
+     (-> tree
+         morph
+         (nl/sentence-punctuation (u/get-in tree [:sem :mood] :decl))))))
+
 (def grammar-atom (atom nil))
 (def lexicon-atom (atom nil))
 (def morphology-atom (atom nil))
@@ -42,39 +84,3 @@
     (filter #(= (u/get-in % [:cat] :top)
                 (u/get-in spec [:cat] :top))
             lexicon)))
-
-(defn morph
-  ([tree]
-   (cond
-     (map? (u/get-in tree [:syntax-tree]))
-     (s/morph (u/get-in tree [:syntax-tree]) (morphology))
-
-     true
-     (s/morph tree (morphology))))
-
-  ([tree & {:keys [sentence-punctuation?]}]
-   (if sentence-punctuation?
-     (-> tree
-         morph
-         (nl/sentence-punctuation (u/get-in tree [:sem :mood] :decl))))))
-
-(defn generate [spec & [times]]
-  (let [attempt (g/generate spec
-                            (grammar)
-                            (fn [spec]
-                              (shuffle (index-fn spec)))
-                            syntax-tree)]
-    (cond
-      (and (not (nil? times))
-           (< times 5)
-           (= :fail attempt))
-      (do
-        (log/info (str "retry.." times))
-        (generate spec (if (nil? times) 1 (+ 1 times))))
-      (= :fail attempt)
-      (log/error (str "giving up generating after 5 times; sorry."))
-      true
-      {:structure attempt
-       :syntax-tree (syntax-tree attempt)
-       :surface (morph attempt)})))
-
