@@ -36,7 +36,9 @@
       [:b (str (:syntax-tree expression-tuple))]]]))
 
 (def target-spec
-  {:cat :top
+  {:cat :noun
+   :phrasal true
+   :head {:phrasal true}
    :subcat []})
   
 (defn home-page []
