@@ -59,11 +59,11 @@
          (nl/sentence-punctuation (u/get-in tree [:sem :mood] :decl))))))
 
 (defn generate [spec & [times]]
-  (let [attempt (first (g/generate-all [spec]
-                                       (grammar)
-                                       (fn [spec]
-                                         (shuffle (index-fn spec)))
-                                       syntax-tree))]
+  (let [attempt (g/generate spec
+                            (grammar)
+                            (fn [spec]
+                              (shuffle (index-fn spec)))
+                            syntax-tree)]
     (cond
       (and (not (nil? times))
            (< times 5)
