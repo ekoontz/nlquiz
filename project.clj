@@ -48,9 +48,12 @@
   :source-paths ["src/clj" "src/cljc" "src/cljs"]
   :resource-paths ["resources" "target/cljsbuild"]
 
+  ;; if you want to add new css files, you also need to add them to: src/clj/babylonui/handler:head.
   :minify-assets
   [[:css {:source "resources/public/css/site.css"
           :target "resources/public/css/site.min.css"}]
+   [:css {:source "resources/public/css/debug.css"
+          :target "resources/public/css/debug.min.css"}]
    [:css {:source "resources/public/css/lexeme.css"
           :target "resources/public/css/lexeme.min.css"}]]
 

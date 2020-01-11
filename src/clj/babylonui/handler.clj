@@ -17,6 +17,7 @@
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1"}]
    (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))
+   (include-css (if (env :dev) "/css/debug.css" "/css/debug.min.css"))
    (include-css (if (env :dev) "/css/lexeme.css" "/css/lexeme.min.css"))])
 
 

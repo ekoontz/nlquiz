@@ -1,0 +1,13 @@
+.debug {
+    border:2px dashed red;
+    float:right;
+    position:absolute;
+    width:75%;
+    height:50%;
+    overflow:scroll;
+    bottom:0;
+    right:0;
+    font-family:monospace;
+    white-space:mono;
+    font-size:small;
+}
