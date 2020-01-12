@@ -25,19 +25,19 @@
               (or (nil? times)
                   (< times 5))
               (do
-                (log/info (str "retry #" (or times 1)))
-                (generate spec (if (nil? times) 2 (+ 1 times))))
+                (log/info (str "retry #" (if (nil? times) 1 (+ 1 times))))
+                (generate spec (if (nil? times) 1 (+ 1 times))))
               true
               (log/error (str "giving up generating after 5 times; sorry.")))))]
       (cond
-        (and (not (nil? times))
-             (< times 5)
+        (and (or (nil? times)
+                 (< times 5))
              (or (= :fail attempt)
-                 (= :fail attempt)))
+                 (nil? attempt)))
         (do
-          (log/info (str "retry #" times))
+          (log/info (str "retry #" (if (nil? times) 1(+ 1 times))))
           (generate spec (if (nil? times) 1 (+ 1 times))))
-        (= :fail attempt)
+        (or (nil? attempt) (= :fail attempt))
         (log/error (str "giving up generating after 5 times; sorry."))
         true
         {:structure attempt
