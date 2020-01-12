@@ -47,7 +47,9 @@
 (declare show-expressions-dropdown)
 
 (defn update-expression []
-  (swap! nl-contents (fn [] (generate-nl @expression-specification-atom))))
+  (log/info (str "generating expression.."))
+  (let [expression (generate-nl @expression-specification-atom)]
+    (swap! nl-contents (fn [] expression))))
 
 (set! (.-onload js/window) 
       (fn []
@@ -62,7 +64,6 @@
 
      [:div.debug
       (str @debug-atom)]
-     
      
      [:div.expression
       [:div.behind-the-scenes
