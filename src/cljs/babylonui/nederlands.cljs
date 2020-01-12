@@ -24,21 +24,21 @@
           (catch js/Error e
             (cond
               (or (nil? times)
-                  (< times 5))
+                  (< times 2))
               (do
                 (log/info (str "retry #" (if (nil? times) 1 (+ 1 times))))
                 (generate spec (if (nil? times) 1 (+ 1 times))))
               true nil)))]
       (cond
         (and (or (nil? times)
-                 (< times 5))
+                 (< times 2))
              (or (= :fail attempt)
                  (nil? attempt)))
         (do
-          (log/info (str "retry #" (if (nil? times) 1(+ 1 times))))
+          (log/info (str "retry #" (if (nil? times) 1 (+ 1 times))))
           (generate spec (if (nil? times) 1 (+ 1 times))))
         (or (nil? attempt) (= :fail attempt))
-        (log/error (str "giving up generating after 5 times; sorry."))
+        (log/error (str "giving up generating after 2 times; sorry."))
         true
         {:structure attempt
          :syntax-tree (syntax-tree attempt)
