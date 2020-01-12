@@ -58,7 +58,7 @@
           :target "resources/public/css/lexeme.min.css"}]]
 
   :cljsbuild
-  {:builds {;; lein cljsbuild auto min
+  {:builds {;; "lein cljsbuild auto min"
             :min
             {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
              :compiler
