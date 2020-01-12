@@ -30,26 +30,19 @@
 (def nl-contents (reagent/atom ""))
 
 (def expression-specification-atom (atom (nth (nl/expressions) 0)))
+(def debug-atom (atom (nth (nl/expressions) 0)))
 
 (defn generate-nl [spec]
-  (let [spec {:phrasal true
-              :cat :verb
-              :rule "s"
-              :head {:phrasal false}
-              :comp {:phrasal false}
-              :reflexive false
-              :subcat []
-              :sem {:subj {:pred :i}
-                    :pred :see}}]
-    (let [expression-tuple (nl/generate spec)]
-      (log/info (str "got result: " (:syntax-tree expression-tuple)))
-      (swap! expression-specification-atom
-             (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree]))))
-      [:div
-       [:i (str (:surface expression-tuple))]
-       " " 
-       [:div.syntax-tree {:style {:float "right"}}
-        [:b (str (:syntax-tree expression-tuple))]]])))
+  (let [spec @expression-specification-atom
+        expression-tuple (nl/generate spec)]
+    (log/info (str "got result: " (:syntax-tree expression-tuple)))
+    (swap! debug-atom
+           (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree]))))
+    [:div
+     [:i (str (:surface expression-tuple))]
+     " " 
+     [:div.syntax-tree {:style {:float "right"}}
+      [:b (str (:syntax-tree expression-tuple))]]]))
 
 (declare show-expressions-dropdown)
 
@@ -63,9 +56,13 @@
 (defn home-page []
   (fn []
     [:div.main
-     [:div.debug
+     [:div.debug1
       (str @expression-specification-atom)
       ]
+
+     [:div.debug
+      (str @debug-atom)]
+     
      
      [:div.expression
       [:div.behind-the-scenes

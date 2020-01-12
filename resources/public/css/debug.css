@@ -1,3 +1,17 @@
+.debug1 {
+    border:2px dashed red;
+    float:left;
+    position:absolute;
+    width:15%;
+    height:50%;
+    overflow:scroll;
+    bottom:0;
+    left:0;
+    font-family:monospace;
+    white-space:mono;
+    font-size:small;
+}
+
 .debug {
     border:2px dashed red;
     float:right;
@@ -9,5 +23,5 @@
     right:0;
     font-family:monospace;
     white-space:mono;
-    font-size:small;
+    font-size:50%;
 }
