@@ -27,8 +27,7 @@
               (do
                 (log/info (str "retry #" (if (nil? times) 1 (+ 1 times))))
                 (generate spec (if (nil? times) 1 (+ 1 times))))
-              true
-              (log/error (str "giving up generating after 5 times; sorry.")))))]
+              true nil)))]
       (cond
         (and (or (nil? times)
                  (< times 5))
