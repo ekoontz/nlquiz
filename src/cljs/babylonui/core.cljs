@@ -1,6 +1,7 @@
 (ns babylonui.core
   (:require
    [accountant.core :as accountant]
+   [babylon.nederlands.cljs_support :as nl-cljs]
    [babylonui.nederlands :as nl]
    [clerk.core :as clerk]
    [cljslog.core :as log]
@@ -29,8 +30,8 @@
 (path-for :about)
 (def nl-contents (reagent/atom ""))
 
-(def expression-specification-atom (atom (nth (nl/expressions) 0)))
-(def debug-atom (atom (nth (nl/expressions) 0)))
+(def expression-specification-atom (atom (nth (nl-cljs/expressions) 0)))
+(def debug-atom (atom (nth (nl-cljs/expressions) 0)))
 
 (defn generate-nl [spec]
   (let [spec @expression-specification-atom
@@ -78,16 +79,16 @@
    [:select {:id "expressionchooser"
              :on-change #(do
                            (swap! expression-specification-atom (fn [x]
-                                                                  (nth (nl/expressions)
+                                                                  (nth (nl-cljs/expressions)
                                                                        (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
                            (update-expression))}
     (map (fn [item-id]
-           (let [expression (nth (nl/expressions) item-id)]
+           (let [expression (nth (nl-cljs/expressions) item-id)]
              [:option {:name item-id
                        :value item-id
                        :key (str "item-" item-id)}
               (:note expression)]))
-         (range 0 (count (nl/expressions))))]])
+         (range 0 (count (nl-cljs/expressions))))]])
 
 (defn about-page []
   (fn [] [:span.main
