@@ -62,10 +62,8 @@
          (nl/sentence-punctuation (u/get-in tree [:sem :mood] :decl))))))
 
 (def grammar-atom (atom nil))
-(def lexicon-atom (atom nil))
 (def morphology-atom (atom nil))
 (def expressions-atom (atom nil))
-(def lexeme-map-atom (atom nil))
 
 (defn grammar []
   (->> (nl/read-compiled-grammar)
@@ -84,8 +82,8 @@
 ;; generation since they are only to be used for parsing.
 ;; TODO: this is duplicated in babylon/nederlands.cljc (see def verb-lexicon).
 (defn lexeme-map []
-  (if (nil? @lexeme-map-atom)
-    (do (swap! lexeme-map-atom
+  (if (nil? @l/lexeme-map-atom)
+    (do (swap! l/lexeme-map-atom
                (fn []
                  {:verb (->> (l/lexicon)
                              (filter #(= :verb (u/get-in % [:cat])))
@@ -100,7 +98,7 @@
                   :top (l/lexicon)
                   :adjective (->> (l/lexicon)                                                          
                                   (filter #(= :adjective (u/get-in % [:cat]))))})))
-    @lexeme-map-atom))
+    @l/lexeme-map-atom))
 
 (defn syntax-tree [tree]
   (s/syntax-tree tree (morphology)))
