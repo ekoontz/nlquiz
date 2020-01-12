@@ -4,6 +4,7 @@
    [babylonui.nederlands :as nl]
    [clerk.core :as clerk]
    [cljslog.core :as log]
+   [dag_unify.core :as u]
    [dommy.core :as dommy]
    [reagent.core :as reagent]
    [reagent.session :as session]
@@ -28,38 +29,58 @@
 (path-for :about)
 (def nl-contents (reagent/atom ""))
 
-(defn generate-nl [spec]
-  (let [expression-tuple (nl/generate spec)]
-    [:div
-     [:i (str (:surface expression-tuple))]
-     " " 
-     [:div.syntax-tree {:style {:float "right"}}
-      [:b (str (:syntax-tree expression-tuple))]]]))
-
-
 (def expression-specification-atom (atom (nth (nl/expressions) 0)))
 
-(declare show-expressions)
+(defn generate-nl [spec]
+  (let [spec {:phrasal true
+              :cat :verb
+              :rule "s"
+              :head {:phrasal false}
+              :comp {:phrasal false}
+              :reflexive false
+              :subcat []
+              :sem {:subj {:pred :i}
+                    :pred :see}}]
+    (let [expression-tuple (nl/generate spec)]
+      (log/info (str "got result: " (:syntax-tree expression-tuple)))
+      (swap! expression-specification-atom
+             (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree]))))
+      [:div
+       [:i (str (:surface expression-tuple))]
+       " " 
+       [:div.syntax-tree {:style {:float "right"}}
+        [:b (str (:syntax-tree expression-tuple))]]])))
+
+(declare show-expressions-dropdown)
 
 (defn update-expression []
   (swap! nl-contents (fn [] (generate-nl @expression-specification-atom))))
-  
+
+(set! (.-onload js/window) 
+      (fn []
+        (update-expression)))
+
 (defn home-page []
   (fn []
     [:div.main
+     [:div.debug
+      (str @expression-specification-atom)
+      ]
+     
      [:div.expression
       [:div.behind-the-scenes
        @nl-contents]
       [:input {:type "button" :value "Generate NL phrase"
                :on-click update-expression}]
-      (show-expressions)]]))
+      (show-expressions-dropdown)]]))
 
-(defn show-expressions []
+(defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
    [:select {:id "expressionchooser"
              :on-change #(do
-                           (swap! expression-specification-atom (fn [x] (nth (nl/expressions)
-                                                                             (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                      
+                           (swap! expression-specification-atom (fn [x]
+                                                                  (nth (nl/expressions)
+                                                                       (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
                            (update-expression))}
     (map (fn [item-id]
            (let [expression (nth (nl/expressions) item-id)]
