@@ -3,6 +3,7 @@
   (:require
    [babylon.generate :as g]
    [babylon.nederlands :as nl]
+   [babylon.nederlands.lexicon :as l]
    [babylon.serialization :as s]
    [cljslog.core :as log]
    [dag_unify.core :as u]))
@@ -79,17 +80,6 @@
   (or @expressions-atom
       (do (swap! expressions-atom (fn [] (nl/read-expressions))))))
 
-(defn lexicon []
-  (if (nil? @lexicon-atom)
-    (do (swap! lexicon-atom
-               (fn []
-                 (-> (nl/read-compiled-lexicon)
-                     babylon.lexiconfn/deserialize-lexicon              
-                     vals
-                     flatten)))
-        @lexicon-atom)
-    @lexicon-atom))
-
 ;; note that we exclude [:exception]s from the lexemes that we use for
 ;; generation since they are only to be used for parsing.
 ;; TODO: this is duplicated in babylon/nederlands.cljc (see def verb-lexicon).
@@ -97,18 +87,18 @@
   (if (nil? @lexeme-map-atom)
     (do (swap! lexeme-map-atom
                (fn []
-                 {:verb (->> (lexicon)
+                 {:verb (->> (l/lexicon)
                              (filter #(= :verb (u/get-in % [:cat])))
                              (filter #(not (u/get-in % [:exception]))))
-                  :det (->> (lexicon)
+                  :det (->> (l/lexicon)
                             (filter #(= :det (u/get-in % [:cat]))))
-                  :intensifier (->> (lexicon)
+                  :intensifier (->> (l/lexicon)
                                     (filter #(= :intensifier (u/get-in % [:cat]))))
-                  :noun (->> (lexicon)
+                  :noun (->> (l/lexicon)
                              (filter #(= :noun (u/get-in % [:cat])))
                              (filter #(not (u/get-in % [:exception]))))
-                  :top (lexicon)
-                  :adjective (->> (lexicon)                                                          
+                  :top (l/lexicon)
+                  :adjective (->> (l/lexicon)                                                          
                                   (filter #(= :adjective (u/get-in % [:cat]))))})))
     @lexeme-map-atom))
 
@@ -125,4 +115,4 @@
         (shuffle result)
         (do
           (log/info (str "no entry from cat: " (u/get-in spec [:cat] ::none) " in lexeme-map: returning all lexemes."))
-          (lexicon)))))
+          (l/lexicon)))))
