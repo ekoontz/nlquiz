@@ -36,8 +36,9 @@
   (let [spec @expression-specification-atom
         expression-tuple (nl/generate spec)]
     (log/info (str "got result: " (:syntax-tree expression-tuple)))
-    (swap! debug-atom
-           (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree]))))
+    (comment
+      (swap! debug-atom
+             (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree])))))
     [:div
      [:i (str (:surface expression-tuple))]
      " " 
