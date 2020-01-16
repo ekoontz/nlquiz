@@ -29,65 +29,66 @@
 (path-for :about)
 (def nl-contents (reagent/atom ""))
 
-(def expression-specification-atom (atom (nth (nl/expressions) 0)))
-(def debug-atom (atom (nth (nl/expressions) 0)))
+(def expression-specification-atom (atom (nth nl/expressions 0)))
+(def debug-atom (atom (nth nl/expressions 0)))
 
 (defn generate-nl [spec]
-  (let [spec @expression-specification-atom
-        expression-tuple (nl/generate spec)]
-    (log/info (str "got result: " (:syntax-tree expression-tuple)))
-    (comment
-      (swap! debug-atom
-             (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree])))))
-    [:div
-     [:i (str (:surface expression-tuple))]
-     " " 
-     [:div.syntax-tree {:style {:float "right"}}
-      [:b (str (:syntax-tree expression-tuple))]]]))
+(let [spec @expression-specification-atom
+      expression-tuple (nl/generate spec)]
+  (log/info (str "got result: " (:syntax-tree expression-tuple)))
+  (comment
+    (swap! debug-atom
+           (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree])))))
+  [:div
+   [:i (str (:surface expression-tuple))]
+   " " 
+   [:div.syntax-tree {:style {:float "right"}}
+    [:b (str (:syntax-tree expression-tuple))]]]))
 
 (declare show-expressions-dropdown)
 
 (defn update-expression []
-  (log/info (str "generating expression.."))
-  (let [expression (generate-nl @expression-specification-atom)]
-    (swap! nl-contents (fn [] expression))))
+(log/info (str "generating expression.."))
+(let [expression (generate-nl @expression-specification-atom)]
+  (swap! nl-contents (fn [] expression))))
 
 (set! (.-onload js/window) 
-      (fn []
-        (update-expression)))
+(fn []
+  (update-expression)))
 
 (defn home-page []
-  (fn []
-    [:div.main
-     [:div.debug1
-      (str @expression-specification-atom)
-      ]
+(fn []
+  [:div.main
+   [:div.debug1
+    (str @expression-specification-atom)
+    ]
 
-     [:div.debug
-      (str @debug-atom)]
-     
-     [:div.expression
-      [:div.behind-the-scenes
-       @nl-contents]
-      [:input {:type "button" :value "Generate NL phrase"
-               :on-click update-expression}]
-      (show-expressions-dropdown)]]))
+   [:div.debug
+    (str @debug-atom)]
+   
+   [:div.expression
+    [:div.behind-the-scenes
+     @nl-contents]
+    [:input {:type "button" :value "Generate NL phrase"
+             :on-click update-expression}]
+    (show-expressions-dropdown)]]))
 
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
    [:select {:id "expressionchooser"
              :on-change #(do
-                           (swap! expression-specification-atom (fn [x]
-                                                                  (nth (nl/expressions)
-                                                                       (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
+                           (swap! expression-specification-atom
+                                  (fn [x]
+                                    (nth nl/expressions
+                                         (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
                            (update-expression))}
     (map (fn [item-id]
-           (let [expression (nth (nl/expressions) item-id)]
+           (let [expression (nth nl/expressions item-id)]
              [:option {:name item-id
                        :value item-id
                        :key (str "item-" item-id)}
               (:note expression)]))
-         (range 0 (count (nl/expressions))))]])
+         (range 0 (count nl/expressions)))]])
 
 (defn about-page []
   (fn [] [:span.main
