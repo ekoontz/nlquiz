@@ -34,16 +34,13 @@
 
 (defn generate-nl [spec]
   (let [spec @expression-specification-atom
-        expression-tuple (nl/generate spec)]
-    (log/info (str "got result: " (:syntax-tree expression-tuple)))
-    (comment
-      (swap! debug-atom
-             (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree])))))
+        expression (nl/generate spec)]
+    (log/info (str "got result: " (nl/syntax-tree expression)))
     [:div
-     [:i (str (:surface expression-tuple))]
+     [:i (str (nl/morph expression))]
      " " 
      [:div.syntax-tree {:style {:float "right"}}
-      [:b (str (:syntax-tree expression-tuple))]]]))
+      [:b (str (nl/syntax-tree expression))]]]))
 
 (declare show-expressions-dropdown)
 
