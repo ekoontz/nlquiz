@@ -1,8 +1,7 @@
 (ns babylonui.core
   (:require
    [accountant.core :as accountant]
-   [babylon.nederlands.cljs_support :as nl]
-   [babylon.nederlands :as nl2]
+   [babylon.nederlands :as nl]
    [clerk.core :as clerk]
    [cljslog.core :as log]
    [dag_unify.core :as u]
@@ -30,21 +29,21 @@
 (path-for :about)
 (def nl-contents (reagent/atom ""))
 
-(def expression-specification-atom (atom (nth nl2/expressions 0)))
-(def debug-atom (atom (nth nl2/expressions 0)))
+(def expression-specification-atom (atom (nth nl/expressions 0)))
+(def debug-atom (atom (nth nl/expressions 0)))
 
 (defn generate-nl [spec]
-(let [spec @expression-specification-atom
-      expression-tuple (nl/generate spec)]
-  (log/info (str "got result: " (:syntax-tree expression-tuple)))
-  (comment
-    (swap! debug-atom
-           (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree])))))
-  [:div
-   [:i (str (:surface expression-tuple))]
-   " " 
-   [:div.syntax-tree {:style {:float "right"}}
-    [:b (str (:syntax-tree expression-tuple))]]]))
+  (let [spec @expression-specification-atom
+        expression-tuple (nl/generate spec)]
+    (log/info (str "got result: " (:syntax-tree expression-tuple)))
+    (comment
+      (swap! debug-atom
+             (fn [] (dag_unify.serialization/serialize (u/get-in (:structure expression-tuple) [:syntax-tree])))))
+    [:div
+     [:i (str (:surface expression-tuple))]
+     " " 
+     [:div.syntax-tree {:style {:float "right"}}
+      [:b (str (:syntax-tree expression-tuple))]]]))
 
 (declare show-expressions-dropdown)
 
@@ -80,16 +79,16 @@
              :on-change #(do
                            (swap! expression-specification-atom
                                   (fn [x]
-                                    (nth nl2/expressions
+                                    (nth nl/expressions
                                          (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
                            (update-expression))}
     (map (fn [item-id]
-           (let [expression (nth nl2/expressions item-id)]
+           (let [expression (nth nl/expressions item-id)]
              [:option {:name item-id
                        :value item-id
                        :key (str "item-" item-id)}
               (:note expression)]))
-         (range 0 (count nl2/expressions)))]])
+         (range 0 (count nl/expressions)))]])
 
 (defn about-page []
   (fn [] [:span.main
