@@ -2,6 +2,7 @@
   (:require
    [accountant.core :as accountant]
    [babylon.nederlands.cljs_support :as nl]
+   [babylon.nederlands :as nl2]
    [clerk.core :as clerk]
    [cljslog.core :as log]
    [dag_unify.core :as u]
@@ -29,8 +30,8 @@
 (path-for :about)
 (def nl-contents (reagent/atom ""))
 
-(def expression-specification-atom (atom (nth nl/expressions 0)))
-(def debug-atom (atom (nth nl/expressions 0)))
+(def expression-specification-atom (atom (nth nl2/expressions 0)))
+(def debug-atom (atom (nth nl2/expressions 0)))
 
 (defn generate-nl [spec]
 (let [spec @expression-specification-atom
@@ -79,16 +80,16 @@
              :on-change #(do
                            (swap! expression-specification-atom
                                   (fn [x]
-                                    (nth nl/expressions
+                                    (nth nl2/expressions
                                          (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
                            (update-expression))}
     (map (fn [item-id]
-           (let [expression (nth nl/expressions item-id)]
+           (let [expression (nth nl2/expressions item-id)]
              [:option {:name item-id
                        :value item-id
                        :key (str "item-" item-id)}
               (:note expression)]))
-         (range 0 (count nl/expressions)))]])
+         (range 0 (count nl2/expressions)))]])
 
 (defn about-page []
   (fn [] [:span.main
