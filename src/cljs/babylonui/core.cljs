@@ -60,8 +60,9 @@
 (defn update-expression []
   (log/info (str "generating expression.."))
   (let [expression (generate-nl @expression-specification-atom)]
-    (swap! nl-contents (fn []
-                         (nl/morph expression)))
+    (swap! nl-contents (fn [arg]
+                         (log/debug (str "The input arg to update-expression is: " arg))
+                         (str arg " " (nl/morph expression))))
     (update-english-expression expression)))
     
 (set! (.-onload js/window) 
