@@ -33,6 +33,14 @@ a:hover {
   text-decoration: underline;
 }
 
+header {
+    float:left;
+    width:45%;
+    left:1%;
+    position:absolute;
+    bottom:0;
+}
+
 footer {
     float:right;
     width:50%;
