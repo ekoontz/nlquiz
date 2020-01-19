@@ -101,7 +101,7 @@
       [:div
        (str @semantics-atom)]]
 
-     [:div {:style {:width "100%" :float "left" :height "10em" :border "0px dashed blue"
+     [:div {:style {:width "100%" :float "left" :height "90%" :border "0px dashed blue"
                     :overflow "scroll"}}
       [contact-list]]]))
 
