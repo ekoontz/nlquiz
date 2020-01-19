@@ -36,11 +36,11 @@
 
 (def app-state
   (reagent/atom
-   {:contacts
+   {:expressions
     []}))
 
-(defn update-contacts! [f & args]
-  (apply swap! app-state update-in [:contacts] f args))
+(defn update-expressions! [f & args]
+  (apply swap! app-state update-in [:expressions] f args))
 
 (defn source-spec [expression]
   {:sem (u/get-in expression [:sem])
@@ -65,11 +65,11 @@
 
 (defn contact-list []
   [:div
-   (for [c (:contacts @app-state)]
+   (for [c (:expressions @app-state)]
      [contact c])])
 
 (defn add-contact! [c]
-  (update-contacts! conj c))
+  (update-expressions! conj c))
 
 (defn noop [arg])
 
