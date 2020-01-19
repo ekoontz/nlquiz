@@ -69,7 +69,7 @@
      [contact c])])
 
 (defn add-contact! [c]
-  (update-expressions! conj c))
+  (update-expressions! #(conj % c)))
 
 (defn noop [arg])
 
