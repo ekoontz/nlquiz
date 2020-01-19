@@ -41,6 +41,7 @@
    :subcat (u/get-in expression [:subcat])
    :agr (u/get-in expression [:agr])
    :modal (u/get-in expression [:modal] false)
+   :comp {:pronoun (u/get-in expression [:comp :pronoun] :top)}
    :cat (u/get-in expression [:cat])})
 
 (defn generate-nl [spec]
