@@ -1,6 +1,7 @@
 (ns babylonui.core
   (:require
    [accountant.core :as accountant]
+   [babylon.english :as en]
    [babylon.nederlands :as nl]
    [clerk.core :as clerk]
    [cljslog.core :as log]
@@ -28,47 +29,62 @@
 
 (path-for :about)
 (def nl-contents (reagent/atom ""))
+(def en-contents (reagent/atom ""))
 
 (def expression-specification-atom (atom (nth nl/expressions 0)))
+(def semantics-atom (reagent/atom nil))
 (def debug-atom (atom (nth nl/expressions 0)))
+
+(defn source-spec [expression]
+  {:sem (u/get-in expression [:sem])
+   :phrasal (u/get-in expression [:phrasal])
+   :subcat (u/get-in expression [:subcat])
+   :agr (u/get-in expression [:agr])
+   :modal (u/get-in expression [:modal] false)
+   :cat (u/get-in expression [:cat])})
 
 (defn generate-nl [spec]
   (let [spec @expression-specification-atom
         expression (nl/generate spec)]
     (log/info (str "got result: " (nl/syntax-tree expression)))
-    [:div
-     [:i (str (nl/morph expression))]
-     " " 
-     [:div.syntax-tree {:style {:float "right"}}
-      [:b (str (nl/syntax-tree expression))]]]))
+    (swap! semantics-atom (fn [] (u/strip-refs (source-spec expression))))
+    expression))
 
 (declare show-expressions-dropdown)
 
-(defn update-expression []
-(log/info (str "generating expression.."))
-(let [expression (generate-nl @expression-specification-atom)]
-  (swap! nl-contents (fn [] expression))))
+(defn update-english-expression [expression]
+  (swap! en-contents (fn []
+                       (en/morph (en/generate (source-spec expression))))))
 
+(defn update-expression []
+  (log/info (str "generating expression.."))
+  (let [expression (generate-nl @expression-specification-atom)]
+    (swap! nl-contents (fn []
+                         (nl/morph expression)))
+    (update-english-expression expression)))
+    
 (set! (.-onload js/window) 
-(fn []
-  (update-expression)))
+      (fn []
+        (update-expression)))
 
 (defn home-page []
-(fn []
-  [:div.main
-   [:div.debug1
-    (str @expression-specification-atom)
-    ]
+  (fn []
+    [:div.main
+     [:div.debugpanel
+      [:div
+       (str @expression-specification-atom)]
 
-   [:div.debug
-    (str @debug-atom)]
-   
-   [:div.expression
-    [:div.behind-the-scenes
-     @nl-contents]
-    [:input {:type "button" :value "Generate NL phrase"
-             :on-click update-expression}]
-    (show-expressions-dropdown)]]))
+      [:div
+       (str @semantics-atom)]]
+     [:div {:style {:width "100%" :float "left"}}
+      [:div.expression
+       @nl-contents]
+      [:div.expression
+       @en-contents]]
+     [:div
+      [:input {:type "button" :value "Generate NL phrase"
+               :on-click update-expression}]
+      (show-expressions-dropdown)]]))
 
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
@@ -90,7 +106,6 @@
 (defn about-page []
   (fn [] [:span.main
           [:h1 "About babylon UI"]]))
-
 
 ;; -------------------------
 ;; Translate routes -> page components
