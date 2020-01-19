@@ -4,14 +4,17 @@ div.language {
     margin:1%;
 }
 
-div.behind-the-scenes {
-    font-family: monospace;
+div.expression {
     border: 2px solid #edd;
-    padding: 1em;
+    padding: 3px;
     background:#eee;
-    font-size:small;
+    font-size:large;
     border-radius: 5px;
     min-height: 1.5em;
+    float:left;
+    margin:1px;
+    width:45%;
+    text-align:center;
 }
 
 div.behind-the-scenes b {

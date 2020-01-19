@@ -34,8 +34,11 @@ a:hover {
 }
 
 footer {
-    float:left;
-    width:100%;
+    float:right;
+    width:50%;
+    right:0;
+    position:absolute;
+    bottom:0;
 }
 
 input {

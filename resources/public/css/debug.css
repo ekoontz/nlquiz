@@ -1,29 +1,23 @@
-.debug1 {
+.debugpanel {
     border:2px dashed red;
     float:left;
     position:absolute;
-    width:45%;
+    width:100%;
     height:15%;
     overflow:scroll;
-    bottom:1em;
+    bottom:3em;
     padding:1px;
     left:1em;
-    font-family:monospace;
-    white-space:mono;
-    font-size:small;
 }
 
-.debug {
-    display:none;
-    border:2px dashed red;
-    float:right;
-    position:absolute;
-    width:75%;
-    height:50%;
-    overflow:scroll;
-    bottom:0;
-    right:0;
+.debugpanel > div {
     font-family:monospace;
     white-space:mono;
     font-size:50%;
+    margin-left:1em;
+    border:1px solid blue;
+    line-height:normal;
+    float:left;
+    max-width:15em;
+    border-radius: 5px;
 }
