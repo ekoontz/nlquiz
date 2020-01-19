@@ -5,6 +5,7 @@
    [babylon.nederlands :as nl]
    [clerk.core :as clerk]
    [cljslog.core :as log]
+   [clojure.string :as string]
    [dag_unify.core :as u]
    [dommy.core :as dommy]
    [reagent.core :as reagent]
@@ -28,65 +29,81 @@
     (:path (reitit/match-by-name router route))))
 
 (path-for :about)
-(def nl-contents (reagent/atom ""))
-(def en-contents (reagent/atom ""))
 
 (def expression-specification-atom (atom (nth nl/expressions 0)))
 (def semantics-atom (reagent/atom nil))
 (def debug-atom (atom (nth nl/expressions 0)))
 
+(def app-state
+  (reagent/atom
+   {:contacts
+    []}))
+
+(defn update-contacts! [f & args]
+  (apply swap! app-state update-in [:contacts] f args))
+
 (defn source-spec [expression]
   {:sem (u/get-in expression [:sem])
    :phrasal (u/get-in expression [:phrasal])
+   :head {:phrasal (u/get-in expression [:head :phrasal] :top)}
    :subcat (u/get-in expression [:subcat])
    :agr (u/get-in expression [:agr])
    :modal (u/get-in expression [:modal] false)
-   :comp {:pronoun (u/get-in expression [:comp :pronoun] :top)}
+   :comp {:pronoun (u/get-in expression [:comp :pronoun] :top)
+          :phrasal (u/get-in expression [:comp :phrasal] :top)}
    :cat (u/get-in expression [:cat])})
 
-(defn generate-nl [spec]
-  (let [spec @expression-specification-atom
-        expression (nl/generate spec)]
-    (log/info (str "got result: " (nl/syntax-tree expression)))
-    (swap! semantics-atom (fn [] (u/strip-refs (source-spec expression))))
-    expression))
+(defn contact [c]
+  (log/info (str "generating nl.."))
+  (let [expression (nl/generate @expression-specification-atom)]
+    [:div.row
+     [:div.expression 
+      [:span (nl/morph expression)]]
+     (log/info (str "generating en.."))
+     [:div.expression 
+      [:span (en/morph (en/generate (source-spec expression)))]]]))
+
+(defn contact-list []
+  [:div
+   (for [c (:contacts @app-state)]
+     [contact c])])
+
+(defn add-contact! [c]
+  (update-contacts! conj c))
+
+(defn noop [arg])
+
+(set! (.-onload js/window) 
+      (fn []
+        (noop 42)))
 
 (declare show-expressions-dropdown)
 
-(defn update-english-expression [expression]
-  (swap! en-contents (fn []
-                       (en/morph (en/generate (source-spec expression))))))
-
-(defn update-expression []
-  (log/info (str "generating expression.."))
-  (let [expression (generate-nl @expression-specification-atom)]
-    (swap! nl-contents (fn [arg]
-                         (log/debug (str "The input arg to update-expression is: " arg))
-                         (str arg " " (nl/morph expression))))
-    (update-english-expression expression)))
-    
-(set! (.-onload js/window) 
-      (fn []
-        (update-expression)))
+(def next-key (atom 0))
+(defn get-next-key []
+  (let [next-value @next-key]
+    (swap! next-key (fn [] (+ 1 @next-key)))
+    next-value))
 
 (defn home-page []
   (fn []
     [:div.main
+
+     [:div
+      [:input {:type "button" :value "Generate NL phrase"
+               :on-click #(add-contact! {:key (get-next-key)})}]
+      [show-expressions-dropdown]]
+
      [:div.debugpanel
       [:div
        (str @expression-specification-atom)]
 
       [:div
        (str @semantics-atom)]]
-     [:div {:style {:width "100%" :float "left"}}
-      [:div.expression
-       @nl-contents]
-      [:div.expression
-       @en-contents]]
-     [:div
-      [:input {:type "button" :value "Generate NL phrase"
-               :on-click update-expression}]
-      (show-expressions-dropdown)]]))
+
+     [:div {:style {:width "100%" :float "left" :height "10em" :border "0px dashed blue"
+                    :overflow "scroll"}}
+      [contact-list]]]))
 
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
@@ -96,7 +113,7 @@
                                   (fn [x]
                                     (nth nl/expressions
                                          (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
-                           (update-expression))}
+                           (add-contact! {}))}
     (map (fn [item-id]
            (let [expression (nth nl/expressions item-id)]
              [:option {:name item-id
