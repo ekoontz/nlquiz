@@ -56,6 +56,13 @@
             :phrasal (u/get-in expression [:comp :phrasal] :top)}
      :cat (u/get-in expression [:cat])}))
 
+(defn source-expression [target-expression]
+  (let [source-spec (source-spec target-expression)]
+    (log/info (str "generating source expression from spec: " (u/strip-refs source-spec)))
+    (let [source-expression (en/generate source-spec)]
+      (log/info (str (nl/morph target-expression) " => " (en/morph source-expression)))
+      [:span (en/morph source-expression)])))
+
 (defn expression [c]
   (log/info (str "generating nl.."))
   (let [target-spec (u/unify @expression-specification-atom
@@ -66,11 +73,7 @@
      [:div.expression 
       [:span (nl/morph expression)]]
      [:div.expression
-      (let [source-spec (source-spec expression)]
-        (log/info (str "generating source expression from spec: " (u/strip-refs source-spec)))
-        (let [source-expression (en/generate source-spec)]
-          (log/info (str (nl/morph expression) " => " (en/morph source-expression)))
-          [:span (en/morph source-expression)]))]]))
+      (source-expression expression)]]))
 
 (defn expression-list []
   [:div
@@ -100,24 +103,25 @@
   next-value))
 
 (defn home-page []
-(fn []
-  [:div.main
+  (fn []
+    [:div.main
 
-   [:div
-    [:input {:type "button" :value "Generate NL phrase"
-             :on-click #(add-expression! {:key (get-next-key)})}]
-    [show-expressions-dropdown]]
+     [:div {:style {:padding-left "1%"}}
+      [:input {:type "button" :value "Generate NL phrase"
+               :on-click #(add-expression! {:key (get-next-key)})}]
+      [show-expressions-dropdown]]
 
-   [:div.debugpanel
-    [:div
-     (str @expression-specification-atom)]
+     [:div.debugpanel
+      [:div
+       (str @expression-specification-atom)]
 
-    [:div
-     (str @semantics-atom)]]
+      [:div
+       (str @semantics-atom)]]
 
-   [:div {:style {:width "100%" :float "left" :height "90%" :border "0px dashed blue"
-                  :overflow "scroll"}}
-    [expression-list]]]))
+     [:div {:style {:width "100%" :float "left" :height "90%"
+                    :border "0px dashed blue" :padding-left "1%"
+                    :padding-top "1%" :overflow "scroll"}}
+      [expression-list]]]))
 
 (defn show-expressions-dropdown []
 [:div {:style {:float "left" :border "0px dashed blue"}}
