@@ -63,22 +63,29 @@
       (log/info (str (nl/morph target-expression) " => " (en/morph source-expression)))
       [:span (en/morph source-expression)])))
 
-(defn expression [c]
+(def next-sourcediv-key (atom 0))
+(defn get-next-sourcediv-key []
+  (let [next-value @next-sourcediv-key]
+    (swap! next-sourcediv-key (fn [] (+ 1 @next-sourcediv-key)))
+    next-value))
+
+(defn target-expression [c]
   (log/info (str "generating nl.."))
   (let [target-spec (u/unify @expression-specification-atom
                              {:cat :noun})
-        expression (nl/generate target-spec)]
-    (log/info (str "target expression: " (nl/morph expression)))
+        target-expression (nl/generate target-spec)]
+    (log/info (str "target expression: " (nl/morph target-expression)))
     [:div.row
      [:div.expression 
-      [:span (nl/morph expression)]]
-     [:div.expression
-      (source-expression expression)]]))
+      [:span
+       (nl/morph target-expression)]]
+     [:div.expression {:id (str "source-" (get-next-sourcediv-key))}
+      (source-expression target-expression)]]))
 
 (defn expression-list []
   [:div
    (for [c (:expressions @app-state)]
-     [expression c])])
+     [target-expression c])])
 
 (defn add-expression! [c]
   (update-expressions!
@@ -88,19 +95,21 @@
        (cons c (butlast existing-expressions))
        (cons c existing-expressions)))))
 
-(defn noop [arg])
+(defn onload-is-noop-for-now [arg]
+  ;; nothing in here (it's a no-op).
+  )
 
 (set! (.-onload js/window) 
-(fn []
-  (noop 42)))
+      (fn []
+        (onload-is-noop-for-now 42)))
 
 (declare show-expressions-dropdown)
 
 (def next-key (atom 0))
 (defn get-next-key []
-(let [next-value @next-key]
-  (swap! next-key (fn [] (+ 1 @next-key)))
-  next-value))
+  (let [next-value @next-key]
+    (swap! next-key (fn [] (+ 1 @next-key)))
+    next-value))
 
 (defn home-page []
   (fn []
