@@ -124,21 +124,22 @@
       [expression-list]]]))
 
 (defn show-expressions-dropdown []
-[:div {:style {:float "left" :border "0px dashed blue"}}
- [:select {:id "expressionchooser"
-           :on-change #(do
-                         (swap! expression-specification-atom
-                                (fn [x]
-                                  (nth nl/expressions
-                                       (js/parseInt (dommy/value (dommy/sel1 :#expressionchooser))))))                   
-                         (add-expression! {}))}
-  (map (fn [item-id]
-         (let [expression (nth nl/expressions item-id)]
-           [:option {:name item-id
-                     :value item-id
-                     :key (str "item-" item-id)}
-            (:note expression)]))
-       (range 0 (count nl/expressions)))]])
+  [:div {:style {:float "left" :border "0px dashed blue"}}
+   [:select {:id "expressionchooser"
+             :on-change #(do
+                           (swap! expression-specification-atom
+                                  (fn [x]
+                                    (nth nl/expressions
+                                         (js/parseInt
+                                          (dommy/value (dommy/sel1 :#expressionchooser))))))
+                           (add-expression! {}))}
+    (map (fn [item-id]
+           (let [expression (nth nl/expressions item-id)]
+             [:option {:name item-id
+                       :value item-id
+                       :key (str "item-" item-id)}
+              (:note expression)]))
+         (range 0 (count nl/expressions)))]])
 
 (defn about-page []
 (fn [] [:span.main
