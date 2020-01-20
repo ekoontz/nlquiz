@@ -1,4 +1,5 @@
 .debugpanel {
+    display:none;
     border:2px dashed red;
     float:left;
     position:absolute;
