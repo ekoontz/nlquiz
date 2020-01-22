@@ -40,7 +40,7 @@
    {:expressions
     []}))
 
-(defn update-expressions! [f & args]
+(defn update-target-expressions! [f & args]
   (apply swap! app-state update-in [:expressions] f args))
 
 (defn source-spec [expression]
@@ -73,13 +73,13 @@
     [:div.expression 
      [:span (nl/morph target-expression)]]))
 
-(defn expression-list []
+(defn target-expression-list []
   [:div
    (for [c (:expressions @app-state)]
      [target-expression c])])
 
 (defn add-expression! [c]
-  (update-expressions!
+  (update-target-expressions!
    (fn [existing-expressions]
      (log/info (str "length of existing expressions: " (count existing-expressions)))
      (if (> (count existing-expressions) 5)
@@ -121,7 +121,7 @@
      [:div {:style {:width "100%" :float "left" :height "90%"
                     :border "0px dashed blue" :padding-left "1%"
                     :padding-top "1%" :overflow "scroll"}}
-      [expression-list]]]))
+      [target-expression-list]]]))
 
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
