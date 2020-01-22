@@ -9,7 +9,7 @@
    [clojure.string :as string]
    [dag_unify.core :as u]
    [dommy.core :as dommy]
-   [reagent.core :as reagent]
+   [reagent.core :as r]
    [reagent.session :as session]
    [reitit.frontend :as reitit]))
 
@@ -32,11 +32,11 @@
 (path-for :about)
 
 (def expression-specification-atom (atom (nth nl/expressions 0)))
-(def semantics-atom (reagent/atom nil))
+(def semantics-atom (r/atom nil))
 (def debug-atom (atom (nth nl/expressions 0)))
 
 (def app-state
-  (reagent/atom
+  (r/atom
    {:expressions
     []}))
 
@@ -56,13 +56,17 @@
             :phrasal (u/get-in expression [:comp :phrasal] :top)}
      :cat (u/get-in expression [:cat])}))
 
-(defn source-expression [target-expression]
-  (let [source-spec (source-spec target-expression)]
-    (log/info (str "generating source expression from spec: " (u/strip-refs source-spec)))
-    (let [source-expression (en/generate source-spec)]
-      (log/info (str (nl/morph target-expression) " => " (en/morph source-expression)))
-      [:div.expression
-       [:span (en/morph source-expression)]])))
+(defn source-expression [c]
+  (log/info (str "generating en.."))
+  (let [the-source-spec {:phrasal true
+                         :head {:phrasal false}
+                         :comp {:phrasal false}
+                         :cat :noun}
+        source-expression (en/generate the-source-spec)]
+    (log/info (str "generating source expression from spec: " (u/strip-refs the-source-spec)))
+    (log/info (str "source expression: " (en/morph source-expression)))
+    [:div.expression
+     [:span (en/morph source-expression)]]))
 
 (defn target-expression [c]
   (log/info (str "generating nl.."))
@@ -73,7 +77,12 @@
     [:div.expression 
      [:span (nl/morph target-expression)]]))
 
-(defn target-expression-list []
+(defn source-expression-list []
+  [:div
+   (for [c (:expressions @app-state)]
+     [source-expression c])])
+
+  (defn target-expression-list []
   [:div
    (for [c (:expressions @app-state)]
      [target-expression c])])
@@ -121,8 +130,14 @@
      [:div {:style {:width "100%" :float "left" :height "90%"
                     :border "0px dashed blue" :padding-left "1%"
                     :padding-top "1%" :overflow "scroll"}}
-      [target-expression-list]]]))
+      [target-expression-list]]
 
+     [:div {:style {:width "100%" :float "left" :height "90%"
+                    :border "0px dashed blue" :padding-left "1%"
+                    :padding-top "1%" :overflow "scroll"}}
+      [source-expression-list]]]))
+
+  
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
    [:select {:id "expressionchooser"
@@ -172,7 +187,7 @@
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render [current-page] (.getElementById js/document "app")))
+  (r/render [current-page] (.getElementById js/document "app")))
 
 (defn init! []
   (clerk/initialize!)
@@ -182,7 +197,7 @@
       (let [match (reitit/match-by-path router path)
             current-page (:name (:data  match))
             route-params (:path-params match)]
-        (reagent/after-render clerk/after-render!)
+        (r/after-render clerk/after-render!)
         (session/put! :route {:current-page (page-for current-page)
                               :route-params route-params})
         (clerk/navigate-page! path)
