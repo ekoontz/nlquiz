@@ -54,8 +54,8 @@
           :target "resources/public/css/site.min.css"}]
    [:css {:source "resources/public/css/debug.css"
           :target "resources/public/css/debug.min.css"}]
-   [:css {:source "resources/public/css/lexeme.css"
-          :target "resources/public/css/lexeme.min.css"}]]
+   [:css {:source "resources/public/css/expression.css"
+          :target "resources/public/css/expression.min.css"}]]
 
   :cljsbuild
   {:builds {;; "lein cljsbuild auto min"

@@ -94,18 +94,20 @@
       [:div
        (str @semantics-atom)]]
 
-     (map (fn [expression-node]
-            (let [target-spec (:spec expression-node)
-                  target-expression (:expression expression-node)]
-              (log/info (str "target expression: " (nl/morph target-expression)))
-              [:div.expression {:key (str expression-node)}
-               [:span (nl/morph target-expression)]]))
-          @target-expressions)
+     [:div.expressions
+      (map (fn [expression-node]
+             (let [target-spec (:spec expression-node)
+                   target-expression (:expression expression-node)]
+               (log/info (str "target expression: " (nl/morph target-expression)))
+               [:div.expression {:key (str expression-node)}
+                [:span (nl/morph target-expression)]]))
+           @target-expressions)]
 
-     (map (fn [expression-node]
-            [:div.expression {:key (str expression-node)}
-             [:span (:morph expression-node)]])
-          @source-expressions)]))
+     [:div.expressions
+      (map (fn [expression-node]
+             [:div.expression {:key (str expression-node)}
+              [:span (:morph expression-node)]])
+           @source-expressions)]]))
 
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}

@@ -7,14 +7,28 @@ div.language {
 div.expression {
     border: 2px solid #edd;
     padding: 3px;
-    background:#eee;
     font-size:large;
     border-radius: 5px;
     min-height: 1.5em;
     float:left;
     margin:1px;
-    width:45%;
+    width:100%;
     text-align:center;
+}
+
+div.expressions {
+    margin:1%;
+    float:left;
+    border:0x dashed blue;
+    width:48%;
+}
+
+.source {
+    background:#ddd;
+}
+
+.target {
+    background:#eee;
 }
 
 div.behind-the-scenes b {

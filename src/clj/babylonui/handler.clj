@@ -18,7 +18,7 @@
            :content "width=device-width, initial-scale=1"}]
    (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))
    (include-css (if (env :dev) "/css/debug.css" "/css/debug.min.css"))
-   (include-css (if (env :dev) "/css/lexeme.css" "/css/lexeme.min.css"))])
+   (include-css (if (env :dev) "/css/expression.css" "/css/expression.min.css"))])
 
 
 ;; TODO: use environment to control which version of the js (normal or optimized) is included.
