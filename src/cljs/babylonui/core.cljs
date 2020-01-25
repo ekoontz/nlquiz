@@ -33,7 +33,6 @@
 
 (def expression-specification-atom (atom (nth nl/expressions 0)))
 (def semantics-atom (r/atom nil))
-(def debug-atom (atom (nth nl/expressions 0)))
 
 (def target-expressions
   (r/atom []))
@@ -68,12 +67,6 @@
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions)))))
 
-(def next-key (atom 0))
-(defn get-next-key []
-  (let [next-value @next-key]
-    (swap! next-key (fn [] (+ 1 @next-key)))
-    next-value))
-
 (defn home-page []
   (fn []
     [:div.main
@@ -81,8 +74,7 @@
      [:div {:style {:padding-left "1%"}}
       [:input {:type "button" :value "Generate NL phrase"
                :on-click #(update-target-expressions!
-                           {:key (get-next-key)
-                            :spec (u/unify @expression-specification-atom
+                           {:spec (u/unify @expression-specification-atom
                                            {:cat :noun})})}]
       [show-expressions-dropdown]]
 
@@ -99,7 +91,7 @@
             (let [target-spec (:spec expression-node)
                   target-expression (nl/generate target-spec)]
               (log/info (str "target expression: " (nl/morph target-expression)))
-              [:div.expression {:key (get-next-key)}
+              [:div.expression {:key (str expression-node)}
                [:span (nl/morph target-expression)]]))
           @target-expressions)]))
 
