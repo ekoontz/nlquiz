@@ -37,23 +37,19 @@
 
 (def app-state
   (r/atom
-   {:expressions
+   {:target-expressions
     []}))
 
 (defn update-target-expressions! [f & args]
-  (apply swap! app-state update-in [:expressions] f args))
+  (apply swap! app-state update-in [:target-expressions] f args))
 
 (defn source-spec [expression]
   (tr/nl-to-en-spec expression))
 
-(defn source-expression [c]
+(defn source-expression [c source-spec]
   (log/info (str "generating en.."))
-  (let [the-source-spec {:phrasal true
-                         :head {:phrasal false}
-                         :comp {:phrasal false}
-                         :cat :noun}
-        source-expression (en/generate the-source-spec)]
-    (log/info (str "generating source expression from spec: " (u/strip-refs the-source-spec)))
+  (let [source-expression (en/generate source-spec)]
+    (log/info (str "generating source expression from spec: " (u/strip-refs source-spec)))
     (log/info (str "source expression: " (en/morph source-expression)))
     [:div.expression
      [:span (en/morph source-expression)]]))
@@ -67,14 +63,9 @@
     [:div.expression 
      [:span (nl/morph target-expression)]]))
 
-(defn source-expression-list []
+(defn target-expression-list []
   [:div
-   (for [c (:expressions @app-state)]
-     [source-expression c])])
-
-  (defn target-expression-list []
-  [:div
-   (for [c (:expressions @app-state)]
+   (for [c (:target-expressions @app-state)]
      [target-expression c])])
 
 (defn add-expression! [c]
@@ -135,13 +126,7 @@
      [:div {:style {:width "100%" :float "left" :height "90%"
                     :border "0px dashed blue" :padding-left "1%"
                     :padding-top "1%" :overflow "scroll"}}
-      [target-expression-list]]
-
-     [:div {:style {:width "100%" :float "left" :height "90%"
-                    :border "0px dashed blue" :padding-left "1%"
-                    :padding-top "1%" :overflow "scroll"}}
-      [source-expression-list]]]))
-
+      [target-expression-list]]]))
   
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
