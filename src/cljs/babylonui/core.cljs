@@ -37,6 +37,9 @@
 (def target-expressions
   (r/atom []))
 
+(def source-expressions
+  (r/atom []))
+
 (defn onload-is-noop-for-now [arg]
   ;; doing nothing for onload for now.
   )
@@ -65,7 +68,14 @@
            (log/info (str "length of existing expressions: " (count existing-expressions)))
            (if (> (count existing-expressions) 5)
              (cons expression-node (butlast existing-expressions))
-             (cons expression-node existing-expressions)))))
+             (cons expression-node existing-expressions))))
+  (let [target-expression-node {:tspec (:spec expression-node)}]
+    (swap! source-expressions
+           (fn [existing-expressions]
+             (log/info (str "length of existing expressions: " (count existing-expressions)))
+             (if (> (count existing-expressions) 5)
+               (cons target-expression-node (butlast existing-expressions))
+               (cons target-expression-node existing-expressions))))))
 
 (defn home-page []
   (fn []
@@ -74,8 +84,12 @@
      [:div {:style {:padding-left "1%"}}
       [:input {:type "button" :value "Generate NL phrase"
                :on-click #(update-target-expressions!
-                           {:spec (u/unify @expression-specification-atom
-                                           {:cat :noun})})}]
+                           (let [spec
+                                 (u/unify @expression-specification-atom
+                                          {:cat :noun})]
+                             {:spec spec
+                              :expression (nl/generate spec)}))}]
+
       [show-expressions-dropdown]]
 
      [shared-state]
@@ -89,7 +103,7 @@
 
      (map (fn [expression-node]
             (let [target-spec (:spec expression-node)
-                  target-expression (nl/generate target-spec)]
+                  target-expression (:expression expression-node)]
               (log/info (str "target expression: " (nl/morph target-expression)))
               [:div.expression {:key (str expression-node)}
                [:span (nl/morph target-expression)]]))
