@@ -86,7 +86,7 @@
        (cons c existing-expressions)))))
 
 (defn onload-is-noop-for-now [arg]
-;; nothing in here (it's a no-op).
+;; doing nothing for onload for now.
 )
 
 (set! (.-onload js/window)
