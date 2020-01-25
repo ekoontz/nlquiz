@@ -50,18 +50,6 @@
 
 (declare show-expressions-dropdown)
 
-(defn atom-input [value]
-  [:input {:type "text"
-           :value @value
-           :on-change #(reset! value (-> % .-target .-value))}])
-
-(defn shared-state []
-  (let [val (r/atom "foo")]
-    (fn []
-      [:div
-       [:p "The value is now: " @val]
-       [:p "Change it here: " [atom-input val]]])))
-
 (defn update-target-expressions! [expression-node]
   (swap! target-expressions
          (fn [existing-expressions]
@@ -69,7 +57,14 @@
            (if (> (count existing-expressions) 5)
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions))))
-  (let [target-expression-node {:tspec (:spec expression-node)}]
+  (let [target-expression-node {:sspec (tr/nl-to-en-spec (:expression expression-node))
+                                :tspec (:spec expression-node)
+                                :morph
+                                (-> (:expression expression-node)
+                                    tr/nl-to-en-spec
+                                    en/generate
+                                    en/morph)}]
+    (log/info (str "source-expression: " (:morph target-expression-node)))
     (swap! source-expressions
            (fn [existing-expressions]
              (log/info (str "length of existing expressions: " (count existing-expressions)))
@@ -92,8 +87,6 @@
 
       [show-expressions-dropdown]]
 
-     [shared-state]
-     
      [:div.debugpanel
       [:div
        (str @expression-specification-atom)]
@@ -107,7 +100,12 @@
               (log/info (str "target expression: " (nl/morph target-expression)))
               [:div.expression {:key (str expression-node)}
                [:span (nl/morph target-expression)]]))
-          @target-expressions)]))
+          @target-expressions)
+
+     (map (fn [expression-node]
+            [:div.expression {:key (str expression-node)}
+             [:span (:morph expression-node)]])
+          @source-expressions)]))
 
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
