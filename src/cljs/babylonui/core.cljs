@@ -50,6 +50,21 @@
 
 (declare show-expressions-dropdown)
 
+(defn do-the-source-expression [target-expression-node]
+  (let [source-expression-node {:sspec (tr/nl-to-en-spec (:expression target-expression-node))
+                                :morph
+                                (-> (:expression target-expression-node)
+                                    tr/nl-to-en-spec
+                                    en/generate
+                                    en/morph)}]
+    (log/info (str "source-expression: " (:morph source-expression-node)))
+    (swap! source-expressions
+           (fn [existing-expressions]
+             (log/info (str "length of existing expressions: " (count existing-expressions)))
+             (if (> (count existing-expressions) 5)
+               (cons source-expression-node (butlast existing-expressions))
+               (cons source-expression-node existing-expressions))))))
+
 (defn update-target-expressions! [expression-node]
   (swap! target-expressions
          (fn [existing-expressions]
@@ -57,21 +72,8 @@
            (if (> (count existing-expressions) 5)
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions))))
-  (let [target-expression-node {:sspec (tr/nl-to-en-spec (:expression expression-node))
-                                :tspec (:spec expression-node)
-                                :morph
-                                (-> (:expression expression-node)
-                                    tr/nl-to-en-spec
-                                    en/generate
-                                    en/morph)}]
-    (log/info (str "source-expression: " (:morph target-expression-node)))
-    (swap! source-expressions
-           (fn [existing-expressions]
-             (log/info (str "length of existing expressions: " (count existing-expressions)))
-             (if (> (count existing-expressions) 5)
-               (cons target-expression-node (butlast existing-expressions))
-               (cons target-expression-node existing-expressions))))))
-
+  (do-the-source-expression expression-node))
+   
 (defn home-page []
   (fn []
     [:div.main
