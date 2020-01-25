@@ -40,28 +40,21 @@
    {:target-expressions
     []}))
 
-(defn update-target-expressions! [c]
-  (swap! app-state update-in [:target-expressions]
-         (fn [existing-expressions]
-           (log/info (str "length of existing expressions: " (count existing-expressions)))
-           (if (> (count existing-expressions) 5)
-             (cons c (butlast existing-expressions))
-             (cons c existing-expressions)))))
-
-(defn generate-target-expression [c]
-  (log/info (str "generating nl.."))
-  (let [target-spec (u/unify @expression-specification-atom
-                             {:cat :noun})
-        target-expression (nl/generate target-spec)]
-    (log/info (str "target expression: " (nl/morph target-expression)))
-    [:div.expression 
-     [:span (nl/morph target-expression)]]))
+(def next-key (atom 0))
+(defn get-next-key []
+  (let [next-value @next-key]
+    (swap! next-key (fn [] (+ 1 @next-key)))
+    next-value))
 
 (defn target-expression-list []
   [:div
    (map (fn [c]
-          (log/info (str "element: " c))
-          [generate-target-expression c])
+          (let [target-spec (u/unify @expression-specification-atom
+                                     {:cat :noun})
+                target-expression (nl/generate target-spec)]
+            (log/info (str "target expression: " (nl/morph target-expression)))
+            [:div.expression {:key (get-next-key)}
+             [:span (nl/morph target-expression)]]))
         (:target-expressions @app-state))])
   
 (defn onload-is-noop-for-now [arg]
@@ -74,12 +67,6 @@
 
 (declare show-expressions-dropdown)
 
-(def next-key (atom 0))
-(defn get-next-key []
-  (let [next-value @next-key]
-    (swap! next-key (fn [] (+ 1 @next-key)))
-    next-value))
-
 (defn atom-input [value]
   [:input {:type "text"
            :value @value
@@ -91,6 +78,14 @@
       [:div
        [:p "The value is now: " @val]
        [:p "Change it here: " [atom-input val]]])))
+
+(defn update-target-expressions! [c]
+  (swap! app-state update-in [:target-expressions]
+         (fn [existing-expressions]
+           (log/info (str "length of existing expressions: " (count existing-expressions)))
+           (if (> (count existing-expressions) 5)
+             (cons c (butlast existing-expressions))
+             (cons c existing-expressions)))))
 
 (defn home-page []
   (fn []
