@@ -40,19 +40,13 @@
    {:target-expressions
     []}))
 
-(defn update-target-expressions! [f & args]
-  (swap! app-state update-in [:target-expressions] f args))
-
-(defn source-spec [expression]
-  (tr/nl-to-en-spec expression))
-
-(defn source-expression [c source-spec]
-  (log/info (str "generating en.."))
-  (let [source-expression (en/generate source-spec)]
-    (log/info (str "generating source expression from spec: " (u/strip-refs source-spec)))
-    (log/info (str "source expression: " (en/morph source-expression)))
-    [:div.expression
-     [:span (en/morph source-expression)]]))
+(defn update-target-expressions! [c]
+  (swap! app-state update-in [:target-expressions]
+         (fn [existing-expressions]
+           (log/info (str "length of existing expressions: " (count existing-expressions)))
+           (if (> (count existing-expressions) 5)
+             (cons c (butlast existing-expressions))
+             (cons c existing-expressions)))))
 
 (defn target-expression [c]
   (log/info (str "generating nl.."))
@@ -68,17 +62,9 @@
    (for [c (:target-expressions @app-state)]
      [target-expression c])])
 
-(defn add-expression! [c]
-  (update-target-expressions!
-   (fn [existing-expressions]
-     (log/info (str "length of existing expressions: " (count existing-expressions)))
-     (if (> (count existing-expressions) 5)
-       (cons c (butlast existing-expressions))
-       (cons c existing-expressions)))))
-
 (defn onload-is-noop-for-now [arg]
-;; doing nothing for onload for now.
-)
+  ;; doing nothing for onload for now.
+  )
 
 (set! (.-onload js/window)
       (fn []
@@ -110,7 +96,7 @@
 
      [:div {:style {:padding-left "1%"}}
       [:input {:type "button" :value "Generate NL phrase"
-               :on-click #(add-expression! {:key (get-next-key)})}]
+               :on-click #(update-target-expressions! {:key (get-next-key)})}]
       [show-expressions-dropdown]]
 
 
@@ -137,7 +123,7 @@
                                     (nth nl/expressions
                                          (js/parseInt
                                           (dommy/value (dommy/sel1 :#expressionchooser))))))
-                           (add-expression! {}))}
+                           (update-target-expressions! {}))}
     (map (fn [item-id]
            (let [expression (nth nl/expressions item-id)]
              [:option {:name item-id
