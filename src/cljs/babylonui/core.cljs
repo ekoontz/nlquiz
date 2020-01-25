@@ -50,10 +50,10 @@
 
 (declare show-expressions-dropdown)
 
-(defn do-the-source-expression [target-expression-node]
-  (let [source-expression-node {:sspec (tr/nl-to-en-spec (:expression target-expression-node))
+(defn do-the-source-expression [target-expression]
+  (let [source-expression-node {:sspec (tr/nl-to-en-spec target-expression)
                                 :morph
-                                (-> (:expression target-expression-node)
+                                (-> target-expression
                                     tr/nl-to-en-spec
                                     en/generate
                                     en/morph)}]
@@ -72,7 +72,7 @@
            (if (> (count existing-expressions) 5)
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions))))
-  (do-the-source-expression expression-node))
+  (do-the-source-expression (:expression expression-node)))
    
 (defn home-page []
   (fn []
