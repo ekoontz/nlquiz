@@ -51,8 +51,7 @@
 (declare show-expressions-dropdown)
 
 (defn do-the-source-expression [target-expression]
-  (let [source-expression-node {:sspec (tr/nl-to-en-spec target-expression)
-                                :morph
+  (let [source-expression-node {:morph
                                 (-> target-expression
                                     tr/nl-to-en-spec
                                     en/generate
