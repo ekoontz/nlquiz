@@ -27,9 +27,12 @@
    (head)
    [:body {:class "body-container"}
     mount-target
-    ;; this value must be the same as in: project.clj:cljsbuild:builds:min:compiler:output-to.
     (if false
+
+      ;; the following include-js path must be the
+      ;; same as in: project.clj:cljsbuild:builds:min:compiler:output-to :
       (include-js "/js/app-optimized.js")
+
       (include-js "/js/app.js"))]))
 
 
