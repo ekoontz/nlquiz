@@ -122,6 +122,9 @@
                :on-click #(add-expression! {:key (get-next-key)})}]
       [show-expressions-dropdown]]
 
+
+     [shared-state]
+     
      [:div.debugpanel
       [:div
        (str @expression-specification-atom)]
