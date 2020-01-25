@@ -40,23 +40,6 @@
    {:target-expressions
     []}))
 
-(def next-key (atom 0))
-(defn get-next-key []
-  (let [next-value @next-key]
-    (swap! next-key (fn [] (+ 1 @next-key)))
-    next-value))
-
-(defn target-expression-list []
-  [:div
-   (map (fn [c]
-          (let [target-spec (u/unify @expression-specification-atom
-                                     {:cat :noun})
-                target-expression (nl/generate target-spec)]
-            (log/info (str "target expression: " (nl/morph target-expression)))
-            [:div.expression {:key (get-next-key)}
-             [:span (nl/morph target-expression)]]))
-        (:target-expressions @app-state))])
-  
 (defn onload-is-noop-for-now [arg]
   ;; doing nothing for onload for now.
   )
@@ -87,6 +70,12 @@
              (cons c (butlast existing-expressions))
              (cons c existing-expressions)))))
 
+(def next-key (atom 0))
+(defn get-next-key []
+  (let [next-value @next-key]
+    (swap! next-key (fn [] (+ 1 @next-key)))
+    next-value))
+
 (defn home-page []
   (fn []
     [:div.main
@@ -105,11 +94,15 @@
       [:div
        (str @semantics-atom)]]
 
-     [:div {:style {:width "100%" :float "left" :height "90%"
-                    :border "0px dashed blue" :padding-left "1%"
-                    :padding-top "1%" :overflow "scroll"}}
-      [target-expression-list]]]))
-  
+     (map (fn [c]
+            (let [target-spec (u/unify @expression-specification-atom
+                                       {:cat :noun})
+                  target-expression (nl/generate target-spec)]
+              (log/info (str "target expression: " (nl/morph target-expression)))
+              [:div.expression {:key (get-next-key)}
+               [:span (nl/morph target-expression)]]))
+          (:target-expressions @app-state))]))
+
 (defn show-expressions-dropdown []
   [:div {:style {:float "left" :border "0px dashed blue"}}
    [:select {:id "expressionchooser"
