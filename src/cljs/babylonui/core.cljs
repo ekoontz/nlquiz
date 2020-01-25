@@ -96,7 +96,6 @@
                :on-click #(update-target-expressions! {:key (get-next-key)})}]
       [show-expressions-dropdown]]
 
-
      [shared-state]
      
      [:div.debugpanel
@@ -119,8 +118,7 @@
                                   (fn [x]
                                     (nth nl/expressions
                                          (js/parseInt
-                                          (dommy/value (dommy/sel1 :#expressionchooser))))))
-                           (update-target-expressions! {:key (get-next-key)}))}
+                                          (dommy/value (dommy/sel1 :#expressionchooser)))))))}
     (map (fn [item-id]
            (let [expression (nth nl/expressions item-id)]
              [:option {:name item-id
