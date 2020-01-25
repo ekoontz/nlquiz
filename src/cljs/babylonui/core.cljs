@@ -81,8 +81,7 @@
       [:input {:type "button" :value "Generate NL phrase"
                :on-click #(update-target-expressions!
                            (let [spec
-                                 (u/unify @expression-specification-atom
-                                          {:cat :noun})]
+                                 (u/unify @expression-specification-atom)]
                              {:spec spec
                               :expression (nl/generate spec)}))}]
 
