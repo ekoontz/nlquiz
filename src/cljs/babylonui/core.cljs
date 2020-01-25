@@ -120,7 +120,7 @@
                                     (nth nl/expressions
                                          (js/parseInt
                                           (dommy/value (dommy/sel1 :#expressionchooser))))))
-                           (update-target-expressions! {}))}
+                           (update-target-expressions! {:key (get-next-key)}))}
     (map (fn [item-id]
            (let [expression (nth nl/expressions item-id)]
              [:option {:name item-id
