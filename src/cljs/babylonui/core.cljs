@@ -59,9 +59,11 @@
 
 (defn target-expression-list []
   [:div
-   (for [c (:target-expressions @app-state)]
-     [generate-target-expression c])])
-
+   (map (fn [c]
+          (log/info (str "element: " c))
+          [generate-target-expression c])
+        (:target-expressions @app-state))])
+  
 (defn onload-is-noop-for-now [arg]
   ;; doing nothing for onload for now.
   )
