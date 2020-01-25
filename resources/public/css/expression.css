@@ -23,6 +23,10 @@ div.expressions {
     width:45%;
 }
 
+div.source {
+    margin-left:1%;
+}
+
 div.source > div.expression {
     background:#eed;
     text-align:right;
