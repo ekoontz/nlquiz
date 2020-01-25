@@ -17,18 +17,22 @@ div.expression {
 }
 
 div.expressions {
-    margin:1%;
+    margin:2%;
     float:left;
     border:0x dashed blue;
-    width:48%;
+    width:45%;
 }
 
 div.source > div.expression {
     background:#eed;
+    text-align:right;
+    padding-right:0.5em;
 }
 
 div.target > div.expression {
     background:#eef;
+    text-align:left;
+    padding-left:0.5em;
 }
 
 div.behind-the-scenes b {
