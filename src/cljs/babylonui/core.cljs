@@ -60,13 +60,13 @@
        [:p "The value is now: " @val]
        [:p "Change it here: " [atom-input val]]])))
 
-(defn update-target-expressions! [c]
+(defn update-target-expressions! [expression-node]
   (swap! target-expressions
          (fn [existing-expressions]
            (log/info (str "length of existing expressions: " (count existing-expressions)))
            (if (> (count existing-expressions) 5)
-             (cons c (butlast existing-expressions))
-             (cons c existing-expressions)))))
+             (cons expression-node (butlast existing-expressions))
+             (cons expression-node existing-expressions)))))
 
 (def next-key (atom 0))
 (defn get-next-key []
@@ -80,7 +80,10 @@
 
      [:div {:style {:padding-left "1%"}}
       [:input {:type "button" :value "Generate NL phrase"
-               :on-click #(update-target-expressions! {:key (get-next-key)})}]
+               :on-click #(update-target-expressions!
+                           {:key (get-next-key)
+                            :spec (u/unify @expression-specification-atom
+                                           {:cat :noun})})}]
       [show-expressions-dropdown]]
 
      [shared-state]
@@ -92,9 +95,8 @@
       [:div
        (str @semantics-atom)]]
 
-     (map (fn [c]
-            (let [target-spec (u/unify @expression-specification-atom
-                                       {:cat :noun})
+     (map (fn [expression-node]
+            (let [target-spec (:spec expression-node)
                   target-expression (nl/generate target-spec)]
               (log/info (str "target expression: " (nl/morph target-expression)))
               [:div.expression {:key (get-next-key)}
