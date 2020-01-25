@@ -44,17 +44,7 @@
   (apply swap! app-state update-in [:expressions] f args))
 
 (defn source-spec [expression]
-  (if true
-    (tr/nl-to-en-spec expression)
-    {:sem (u/get-in expression [:sem])
-     :phrasal (u/get-in expression [:phrasal])
-     :head {:phrasal (u/get-in expression [:head :phrasal] :top)}
-     :subcat (u/get-in expression [:subcat])
-     :agr (u/get-in expression [:agr])
-     :modal (u/get-in expression [:modal] false)
-     :comp {:pronoun (u/get-in expression [:comp :pronoun] :top)
-            :phrasal (u/get-in expression [:comp :phrasal] :top)}
-     :cat (u/get-in expression [:cat])}))
+  (tr/nl-to-en-spec expression))
 
 (defn source-expression [c]
   (log/info (str "generating en.."))
