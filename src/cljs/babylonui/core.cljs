@@ -94,7 +94,7 @@
       [:div
        (str @semantics-atom)]]
 
-     [:div.expressions
+     [:div {:class ["expressions" "target"]}
       (map (fn [expression-node]
              (let [target-spec (:spec expression-node)
                    target-expression (:expression expression-node)]
@@ -103,7 +103,7 @@
                 [:span (nl/morph target-expression)]]))
            @target-expressions)]
 
-     [:div.expressions
+     [:div {:class ["expressions" "source"]}
       (map (fn [expression-node]
              [:div.expression {:key (str expression-node)}
               [:span (:morph expression-node)]])

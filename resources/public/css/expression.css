@@ -23,12 +23,12 @@ div.expressions {
     width:48%;
 }
 
-.source {
-    background:#ddd;
+div.source > div.expression {
+    background:#eed;
 }
 
-.target {
-    background:#eee;
+div.target > div.expression {
+    background:#eef;
 }
 
 div.behind-the-scenes b {
