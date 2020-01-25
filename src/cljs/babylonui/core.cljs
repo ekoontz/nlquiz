@@ -41,7 +41,7 @@
     []}))
 
 (defn update-target-expressions! [f & args]
-  (apply swap! app-state update-in [:target-expressions] f args))
+  (swap! app-state update-in [:target-expressions] f args))
 
 (defn source-spec [expression]
   (tr/nl-to-en-spec expression))
