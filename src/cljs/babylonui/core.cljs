@@ -48,7 +48,7 @@
              (cons c (butlast existing-expressions))
              (cons c existing-expressions)))))
 
-(defn target-expression [c]
+(defn generate-target-expression [c]
   (log/info (str "generating nl.."))
   (let [target-spec (u/unify @expression-specification-atom
                              {:cat :noun})
@@ -60,7 +60,7 @@
 (defn target-expression-list []
   [:div
    (for [c (:target-expressions @app-state)]
-     [target-expression c])])
+     [generate-target-expression c])])
 
 (defn onload-is-noop-for-now [arg]
   ;; doing nothing for onload for now.
