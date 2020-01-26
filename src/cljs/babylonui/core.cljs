@@ -102,19 +102,23 @@
 
      [:div {:style {:float "left"}}
       [:div {:class ["expressions" "target"]}
-       (map (fn [expression-node]
-              (let [target-spec (:spec expression-node)
-                    target-expression (:expression expression-node)]
-                (log/info (str "target expression: " (nl/morph target-expression)))
-                [:div.expression {:key (str expression-node)}
-                 [:span (nl/morph target-expression)]]))
-            @target-expressions)]
+       (doall
+        (map (fn [i]
+               (let [expression-node (nth @target-expressions i)
+                     target-spec (:spec expression-node)
+                     target-expression (:expression expression-node)]
+                 (log/info (str "target expression: " (nl/morph target-expression)))
+                 [:div.expression {:key (str "target-" i)}
+                  [:span (nl/morph target-expression)]]))
+             (range 0 (count @target-expressions))))]
 
       [:div {:class ["expressions" "source"]}
-       (map (fn [expression-node]
-              [:div.expression {:key (str expression-node)}
-               [:span (:morph expression-node)]])
-            @source-expressions)]]
+       (doall
+        (map (fn [i]
+               (let [expression-node (nth @source-expressions i)]
+                 [:div.expression {:key (str "source-" i)}
+                  [:span (:morph expression-node)]]))
+             (range 0 (count @source-expressions))))]]
      [timer-component]]))
 
 (defn show-expressions-dropdown []
