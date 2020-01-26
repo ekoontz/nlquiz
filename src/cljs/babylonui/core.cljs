@@ -40,10 +40,6 @@
 (def source-expressions
   (r/atom []))
 
-(defn onload-is-noop-for-now [arg]
-  ;; doing nothing for onload for now.
-  )
-
 (declare show-expressions-dropdown)
 
 (defn do-the-source-expression [target-expression]
@@ -55,6 +51,7 @@
     (log/info (str "source-expression: " (:morph source-expression-node)))
     (swap! source-expressions
            (fn [existing-expressions]
+
              (log/info (str "length of existing expressions: " (count existing-expressions)))
              (if (> (count existing-expressions) 5)
                (cons source-expression-node (butlast existing-expressions))
@@ -66,90 +63,91 @@
            (log/info (str "length of existing expressions: " (count existing-expressions)))
            (if (> (count existing-expressions) 5)
              (cons expression-node (butlast existing-expressions))
-             (cons expression-node existing-expressions))))
-  (do-the-source-expression (:expression expression-node)))
+             (cons expression-node existing-expressions)))))
+
+(defn generate []
+  (let [target-expression
+        (nl/generate @expression-specification-atom)]
+    (update-target-expressions!
+     {:expression target-expression})
+    (do-the-source-expression target-expression)))
 
 (set! (.-onload js/window)
-      (fn []
-        (update-target-expressions!
-         {:expression (nl/generate @expression-specification-atom)})))
+      (fn []))
 
 (defn home-page []
-  (fn []
-    [:div.main
+(fn []
+  [:div.main
 
-     [:div {:style {:padding-left "1%"}}
-      [:input {:type "button" :value "Generate NL phrase"
-               :on-click #(update-target-expressions!
-                           {:expression (nl/generate @expression-specification-atom)})}]
+   [:div {:style {:padding-left "1%"}}
+    [:input {:type "button" :value "Generate phrase pair"
+             :on-click generate}]
 
-      [show-expressions-dropdown]]
+    [show-expressions-dropdown]]
 
-     [:div.debugpanel
-      [:div
-       (str @expression-specification-atom)]
+   [:div.debugpanel
+    [:div
+     (str @expression-specification-atom)]
 
-      [:div
-       (str @semantics-atom)]]
+    [:div
+     (str @semantics-atom)]]
 
-     [:div {:class ["expressions" "target"]}
-      (map (fn [expression-node]
-             (let [target-spec (:spec expression-node)
-                   target-expression (:expression expression-node)]
-               (log/info (str "target expression: " (nl/morph target-expression)))
-               [:div.expression {:key (str expression-node)}
-                [:span (nl/morph target-expression)]]))
-           @target-expressions)]
-
-     [:div {:class ["expressions" "source"]}
-      (map (fn [expression-node]
+   [:div {:class ["expressions" "target"]}
+    (map (fn [expression-node]
+           (let [target-spec (:spec expression-node)
+                 target-expression (:expression expression-node)]
+             (log/info (str "target expression: " (nl/morph target-expression)))
              [:div.expression {:key (str expression-node)}
-              [:span (:morph expression-node)]])
-           @source-expressions)]]))
+              [:span (nl/morph target-expression)]]))
+         @target-expressions)]
+
+   [:div {:class ["expressions" "source"]}
+    (map (fn [expression-node]
+           [:div.expression {:key (str expression-node)}
+            [:span (:morph expression-node)]])
+         @source-expressions)]]))
 
 (defn show-expressions-dropdown []
-  [:div {:style {:float "left" :border "0px dashed blue"}}
-   [:select {:id "expressionchooser"
-             :on-change #(do
-                           (swap! expression-specification-atom
-                                  (fn [x]
-                                    (nth nl/expressions
-                                         (js/parseInt
-                                          (dommy/value (dommy/sel1 :#expressionchooser)))))))}
-    (map (fn [item-id]
-           (let [expression (nth nl/expressions item-id)]
-             [:option {:name item-id
-                       :value item-id
-                       :key (str "item-" item-id)}
-              (:note expression)]))
-         (range 0 (count nl/expressions)))]])
+[:div {:style {:float "left" :border "0px dashed blue"}}
+ [:select {:id "expressionchooser"
+           :on-change #(reset! expression-specification-atom
+                               (nth nl/expressions
+                                    (js/parseInt
+                                     (dommy/value (dommy/sel1 :#expressionchooser)))))}
+  (map (fn [item-id]
+         (let [expression (nth nl/expressions item-id)]
+           [:option {:name item-id
+                     :value item-id
+                     :key (str "item-" item-id)}
+            (:note expression)]))
+       (range 0 (count nl/expressions)))]])
 
 (defn about-page []
-  (fn [] [:span.main
-          [:h1 "About babylon UI"]]))
+(fn [] [:span.main
+        [:h1 "About babylon UI"]]))
 
 ;; -------------------------
 ;; Translate routes -> page components
 
 (defn page-for [route]
-  (case route
-    :index #'home-page
-    :about #'about-page))
+(case route
+  :index #'home-page
+  :about #'about-page))
 
 ;; -------------------------
 ;; Page mounting component
 
 (defn current-page []
-  (fn []
-    (let [page (:current-page (session/get :route))]
-      [:div
-       [:header
-        [:p [:a {:href (path-for :index)} "Home"] " | "
-         [:a {:href (path-for :about)} "About babylon UI"]]]
-       [page]
-       [:footer
-        [:p "Babylon UI was generated by the "
-         [:a {:href "https://github.com/reagent-project/reagent-template"} "Reagent Template"] "."]]])))
+(fn []
+  (let [page (:current-page (session/get :route))]
+    [:div
+     [:header
+      [:p [:a {:href (path-for :index)} "Home"] " | "
+       [:a {:href (path-for :about)} "About babylon UI"]]]
+     [page]
+     [:footer
+      [:p "Babylon UI was generated by the "
+       [:a {:href "https://github.com/reagent-project/reagent-template"} "Reagent Template"] "."]]])))
 
 ;; -------------------------
 ;; Initialize app
@@ -158,20 +156,20 @@
 (r/render [current-page] (.getElementById js/document "app")))
 
 (defn init! []
-  (clerk/initialize!)
-  (accountant/configure-navigation!
-   {:nav-handler
-    (fn [path]
-      (let [match (reitit/match-by-path router path)
-            current-page (:name (:data  match))
-            route-params (:path-params match)]
-        (r/after-render clerk/after-render!)
-        (session/put! :route {:current-page (page-for current-page)
-                              :route-params route-params})
-        (clerk/navigate-page! path)
-        ))
-    :path-exists?
-    (fn [path]
-      (boolean (reitit/match-by-path router path)))})
-  (accountant/dispatch-current!)
-  (mount-root))
+(clerk/initialize!)
+(accountant/configure-navigation!
+ {:nav-handler
+  (fn [path]
+    (let [match (reitit/match-by-path router path)
+          current-page (:name (:data  match))
+          route-params (:path-params match)]
+      (r/after-render clerk/after-render!)
+      (session/put! :route {:current-page (page-for current-page)
+                            :route-params route-params})
+      (clerk/navigate-page! path)
+      ))
+  :path-exists?
+  (fn [path]
+    (boolean (reitit/match-by-path router path)))})
+(accountant/dispatch-current!)
+(mount-root))
