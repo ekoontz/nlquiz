@@ -95,7 +95,7 @@
                              @generated)
              " pairs")]
 
-       [:div {:style {:marging-left "1em"
+       [:div {:style {:margin-left "1em"
                       :float :left
                       :white-space "nowrap"}}
         "Turn generation: "
