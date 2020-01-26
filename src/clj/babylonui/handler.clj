@@ -21,13 +21,15 @@
    (include-css (if (env :dev) "/css/expression.css" "/css/expression.min.css"))])
 
 
+(def optimized? false)
+
 ;; TODO: use environment to control which version of the js (normal or optimized) is included.
 (defn loading-page []
   (html5
    (head)
    [:body {:class "body-container"}
     mount-target
-    (if false
+    (if optimized?
 
       ;; the following include-js path must be the
       ;; same as in: project.clj:cljsbuild:builds:min:compiler:output-to :
