@@ -81,26 +81,50 @@
       (fn []))
 
 (defn timer-component []
-  (let [generated (r/atom 0)]
+  (let [generated (r/atom 0)
+        generate? (r/atom true)]
     (fn []
-      (do
+      (when @generate?
         (generate)
-        (js/setTimeout #(swap! generated inc) 6000))
-      [:div {:style {:float "left"}}
-       "Generated: " (inc @generated)])))
+        (js/setTimeout #(swap! generated inc) 50))
+      [:div {:style {:float "left" :padding "0.25em"}}
+
+       [:div {:style {:float "left"}}
+        (str "Generated: " (if @generate?
+                             (inc @generated)
+                             @generated)
+             " pairs")]
+
+       [:div {:style {:marging-left "1em"
+                      :float :left
+                      :white-space "nowrap"}}
+        "Turn generation: "
+        [:input {:type "radio" :value "Generate"
+                 :name "generate-switch"
+                 :checked @generate?
+                 :on-click #(reset! generate? true)
+                 :id "switch-on"}]
+        [:label {:for "switch-on"} "On"]
+        [:input {:type "radio" :value "Generate"
+                 :name "generate-switch"
+                 :checked (not @generate?)
+                 :on-click #(reset! generate? false)
+                 :id "switch-off"}]
+        [:label {:for "switch-off"} "Off"]]])))
 
 (defn home-page []
   (fn []
     [:div.main
      [show-expressions-dropdown]
+     [timer-component]
      [:div.debugpanel
       [:div
        (str @expression-specification-atom)]]
-
+     
      [:div
       (str @semantics-atom)]
-
-     [:div {:style {:float "left"}}
+     
+     [:div {:style {:float "left" :width "100%" :border "0px dashed blue"}}
       [:div {:class ["expressions" "target"]}
        (doall
         (map (fn [i]
@@ -119,26 +143,26 @@
                  [:div.expression {:key (str "source-" i)}
                   [:span (:morph expression-node)]]))
              (range 0 (count @source-expressions))))]]
-     [timer-component]]))
+     ]))
 
 (defn show-expressions-dropdown []
-  [:div {:style {:float "left" :border "0px dashed blue"}}
-   [:select {:id "expressionchooser"
-             :on-change #(reset! expression-specification-atom
-                                 (nth nl/expressions
-                                      (js/parseInt
-                                       (dommy/value (dommy/sel1 :#expressionchooser)))))}
-    (map (fn [item-id]
-           (let [expression (nth nl/expressions item-id)]
-             [:option {:name item-id
-                       :value item-id
-                       :key (str "item-" item-id)}
-              (:note expression)]))
-         (range 0 (count nl/expressions)))]])
+[:div {:style {:float "left" :border "0px dashed blue"}}
+ [:select {:id "expressionchooser"
+           :on-change #(reset! expression-specification-atom
+                               (nth nl/expressions
+                                    (js/parseInt
+                                     (dommy/value (dommy/sel1 :#expressionchooser)))))}
+  (map (fn [item-id]
+         (let [expression (nth nl/expressions item-id)]
+           [:option {:name item-id
+                     :value item-id
+                     :key (str "item-" item-id)}
+            (:note expression)]))
+       (range 0 (count nl/expressions)))]])
 
 (defn about-page []
-  (fn [] [:span.main
-          [:h1 "About babylon UI"]]))
+(fn [] [:span.main
+        [:h1 "About babylon UI"]]))
 
 ;; -------------------------
 ;; Translate routes -> page components
