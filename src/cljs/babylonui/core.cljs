@@ -85,7 +85,7 @@
     (fn []
       (do
         (generate)
-        (js/setTimeout #(swap! generated inc) 5000))
+        (js/setTimeout #(swap! generated inc) 6000))
       [:div {:style {:float "left"}}
        "Generated: " (inc @generated)])))
 
