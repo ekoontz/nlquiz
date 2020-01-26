@@ -65,7 +65,7 @@
 (defn update-target-expressions! [expression-node]
   (swap! target-expressions
          (fn [existing-expressions]
-           (log/info (str "length of existing expressions: " (count existing-expressions)))
+           (log/debug (str "length of existing expressions: " (count existing-expressions)))
            (if (> (count existing-expressions) 5)
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions)))))
