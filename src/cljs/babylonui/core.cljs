@@ -57,7 +57,7 @@
     (swap! source-expressions
            (fn [existing-expressions]
 
-             (log/info (str "length of existing expressions: " (count existing-expressions)))
+             (log/debug (str "length of existing expressions: " (count existing-expressions)))
              (if (> (count existing-expressions) 5)
                (cons source-expression-node (butlast existing-expressions))
                (cons source-expression-node existing-expressions))))))
@@ -133,7 +133,7 @@
                (let [expression-node (nth @target-expressions i)
                      target-spec (:spec expression-node)
                      target-expression (:expression expression-node)]
-                 (log/info (str "target expression: " (nl/morph target-expression)))
+                 (log/debug (str "target expression: " (nl/morph target-expression)))
                  [:div.expression {:key (str "target-" i)}
                   [:span (nl/morph target-expression)]]))
              (range 0 (count @target-expressions))))]
