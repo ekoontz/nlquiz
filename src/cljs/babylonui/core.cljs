@@ -53,7 +53,7 @@
                                     (do
                                       (log/warn (str "failed to generate: " e))
                                       "??")))}]
-    (log/info (str "source-expression: " (:morph source-expression-node)))
+    (log/debug (str "source-expression: " (:morph source-expression-node)))
     (swap! source-expressions
            (fn [existing-expressions]
 
