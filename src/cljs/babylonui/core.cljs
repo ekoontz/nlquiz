@@ -103,12 +103,14 @@
                  :name "generate-switch"
                  :checked @generate?
                  :on-click #(reset! generate? true)
+                 :on-change #(reset! generate? true)
                  :id "switch-on"}]
         [:label {:for "switch-on"} "On"]
         [:input {:type "radio" :value "Generate"
                  :name "generate-switch"
                  :checked (not @generate?)
                  :on-click #(reset! generate? false)
+                 :on-change #(reset! generate? false)
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
 
