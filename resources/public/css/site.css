@@ -47,6 +47,8 @@ footer {
     right:0;
     position:absolute;
     bottom:0;
+    text-align:right;
+    font-size:small;
 }
 
 input {

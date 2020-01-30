@@ -87,7 +87,7 @@
       (when @generate?
         (generate)
         (js/setTimeout #(swap! generated inc) 50))
-      [:div {:style {:float "left" :padding "0.25em"}}
+      [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
        [:div {:style {:float "left"}}
         (str "Generated: " (if @generate?
@@ -96,7 +96,8 @@
              " pairs")]
 
        [:div {:style {:margin-left "1em"
-                      :float :left
+                      :float :right
+                      :text-align :right
                       :white-space "nowrap"}}
         "Turn generation: "
         [:input {:type "radio" :value "Generate"
