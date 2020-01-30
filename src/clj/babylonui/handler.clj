@@ -5,6 +5,8 @@
    [hiccup.page :refer [include-js include-css html5]]
    [config.core :refer [env]]))
 
+(def optimized? false)
+
 (def mount-target
   [:div#app
    [:h2 "Welcome to babylonui"]
@@ -19,9 +21,6 @@
    (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))
    (include-css (if (env :dev) "/css/debug.css" "/css/debug.min.css"))
    (include-css (if (env :dev) "/css/expression.css" "/css/expression.min.css"))])
-
-
-(def optimized? false)
 
 ;; TODO: use environment to control which version of the js (normal or optimized) is included.
 (defn loading-page []
