@@ -118,8 +118,11 @@
 (defn home-page []
   (fn []
     [:div.main
-     [show-expressions-dropdown]
-     [timer-component]
+     [:div
+      {:style {:float "left" :margin-left "10%"
+               :width "80%" :border "0px dashed green"}}
+      [show-expressions-dropdown]
+      [timer-component]]
      [:div.debugpanel
       [:div
        (str @expression-specification-atom)]]
@@ -127,7 +130,8 @@
      [:div
       (str @semantics-atom)]
      
-     [:div {:style {:float "left" :width "100%" :border "0px dashed blue"}}
+     [:div {:style {:float "left" :margin-left "5%"
+                    :width "90%" :border "0px dashed blue"}}
       [:div {:class ["expressions" "target"]}
        (doall
         (map (fn [i]
