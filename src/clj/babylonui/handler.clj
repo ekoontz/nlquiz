@@ -1,9 +1,11 @@
 (ns babylonui.handler
   (:require
+   [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
    [babylonui.middleware :refer [middleware]]
    [hiccup.page :refer [include-js include-css html5]]
-   [config.core :refer [env]]))
+   [config.core :refer [env]]
+   [clojure.data.json :as json :refer [write-str]]))
 
 (def optimized? false)
 
@@ -51,6 +53,17 @@
       ["" {:get {:handler index-handler}}]
       ["/:item-id" {:get {:handler index-handler
                           :parameters {:path {:item-id int?}}}}]]
+
+     ["/language/:spec" {:get {:handler
+                               (fn [_request]
+                                 (let [spec (-> _request :path-params :spec)]
+                                   {:status 200
+                                    :headers {"Content-Type" "application/json"}
+                                    :body (write-str {:target "echt klein"
+                                                      :source "really small"
+                                                      :spec (Integer. spec)})}))
+                               :parameters {:path {:spec int?}}}}]
+
      ["/about" {:get {:handler index-handler}}]])
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/" :root "/public"})
