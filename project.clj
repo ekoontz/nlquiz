@@ -20,7 +20,7 @@
                  [venantius/accountant "0.2.5"
                   :exclusions [org.clojure/tools.reader]]
                  [cljslog "0.1.0"]
-                 [dag_unify "1.7.5"]
+                 [dag_unify "1.7.6"]
                  [babylon "0.0.1-SNAPSHOT"]
 
                  [ring/ring-core "1.7.1"]
