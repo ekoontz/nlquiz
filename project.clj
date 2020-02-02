@@ -20,6 +20,8 @@
                  [venantius/accountant "0.2.5"
                   :exclusions [org.clojure/tools.reader]]
                  [cljslog "0.1.0"]
+                 [clj-http "3.4.1"]
+                 [cljs-http "0.1.46"]
                  [org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.logging "0.5.0"]
                  [dag_unify "1.7.6"]
@@ -28,6 +30,7 @@
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-devel "1.7.1"]
                  [org.clojure/data.json "0.2.7"]
+                 [org.clojure/core.async "0.4.474"]
                  [ring/ring-jetty-adapter "1.7.1"]]
   
   :plugins [[lein-environ "1.1.0"]

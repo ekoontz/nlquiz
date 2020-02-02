@@ -2,10 +2,14 @@
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
+   [babylon.english :as en]
+   [babylon.nederlands :as nl]
+   [babylon.translate :as tr]
    [babylonui.middleware :refer [middleware]]
-   [hiccup.page :refer [include-js include-css html5]]
    [config.core :refer [env]]
-   [clojure.data.json :as json :refer [write-str]]))
+   [clojure.data.json :as json :refer [write-str]]
+   [dag_unify.core :as u]
+   [hiccup.page :refer [include-js include-css html5]]))
 
 (def optimized? false)
 
@@ -45,6 +49,23 @@
    :headers {"Content-Type" "text/html"}
    :body (loading-page)})
 
+(def nl-expressions
+  (filter #(= true (u/get-in % [:menuable?] true))
+          nl/expressions))
+
+(defn generate [_request]
+  (let [spec-index (-> _request :path-params :spec)
+        spec (nth nl-expressions (Integer. spec-index))
+        target-expression (-> spec nl/generate)]
+    {:status 200
+     :headers {"Content-Type" "application/json"}
+     :body (write-str {:source (-> target-expression
+                                   tr/nl-to-en-spec
+                                   en/generate
+                                   en/morph)
+                       :target (-> target-expression
+                                   nl/morph)})}))
+
 (def app
   (reitit-ring/ring-handler
    (reitit-ring/router
@@ -54,14 +75,7 @@
       ["/:item-id" {:get {:handler index-handler
                           :parameters {:path {:item-id int?}}}}]]
 
-     ["/language/:spec" {:get {:handler
-                               (fn [_request]
-                                 (let [spec (-> _request :path-params :spec)]
-                                   {:status 200
-                                    :headers {"Content-Type" "application/json"}
-                                    :body (write-str {:target "echt klein"
-                                                      :source "really small"
-                                                      :spec (Integer. spec)})}))
+     ["/language/:spec" {:get {:handler generate
                                :parameters {:path {:spec int?}}}}]
 
      ["/about" {:get {:handler index-handler}}]])

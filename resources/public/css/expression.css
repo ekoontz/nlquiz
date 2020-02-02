@@ -8,19 +8,23 @@ div.expression {
     border: 2px solid #edd;
     padding: 3px;
     font-size:large;
-    border-radius: 5px;
     min-height: 1.5em;
     float:left;
     margin:1px;
+    margin-bottom:3px;
     width:100%;
     text-align:center;
 }
 
 div.expressions {
-    margin:1%;
+    margin:1px;
     float:left;
     border:0x dashed blue;
     width:45%;
+}
+
+div.target {
+    margin-left:1em;
 }
 
 div.source {
@@ -31,12 +35,20 @@ div.source > div.expression {
     background:#eed;
     text-align:right;
     padding-right:0.5em;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 10px;
 }
 
 div.target > div.expression {
     background:#eef;
     text-align:left;
     padding-left:0.5em;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 0px;
 }
 
 div.behind-the-scenes b {

@@ -5,13 +5,16 @@
    [babylon.nederlands :as nl]
    [babylon.translate :as tr]
    [clerk.core :as clerk]
+   [cljs-http.client :as http]
    [cljslog.core :as log]
    [clojure.string :as string]
    [dag_unify.core :as u]
    [dommy.core :as dommy]
    [reagent.core :as r]
    [reagent.session :as session]
-   [reitit.frontend :as reitit]))
+   [reitit.frontend :as reitit]
+   [cljs.core.async :refer [<!]])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 ;; -------------------------
 ;; Routes
@@ -77,6 +80,14 @@
      {:expression target-expression})
     (do-the-source-expression target-expression)))
 
+(def source-node (r/atom []))
+(def target-node (r/atom []))
+
+(defn generate-from-server []
+  (go (let [response (<! (http/get (str "http://localhost:3449/language/" 0)))]
+        (reset! source-node (-> response :source))
+        (reset! target-node (-> response :target)))))
+
 (set! (.-onload js/window)
       (fn []))
 
@@ -99,7 +110,7 @@
                       :float :right
                       :text-align :right
                       :white-space "nowrap"}}
-        "Turn generation: "
+        "Generate:"
         [:input {:type "radio" :value "Generate"
                  :name "generate-switch"
                  :checked @generate?
@@ -123,34 +134,25 @@
                :width "80%" :border "0px dashed green"}}
       [show-expressions-dropdown]
       [timer-component]]
-     [:div.debugpanel
-      [:div
-       (str @expression-specification-atom)]]
      
-     [:div
-      (str @semantics-atom)]
+     [:div {:class ["expressions" "target"]}
+      (doall
+       (map (fn [i]
+              (let [expression-node (nth @target-expressions i)
+                    target-spec (:spec expression-node)
+                    target-expression (:expression expression-node)]
+                (log/debug (str "target expression: " (nl/morph target-expression)))
+                [:div.expression {:key (str "target-" i)}
+                 [:span (nl/morph target-expression)]]))
+            (range 0 (count @target-expressions))))]
      
-     [:div {:style {:float "left" :margin-left "5%"
-                    :width "90%" :border "0px dashed blue"}}
-      [:div {:class ["expressions" "target"]}
-       (doall
-        (map (fn [i]
-               (let [expression-node (nth @target-expressions i)
-                     target-spec (:spec expression-node)
-                     target-expression (:expression expression-node)]
-                 (log/debug (str "target expression: " (nl/morph target-expression)))
-                 [:div.expression {:key (str "target-" i)}
-                  [:span (nl/morph target-expression)]]))
-             (range 0 (count @target-expressions))))]
-
-      [:div {:class ["expressions" "source"]}
-       (doall
-        (map (fn [i]
-               (let [expression-node (nth @source-expressions i)]
-                 [:div.expression {:key (str "source-" i)}
-                  [:span (:morph expression-node)]]))
-             (range 0 (count @source-expressions))))]]
-     ]))
+     [:div {:class ["expressions" "source"]}
+      (doall
+       (map (fn [i]
+              (let [expression-node (nth @source-expressions i)]
+                [:div.expression {:key (str "source-" i)}
+                 [:span (:morph expression-node)]]))
+             (range 0 (count @source-expressions))))]]))
 
 (defn show-expressions-dropdown []
   (let [show-these-expressions
