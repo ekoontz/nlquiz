@@ -24,7 +24,7 @@
                  [cljs-http "0.1.46"]
                  [org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.logging "0.5.0"]
-                 [dag_unify "1.7.6"]
+                 [dag_unify "1.9.1-SNAPSHOT"]
                  [babylon "0.0.1-SNAPSHOT"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
@@ -63,12 +63,15 @@
           :target "resources/public/css/expression.min.css"}]]
 
   :cljsbuild
+  ;; see the Makefile: 'make build'
+  ;; (cd ../babylon ; make clean; make compile; lein install); rm target/cljsbuild/public/js/app-optimized.js;  lein cljsbuild once min ;  lein figwheel
   {:builds {;; "lein cljsbuild auto min"
             :min
             {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
              :compiler
 
-             ;; this value must be the same as what is used in: src/clj/babylonui/handler.clj:(defn loading-page).
+             ;; this value must be the same as what is used in the (if optimized? ..)
+             ;; part of src/clj/babylonui/handler.clj:(defn loading-page).
              {:output-to        "target/cljsbuild/public/js/app-optimized.js"
 
               :output-dir       "target/cljsbuild/public/js"
@@ -82,6 +85,9 @@
              :compiler
              {:main "babylonui.dev"
               :asset-path "/js/out"
+              ;; this value must be the same as what is used in the
+              ;; else part of the (if optimized? ..)
+              ;; part of src/clj/babylonui/handler.clj:(defn loading-page).
               :output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/cljsbuild/public/js/out"
               :source-map true
