@@ -2,16 +2,14 @@
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
-   [babylon.english :as en]
    [babylon.nederlands :as nl]
-   [babylon.translate :as tr]
    [babylonui.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
    [dag_unify.core :as u]
    [hiccup.page :refer [include-js include-css html5]]))
 
-(def optimized? false)
+(def optimized? true)
 
 (def mount-target
   [:div#app
@@ -59,12 +57,8 @@
         target-expression (-> spec nl/generate)]
     {:status 200
      :headers {"Content-Type" "application/json"}
-     :body (write-str {:source (-> target-expression
-                                   tr/nl-to-en-spec
-                                   en/generate
-                                   en/morph)
-                       :target (-> target-expression
-                                   nl/morph)})}))
+     :body (write-str {:source "foo"
+                       :target "bar"})}))
 
 (def app
   (reitit-ring/ring-handler
