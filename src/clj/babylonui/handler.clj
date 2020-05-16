@@ -9,7 +9,7 @@
    [dag_unify.core :as u]
    [hiccup.page :refer [include-js include-css html5]]))
 
-(def optimized? true)
+(def optimized? false)
 
 (def mount-target
   [:div#app
