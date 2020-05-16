@@ -46,6 +46,7 @@
 (declare show-expressions-dropdown)
 
 (defn do-the-source-expression [target-expression]
+  (log/debug (str "GOT HERE!!! WITH A TARGET EXPRESSION:" target-expression))
   (let [source-expression-node {:morph
                                 (try
                                   (-> target-expression
@@ -74,6 +75,7 @@
              (cons expression-node existing-expressions)))))
 
 (defn generate []
+  (log/debug (str "GENERATE!! THE EXPRESSION ATOM IS: " @expression-specification-atom))
   (let [target-expression
         (nl/generate @expression-specification-atom)]
     (update-target-expressions!
