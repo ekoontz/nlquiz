@@ -13,7 +13,7 @@
                  [ring/ring-defaults "0.3.2"]
                  [hiccup "1.0.5"]
                  [yogthos/config "1.1.6"]
-                 [org.clojure/clojurescript "1.10.597"
+                 [org.clojure/clojurescript "1.10.741"
                   :scope "provided"]
                  [metosin/reitit "0.3.7"]
                  [pez/clerk "1.0.0"]
@@ -24,7 +24,7 @@
                  [cljs-http "0.1.46"]
                  [org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.logging "0.5.0"]
-                 [dag_unify "1.9.1"]
+                 [dag_unify "1.9.5"]
                  [babylon "0.0.1-SNAPSHOT"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
@@ -104,22 +104,21 @@
    :css-dirs ["resources/public/css"]
    :ring-handler babylonui.handler/app}
 
-  :profiles {:dev {:repl-options {:init-ns babylonui.repl}
-                   :dependencies [[cider/piggieback "0.4.2"]
+  :profiles {:dev {:repl-options {:init-ns babylonui.repl
+                                  :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
+                   :dependencies [[cider/piggieback "0.5.0"]
                                   [binaryage/devtools "0.9.11"]
                                   [ring/ring-mock "0.4.0"]
                                   [ring/ring-devel "1.8.0"]
+                                  [org.clojure/tools.nrepl "0.2.13"]
                                   [prone "2019-07-08"]
                                   [figwheel-sidecar "0.5.19"]
-                                  [nrepl "0.6.0"]
+                                  [nrepl "0.7.0"]
                                   [pjstadig/humane-test-output "0.10.0"]]
-                   
-                   
 
                    :source-paths ["env/dev/clj"]
                    :plugins [[lein-figwheel "0.5.19"]]
                    
-
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
 
