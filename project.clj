@@ -25,7 +25,7 @@
                  [org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.logging "0.5.0"]
                  [dag_unify "1.9.5"]
-                 [babylon "0.0.1"]
+                 [babylon "0.0.2-SNAPSHOT"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-devel "1.7.1"]
