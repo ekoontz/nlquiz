@@ -2,7 +2,9 @@
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
+   [babylon.english :as en]
    [babylon.nederlands :as nl]
+   [babylon.translate :as tr]
    [babylonui.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
@@ -54,11 +56,14 @@
 (defn generate [_request]
   (let [spec-index (-> _request :path-params :spec)
         spec (nth nl-expressions (Integer. spec-index))
-        target-expression (-> spec nl/generate)]
+        target-expression (-> spec nl/generate)
+        source-expression (-> target-expression tr/nl-to-en-spec en/generate)
+
+        ]
     {:status 200
      :headers {"Content-Type" "application/json"}
-     :body (write-str {:source "foo"
-                       :target "bar"})}))
+     :body (write-str {:source (-> source-expression en/morph)
+                       :target (-> target-expression nl/morph)})}))
 
 (def app
   (reitit-ring/ring-handler
