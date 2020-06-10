@@ -130,10 +130,11 @@
         [:label {:for "switch-off"} "Off"]]])))
 
 (defn quiz-component []
-  (if false
-    (timer-component)
-    (fn []
-      [:div "BLAAHHH !! ANSWER SUM'N!!"])))
+  (fn []
+    [:div
+     [:div#question "HERE IS THE QUESTION....!!"]
+     [:input {:name "guess"}]
+     [:div "BLAAHHH !! ANSWER SUM'N!!"]]))
 
 (defn home-page []
   (fn []
