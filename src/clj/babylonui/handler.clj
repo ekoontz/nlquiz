@@ -61,9 +61,7 @@
   (let [spec-index (-> _request :path-params :spec)
         spec (nth nl-expressions (Integer. spec-index))
         target-expression (-> spec nl/generate)
-        source-expression (-> target-expression tr/nl-to-en-spec en/generate)
-
-        ]
+        source-expression (-> target-expression tr/nl-to-en-spec en/generate)]
     {:status 200
      :headers {"Content-Type" "application/json"}
      :body (write-str {:source (-> source-expression en/morph)
