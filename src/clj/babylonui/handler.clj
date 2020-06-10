@@ -11,7 +11,7 @@
    [dag_unify.core :as u]
    [hiccup.page :refer [include-js include-css html5]]))
 
-(def optimized? true)
+(def optimized? false)
 
 (def mount-target
   [:div#app
@@ -42,12 +42,18 @@
 
       (include-js "/js/app.js"))]))
 
-
 (defn index-handler
   [_request]
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (loading-page)})
+
+(defn quiz-handler [_request]
+  {:status 200
+   :headers {"Content-Type" "text/html"}
+   :body (if false
+           (str "<h1>WTF!!! FUCK!!..</h1>")
+           (loading-page))})
 
 (def nl-expressions
   (filter #(= true (u/get-in % [:menuable?] true))
@@ -76,6 +82,8 @@
 
      ["/language/:spec" {:get {:handler generate
                                :parameters {:path {:spec int?}}}}]
+
+     ["/quiz" {:get {:handler quiz-handler}}]
 
      ["/about" {:get {:handler index-handler}}]])
    (reitit-ring/routes

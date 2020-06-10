@@ -22,6 +22,7 @@
 (def router
   (reitit/router
    [["/" :index]
+    ["/quiz" :quiz]
     ["/items"
      ["" :items]
      ["/:item-id" :item]]
@@ -128,12 +129,21 @@
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
 
+(defn quiz-component []
+  (if false
+    (timer-component)
+    (fn []
+      [:div "BLAAHHH !! ANSWER SUM'N!!"])))
+
 (defn home-page []
   (fn []
     [:div.main
      [:div
       {:style {:float "left" :margin-left "10%"
                :width "80%" :border "0px dashed green"}}
+
+      [:h1 "hello!@!"]
+
       [show-expressions-dropdown]
       [timer-component]]
      
@@ -155,6 +165,18 @@
                 [:div.expression {:key (str "source-" i)}
                  [:span (:morph expression-node)]]))
              (range 0 (count @source-expressions))))]]))
+
+(defn quiz-page []
+  (fn []
+    [:div.main
+     [:div
+      {:style {:float "left" :margin-left "10%"
+               :width "80%" :border "0px dashed green"}}
+
+      [:h1 "WELCOME TO THE QUIZ!!!!@!"]
+
+      [show-expressions-dropdown]
+      [quiz-component]]]))
 
 (defn show-expressions-dropdown []
   (let [show-these-expressions
@@ -184,6 +206,7 @@
 (defn page-for [route]
   (case route
     :index #'home-page
+    :quiz #'quiz-page
     :about #'about-page))
 
 ;; -------------------------

@@ -4,7 +4,13 @@ This is the babylonui project.
 
 ## Development mode
 
-To start the Figwheel compiler, navigate to the project folder and run the following command in the terminal:
+Make sure you have in `src/clj/babylonui/handler.clj`:
+
+```
+(def optimized? false)
+```
+
+(Re)start the Figwheel compiler by navigating to the project folder and run the following command in the terminal:
 
 ```
 lein figwheel
