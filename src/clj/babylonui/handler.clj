@@ -51,9 +51,7 @@
 (defn quiz-handler [_request]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body (if false
-           (str "<h1>WTF!!! FUCK!!..</h1>")
-           (loading-page))})
+   :body (loading-page)})
 
 (def nl-expressions
   (filter #(= true (u/get-in % [:menuable?] true))
