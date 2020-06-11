@@ -68,6 +68,17 @@
      :body (write-str {:source (-> source-expression en/morph)
                        :target (-> target-expression nl/morph)})}))
 
+(defn parse [_request]
+  (let [string-to-parse
+        (get
+         (-> _request :query-params) "q")]
+    (log/info (str "parse: your input was: " string-to-parse))
+    (let [parses
+          (->> string-to-parse nl/parse (map nl/syntax-tree) (reduce str))]
+      {:status 200
+       :headers {"Content-Type" "application/json"}
+       :body (write-str {:parses parses})})))
+
 (def app
   (reitit-ring/ring-handler
    (reitit-ring/router
@@ -80,6 +91,8 @@
      ["/language/:spec" {:get {:handler generate
                                :parameters {:path {:spec int?}}}}]
 
+     ["/parse" {:get {:handler parse}}]
+     
      ["/quiz" {:get {:handler quiz-handler}}]
 
      ["/about" {:get {:handler index-handler}}]])
