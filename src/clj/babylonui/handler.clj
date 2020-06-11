@@ -60,6 +60,7 @@
 (defn generate [_request]
   (let [spec-index (-> _request :path-params :spec)
         spec (nth nl-expressions (Integer. spec-index))
+        debug (log/info (str "generating a question with spec: " spec))
         target-expression (-> spec nl/generate)
         source-expression (-> target-expression tr/nl-to-en-spec en/generate)]
     {:status 200

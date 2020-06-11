@@ -129,12 +129,20 @@
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
 
+(defonce question-text (r/atom "..."))
+
+(defn get-a-question []
+  (go (let [response (<! (http/get (str "http://localhost:3449/language/" 14)))]
+        (log/info (str "one correct answer to this question is: " (-> response :body :target)))
+        (reset! question-text (-> response :body :source)))))
+  
 (defn quiz-component []
   (fn []
-    [:div
-     [:div#question "HERE IS THE QUESTION....!!"]
-     [:input {:name "guess"}]
-     [:div "BLAAHHH !! ANSWER SUM'N!!"]]))
+    [:div {:style {:margin-top "1em" :border "1px dashed blue" :float "left" :width "100%"}}
+     [:div {:style {:float "left" :width "50%"}}
+      @question-text]
+     [:div {:style {:float "right" :width "50%"}}
+      [:input {:name "guess"}]]]))
 
 (defn home-page []
   (fn []
@@ -168,6 +176,7 @@
              (range 0 (count @source-expressions))))]]))
 
 (defn quiz-page []
+  (get-a-question)
   (fn []
     [:div.main
      [:div
