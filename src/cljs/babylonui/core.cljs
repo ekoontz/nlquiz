@@ -134,7 +134,7 @@
 (defonce parse-text (r/atom ""))
 
 (defn get-a-question []
-  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 14)))]
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
         (log/info (str "one correct answer to this question is: '"
                        (-> response :body :target) "'"))
         (reset! question-text (-> response :body :source)))))
