@@ -83,18 +83,10 @@
   (reitit-ring/ring-handler
    (reitit-ring/router
     [["/" {:get {:handler index-handler}}]
-     ["/items"
-      ["" {:get {:handler index-handler}}]
-      ["/:item-id" {:get {:handler index-handler
-                          :parameters {:path {:item-id int?}}}}]]
-
      ["/generate/:spec" {:get {:handler generate
                                :parameters {:path {:spec int?}}}}]
-
      ["/parse" {:get {:handler parse}}]
-     
      ["/quiz" {:get {:handler quiz-handler}}]
-
      ["/about" {:get {:handler index-handler}}]])
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/" :root "/public"})
