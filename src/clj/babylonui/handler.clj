@@ -88,7 +88,7 @@
       ["/:item-id" {:get {:handler index-handler
                           :parameters {:path {:item-id int?}}}}]]
 
-     ["/language/:spec" {:get {:handler generate
+     ["/generate/:spec" {:get {:handler generate
                                :parameters {:path {:spec int?}}}}]
 
      ["/parse" {:get {:handler parse}}]

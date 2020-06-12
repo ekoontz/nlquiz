@@ -87,7 +87,7 @@
 (def target-node (r/atom []))
 
 (defn generate-from-server []
-  (go (let [response (<! (http/get (str "http://localhost:3449/language/" 0)))]
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
         (reset! source-node (-> response :source))
         (reset! target-node (-> response :target)))))
 
@@ -134,15 +134,13 @@
 (defonce parse-text (r/atom ""))
 
 (defn get-a-question []
-  (go (let [response (<! (http/get (str "http://localhost:3449/language/" 14)))]
-        (log/info (str "one correct answer to this question is: '" (-> response :body :target) "'"))
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 14)))]
+        (log/info (str "one correct answer to this question is: '"
+                       (-> response :body :target) "'"))
         (reset! question-text (-> response :body :source)))))
 
 (defn submit-guess [the-atom the-input-element]
-
   (reset! the-atom (-> the-input-element .-target .-value))
-  
-  ;; 1. submit the guess
   (let [guess-string @the-atom]
     (log/info (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
@@ -164,7 +162,8 @@
   
 (defn quiz-component []
   (fn []
-    [:div {:style {:margin-top "1em" :border "1px dashed blue" :float "left" :width "100%"}}
+    [:div {:style {:margin-top "1em"
+                   :float "left" :width "100%"}}
 
      [:div {:style {:float "left" :width "100%"}}
       @question-text]
