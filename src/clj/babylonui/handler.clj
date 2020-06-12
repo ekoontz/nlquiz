@@ -74,7 +74,7 @@
          (-> _request :query-params) "q")]
     (log/info (str "parse: your input was: " string-to-parse))
     (let [parses
-          (->> string-to-parse nl/parse (map nl/syntax-tree) (reduce str))]
+          (->> string-to-parse nl/parse (map nl/syntax-tree))]
       {:status 200
        :headers {"Content-Type" "application/json"}
        :body (write-str {:parses parses})})))

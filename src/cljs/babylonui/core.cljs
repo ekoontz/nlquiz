@@ -130,8 +130,8 @@
         [:label {:for "switch-off"} "Off"]]])))
 
 (defonce guess-text (r/atom ""))
-(defonce question-text (r/atom "..."))
-(defonce parse-text (r/atom "..."))
+(defonce question-text (r/atom ""))
+(defonce parse-text (r/atom ""))
 
 (defn get-a-question []
   (go (let [response (<! (http/get (str "http://localhost:3449/language/" 14)))]
@@ -148,7 +148,12 @@
     (go (let [response (<! (http/get "http://localhost:3449/parse"
                                      {:query-params {"q" guess-string}}))]
           (log/info (str "returned value was: " (-> response :body)))
-          (reset! parse-text (-> response :body))))))
+          (reset! parse-text
+                  [:ul
+                   (->>
+                    (-> response :body :parses)
+                    (map (fn [parse]
+                           [:li parse])))])))))
   
 (defn atom-input [value]
   [:div
@@ -160,16 +165,15 @@
 (defn quiz-component []
   (fn []
     [:div {:style {:margin-top "1em" :border "1px dashed blue" :float "left" :width "100%"}}
-     [:div {:style {:float "left" :width "50%"}}
+
+     [:div {:style {:float "left" :width "100%"}}
       @question-text]
 
-     [:div {:style {:float "left" :width "50%"}}
-      @parse-text]
+     [:div {:style {:float "right" :width "100%"}}
+      (atom-input guess-text)]
 
-     [:div [:b (str "hello... your guess is: " @guess-text)]]
-     
-     [:div {:style {:float "right" :width "50%"}}
-      (atom-input guess-text)]]))
+     [:div {:style {:float "left" :width "100%"}}
+      @parse-text]]))
 
 (defn home-page []
   (fn []
