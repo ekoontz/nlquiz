@@ -51,7 +51,6 @@
 
 (defn json-response
   [_request handler]
-  (log/info (str "GOT HERE!@!!!"))
   {:status 200
    :headers {"Content-Type" "application/json"}
    :body (write-str (handler _request))})
