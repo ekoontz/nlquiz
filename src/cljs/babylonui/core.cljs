@@ -4,6 +4,7 @@
    [babylon.english :as en]
    [babylon.nederlands :as nl]
    [babylon.translate :as tr]
+   [babylonui.handlers :as handlers]
    [clerk.core :as clerk]
    [cljs-http.client :as http]
    [cljslog.core :as log]
@@ -44,10 +45,7 @@
 (def source-expressions
   (r/atom []))
 
-(declare show-expressions-dropdown)
-
 (defn do-the-source-expression [target-expression]
-  (log/debug (str "GOT HERE!!! WITH A TARGET EXPRESSION:" target-expression))
   (let [source-expression-node {:morph
                                 (try
                                   (-> target-expression
@@ -210,9 +208,9 @@
       {:style {:float "left" :margin-left "10%"
                :width "80%" :border "0px dashed green"}}
 
-      [:h1 "hello!@!"]
+      [:h1 "Expression generator"]
 
-      [show-expressions-dropdown]
+      [handlers/show-expressions-dropdown]
       [timer-component]]
      
      [:div {:class ["expressions" "target"]}
@@ -244,26 +242,9 @@
 
       [:h3 "Quiz"]
 
-      [show-expressions-dropdown]
+      [handlers/show-expressions-dropdown]
       [quiz-component]]]))
 
-(defn show-expressions-dropdown []
-  (let [show-these-expressions
-        (filter #(= true (u/get-in % [:menuable?] true))
-                nl/expressions)]
-    [:div {:style {:float "left" :border "0px dashed blue"}}
-     [:select {:id "expressionchooser"
-               :on-change #(reset! expression-specification-atom
-                                   (nth show-these-expressions
-                                        (js/parseInt
-                                         (dommy/value (dommy/sel1 :#expressionchooser)))))}
-      (map (fn [item-id]
-             (let [expression (nth show-these-expressions item-id)]
-               [:option {:name item-id
-                         :value item-id
-                         :key (str "item-" item-id)}
-                (:note expression)]))
-           (range 0 (count show-these-expressions)))]]))
 
 (defn about-page []
 (fn [] [:span.main
