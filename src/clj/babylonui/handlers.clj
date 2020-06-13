@@ -20,8 +20,12 @@
         spec (nth nl-expressions (Integer. spec-index))
         debug (log/info (str "generating a question with spec: " spec))
         target-expression (-> spec nl/generate)
-        source-expression (-> target-expression tr/nl-to-en-spec en/generate)]
+        source-expression (-> target-expression tr/nl-to-en-spec en/generate)
+        source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])) (map u/pprint))]
+    (log/info (str "generated: '" (-> source-expression en/morph) "'"
+                   " -> '"  (-> target-expression nl/morph) "'"))
     {:source (-> source-expression en/morph)
+     :source-sem source-semantics
      :target (-> target-expression nl/morph)}))
 
 (defn parse [_request]
