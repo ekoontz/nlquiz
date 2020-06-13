@@ -149,8 +149,10 @@
               trees (->> (range 0 (count trees))
                          (map (fn [index]
                                 {:tree (nth trees index)
-                                 :index index})))]
+                                 :index index})))
+              sems (-> response :body :sem)]
           (log/info (str "trees with indices: " trees))
+          (log/info (str "sems: " sems))
           (reset! parse-text
                   [:ul
                    (->>
