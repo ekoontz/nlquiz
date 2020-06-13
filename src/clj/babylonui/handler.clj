@@ -55,14 +55,15 @@
    :headers {"Content-Type" "application/json"}
    :body (write-str (handler _request))})
 
+;; see: src/cljs/babylonui/core.cljs for the subset of
+;; these routes below that are handled by html-response:
+;; i.e. "/","/quiz", and "/about":
 (def app
   (reitit-ring/ring-handler
    (reitit-ring/router
     [["/" {:get {:handler html-response}}]
 
-     ["/generate/:spec" {:get {:handler
-                               (fn [request]
-                                 (json-response request generate))}}]
+     ["/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]
      ["/parse" {:get {:handler (fn [request] (json-response request parse))}}]
      ["/quiz" {:get {:handler html-response}}]
      ["/about" {:get {:handler html-response}}]])
