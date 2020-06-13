@@ -5,6 +5,7 @@
    [babylon.english :as en]
    [babylon.nederlands :as nl]
    [babylon.translate :as tr]
+   [babylonui.handlers :refer [generate parse]]
    [babylonui.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
@@ -42,52 +43,31 @@
 
       (include-js "/js/app.js"))]))
 
-(defn index-handler
+(defn html-response
   [_request]
   {:status 200
    :headers {"Content-Type" "text/html"}
    :body (loading-page)})
 
-(defn quiz-handler [_request]
+(defn json-response
+  [_request fn]
   {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body (loading-page)})
-
-(def nl-expressions
-  (filter #(= true (u/get-in % [:menuable?] true))
-          nl/expressions))
-
-(defn generate [_request]
-  (let [spec-index (-> _request :path-params :spec)
-        spec (nth nl-expressions (Integer. spec-index))
-        debug (log/info (str "generating a question with spec: " spec))
-        target-expression (-> spec nl/generate)
-        source-expression (-> target-expression tr/nl-to-en-spec en/generate)]
-    {:status 200
-     :headers {"Content-Type" "application/json"}
-     :body (write-str {:source (-> source-expression en/morph)
-                       :target (-> target-expression nl/morph)})}))
-
-(defn parse [_request]
-  (let [string-to-parse
-        (get
-         (-> _request :query-params) "q")]
-    (log/info (str "parse: your input was: " string-to-parse))
-    (let [parses
-          (->> string-to-parse nl/parse (map nl/syntax-tree))]
-      {:status 200
-       :headers {"Content-Type" "application/json"}
-       :body (write-str {:parses parses})})))
+   :headers {"Content-Type" "application/json"}
+   :body (fn)})
 
 (def app
   (reitit-ring/ring-handler
    (reitit-ring/router
-    [["/" {:get {:handler index-handler}}]
+    [["/" {:get {:handler html-response}}]
+
      ["/generate/:spec" {:get {:handler generate
+                               ;; :spec is an index in an array of expressions;
+                               ;; the index is the expression specification that we want to
+                               ;; use to generate.
                                :parameters {:path {:spec int?}}}}]
      ["/parse" {:get {:handler parse}}]
-     ["/quiz" {:get {:handler quiz-handler}}]
-     ["/about" {:get {:handler index-handler}}]])
+     ["/quiz" {:get {:handler html-response}}]
+     ["/about" {:get {:handler html-response}}]])
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/" :root "/public"})
     (reitit-ring/create-default-handler))
