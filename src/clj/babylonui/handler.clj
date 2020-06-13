@@ -62,11 +62,7 @@
 
      ["/generate/:spec" {:get {:handler
                                (fn [request]
-                                 (json-response request generate))
-                               ;; :spec is an index in an array of expressions;
-                               ;; the index is the expression specification that we want to
-                               ;; use to generate.
-                               :parameters {:path {:spec int?}}}}]
+                                 (json-response request generate))}}]
      ["/parse" {:get {:handler (fn [request] (json-response request parse))}}]
      ["/quiz" {:get {:handler html-response}}]
      ["/about" {:get {:handler html-response}}]])
