@@ -1,10 +1,9 @@
+;; top-level, mostly-generic http handler configuration;
+;; See babylonui.handlers for more domain-specific http handlers.
 (ns babylonui.handler
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
-   [babylon.english :as en]
-   [babylon.nederlands :as nl]
-   [babylon.translate :as tr]
    [babylonui.handlers :refer [generate parse]]
    [babylonui.middleware :refer [middleware]]
    [config.core :refer [env]]
