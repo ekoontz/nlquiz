@@ -61,12 +61,15 @@
 (def app
   (reitit-ring/ring-handler
    (reitit-ring/router
-    [["/" {:get {:handler html-response}}]
-
+    [;; routes which return a html response:
+     ["/"      {:get {:handler html-response}}]
+     ["/about" {:get {:handler html-response}}]
+     ["/quiz"  {:get {:handler html-response}}]
+     
+     ;; routes which return a json response:
      ["/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]
-     ["/parse" {:get {:handler (fn [request] (json-response request parse))}}]
-     ["/quiz" {:get {:handler html-response}}]
-     ["/about" {:get {:handler html-response}}]])
+     ["/parse"          {:get {:handler (fn [request] (json-response request parse))}}]])
+
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/" :root "/public"})
     (reitit-ring/create-default-handler))
