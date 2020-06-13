@@ -144,15 +144,22 @@
   (let [guess-string @the-atom]
     (log/info (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
-                                     {:query-params {"q" guess-string}}))]
-          (log/info (str "returned value was: " (-> response :body)))
+                                     {:query-params {"q" guess-string}}))
+              trees (-> response :body :trees)
+              trees (->> (range 0 (count trees))
+                         (map (fn [index]
+                                {:tree (nth trees index)
+                                 :index index})))]
+          (log/info (str "trees with indices: " trees))
           (reset! parse-text
                   [:ul
                    (->>
-                    (-> response :body :parses)
+                    trees
                     (map (fn [parse]
-                           [:li parse])))])))))
-  
+                           [:li
+                            {:key (str "tree-" (:index parse))}
+                            (:tree parse)])))])))))
+
 (defn atom-input [value]
   [:div
    [:input {:type "text"
