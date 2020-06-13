@@ -34,8 +34,9 @@
     (let [parses (->> string-to-parse nl/parse)
           serialized (->> parses (map u/pprint))
           syntax-trees (->> parses (map nl/syntax-tree))]
-      (write-str {:parses syntax-trees
-                  :serialized serialized}))))
+      {:parses syntax-trees
+       :serialized serialized})))
+
 
 
 

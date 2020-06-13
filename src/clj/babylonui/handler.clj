@@ -51,9 +51,10 @@
 
 (defn json-response
   [_request handler]
+  (log/info (str "GOT HERE!@!!!"))
   {:status 200
    :headers {"Content-Type" "application/json"}
-   :body (handler _request)})
+   :body (write-str (handler _request))})
 
 (def app
   (reitit-ring/ring-handler
