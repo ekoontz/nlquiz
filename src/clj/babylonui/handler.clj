@@ -62,7 +62,7 @@
 
      ["/generate/:spec" {:get {:handler
                                (fn [request]
-                                 (generate request))
+                                 (json-response request generate))
                                ;; :spec is an index in an array of expressions;
                                ;; the index is the expression specification that we want to
                                ;; use to generate.

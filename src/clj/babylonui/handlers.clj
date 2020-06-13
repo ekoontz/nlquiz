@@ -21,10 +21,8 @@
         debug (log/info (str "generating a question with spec: " spec))
         target-expression (-> spec nl/generate)
         source-expression (-> target-expression tr/nl-to-en-spec en/generate)]
-    {:status 200
-     :headers {"Content-Type" "application/json"}
-     :body (write-str {:source (-> source-expression en/morph)
-                       :target (-> target-expression nl/morph)})}))
+    {:source (-> source-expression en/morph)
+     :target (-> target-expression nl/morph)}))
 
 (defn parse [_request]
   (let [string-to-parse
