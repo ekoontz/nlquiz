@@ -129,8 +129,8 @@
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
 
-(defonce guess-text (r/atom ""))
-(defonce question-text (r/atom ""))
+(defonce guess-html (r/atom ""))
+(defonce question-html (r/atom ""))
 (defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
 
@@ -138,7 +138,7 @@
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
         (log/info (str "one correct answer to this question is: '"
                        (-> response :body :target) "'"))
-        (reset! question-text (-> response :body :source)))))
+        (reset! question-html (-> response :body :source)))))
 
 (defn submit-guess [the-atom the-input-element]
   (reset! the-atom (-> the-input-element .-target .-value))
@@ -191,10 +191,10 @@
                    :float "left" :width "100%"}}
 
      [:div {:style {:float "left" :width "100%"}}
-      @question-text]
+      @question-html]
 
      [:div {:style {:float "right" :width "100%"}}
-      (atom-input guess-text)]
+      (atom-input guess-html)]
 
      [:div {:style {:float "left" :width "100%"}}
       @parse-html]
