@@ -50,10 +50,10 @@
    :body (loading-page)})
 
 (defn json-response
-  [_request fn]
+  [_request handler]
   {:status 200
    :headers {"Content-Type" "application/json"}
-   :body (fn)})
+   :body (handler _request)})
 
 (def app
   (reitit-ring/ring-handler
@@ -65,7 +65,7 @@
                                ;; the index is the expression specification that we want to
                                ;; use to generate.
                                :parameters {:path {:spec int?}}}}]
-     ["/parse" {:get {:handler parse}}]
+     ["/parse" {:get {:handler (fn [request] (json-response request parse))}}]
      ["/quiz" {:get {:handler html-response}}]
      ["/about" {:get {:handler html-response}}]])
    (reitit-ring/routes

@@ -34,9 +34,8 @@
     (let [parses (->> string-to-parse nl/parse)
           serialized (->> parses (map u/pprint))
           syntax-trees (->> parses (map nl/syntax-tree))]
-      {:status 200
-       :headers {"Content-Type" "application/json"}
-       :body (write-str {:parses syntax-trees
-                         :serialized serialized})})))
+      (write-str {:parses syntax-trees
+                  :serialized serialized}))))
+
 
 
