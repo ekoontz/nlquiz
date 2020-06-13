@@ -201,7 +201,7 @@
       @sem-html]]))
 
 
-(defn home-page []
+(defn generate-page []
   (fn []
     [:div.main
      [:div
@@ -255,7 +255,7 @@
 
 (defn page-for [route]
   (case route
-    :index #'home-page
+    :index #'generate-page
     :quiz #'quiz-page
     :about #'about-page))
 
@@ -268,7 +268,7 @@
       [:div
        [:header
         [:p
-         [:a {:href (path-for :index)} "Home"] " | "
+         [:a {:href (path-for :index)} "Generate"] " | "
          [:a {:href (path-for :quiz)} "Quiz"] " | "
          [:a {:href (path-for :about)} "About"]]]
        [page]
