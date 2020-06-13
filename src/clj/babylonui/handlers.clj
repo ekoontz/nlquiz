@@ -33,8 +33,4 @@
           serialized (->> parses (map u/pprint))
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:parses syntax-trees
-       :serialized serialized})))
-
-
-
-
+       :sem (->> parses (map #(u/get-in % [:sem])) (map u/pprint))})))
