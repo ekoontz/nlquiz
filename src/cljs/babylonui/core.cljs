@@ -131,7 +131,8 @@
 
 (defonce guess-text (r/atom ""))
 (defonce question-text (r/atom ""))
-(defonce parse-text (r/atom ""))
+(defonce parse-html (r/atom ""))
+(defonce sem-html (r/atom ""))
 
 (defn get-a-question []
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
@@ -150,10 +151,25 @@
                          (map (fn [index]
                                 {:tree (nth trees index)
                                  :index index})))
-              sems (-> response :body :sem)]
+              sems (-> response :body :sem)
+              sems (->> (range 0 (count sems))
+                        (map (fn [index]
+                               {:sem (nth sems index)
+                                :index index})))]
           (log/info (str "trees with indices: " trees))
           (log/info (str "sems: " sems))
-          (reset! parse-text
+
+          (reset! sem-html
+                  [:ul
+                   (->>
+                    sems
+                    (map (fn [sem]
+                           [:li {:key (str "sem-" (:index sem))}
+                            (:sem sem)
+
+                            ])))])
+
+          (reset! parse-html
                   [:ul
                    (->>
                     trees
@@ -181,7 +197,11 @@
       (atom-input guess-text)]
 
      [:div {:style {:float "left" :width "100%"}}
-      @parse-text]]))
+      @parse-html]
+
+     [:div {:style {:float "left" :width "100%"}}
+      @sem-html]]))
+
 
 (defn home-page []
   (fn []
