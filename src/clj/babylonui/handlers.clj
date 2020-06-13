@@ -34,7 +34,8 @@
          (-> _request :query-params) "q")]
     (log/info (str "parsing input: " string-to-parse))
     (let [parses (->> string-to-parse nl/parse)
-          serialized (->> parses (map u/pprint))
           syntax-trees (->> parses (map nl/syntax-tree))]
-      {:parses syntax-trees
-       :sem (->> parses (map #(u/get-in % [:sem])) (map u/pprint))})))
+      {:trees syntax-trees
+       :sem (->> parses
+                 (map #(u/get-in % [:sem]))
+                 (map u/pprint))})))
