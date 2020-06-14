@@ -17,22 +17,6 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-;; -------------------------
-;; Routes
-
-(def router
-  (reitit/router
-   [["/" :index]
-    ["/quiz" :quiz]
-    ["/about" :about]]))
-
-(defn path-for [route & [params]]
-  (if params
-    (:path (reitit/match-by-name router route params))
-    (:path (reitit/match-by-name router route))))
-
-(path-for :about)
-
 (defn update-target-expressions! [target-expressions expression-node]
   (swap! target-expressions
          (fn [existing-expressions]
@@ -118,10 +102,7 @@
        [:div {:class ["expressions" "target"]}
         (doall
          (map (fn [i]
-                (let [expression-node (nth @target-expressions i)
-                      target-spec (:spec expression-node)
-                      target-expression (:expression expression-node)]
-                  (log/debug (str "target expression: " (nl/morph target-expression)))
+                (let [target-expression (:expression (nth @target-expressions i))]
                   [:div.expression {:key (str "target-" i)}
                    [:span (nl/morph target-expression)]]))
               (range 0 (count @target-expressions))))]
@@ -136,14 +117,6 @@
 
 (def source-node (r/atom []))
 (def target-node (r/atom []))
-(defn generate-from-server []
-  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
-        (reset! source-node (-> response :source))
-        (reset! target-node (-> response :target)))))
-
-(set! (.-onload js/window)
-      (fn []))
-
 
 (defonce guess-html (r/atom ""))
 (defonce question-html (r/atom ""))
@@ -237,14 +210,6 @@
         [:h1 "About babylon UI"]]))
 
 ;; -------------------------
-;; Translate routes -> page components
-(defn page-for [route]
-  (case route
-    :index #'generate-page
-    :quiz #'quiz-page
-    :about #'about-page))
-
-;; -------------------------
 ;; Page mounting component
 
 (defn current-page []
@@ -263,6 +228,28 @@
           "Reagent Template"] " | "
          [:a {:href "https://github.com/ekoontz/menard"}
           "Menard"] ""]]])))
+
+;; -------------------------
+;; Routes
+
+(def router
+  (reitit/router
+   [["/" :index]
+    ["/quiz" :quiz]
+    ["/about" :about]]))
+
+(defn path-for [route & [params]]
+  (if params
+    (:path (reitit/match-by-name router route params))
+    (:path (reitit/match-by-name router route))))
+
+;; -------------------------
+;; Translate routes -> page components
+(defn page-for [route]
+  (case route
+    :index #'generate-page
+    :quiz #'quiz-page
+    :about #'about-page))
 
 ;; -------------------------
 ;; Initialize app
@@ -288,3 +275,15 @@
       (boolean (reitit/match-by-path router path)))})
   (accountant/dispatch-current!)
   (mount-root))
+
+
+;; not used yet:
+(defn generate-from-server []
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
+        (reset! source-node (-> response :source))
+        (reset! target-node (-> response :target)))))
+
+(set! (.-onload js/window)
+      (fn []))
+
+
