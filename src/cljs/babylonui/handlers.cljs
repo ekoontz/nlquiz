@@ -3,18 +3,21 @@
    [babylon.english :as en]
    [babylon.nederlands :as nl]
    [babylon.translate :as tr]
-   [dag_unify.core :as u]))
+   [cljslog.core :as log]
+   [dag_unify.core :as u]
+   [dommy.core :as dommy]))
 
-(defn show-expressions-dropdown []
+(defn show-expressions-dropdown [expression-chosen-atom]
   (let [show-these-expressions
         (filter #(= true (u/get-in % [:menuable?] true))
                 nl/expressions)]
     [:div {:style {:float "left" :border "0px dashed blue"}}
      [:select {:id "expressionchooser"
-               :on-change #(reset! expression-specification-atom
+               :on-change #(reset! expression-chosen-atom
                                    (nth show-these-expressions
                                         (js/parseInt
                                          (dommy/value (dommy/sel1 :#expressionchooser)))))}
+      
       (map (fn [item-id]
              (let [expression (nth show-these-expressions item-id)]
                [:option {:name item-id
