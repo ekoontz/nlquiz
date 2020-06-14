@@ -63,47 +63,14 @@
                (cons source-expression-node existing-expressions))))))
 
 (defn generate [target-expressions source-expressions chooser-atom]
-  (log/info (str "doing generate with specification: " (nth nl/expressions @chooser-atom)))
-  (let [target-expression
-        (nl/generate (nth nl/expressions @chooser-atom))]
-    (update-target-expressions!
-     target-expressions
-     {:expression target-expression})
-    (do-the-source-expression target-expression source-expressions)))
-
-(defn generate-page []
-  (let [target-expressions (atom [])
-        source-expressions (r/atom [])
-        spec-atom (atom 0)]
-    (fn []
-      [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
-
-        [:h1 "Expression generator"]
-
-        [handlers/show-expressions-dropdown spec-atom]
-        [timer-component target-expressions source-expressions spec-atom]]
-       
-       [:div {:class ["expressions" "target"]}
-        (doall
-         (map (fn [i]
-                (let [expression-node (nth @target-expressions i)
-                      target-spec (:spec expression-node)
-                      target-expression (:expression expression-node)]
-                  (log/debug (str "target expression: " (nl/morph target-expression)))
-                  [:div.expression {:key (str "target-" i)}
-                   [:span (nl/morph target-expression)]]))
-              (range 0 (count @target-expressions))))]
-       
-       [:div {:class ["expressions" "source"]}
-        (doall
-         (map (fn [i]
-                (let [expression-node (nth @source-expressions i)]
-                  [:div.expression {:key (str "source-" i)}
-                   [:span (:morph expression-node)]]))
-              (range 0 (count @source-expressions))))]])))
+  (let [index @chooser-atom]
+    (log/info (str "doing generate with specification: " (nth nl/expressions @chooser-atom)))
+    (let [target-expression
+          (nl/generate (nth nl/expressions @chooser-atom))]
+      (update-target-expressions!
+       target-expressions
+       {:expression target-expression})
+      (do-the-source-expression target-expression source-expressions))))
 
 (defn timer-component [target-expressions source-expressions spec-atom]
   (let [generated (r/atom 0)
@@ -139,6 +106,40 @@
                  :on-change #(reset! generate? false)
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
+
+(defn generate-page []
+  (let [target-expressions (atom [])
+        source-expressions (r/atom [])
+        spec-atom (atom 0)]
+    (fn []
+      [:div.main
+       [:div
+        {:style {:float "left" :margin-left "10%"
+                 :width "80%" :border "0px dashed green"}}
+
+        [:h1 "Expression generator"]
+
+        [handlers/show-expressions-dropdown spec-atom]
+        [timer-component target-expressions source-expressions spec-atom]]
+       
+       [:div {:class ["expressions" "target"]}
+        (doall
+         (map (fn [i]
+                (let [expression-node (nth @target-expressions i)
+                      target-spec (:spec expression-node)
+                      target-expression (:expression expression-node)]
+                  (log/debug (str "target expression: " (nl/morph target-expression)))
+                  [:div.expression {:key (str "target-" i)}
+                   [:span (nl/morph target-expression)]]))
+              (range 0 (count @target-expressions))))]
+       
+       [:div {:class ["expressions" "source"]}
+        (doall
+         (map (fn [i]
+                (let [expression-node (nth @source-expressions i)]
+                  [:div.expression {:key (str "source-" i)}
+                   [:span (:morph expression-node)]]))
+              (range 0 (count @source-expressions))))]])))
 
 (def source-node (r/atom []))
 (def target-node (r/atom []))
