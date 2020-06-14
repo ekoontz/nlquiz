@@ -36,9 +36,6 @@
 (def expression-specification-atom (atom (nth nl/expressions 0)))
 (def semantics-atom (r/atom nil))
 
-(def target-expressions
-  (r/atom []))
-
 (def source-expressions
   (r/atom []))
 
@@ -62,7 +59,7 @@
                (cons source-expression-node (butlast existing-expressions))
                (cons source-expression-node existing-expressions))))))
 
-(defn update-target-expressions! [expression-node]
+(defn update-target-expressions! [target-expressions expression-node]
   (swap! target-expressions
          (fn [existing-expressions]
            (log/debug (str "length of existing expressions: " (count existing-expressions)))
@@ -70,11 +67,12 @@
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions)))))
 
-(defn generate []
+(defn generate [target-expressions]
   (log/debug (str "GENERATE!! THE EXPRESSION ATOM IS: " @expression-specification-atom))
   (let [target-expression
         (nl/generate @expression-specification-atom)]
     (update-target-expressions!
+     target-expressions
      {:expression target-expression})
     (do-the-source-expression target-expression)))
 
@@ -89,12 +87,12 @@
 (set! (.-onload js/window)
       (fn []))
 
-(defn timer-component []
+(defn timer-component [target-expressions]
   (let [generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (generate)
+        (generate target-expressions)
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
@@ -198,7 +196,7 @@
       @sem-html]]))
 
 
-(defn generate-page []
+(defn generate-page [target-expressions]
   (fn []
     [:div.main
      [:div
@@ -208,7 +206,7 @@
       [:h1 "Expression generator"]
 
       [handlers/show-expressions-dropdown]
-      [timer-component]]
+      [timer-component target-expressions]]
      
      [:div {:class ["expressions" "target"]}
       (doall
@@ -252,7 +250,7 @@
 
 (defn page-for [route]
   (case route
-    :index #'generate-page
+    :index (fn [] (generate-page (atom [])))
     :quiz #'quiz-page
     :about #'about-page))
 
