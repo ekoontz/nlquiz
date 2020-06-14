@@ -151,8 +151,8 @@
                         (map (fn [index]
                                {:sem (nth sems index)
                                 :index index})))]
-          (log/info (str "trees with indices: " trees))
-          (log/info (str "sems: " sems))
+          (log/debug (str "trees with indices: " trees))
+          (log/debug (str "sems: " sems))
 
           (reset! sem-html
                   [:ul
