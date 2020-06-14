@@ -21,44 +21,6 @@
 (defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
 
-(defn submit-guess [the-atom the-input-element]
-  (reset! the-atom (-> the-input-element .-target .-value))
-  (let [guess-string @the-atom]
-    (log/debug (str "submitting your guess: " guess-string))
-    (go (let [response (<! (http/get "http://localhost:3449/parse"
-                                     {:query-params {"q" guess-string}}))
-              trees (-> response :body :trees)
-              trees (->> (range 0 (count trees))
-                         (map (fn [index]
-                                {:tree (nth trees index)
-                                 :index index})))
-              sems (-> response :body :sem)
-              sems (->> (range 0 (count sems))
-                        (map (fn [index]
-                               {:sem (nth sems index)
-                                :index index})))]
-          (log/debug (str "trees with indices: " trees))
-          (log/debug (str "sems: " sems))
-
-          (reset! sem-html
-                  [:ul
-                   (->>
-                    sems
-                    (map (fn [sem]
-                           [:li {:key (str "sem-" (:index sem))}
-                            (:sem sem)
-
-                            ])))])
-
-          (reset! parse-html
-                  [:ul
-                   (->>
-                    trees
-                    (map (fn [parse]
-                           [:li
-                            {:key (str "tree-" (:index parse))}
-                            (:tree parse)])))])))))
-
 (defn quiz-page []
   (let [spec-atom (atom 0)]
     (quiz/get-a-question @spec-atom)
