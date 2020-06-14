@@ -34,7 +34,6 @@
 (path-for :about)
 
 (def expression-specification-atom (atom (nth nl/expressions 0)))
-(def semantics-atom (r/atom nil))
 
 (defn do-the-source-expression [target-expression source-expressions]
   (let [source-expression-node {:morph
