@@ -3,6 +3,7 @@
    [accountant.core :as accountant]
    [babylonui.generate :as generate]
    [babylonui.handlers :as handlers]
+   [babylonui.quiz :as quiz]
    [clerk.core :as clerk]
    [cljs-http.client :as http]
    [cljslog.core :as log]
@@ -70,41 +71,6 @@
             :size 50
             :value @value
             :on-change #(submit-guess value %)}]])
-  
-(defn quiz-component []
-  (fn []
-    [:div {:style {:margin-top "1em"
-                   :float "left" :width "100%"}}
-
-     [:div {:style {:float "left" :width "100%"}}
-      @question-html]
-
-     [:div {:style {:float "right" :width "100%"}}
-      (atom-input guess-html)]
-
-     [:div {:style {:float "left" :width "100%"}}
-      @parse-html]
-
-     [:div {:style {:float "left" :width "100%"}}
-      @sem-html]]))
-
-(defn quiz-page []
-  (let [spec-atom (atom 0)]
-    (get-a-question @spec-atom)
-    (fn []
-      [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
-
-        [:h3 "Quiz"]
-
-        [handlers/show-expressions-dropdown spec-atom]
-        [quiz-component]]])))
-
-(defn about-page []
-(fn [] [:span.main
-        [:h1 "About babylon UI"]]))
 
 ;; -------------------------
 ;; Page mounting component
@@ -140,12 +106,16 @@
     (:path (reitit/match-by-name router route params))
     (:path (reitit/match-by-name router route))))
 
+(defn about-page []
+  (fn [] [:span.main
+          [:h1 "About babylon UI"]]))
+
 ;; -------------------------
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
     :index #'generate/generate-page
-    :quiz #'quiz-page
+    :quiz #'quiz/quiz-page
     :about #'about-page))
 
 ;; -------------------------
