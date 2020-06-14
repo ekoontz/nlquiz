@@ -36,7 +36,7 @@
 (def expression-specification-atom (atom (nth nl/expressions 0)))
 (def semantics-atom (r/atom nil))
 
-(defn do-the-source-expression [target-expression source-expressions-local]
+(defn do-the-source-expression [target-expression source-expressions]
   (let [source-expression-node {:morph
                                 (try
                                   (-> target-expression
@@ -48,7 +48,7 @@
                                       (log/warn (str "failed to generate: " e))
                                       "??")))}]
     (log/debug (str "source-expression: " (:morph source-expression-node)))
-    (swap! source-expressions-local
+    (swap! source-expressions
            (fn [existing-expressions]
 
              (log/debug (str "length of existing expressions: " (count existing-expressions)))
@@ -65,13 +65,13 @@
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions)))))
 
-(defn generate [target-expressions source-expressions-local]
+(defn generate [target-expressions source-expressions]
   (let [target-expression
         (nl/generate @expression-specification-atom)]
     (update-target-expressions!
      target-expressions
      {:expression target-expression})
-    (do-the-source-expression target-expression source-expressions-local)))
+    (do-the-source-expression target-expression source-expressions)))
 
 (def source-node (r/atom []))
 (def target-node (r/atom []))
@@ -84,12 +84,12 @@
 (set! (.-onload js/window)
       (fn []))
 
-(defn timer-component [target-expressions source-expressions-local]
+(defn timer-component [target-expressions source-expressions]
   (let [generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (generate target-expressions source-expressions-local)
+        (generate target-expressions source-expressions)
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
@@ -193,8 +193,7 @@
       @sem-html]]))
 
 
-(defn generate-page [target-expressions source-expressions source-expressions-local]
-  (log/info (str " GENERATE_PAGE ARE THEY EQUAL??? " (= source-expressions source-expressions-local)))
+(defn generate-page [target-expressions source-expressions]
   (fn []
     [:div.main
      [:div
@@ -245,13 +244,9 @@
 
 ;; -------------------------
 ;; Translate routes -> page components
-
-(def source-expressions-fuck
-  (r/atom []))
-
 (defn page-for [route]
   (case route
-    :index (fn [] (generate-page (atom []) source-expressions-fuck (atom [])))
+    :index (fn [] (generate-page (atom []) (r/atom [])))
     :quiz #'quiz-page
     :about #'about-page))
 
