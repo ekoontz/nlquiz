@@ -12,10 +12,6 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(def source-node (r/atom []))
-(def target-node (r/atom []))
-
-(defonce question-html (r/atom ""))
 (defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
 
@@ -63,28 +59,28 @@
                             {:key (str "tree-" (:index parse))}
                             (:tree parse)])))])))))
 
-(defonce guess-html (r/atom ""))
-
 (defn quiz-component []
-  (fn []
-    [:div {:style {:margin-top "1em"
-                   :float "left" :width "100%"}}
+  (let [guess-html (r/atom "")
+        question-html (r/atom "")]
+    (fn []
+      [:div {:style {:margin-top "1em"
+                     :float "left" :width "100%"}}
 
-     [:div {:style {:float "left" :width "100%"}}
-      @question-html]
+       [:div {:style {:float "left" :width "100%"}}
+        @question-html]
 
-     [:div {:style {:float "right" :width "100%"}}
-      [:div
-       [:input {:type "text"
-                :size 50
-                :value @guess-html
-                :on-change #(submit-guess guess-html %)}]]]
+       [:div {:style {:float "right" :width "100%"}}
+        [:div
+         [:input {:type "text"
+                  :size 50
+                  :value @guess-html
+                  :on-change #(submit-guess guess-html %)}]]]
 
-     [:div {:style {:float "left" :width "100%"}}
-      @parse-html]
+       [:div {:style {:float "left" :width "100%"}}
+        @parse-html]
 
-     [:div {:style {:float "left" :width "100%"}}
-      @sem-html]]))
+       [:div {:style {:float "left" :width "100%"}}
+        @sem-html]])))
 
 (defn quiz-page []
   (let [spec-atom (atom 0)]
@@ -170,15 +166,3 @@
       (boolean (reitit/match-by-path router path)))})
   (accountant/dispatch-current!)
   (mount-root))
-
-
-;; not used yet:
-(defn generate-from-server []
-  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
-        (reset! source-node (-> response :source))
-        (reset! target-node (-> response :target)))))
-
-(set! (.-onload js/window)
-      (fn []))
-
-
