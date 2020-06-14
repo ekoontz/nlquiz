@@ -62,22 +62,21 @@
                (cons source-expression-node (butlast existing-expressions))
                (cons source-expression-node existing-expressions))))))
 
-(defn generate [target-expressions source-expressions chooser-atom]
-  (let [index @chooser-atom]
-    (log/info (str "doing generate with specification: " (nth nl/expressions @chooser-atom)))
-    (let [target-expression
-          (nl/generate (nth nl/expressions @chooser-atom))]
-      (update-target-expressions!
-       target-expressions
-       {:expression target-expression})
-      (do-the-source-expression target-expression source-expressions))))
+(defn generate [target-expressions source-expressions the-index]
+  (log/info (str "doing generate with specification: " (nth nl/expressions the-index)))
+  (let [target-expression
+        (nl/generate (nth nl/expressions the-index))]
+    (update-target-expressions!
+     target-expressions
+     {:expression target-expression})
+    (do-the-source-expression target-expression source-expressions)))
 
 (defn timer-component [target-expressions source-expressions spec-atom]
   (let [generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (generate target-expressions source-expressions spec-atom)
+        (generate target-expressions source-expressions @spec-atom)
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
