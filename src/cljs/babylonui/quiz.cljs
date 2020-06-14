@@ -15,7 +15,6 @@
 (def source-node (r/atom []))
 (def target-node (r/atom []))
 
-(defonce guess-html (r/atom ""))
 (defonce question-html (r/atom ""))
 (defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
@@ -64,13 +63,8 @@
                             {:key (str "tree-" (:index parse))}
                             (:tree parse)])))])))))
 
-(defn atom-input [value]
-  [:div
-   [:input {:type "text"
-            :size 50
-            :value @value
-            :on-change #(submit-guess value %)}]])
-  
+(defonce guess-html (r/atom ""))
+
 (defn quiz-component []
   (fn []
     [:div {:style {:margin-top "1em"
@@ -80,7 +74,11 @@
       @question-html]
 
      [:div {:style {:float "right" :width "100%"}}
-      (atom-input guess-html)]
+      [:div
+       [:input {:type "text"
+                :size 50
+                :value @guess-html
+                :on-change #(submit-guess guess-html %)}]]]
 
      [:div {:style {:float "left" :width "100%"}}
       @parse-html]
