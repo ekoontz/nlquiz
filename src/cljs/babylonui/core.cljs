@@ -62,13 +62,11 @@
                (cons source-expression-node (butlast existing-expressions))
                (cons source-expression-node existing-expressions))))))
 
-(defn generate [target-expressions source-expressions the-index]
-  (log/info (str "doing generate with specification: " (nth nl/expressions the-index)))
+(defn generate [target-expressions source-expressions expression-index]
+  (log/info (str "doing generate with specification: " (nth nl/expressions expression-index)))
   (let [target-expression
-        (nl/generate (nth nl/expressions the-index))]
-    (update-target-expressions!
-     target-expressions
-     {:expression target-expression})
+        (nl/generate (nth nl/expressions expression-index))]
+    (update-target-expressions! target-expressions {:expression target-expression})
     (do-the-source-expression target-expression source-expressions)))
 
 (defn timer-component [target-expressions source-expressions spec-atom]
