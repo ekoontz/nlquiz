@@ -13,28 +13,6 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(def source-node (r/atom []))
-(def target-node (r/atom []))
-
-(defonce guess-html (r/atom ""))
-(defonce question-html (r/atom ""))
-(defonce parse-html (r/atom ""))
-(defonce sem-html (r/atom ""))
-
-(defn quiz-page []
-  (let [spec-atom (atom 0)]
-    (quiz/get-a-question @spec-atom)
-    (fn []
-      [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
-
-        [:h3 "Quiz"]
-
-        [handlers/show-expressions-dropdown spec-atom]
-        [quiz/quiz-component]]])))
-
 (defn about-page []
 (fn [] [:span.main
         [:h1 "About babylon UI"]]))
@@ -78,7 +56,7 @@
 (defn page-for [route]
   (case route
     :index #'generate/generate-page
-    :quiz #'quiz-page
+    :quiz #'quiz/quiz-page
     :about #'about-page))
 
 ;; -------------------------
@@ -108,6 +86,8 @@
 
 
 ;; not used yet:
+(def source-node (r/atom []))
+(def target-node (r/atom []))
 (defn generate-from-server []
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
         (reset! source-node (-> response :source))
