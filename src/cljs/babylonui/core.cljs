@@ -92,7 +92,7 @@
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (generate target-expressions source-expressions)
+        (generate target-expressions source-expressions-local)
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
