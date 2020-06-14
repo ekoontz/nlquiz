@@ -39,7 +39,7 @@
 (def source-expressions
   (r/atom []))
 
-(defn do-the-source-expression [target-expression]
+(defn do-the-source-expression [target-expression source-expressions]
   (let [source-expression-node {:morph
                                 (try
                                   (-> target-expression
@@ -73,7 +73,7 @@
     (update-target-expressions!
      target-expressions
      {:expression target-expression})
-    (do-the-source-expression target-expression)))
+    (do-the-source-expression target-expression source-expressions)))
 
 (def source-node (r/atom []))
 (def target-node (r/atom []))
