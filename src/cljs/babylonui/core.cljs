@@ -39,7 +39,7 @@
 (def source-expressions
   (r/atom []))
 
-(defn do-the-source-expression [target-expression source-expressions]
+(defn do-the-source-expression [target-expression source-expressions-local]
   (let [source-expression-node {:morph
                                 (try
                                   (-> target-expression
@@ -51,7 +51,7 @@
                                       (log/warn (str "failed to generate: " e))
                                       "??")))}]
     (log/debug (str "source-expression: " (:morph source-expression-node)))
-    (swap! source-expressions
+    (swap! source-expressions-local
            (fn [existing-expressions]
 
              (log/debug (str "length of existing expressions: " (count existing-expressions)))
@@ -62,18 +62,19 @@
 (defn update-target-expressions! [target-expressions expression-node]
   (swap! target-expressions
          (fn [existing-expressions]
-           (log/debug (str "length of existing expressions: " (count existing-expressions)))
+           (log/debug (str "length of existing expressions: "
+                           (count existing-expressions)))
            (if (> (count existing-expressions) 5)
              (cons expression-node (butlast existing-expressions))
              (cons expression-node existing-expressions)))))
 
-(defn generate [target-expressions]
+(defn generate [target-expressions source-expressions-local]
   (let [target-expression
         (nl/generate @expression-specification-atom)]
     (update-target-expressions!
      target-expressions
      {:expression target-expression})
-    (do-the-source-expression target-expression source-expressions)))
+    (do-the-source-expression target-expression source-expressions-local)))
 
 (def source-node (r/atom []))
 (def target-node (r/atom []))
@@ -91,7 +92,7 @@
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (generate target-expressions)
+        (generate target-expressions source-expressions)
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
