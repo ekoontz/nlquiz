@@ -36,9 +36,6 @@
 (def expression-specification-atom (atom (nth nl/expressions 0)))
 (def semantics-atom (r/atom nil))
 
-(def source-expressions
-  (r/atom []))
-
 (defn do-the-source-expression [target-expression source-expressions-local]
   (let [source-expression-node {:morph
                                 (try
@@ -196,7 +193,8 @@
       @sem-html]]))
 
 
-(defn generate-page [target-expressions source-expressions-local]
+(defn generate-page [target-expressions source-expressions source-expressions-local]
+  (log/info (str " GENERATE_PAGE ARE THEY EQUAL??? " (= source-expressions source-expressions-local)))
   (fn []
     [:div.main
      [:div
@@ -248,9 +246,12 @@
 ;; -------------------------
 ;; Translate routes -> page components
 
+(def source-expressions-fuck
+  (r/atom []))
+
 (defn page-for [route]
   (case route
-    :index (fn [] (generate-page (atom []) (atom [])))
+    :index (fn [] (generate-page (atom []) source-expressions-fuck (atom [])))
     :quiz #'quiz-page
     :about #'about-page))
 
