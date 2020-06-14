@@ -87,7 +87,7 @@
 (set! (.-onload js/window)
       (fn []))
 
-(defn timer-component [target-expressions]
+(defn timer-component [target-expressions source-expressions-local]
   (let [generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
@@ -196,7 +196,7 @@
       @sem-html]]))
 
 
-(defn generate-page [target-expressions]
+(defn generate-page [target-expressions source-expressions-local]
   (fn []
     [:div.main
      [:div
@@ -206,7 +206,7 @@
       [:h1 "Expression generator"]
 
       [handlers/show-expressions-dropdown]
-      [timer-component target-expressions]]
+      [timer-component target-expressions source-expressions]]
      
      [:div {:class ["expressions" "target"]}
       (doall
@@ -250,7 +250,7 @@
 
 (defn page-for [route]
   (case route
-    :index (fn [] (generate-page (atom [])))
+    :index (fn [] (generate-page (atom []) (atom [])))
     :quiz #'quiz-page
     :about #'about-page))
 
