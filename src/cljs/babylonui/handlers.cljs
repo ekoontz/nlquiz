@@ -14,10 +14,8 @@
     [:div {:style {:float "left" :border "0px dashed blue"}}
      [:select {:id "expressionchooser"
                :on-change #(reset! expression-chosen-atom
-                                   (nth show-these-expressions
-                                        (js/parseInt
-                                         (dommy/value (dommy/sel1 :#expressionchooser)))))}
-      
+                                   (js/parseInt
+                                    (dommy/value (dommy/sel1 :#expressionchooser))))}
       (map (fn [item-id]
              (let [expression (nth show-these-expressions item-id)]
                [:option {:name item-id

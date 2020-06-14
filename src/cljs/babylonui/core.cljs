@@ -66,8 +66,9 @@
 
 (defn generate [target-expressions source-expressions chooser-atom]
   (log/info (str "doing generate with specification number: " @chooser-atom))
+  (log/info (str "doing generate with specification: " (nth nl/expressions @chooser-atom)))
   (let [target-expression
-        (nl/generate @chooser-atom)]
+        (nl/generate (nth nl/expressions @chooser-atom))]
     (update-target-expressions!
      target-expressions
      {:expression target-expression})
@@ -85,7 +86,6 @@
       (fn []))
 
 (defn timer-component [target-expressions source-expressions spec-atom]
-  (log/info (str "FUCK: " @spec-atom))
   (let [generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
@@ -125,8 +125,8 @@
 (defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
 
-(defn get-a-question []
-  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
+(defn get-a-question [spec-index]
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" spec-index)))]
         (log/info (str "one correct answer to this question is: '"
                        (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source)))))
@@ -195,7 +195,7 @@
 
 
 (defn generate-page [target-expressions source-expressions]
-  (let [spec-atom (atom (nth nl/expressions 0))]
+  (let [spec-atom (atom 0)]
     (fn []
       [:div.main
        [:div
@@ -227,18 +227,18 @@
               (range 0 (count @source-expressions))))]])))
 
 (defn quiz-page []
-  (get-a-question)
-  (fn []
-    [:div.main
-     [:div
-      {:style {:float "left" :margin-left "10%"
-               :width "80%" :border "0px dashed green"}}
+  (let [spec-atom (atom 0)]
+    (get-a-question @spec-atom)
+    (fn []
+      [:div.main
+       [:div
+        {:style {:float "left" :margin-left "10%"
+                 :width "80%" :border "0px dashed green"}}
 
-      [:h3 "Quiz"]
+        [:h3 "Quiz"]
 
-      [handlers/show-expressions-dropdown]
-      [quiz-component]]]))
-
+        [handlers/show-expressions-dropdown spec-atom]
+        [quiz-component]]])))
 
 (defn about-page []
 (fn [] [:span.main
