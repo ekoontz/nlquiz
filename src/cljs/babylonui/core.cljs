@@ -68,7 +68,6 @@
              (cons expression-node existing-expressions)))))
 
 (defn generate [target-expressions]
-  (log/debug (str "GENERATE!! THE EXPRESSION ATOM IS: " @expression-specification-atom))
   (let [target-expression
         (nl/generate @expression-specification-atom)]
     (update-target-expressions!
