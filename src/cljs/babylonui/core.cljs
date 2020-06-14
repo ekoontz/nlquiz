@@ -33,7 +33,14 @@
 
 (path-for :about)
 
-(def expression-specification-atom (atom (nth nl/expressions 0)))
+(defn update-target-expressions! [target-expressions expression-node]
+  (swap! target-expressions
+         (fn [existing-expressions]
+           (log/debug (str "length of existing expressions: "
+                           (count existing-expressions)))
+           (if (> (count existing-expressions) 5)
+             (cons expression-node (butlast existing-expressions))
+             (cons expression-node existing-expressions)))))
 
 (defn do-the-source-expression [target-expression source-expressions]
   (let [source-expression-node {:morph
@@ -55,17 +62,7 @@
                (cons source-expression-node (butlast existing-expressions))
                (cons source-expression-node existing-expressions))))))
 
-(defn update-target-expressions! [target-expressions expression-node]
-  (swap! target-expressions
-         (fn [existing-expressions]
-           (log/debug (str "length of existing expressions: "
-                           (count existing-expressions)))
-           (if (> (count existing-expressions) 5)
-             (cons expression-node (butlast existing-expressions))
-             (cons expression-node existing-expressions)))))
-
 (defn generate [target-expressions source-expressions chooser-atom]
-  (log/info (str "doing generate with specification number: " @chooser-atom))
   (log/info (str "doing generate with specification: " (nth nl/expressions @chooser-atom)))
   (let [target-expression
         (nl/generate (nth nl/expressions @chooser-atom))]
@@ -74,16 +71,39 @@
      {:expression target-expression})
     (do-the-source-expression target-expression source-expressions)))
 
-(def source-node (r/atom []))
-(def target-node (r/atom []))
+(defn generate-page []
+  (let [target-expressions (atom [])
+        source-expressions (r/atom [])
+        spec-atom (atom 0)]
+    (fn []
+      [:div.main
+       [:div
+        {:style {:float "left" :margin-left "10%"
+                 :width "80%" :border "0px dashed green"}}
 
-(defn generate-from-server []
-  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
-        (reset! source-node (-> response :source))
-        (reset! target-node (-> response :target)))))
+        [:h1 "Expression generator"]
 
-(set! (.-onload js/window)
-      (fn []))
+        [handlers/show-expressions-dropdown spec-atom]
+        [timer-component target-expressions source-expressions spec-atom]]
+       
+       [:div {:class ["expressions" "target"]}
+        (doall
+         (map (fn [i]
+                (let [expression-node (nth @target-expressions i)
+                      target-spec (:spec expression-node)
+                      target-expression (:expression expression-node)]
+                  (log/debug (str "target expression: " (nl/morph target-expression)))
+                  [:div.expression {:key (str "target-" i)}
+                   [:span (nl/morph target-expression)]]))
+              (range 0 (count @target-expressions))))]
+       
+       [:div {:class ["expressions" "source"]}
+        (doall
+         (map (fn [i]
+                (let [expression-node (nth @source-expressions i)]
+                  [:div.expression {:key (str "source-" i)}
+                   [:span (:morph expression-node)]]))
+              (range 0 (count @source-expressions))))]])))
 
 (defn timer-component [target-expressions source-expressions spec-atom]
   (let [generated (r/atom 0)
@@ -120,6 +140,17 @@
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
 
+(def source-node (r/atom []))
+(def target-node (r/atom []))
+(defn generate-from-server []
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
+        (reset! source-node (-> response :source))
+        (reset! target-node (-> response :target)))))
+
+(set! (.-onload js/window)
+      (fn []))
+
+
 (defonce guess-html (r/atom ""))
 (defonce question-html (r/atom ""))
 (defonce parse-html (r/atom ""))
@@ -134,7 +165,7 @@
 (defn submit-guess [the-atom the-input-element]
   (reset! the-atom (-> the-input-element .-target .-value))
   (let [guess-string @the-atom]
-    (log/info (str "submitting your guess: " guess-string))
+    (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
                                      {:query-params {"q" guess-string}}))
               trees (-> response :body :trees)
@@ -193,39 +224,6 @@
      [:div {:style {:float "left" :width "100%"}}
       @sem-html]]))
 
-
-(defn generate-page [target-expressions source-expressions]
-  (let [spec-atom (atom 0)]
-    (fn []
-      [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
-
-        [:h1 "Expression generator"]
-
-        [handlers/show-expressions-dropdown spec-atom]
-        [timer-component target-expressions source-expressions spec-atom]]
-       
-       [:div {:class ["expressions" "target"]}
-        (doall
-         (map (fn [i]
-                (let [expression-node (nth @target-expressions i)
-                      target-spec (:spec expression-node)
-                      target-expression (:expression expression-node)]
-                  (log/debug (str "target expression: " (nl/morph target-expression)))
-                  [:div.expression {:key (str "target-" i)}
-                   [:span (nl/morph target-expression)]]))
-              (range 0 (count @target-expressions))))]
-       
-       [:div {:class ["expressions" "source"]}
-        (doall
-         (map (fn [i]
-                (let [expression-node (nth @source-expressions i)]
-                  [:div.expression {:key (str "source-" i)}
-                   [:span (:morph expression-node)]]))
-              (range 0 (count @source-expressions))))]])))
-
 (defn quiz-page []
   (let [spec-atom (atom 0)]
     (get-a-question @spec-atom)
@@ -248,7 +246,7 @@
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
-    :index (fn [] (generate-page (atom []) (r/atom [])))
+    :index #'generate-page
     :quiz #'quiz-page
     :about #'about-page))
 
