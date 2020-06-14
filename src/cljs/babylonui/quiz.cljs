@@ -1,9 +1,8 @@
-(ns babylonui.core
+(ns babylonui.quiz
   (:require
    [accountant.core :as accountant]
    [babylonui.generate :as generate]
    [babylonui.handlers :as handlers]
-   [babylonui.quiz :as quiz]
    [clerk.core :as clerk]
    [cljs-http.client :as http]
    [cljslog.core :as log]
@@ -20,6 +19,12 @@
 (defonce question-html (r/atom ""))
 (defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
+
+(defn get-a-question [spec-index]
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" spec-index)))]
+        (log/info (str "one correct answer to this question is: '"
+                       (-> response :body :target) "'"))
+        (reset! question-html (-> response :body :source)))))
 
 (defn submit-guess [the-atom the-input-element]
   (reset! the-atom (-> the-input-element .-target .-value))
@@ -59,9 +64,33 @@
                             {:key (str "tree-" (:index parse))}
                             (:tree parse)])))])))))
 
+(defn atom-input [value]
+  [:div
+   [:input {:type "text"
+            :size 50
+            :value @value
+            :on-change #(submit-guess value %)}]])
+  
+(defn quiz-component []
+  (fn []
+    [:div {:style {:margin-top "1em"
+                   :float "left" :width "100%"}}
+
+     [:div {:style {:float "left" :width "100%"}}
+      @question-html]
+
+     [:div {:style {:float "right" :width "100%"}}
+      (atom-input guess-html)]
+
+     [:div {:style {:float "left" :width "100%"}}
+      @parse-html]
+
+     [:div {:style {:float "left" :width "100%"}}
+      @sem-html]]))
+
 (defn quiz-page []
   (let [spec-atom (atom 0)]
-    (quiz/get-a-question @spec-atom)
+    (get-a-question @spec-atom)
     (fn []
       [:div.main
        [:div
@@ -71,7 +100,7 @@
         [:h3 "Quiz"]
 
         [handlers/show-expressions-dropdown spec-atom]
-        [quiz/quiz-component]]])))
+        [quiz-component]]])))
 
 (defn about-page []
 (fn [] [:span.main
