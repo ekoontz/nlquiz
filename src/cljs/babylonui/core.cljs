@@ -24,9 +24,6 @@
   (reitit/router
    [["/" :index]
     ["/quiz" :quiz]
-    ["/items"
-     ["" :items]
-     ["/:item-id" :item]]
     ["/about" :about]]))
 
 (defn path-for [route & [params]]
