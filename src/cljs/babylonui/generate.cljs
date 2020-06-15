@@ -20,7 +20,7 @@
        [:div {:class ["expressions" "target"]}
         (doall
          (map (fn [i]
-                (let [target-expression (:expression (nth @target-expressions i))]
+                (let [target-expression (nth @target-expressions i)]
                   [:div.expression {:key (str "target-" i)}
                    [:span (nl/morph target-expression)]]))
               (range 0 (count @target-expressions))))]
@@ -29,7 +29,7 @@
          (map (fn [i]
                 (let [expression-node (nth @source-expressions i)]
                   [:div.expression {:key (str "source-" i)}
-                   [:span (:morph expression-node)]]))
+                   [:span (en/morph expression-node)]]))
               (range 0 (count @source-expressions))))]])))
 
 (defn controls [target-expressions source-expressions spec-atom]
@@ -39,7 +39,7 @@
       (when @generate?
         (let [target-expression (nl/generate (nth nl/expressions @spec-atom))
               source-expression (do-the-source-expression target-expression source-expressions)]
-          (update-expressions! target-expressions {:expression target-expression})
+          (update-expressions! target-expressions target-expression)
           (update-expressions! source-expressions source-expression))
         (js/setTimeout #(swap! count-generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
@@ -74,15 +74,14 @@
              (cons new-expression existing-expressions)))))
 
 (defn do-the-source-expression [target-expression source-expressions]
-  {:morph
-   (try
-     (-> target-expression
-         tr/nl-to-en-spec
-         en/generate
-         en/morph)
-     (catch js/Error e
-       (do
-         (log/warn (str "failed to generate: " e))
-         "??")))})
+  (try
+    (-> target-expression
+        tr/nl-to-en-spec
+        en/generate)
+    (catch js/Error e
+      (do
+        (log/warn (str "failed to generate: " e))
+        "??"))))
+
 
 
