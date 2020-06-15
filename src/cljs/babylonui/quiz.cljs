@@ -12,6 +12,49 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+(declare get-a-question)
+(declare quiz-component)
+(declare submit-guess)
+
+(defn quiz-page []
+  (let [expression-index (atom 0)
+        guess-html (r/atom "")
+        parse-html (r/atom "")
+        sem-html (r/atom "")
+        question-html (r/atom "")]
+    (get-a-question @expression-index question-html)
+    (fn []
+      [:div.main
+       [:div
+        {:style {:float "left" :margin-left "10%"
+                 :width "80%" :border "0px dashed green"}}
+
+        [:h3 "Quiz"]
+
+        [handlers/show-expressions-dropdown expression-index]
+        [quiz-component question-html parse-html sem-html guess-html]]])))
+
+(defn quiz-component [question-html parse-html sem-html guess-html]
+  (fn []
+    [:div {:style {:margin-top "1em"
+                   :float "left" :width "100%"}}
+
+     [:div {:style {:float "left" :width "100%"}}
+      @question-html]
+
+     [:div {:style {:float "right" :width "100%"}}
+      [:div
+       [:input {:type "text"
+                :size 50
+                :value @guess-html
+                :on-change #(submit-guess guess-html % parse-html sem-html)}]]]
+
+     [:div {:style {:float "left" :width "100%"}}
+      @parse-html]
+
+     [:div {:style {:float "left" :width "100%"}}
+      @sem-html]]))
+
 (defn get-a-question [spec-index question-html]
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/" spec-index)))]
         (log/info (str "one correct answer to this question is: '"
@@ -56,41 +99,3 @@
                             {:key (str "tree-" (:index parse))}
                             (:tree parse)])))])))))
 
-(defn quiz-component [question-html parse-html sem-html guess-html]
-  (fn []
-    [:div {:style {:margin-top "1em"
-                   :float "left" :width "100%"}}
-
-     [:div {:style {:float "left" :width "100%"}}
-      @question-html]
-
-     [:div {:style {:float "right" :width "100%"}}
-      [:div
-       [:input {:type "text"
-                :size 50
-                :value @guess-html
-                :on-change #(submit-guess guess-html % parse-html sem-html)}]]]
-
-     [:div {:style {:float "left" :width "100%"}}
-      @parse-html]
-
-     [:div {:style {:float "left" :width "100%"}}
-      @sem-html]]))
-
-(defn quiz-page []
-  (let [expression-index (atom 0)
-        guess-html (r/atom "")
-        parse-html (r/atom "")
-        sem-html (r/atom "")
-        question-html (r/atom "")]
-    (get-a-question @expression-index question-html)
-    (fn []
-      [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
-
-        [:h3 "Quiz"]
-
-        [handlers/show-expressions-dropdown expression-index]
-        [quiz-component question-html parse-html sem-html guess-html]]])))
