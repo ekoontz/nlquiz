@@ -50,7 +50,9 @@
         (let [expression-index @spec-atom
               target-expression (nl/generate (nth nl/expressions expression-index))]
           (update-target-expressions! target-expressions {:expression target-expression})
-          (do-the-source-expression target-expression source-expressions))
+          (let [source-expression-node
+                (do-the-source-expression target-expression source-expressions)]
+            (update-expressions! source-expressions source-expression-node)))
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
@@ -92,16 +94,15 @@
   (update-expressions! target-expressions expression-node))
 
 (defn do-the-source-expression [target-expression source-expressions]
-  (let [source-expression-node {:morph
-                                (try
-                                  (-> target-expression
-                                      tr/nl-to-en-spec
-                                      en/generate
-                                      en/morph)
-                                  (catch js/Error e
-                                    (do
-                                      (log/warn (str "failed to generate: " e))
-                                      "??")))}]
-    (log/debug (str "source-expression: " (:morph source-expression-node)))
-    (update-expressions! source-expressions source-expression-node)))
+  {:morph
+   (try
+     (-> target-expression
+         tr/nl-to-en-spec
+         en/generate
+         en/morph)
+     (catch js/Error e
+       (do
+         (log/warn (str "failed to generate: " e))
+         "??")))})
+
 
