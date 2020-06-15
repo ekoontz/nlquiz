@@ -47,25 +47,20 @@
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (let [expression-index @spec-atom
-              target-expression (nl/generate (nth nl/expressions expression-index))]
+        (let [target-expression (nl/generate (nth nl/expressions @spec-atom))
+              source-expression (do-the-source-expression target-expression source-expressions)]
           (update-expressions! target-expressions {:expression target-expression})
-          (update-expressions! source-expressions
-                               (do-the-source-expression target-expression source-expressions)))
+          (update-expressions! source-expressions source-expression))
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
-
        [:div {:style {:float "left"}}
         (str "Generated: " (if @generate?
                              (inc @generated)
-                             @generated)
-             " pairs")]
-
+                             @generated) " pair" (if (not (= @generated 0)) "s") ".")]
        [:div {:style {:margin-left "1em"
                       :float :right
                       :text-align :right
-                      :white-space "nowrap"}}
-        "Generate:"
+                      :white-space "nowrap"}} "Generate:"
         [:input {:type "radio" :value "Generate"
                  :name "generate-switch"
                  :checked @generate?
@@ -80,7 +75,6 @@
                  :on-change #(reset! generate? false)
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
-
 
 (defn update-expressions! [expressions new-expression]
   (swap! expressions
