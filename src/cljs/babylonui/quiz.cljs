@@ -12,15 +12,13 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defonce sem-html (r/atom ""))
-
 (defn get-a-question [spec-index question-html]
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/" spec-index)))]
         (log/info (str "one correct answer to this question is: '"
                        (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source)))))
 
-(defn submit-guess [the-atom the-input-element parse-html]
+(defn submit-guess [the-atom the-input-element parse-html sem-html]
   (reset! the-atom (-> the-input-element .-target .-value))
   (let [guess-string @the-atom]
     (log/debug (str "submitting your guess: " guess-string))
@@ -60,7 +58,7 @@
 
 (defonce guess-html (r/atom ""))
 
-(defn quiz-component [question-html parse-html]
+(defn quiz-component [question-html parse-html sem-html]
   (fn []
     [:div {:style {:margin-top "1em"
                    :float "left" :width "100%"}}
@@ -73,7 +71,7 @@
        [:input {:type "text"
                 :size 50
                 :value @guess-html
-                :on-change #(submit-guess guess-html % parse-html)}]]]
+                :on-change #(submit-guess guess-html % parse-html sem-html)}]]]
 
      [:div {:style {:float "left" :width "100%"}}
       @parse-html]
@@ -82,10 +80,10 @@
       @sem-html]]))
 
 (defn quiz-page []
-  (let [spec-atom (atom 0)
-        question-html (r/atom "")
-        parse-html (r/atom "")
-        ]
+  (let [parse-html (r/atom "")
+        sem-html (r/atom "")
+        spec-atom (atom 0)
+        question-html (r/atom "")]
     (get-a-question @spec-atom question-html)
     (fn []
       [:div.main
@@ -96,7 +94,7 @@
         [:h3 "Quiz"]
 
         [handlers/show-expressions-dropdown spec-atom]
-        [quiz-component question-html parse-html]]])))
+        [quiz-component question-html parse-html sem-html]]])))
 
 (defn about-page []
 (fn [] [:span.main
