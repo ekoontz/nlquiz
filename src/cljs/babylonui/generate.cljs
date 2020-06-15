@@ -3,7 +3,7 @@
    [babylon.english :as en]
    [babylon.nederlands :as nl]
    [babylon.translate :as tr]
-   [babylonui.handlers :as handlers]
+   [babylonui.dropdown :as dropdown]
    [cljslog.core :as log]
    [reagent.core :as r]))
 
@@ -23,7 +23,7 @@
 
         [:h1 "Expression generator"]
 
-        [handlers/show-expressions-dropdown spec-atom]
+        [dropdown/expressions spec-atom]
         [timer-component target-expressions source-expressions spec-atom]]
        
        [:div {:class ["expressions" "target"]}

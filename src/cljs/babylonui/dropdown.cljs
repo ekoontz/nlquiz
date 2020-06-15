@@ -1,4 +1,4 @@
-(ns babylonui.handlers
+(ns babylonui.dropdown
   (:require
    [babylon.english :as en]
    [babylon.nederlands :as nl]
@@ -7,7 +7,7 @@
    [dag_unify.core :as u]
    [dommy.core :as dommy]))
 
-(defn show-expressions-dropdown [expression-chosen-atom]
+(defn expressions [expression-chosen-atom]
   (let [show-these-expressions
         (filter #(= true (u/get-in % [:menuable?] true))
                 nl/expressions)]

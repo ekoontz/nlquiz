@@ -2,7 +2,7 @@
   (:require
    [accountant.core :as accountant]
    [babylonui.generate :as generate]
-   [babylonui.handlers :as handlers]
+   [babylonui.dropdown :as dropdown]
    [clerk.core :as clerk]
    [cljs-http.client :as http]
    [cljslog.core :as log]
@@ -31,7 +31,7 @@
 
         [:h3 "Quiz"]
 
-        [handlers/show-expressions-dropdown expression-index]
+        [dropdown/expressions expression-index]
         [quiz-component question-html parse-html sem-html guess-html]]])))
 
 (defn quiz-component [question-html parse-html sem-html guess-html]

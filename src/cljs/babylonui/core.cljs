@@ -2,7 +2,6 @@
   (:require
    [accountant.core :as accountant]
    [babylonui.generate :as generate]
-   [babylonui.handlers :as handlers]
    [babylonui.quiz :as quiz]
    [clerk.core :as clerk]
    [cljs-http.client :as http]
