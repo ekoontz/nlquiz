@@ -16,7 +16,12 @@
        [:div {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
         [:h1 "Expression generator"]
         [dropdown/expressions spec-atom]
-        [controls target-expressions source-expressions spec-atom]]
+        [controls
+         (fn []
+           (let [target-expression (nl/generate (nth nl/expressions @spec-atom))
+                 source-expression (do-the-source-expression target-expression)]
+             (update-expressions! target-expressions target-expression)
+             (update-expressions! source-expressions source-expression)))]]
        [:div {:class ["expressions" "target"]}
         (doall
          (map (fn [i]
@@ -32,15 +37,12 @@
                    [:span (en/morph expression-node)]]))
               (range 0 (count @source-expressions))))]])))
 
-(defn controls [target-expressions source-expressions spec-atom]
+(defn controls [generation-function]
   (let [count-generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (let [target-expression (nl/generate (nth nl/expressions @spec-atom))
-              source-expression (do-the-source-expression target-expression source-expressions)]
-          (update-expressions! target-expressions target-expression)
-          (update-expressions! source-expressions source-expression))
+        (generation-function)
         (js/setTimeout #(swap! count-generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
        [:div {:style {:float "left"}}
@@ -73,7 +75,7 @@
              (cons new-expression (butlast existing-expressions))
              (cons new-expression existing-expressions)))))
 
-(defn do-the-source-expression [target-expression source-expressions]
+(defn do-the-source-expression [target-expression]
   (try
     (-> target-expression
         tr/nl-to-en-spec
