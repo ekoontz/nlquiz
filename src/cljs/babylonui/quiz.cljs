@@ -12,7 +12,6 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
 
 (defn get-a-question [spec-index question-html]
@@ -21,7 +20,7 @@
                        (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source)))))
 
-(defn submit-guess [the-atom the-input-element]
+(defn submit-guess [the-atom the-input-element parse-html]
   (reset! the-atom (-> the-input-element .-target .-value))
   (let [guess-string @the-atom]
     (log/debug (str "submitting your guess: " guess-string))
@@ -61,7 +60,7 @@
 
 (defonce guess-html (r/atom ""))
 
-(defn quiz-component [question-html]
+(defn quiz-component [question-html parse-html]
   (fn []
     [:div {:style {:margin-top "1em"
                    :float "left" :width "100%"}}
@@ -74,7 +73,7 @@
        [:input {:type "text"
                 :size 50
                 :value @guess-html
-                :on-change #(submit-guess guess-html %)}]]]
+                :on-change #(submit-guess guess-html % parse-html)}]]]
 
      [:div {:style {:float "left" :width "100%"}}
       @parse-html]
@@ -84,7 +83,9 @@
 
 (defn quiz-page []
   (let [spec-atom (atom 0)
-        question-html (r/atom "")]
+        question-html (r/atom "")
+        parse-html (r/atom "")
+        ]
     (get-a-question @spec-atom question-html)
     (fn []
       [:div.main
@@ -95,7 +96,7 @@
         [:h3 "Quiz"]
 
         [handlers/show-expressions-dropdown spec-atom]
-        [quiz-component question-html]]])))
+        [quiz-component question-html parse-html]]])))
 
 (defn about-page []
 (fn [] [:span.main
