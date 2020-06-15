@@ -11,7 +11,7 @@
 (declare update-target-expressions)
 (declare timer-component)
 
-(defn generate-page []
+(defn generate-component []
   (let [target-expressions (atom [])
         source-expressions (r/atom [])
         spec-atom (atom 0)]

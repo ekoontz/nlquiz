@@ -12,9 +12,9 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defn about-page []
-(fn [] [:span.main
-        [:h1 "About babylon UI"]]))
+(defn about-component []
+  (fn [] [:span.main
+          [:h1 "About babylon UI"]]))
 
 ;; -------------------------
 ;; Page mounting component
@@ -54,9 +54,9 @@
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
-    :index #'generate/generate-page
-    :quiz #'quiz/quiz-page
-    :about #'about-page))
+    :index #'generate/generate-component
+    :quiz #'quiz/quiz-component
+    :about #'about-component))
 
 ;; -------------------------
 ;; Initialize app
