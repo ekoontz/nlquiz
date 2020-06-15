@@ -33,7 +33,7 @@
               (range 0 (count @source-expressions))))]])))
 
 (defn controls [target-expressions source-expressions spec-atom]
-  (let [generated (r/atom 0)
+  (let [count-generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
       (when @generate?
@@ -41,12 +41,12 @@
               source-expression (do-the-source-expression target-expression source-expressions)]
           (update-expressions! target-expressions {:expression target-expression})
           (update-expressions! source-expressions source-expression))
-        (js/setTimeout #(swap! generated inc) 50))
+        (js/setTimeout #(swap! count-generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
        [:div {:style {:float "left"}}
         (str "Generated: " (if @generate?
-                             (inc @generated)
-                             @generated) " pair" (if (not (= @generated 0)) "s") ".")]
+                             (inc @count-generated)
+                             @count-generated) " pair" (if (not (= @count-generated 0)) "s") ".")]
        [:div {:style {:margin-left "1em"
                       :float :right
                       :text-align :right
