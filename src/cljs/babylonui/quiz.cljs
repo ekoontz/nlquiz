@@ -12,11 +12,10 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(defonce question-html (r/atom ""))
 (defonce parse-html (r/atom ""))
 (defonce sem-html (r/atom ""))
 
-(defn get-a-question [spec-index]
+(defn get-a-question [spec-index question-html]
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/" spec-index)))]
         (log/info (str "one correct answer to this question is: '"
                        (-> response :body :target) "'"))
@@ -62,7 +61,7 @@
 
 (defonce guess-html (r/atom ""))
 
-(defn quiz-component []
+(defn quiz-component [question-html]
   (fn []
     [:div {:style {:margin-top "1em"
                    :float "left" :width "100%"}}
@@ -84,8 +83,9 @@
       @sem-html]]))
 
 (defn quiz-page []
-  (let [spec-atom (atom 0)]
-    (get-a-question @spec-atom)
+  (let [spec-atom (atom 0)
+        question-html (r/atom "")]
+    (get-a-question @spec-atom question-html)
     (fn []
       [:div.main
        [:div
@@ -95,7 +95,7 @@
         [:h3 "Quiz"]
 
         [handlers/show-expressions-dropdown spec-atom]
-        [quiz-component]]])))
+        [quiz-component question-html]]])))
 
 (defn about-page []
 (fn [] [:span.main
