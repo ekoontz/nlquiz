@@ -103,11 +103,5 @@
                                       (log/warn (str "failed to generate: " e))
                                       "??")))}]
     (log/debug (str "source-expression: " (:morph source-expression-node)))
-    (swap! source-expressions
-           (fn [existing-expressions]
-
-             (log/debug (str "length of existing expressions: " (count existing-expressions)))
-             (if (> (count existing-expressions) 5)
-               (cons source-expression-node (butlast existing-expressions))
-               (cons source-expression-node existing-expressions))))))
+    (update-expressions! source-expressions source-expression-node)))
 
