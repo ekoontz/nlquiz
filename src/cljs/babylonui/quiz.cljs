@@ -56,9 +56,7 @@
                             {:key (str "tree-" (:index parse))}
                             (:tree parse)])))])))))
 
-(defonce guess-html (r/atom ""))
-
-(defn quiz-component [question-html parse-html sem-html]
+(defn quiz-component [question-html parse-html sem-html guess-html]
   (fn []
     [:div {:style {:margin-top "1em"
                    :float "left" :width "100%"}}
@@ -80,9 +78,10 @@
       @sem-html]]))
 
 (defn quiz-page []
-  (let [parse-html (r/atom "")
+  (let [expression-index (atom 0)
+        guess-html (r/atom "")
+        parse-html (r/atom "")
         sem-html (r/atom "")
-        expression-index (atom 0)
         question-html (r/atom "")]
     (get-a-question @expression-index question-html)
     (fn []
@@ -94,11 +93,11 @@
         [:h3 "Quiz"]
 
         [handlers/show-expressions-dropdown expression-index]
-        [quiz-component question-html parse-html sem-html]]])))
+        [quiz-component question-html parse-html sem-html guess-html]]])))
 
 (defn about-page []
-(fn [] [:span.main
-        [:h1 "About babylon UI"]]))
+  (fn [] [:span.main
+          [:h1 "About babylon UI"]]))
 
 ;; -------------------------
 ;; Page mounting component
