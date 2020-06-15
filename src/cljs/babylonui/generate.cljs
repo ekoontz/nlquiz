@@ -49,10 +49,9 @@
       (when @generate?
         (let [expression-index @spec-atom
               target-expression (nl/generate (nth nl/expressions expression-index))]
-          (update-target-expressions! target-expressions {:expression target-expression})
-          (let [source-expression-node
-                (do-the-source-expression target-expression source-expressions)]
-            (update-expressions! source-expressions source-expression-node)))
+          (update-expressions! target-expressions {:expression target-expression})
+          (update-expressions! source-expressions
+                               (do-the-source-expression target-expression source-expressions)))
         (js/setTimeout #(swap! generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
 
@@ -89,9 +88,6 @@
            (if (> (count existing-expressions) 5)
              (cons new-expression (butlast existing-expressions))
              (cons new-expression existing-expressions)))))
-
-(defn update-target-expressions! [target-expressions expression-node]
-  (update-expressions! target-expressions expression-node))
 
 (defn do-the-source-expression [target-expression source-expressions]
   {:morph
