@@ -7,25 +7,16 @@
    [cljslog.core :as log]
    [reagent.core :as r]))
 
-(declare do-the-source-expressions)
-(declare update-target-expressions)
-(declare controls)
-
 (defn generate-component []
   (let [target-expressions (r/atom [])
         source-expressions (r/atom [])
         spec-atom (atom 0)]
     (fn []
       [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
-
+       [:div {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
         [:h1 "Expression generator"]
-
         [dropdown/expressions spec-atom]
         [controls target-expressions source-expressions spec-atom]]
-       
        [:div {:class ["expressions" "target"]}
         (doall
          (map (fn [i]
@@ -33,7 +24,6 @@
                   [:div.expression {:key (str "target-" i)}
                    [:span (nl/morph target-expression)]]))
               (range 0 (count @target-expressions))))]
-       
        [:div {:class ["expressions" "source"]}
         (doall
          (map (fn [i]
