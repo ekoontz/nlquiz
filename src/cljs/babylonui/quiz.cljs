@@ -82,9 +82,9 @@
 (defn quiz-page []
   (let [parse-html (r/atom "")
         sem-html (r/atom "")
-        spec-atom (atom 0)
+        expression-index (atom 0)
         question-html (r/atom "")]
-    (get-a-question @spec-atom question-html)
+    (get-a-question @expression-index question-html)
     (fn []
       [:div.main
        [:div
@@ -93,7 +93,7 @@
 
         [:h3 "Quiz"]
 
-        [handlers/show-expressions-dropdown spec-atom]
+        [handlers/show-expressions-dropdown expression-index]
         [quiz-component question-html parse-html sem-html]]])))
 
 (defn about-page []
