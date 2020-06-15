@@ -7,34 +7,40 @@
    [cljslog.core :as log]
    [reagent.core :as r]))
 
-(defn update-target-expressions! [target-expressions expression-node]
-  (swap! target-expressions
-         (fn [existing-expressions]
-           (log/debug (str "length of existing expressions: "
-                           (count existing-expressions)))
-           (if (> (count existing-expressions) 5)
-             (cons expression-node (butlast existing-expressions))
-             (cons expression-node existing-expressions)))))
+(declare do-the-source-expressions)
+(declare update-target-expressions)
+(declare timer-component)
 
-(defn do-the-source-expression [target-expression source-expressions]
-  (let [source-expression-node {:morph
-                                (try
-                                  (-> target-expression
-                                      tr/nl-to-en-spec
-                                      en/generate
-                                      en/morph)
-                                  (catch js/Error e
-                                    (do
-                                      (log/warn (str "failed to generate: " e))
-                                      "??")))}]
-    (log/debug (str "source-expression: " (:morph source-expression-node)))
-    (swap! source-expressions
-           (fn [existing-expressions]
+(defn generate-page []
+  (let [target-expressions (atom [])
+        source-expressions (r/atom [])
+        spec-atom (atom 0)]
+    (fn []
+      [:div.main
+       [:div
+        {:style {:float "left" :margin-left "10%"
+                 :width "80%" :border "0px dashed green"}}
 
-             (log/debug (str "length of existing expressions: " (count existing-expressions)))
-             (if (> (count existing-expressions) 5)
-               (cons source-expression-node (butlast existing-expressions))
-               (cons source-expression-node existing-expressions))))))
+        [:h1 "Expression generator"]
+
+        [handlers/show-expressions-dropdown spec-atom]
+        [timer-component target-expressions source-expressions spec-atom]]
+       
+       [:div {:class ["expressions" "target"]}
+        (doall
+         (map (fn [i]
+                (let [target-expression (:expression (nth @target-expressions i))]
+                  [:div.expression {:key (str "target-" i)}
+                   [:span (nl/morph target-expression)]]))
+              (range 0 (count @target-expressions))))]
+       
+       [:div {:class ["expressions" "source"]}
+        (doall
+         (map (fn [i]
+                (let [expression-node (nth @source-expressions i)]
+                  [:div.expression {:key (str "source-" i)}
+                   [:span (:morph expression-node)]]))
+              (range 0 (count @source-expressions))))]])))
 
 (defn timer-component [target-expressions source-expressions spec-atom]
   (let [generated (r/atom 0)
@@ -74,34 +80,32 @@
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
 
-(defn generate-page []
-  (let [target-expressions (atom [])
-        source-expressions (r/atom [])
-        spec-atom (atom 0)]
-    (fn []
-      [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
+(defn update-target-expressions! [target-expressions expression-node]
+  (swap! target-expressions
+         (fn [existing-expressions]
+           (log/debug (str "length of existing expressions: "
+                           (count existing-expressions)))
+           (if (> (count existing-expressions) 5)
+             (cons expression-node (butlast existing-expressions))
+             (cons expression-node existing-expressions)))))
 
-        [:h1 "Expression generator"]
+(defn do-the-source-expression [target-expression source-expressions]
+  (let [source-expression-node {:morph
+                                (try
+                                  (-> target-expression
+                                      tr/nl-to-en-spec
+                                      en/generate
+                                      en/morph)
+                                  (catch js/Error e
+                                    (do
+                                      (log/warn (str "failed to generate: " e))
+                                      "??")))}]
+    (log/debug (str "source-expression: " (:morph source-expression-node)))
+    (swap! source-expressions
+           (fn [existing-expressions]
 
-        [handlers/show-expressions-dropdown spec-atom]
-        [timer-component target-expressions source-expressions spec-atom]]
-       
-       [:div {:class ["expressions" "target"]}
-        (doall
-         (map (fn [i]
-                (let [target-expression (:expression (nth @target-expressions i))]
-                  [:div.expression {:key (str "target-" i)}
-                   [:span (nl/morph target-expression)]]))
-              (range 0 (count @target-expressions))))]
-       
-       [:div {:class ["expressions" "source"]}
-        (doall
-         (map (fn [i]
-                (let [expression-node (nth @source-expressions i)]
-                  [:div.expression {:key (str "source-" i)}
-                   [:span (:morph expression-node)]]))
-              (range 0 (count @source-expressions))))]])))
+             (log/debug (str "length of existing expressions: " (count existing-expressions)))
+             (if (> (count existing-expressions) 5)
+               (cons source-expression-node (butlast existing-expressions))
+               (cons source-expression-node existing-expressions))))))
 
