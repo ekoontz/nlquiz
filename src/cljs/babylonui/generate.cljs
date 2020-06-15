@@ -9,10 +9,10 @@
 
 (declare do-the-source-expressions)
 (declare update-target-expressions)
-(declare timer-component)
+(declare controls)
 
 (defn generate-component []
-  (let [target-expressions (atom [])
+  (let [target-expressions (r/atom [])
         source-expressions (r/atom [])
         spec-atom (atom 0)]
     (fn []
@@ -24,7 +24,7 @@
         [:h1 "Expression generator"]
 
         [dropdown/expressions spec-atom]
-        [timer-component target-expressions source-expressions spec-atom]]
+        [controls target-expressions source-expressions spec-atom]]
        
        [:div {:class ["expressions" "target"]}
         (doall
@@ -42,7 +42,7 @@
                    [:span (:morph expression-node)]]))
               (range 0 (count @source-expressions))))]])))
 
-(defn timer-component [target-expressions source-expressions spec-atom]
+(defn controls [target-expressions source-expressions spec-atom]
   (let [generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
