@@ -80,14 +80,16 @@
                  :id "switch-off"}]
         [:label {:for "switch-off"} "Off"]]])))
 
-(defn update-target-expressions! [target-expressions expression-node]
-  (swap! target-expressions
+
+(defn update-expressions! [expressions new-expression]
+  (swap! expressions
          (fn [existing-expressions]
-           (log/debug (str "length of existing expressions: "
-                           (count existing-expressions)))
            (if (> (count existing-expressions) 5)
-             (cons expression-node (butlast existing-expressions))
-             (cons expression-node existing-expressions)))))
+             (cons new-expression (butlast existing-expressions))
+             (cons new-expression existing-expressions)))))
+
+(defn update-target-expressions! [target-expressions expression-node]
+  (update-expressions! target-expressions expression-node))
 
 (defn do-the-source-expression [target-expression source-expressions]
   (let [source-expression-node {:morph
