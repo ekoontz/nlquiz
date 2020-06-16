@@ -3,6 +3,8 @@
    [accountant.core :as accountant]
    [babylonui.generate :as generate]
    [babylonui.dropdown :as dropdown]
+   [dag_unify.core :as u]
+   [dag_unify.serialization :as s]
    [clerk.core :as clerk]
    [cljs-http.client :as http]
    [cljslog.core :as log]
@@ -20,9 +22,9 @@
         parse-html (r/atom "")
         sem-html (r/atom "")
         question-html (r/atom "")
-        spec-index @expression-index]
+        parse-list (r/atom [])]
     (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
-                                          spec-index)))]
+                                          @expression-index)))]
           (log/info (str "one correct answer to this question is: '"
                          (-> response :body :target) "'"))
           (reset! question-html (-> response :body :source))))
@@ -42,13 +44,29 @@
            [:input {:type "text"
                     :size 50
                     :value @guess-html
-                    :on-change #(submit-guess guess-html % parse-html sem-html)}]]]
+                    :on-change #(submit-guess guess-html
+                                              %
+                                              parse-html
+                                              sem-html
+                                              parse-list)}]]]
+
          [:div {:style {:float "left" :width "100%"}}
           @parse-html]
          [:div {:style {:float "left" :width "100%"}}
-          @sem-html]]]])))
+          @sem-html]]
 
-(defn submit-guess [the-atom the-input-element parse-html sem-html]
+        [:div {:style {:float "left" :width "100%"
+                       :border "1px dashed green"}}
+         [:h3 "semantics list:"]
+         [:ul
+          (doall
+           (map (fn [i]
+                  (let [sem (nth @parse-list i)]
+                    [:li {:key i}
+                     (str sem)]))
+                (range 0 (count @parse-list))))]]]])))
+
+(defn submit-guess [the-atom the-input-element parse-html sem-html parse-list]
   (reset! the-atom (-> the-input-element .-target .-value))
   (let [guess-string @the-atom]
     (log/debug (str "submitting your guess: " guess-string))
@@ -58,31 +76,7 @@
               trees (->> (range 0 (count trees))
                          (map (fn [index]
                                 {:tree (nth trees index)
-                                 :index index})))
-              sems (-> response :body :sem)
-              sems (->> (range 0 (count sems))
-                        (map (fn [index]
-                               {:sem (nth sems index)
-                                :index index})))]
+                                 :index index})))]
           (log/debug (str "trees with indices: " trees))
-          (log/debug (str "sems: " sems))
-
-          (reset! sem-html
-                  [:ul
-                   (->>
-                    sems
-                    (map (fn [sem]
-                           [:li {:key (str "sem-" (:index sem))}
-                            (:sem sem)
-
-                            ])))])
-
-          (reset! parse-html
-                  [:ul
-                   (->>
-                    trees
-                    (map (fn [parse]
-                           [:li
-                            {:key (str "tree-" (:index parse))}
-                            (:tree parse)])))])))))
+          (reset! parse-list (-> response :body :sem))))))
 

@@ -17,11 +17,15 @@
         [:h1 "Expression generator"]
         [dropdown/expressions spec-atom]
         [controls
-         (fn []
+
+         ;; function that will be called by (controls) to generate the pair
+         ;; of expressions and insert them into the table of existing expressions:
+         (fn [] 
            (let [target-expression (nl/generate (nth nl/expressions @spec-atom))
                  source-expression (do-the-source-expression target-expression)]
              (update-expressions! target-expressions target-expression)
              (update-expressions! source-expressions source-expression)))]]
+
        [:div {:class ["expressions" "target"]}
         (doall
          (map (fn [i]
@@ -37,12 +41,12 @@
                    [:span (en/morph expression-node)]]))
               (range 0 (count @source-expressions))))]])))
 
-(defn controls [generation-function]
+(defn controls [generate-pair-fn]
   (let [count-generated (r/atom 0)
         generate? (r/atom true)]
     (fn []
       (when @generate?
-        (generation-function)
+        (generate-pair-fn)
         (js/setTimeout #(swap! count-generated inc) 50))
       [:div {:style {:float "left" :width "100%" :padding "0.25em"}}
        [:div {:style {:float "left"}}
