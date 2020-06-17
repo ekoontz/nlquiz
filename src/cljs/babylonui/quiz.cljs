@@ -44,7 +44,7 @@
         [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
          [:div {:style {:float "left" :width "100%"}}
           @question-html]
-         [:div {:style {:float "left" :width "100%" :border "1px dashed blue"}}
+         [:div {:style {:float "left" :width "40%" :border "1px dashed blue"}}
           [:h3 "possible correct semantics"]
           [:ul
            (doall
@@ -53,7 +53,18 @@
                         (let [sem (nth @possible-correct-semantics i)]
                           [:li {:key i}
                            (str sem)])))))]]
-         [:div {:style {:float "right" :width "100%"}}
+
+        [:div {:style {:float "right" :width "40%" :border "1px dashed green"}}
+         [:h3 "guess semantics"]
+         [:ul
+          (doall
+           (map (fn [i]
+                  (let [sem (nth @semantics-of-guess i)]
+                    [:li {:key i}
+                     (str sem)]))
+                (range 0 (count @semantics-of-guess))))]]
+         
+         [:div {:style {:float "right"}}
           [:div
            [:input {:type "text"
                     :size 50
@@ -62,15 +73,10 @@
 
          [:div {:style {:float "left" :width "100%"}} @parse-html]]
 
-        [:div {:style {:float "left" :width "100%" :border "1px dashed green"}}
-         [:h3 "semantics list:"]
-         [:ul
-          (doall
-           (map (fn [i]
-                  (let [sem (nth @semantics-of-guess i)]
-                    [:li {:key i}
-                     (str sem)]))
-                (range 0 (count @semantics-of-guess))))]]]])))
+        ]
+       ]
+
+      )))
 
 (defn evaluate-guess [guesses corrects]
   (let [result
