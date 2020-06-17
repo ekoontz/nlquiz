@@ -16,6 +16,8 @@
 
 (declare submit-guess)
 
+(def eval-atom (r/atom "UNDEFINED...???"))
+
 (defn quiz-component []
   (let [expression-index (atom 0)
         guess-text (r/atom "")
@@ -34,6 +36,10 @@
        [:div
         {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
         [:h3 "Quiz"]
+
+        [:div {:style {:float "right" :border "5px dashed blue"}}
+         @eval-atom]
+        
         [dropdown/expressions expression-index]
         [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
          [:div {:style {:float "left" :width "100%"}}
@@ -67,17 +73,19 @@
                 (range 0 (count @semantics-of-guess))))]]]])))
 
 (defn evaluate-guess [guesses corrects]
-  (not (empty?
-        (remove #(= :fail %)
-                (mapcat (fn [g]
-                          (map (fn [c]
-                                 (let [result (u/unify c g)]
-                                   (if (= result :fail)
-                                     (log/info (str "fail: " (dag_unify.diagnostics/fail-path c g)))
-                                     (log/info (str "guess was correct: " g)))
-                                   result))
-                               corrects))
-                        guesses)))))
+  (let [result
+        (not (empty?
+              (remove #(= :fail %)
+                      (mapcat (fn [g]
+                                (map (fn [c]
+                                       (let [result (u/unify c g)]
+                                         (if (= result :fail)
+                                           (log/info (str "fail: " (dag_unify.diagnostics/fail-path c g)))
+                                           (log/info (str "guess was correct: " g)))
+                                         result))
+                                     corrects))
+                              guesses))))]
+    (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
   (reset! guess-text (-> the-input-element .-target .-value))
@@ -95,7 +103,7 @@
           (if (not (empty? @semantics-of-guess))
             (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
                            @possible-correct-semantics " result:"
-                           (evaluate-guess @semantics-of-guess @possible-correct-semantics))))
+                           (evaluate-guess @semantics-of-guess @possible-correct-semantics eval-atom))))
           (if false
             (log/info (str "comparing guesses: " @semantics-of-guess " with correct answer:"
                            @possible-correct-semantics)))))))
