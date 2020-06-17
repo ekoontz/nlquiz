@@ -44,11 +44,7 @@
            [:input {:type "text"
                     :size 50
                     :value @guess-html
-                    :on-change #(submit-guess guess-html
-                                              %
-                                              parse-html
-                                              sem-html
-                                              parse-list)}]]]
+                    :on-change #(submit-guess guess-html % parse-html sem-html parse-list)}]]]
 
          [:div {:style {:float "left" :width "100%"}}
           @parse-html]
