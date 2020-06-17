@@ -31,8 +31,7 @@
     (fn []
       [:div.main
        [:div
-        {:style {:float "left" :margin-left "10%"
-                 :width "80%" :border "0px dashed green"}}
+        {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
         [:h3 "Quiz"]
         [dropdown/expressions expression-index]
         [:div {:style {:margin-top "1em"
@@ -46,13 +45,10 @@
                     :value @guess-html
                     :on-change #(submit-guess guess-html % parse-html sem-html parse-list)}]]]
 
-         [:div {:style {:float "left" :width "100%"}}
-          @parse-html]
-         [:div {:style {:float "left" :width "100%"}}
-          @sem-html]]
+         [:div {:style {:float "left" :width "100%"}} @parse-html]
+         [:div {:style {:float "left" :width "100%"}} @sem-html]]
 
-        [:div {:style {:float "left" :width "100%"
-                       :border "1px dashed green"}}
+        [:div {:style {:float "left" :width "100%" :border "1px dashed green"}}
          [:h3 "semantics list:"]
          [:ul
           (doall
