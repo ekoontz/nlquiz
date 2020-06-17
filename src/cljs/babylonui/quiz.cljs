@@ -67,13 +67,16 @@
                 (range 0 (count @semantics-of-guess))))]]]])))
 
 (defn evaluate-guess [guesses corrects]
-  (log/info (str "evaluating your guesses!! " guesses))
   (not (empty?
         (remove #(= :fail %)
                 (mapcat (fn [g]
                           (map (fn [c]
-                                 (dag_unify.core/unify c g))
-                               correct))
+                                 (let [result (u/unify c g)]
+                                   (if (= result :fail)
+                                     (log/info (str "fail: " (dag_unify.diagnostics/fail-path c g)))
+                                     (log/info (str "guess was correct: " g)))
+                                   result))
+                               corrects))
                         guesses)))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
@@ -89,13 +92,10 @@
                                  :index index})))]
           (log/debug (str "trees with indices: " trees))
           (reset! semantics-of-guess (-> response :body :sem))
-          (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
-                         @possible-correct-semantics " result:"
-                         (evaluate-guess @semantics-of-guess @possible-correct-semantics)))
+          (if (not (empty? @semantics-of-guess))
+            (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
+                           @possible-correct-semantics " result:"
+                           (evaluate-guess @semantics-of-guess @possible-correct-semantics))))
           (if false
             (log/info (str "comparing guesses: " @semantics-of-guess " with correct answer:"
                            @possible-correct-semantics)))))))
-
-
-                         
-
