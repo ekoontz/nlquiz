@@ -108,19 +108,18 @@
 
       )))
 
-(defn evaluate-guess [guesses corrects]
+(defn evaluate-guess [guesses correct-semantics-set]
   (let [result
         (not (empty?
               (->> guesses
-                   (mapcat (fn [g]
-                             (->>
-                              corrects
-                              (map (fn [c]
-                                     (let [result (u/unify c g)]
-                                       (if (= result :fail)
-                                         (log/info (str "fail: " (dag_unify.diagnostics/fail-path c g)))
-                                         (log/info (str "guess was correct: " g)))
-                                       result))))))
+                   (mapcat (fn [guess]
+                             (->> correct-semantics-set
+                                  (map (fn [correct-semantics]
+                                         (let [result (u/unify correct-semantics guess)]
+                                           (if (= result :fail)
+                                             (log/info (str "fail: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
+                                             (log/info (str "guess was correct: " guess)))
+                                           result))))))
                    (remove #(= :fail %)))))]
     (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))
     (when result
