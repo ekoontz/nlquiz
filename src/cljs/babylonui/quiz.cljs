@@ -112,15 +112,16 @@
   (let [result
         (not (empty?
               (remove #(= :fail %)
-                      (mapcat (fn [g]
-                                (map (fn [c]
-                                       (let [result (u/unify c g)]
-                                         (if (= result :fail)
-                                           (log/info (str "fail: " (dag_unify.diagnostics/fail-path c g)))
-                                           (log/info (str "guess was correct: " g)))
-                                         result))
-                                     corrects))
-                              guesses))))]
+                      (->> guesses
+                           (mapcat (fn [g]
+                                     (->>
+                                      corrects
+                                      (map (fn [c]
+                                             (let [result (u/unify c g)]
+                                               (if (= result :fail)
+                                                 (log/info (str "fail: " (dag_unify.diagnostics/fail-path c g)))
+                                                 (log/info (str "guess was correct: " g)))
+                                               result))))))))))]
     (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))
     (when result
       (reset! question-table
