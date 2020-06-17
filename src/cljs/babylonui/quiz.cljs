@@ -133,13 +133,7 @@
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
-                                     {:query-params {"q" guess-string}}))
-              trees (-> response :body :trees)
-              trees (->> (range 0 (count trees))
-                         (map (fn [index]
-                                {:tree (nth trees index)
-                                 :index index})))]
-          (log/debug (str "trees with indices: " trees))
+                                     {:query-params {"q" guess-string}}))]
           (reset! semantics-of-guess (-> response :body :sem))
           (if (not (empty? @semantics-of-guess))
             (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
