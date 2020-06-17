@@ -17,20 +17,24 @@
 (declare submit-guess)
 
 (def eval-atom (r/atom "UNDEFINED...???"))
+(def question-table (r/atom []))
+(def expression-index (atom 0))
+(def question-html (r/atom ""))
+(def possible-correct-semantics (r/atom []))
+
+(defn new-question [expression-index question-html possible-correct-semantics]
+  (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
+                                        @expression-index)))]
+        (log/info (str "one correct answer to this question is: '"
+                       (-> response :body :target) "'"))
+        (reset! question-html (-> response :body :source))
+        (reset! possible-correct-semantics (-> response :body :source-sem)))))
 
 (defn quiz-component []
-  (let [expression-index (atom 0)
-        guess-text (r/atom "")
+  (let [guess-text (r/atom "")
         parse-html (r/atom "")
-        question-html (r/atom "")
-        semantics-of-guess (r/atom [])
-        possible-correct-semantics (r/atom [])]
-    (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
-                                          @expression-index)))]
-          (log/info (str "one correct answer to this question is: '"
-                         (-> response :body :target) "'"))
-          (reset! question-html (-> response :body :source))
-          (reset! possible-correct-semantics (-> response :body :source-sem))))
+        semantics-of-guess (r/atom [])]
+    (new-question expression-index question-html possible-correct-semantics)
     (fn []
       [:div.main
        [:div
@@ -39,6 +43,25 @@
 
         [:div {:style {:float "right" :border "5px dashed blue"}}
          @eval-atom]
+
+        [:div {:style {:float "left" :width "100%" :border "2px dashed yellow"}}
+
+         [:table
+          [:thead [:tr [:th] [:th "source"] [:th "target"]]]
+          [:tbody
+           (doall
+            (->> (range 0 (count @question-table))
+                 (map (fn [i]
+                        [:tr {:key i}
+                         [:th i]
+                         [:td (-> @question-table (nth i) :source)]
+                         [:td (-> @question-table (nth i) :target)]
+                         ]))))
+           ]
+          ]
+         
+         ]
+         
         
         [dropdown/expressions expression-index]
         [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
@@ -91,7 +114,12 @@
                                          result))
                                      corrects))
                               guesses))))]
-    (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))))
+    (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))
+    (when result
+      (reset! question-table
+              (cons {:source "foo" :target "bar"}
+                    @question-table))
+      (new-question expression-index question-html possible-correct-semantics))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
   (reset! guess-text (-> the-input-element .-target .-value))
