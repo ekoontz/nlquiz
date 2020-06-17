@@ -18,7 +18,7 @@
 
 (defn quiz-component []
   (let [expression-index (atom 0)
-        guess-html (r/atom "")
+        guess-text (r/atom "")
         parse-html (r/atom "")
         sem-html (r/atom "")
         question-html (r/atom "")
@@ -42,8 +42,8 @@
           [:div
            [:input {:type "text"
                     :size 50
-                    :value @guess-html
-                    :on-change #(submit-guess guess-html % parse-html sem-html parse-list)}]]]
+                    :value @guess-text
+                    :on-change #(submit-guess guess-text % parse-html sem-html parse-list)}]]]
 
          [:div {:style {:float "left" :width "100%"}} @parse-html]
          [:div {:style {:float "left" :width "100%"}} @sem-html]]
@@ -58,9 +58,9 @@
                      (str sem)]))
                 (range 0 (count @parse-list))))]]]])))
 
-(defn submit-guess [the-atom the-input-element parse-html sem-html parse-list]
-  (reset! the-atom (-> the-input-element .-target .-value))
-  (let [guess-string @the-atom]
+(defn submit-guess [guess-text the-input-element parse-html sem-html parse-list]
+  (reset! guess-text (-> the-input-element .-target .-value))
+  (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
                                      {:query-params {"q" guess-string}}))
