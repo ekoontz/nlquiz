@@ -27,7 +27,8 @@
                                           @expression-index)))]
           (log/info (str "one correct answer to this question is: '"
                          (-> response :body :target) "'"))
-          (reset! question-html (-> response :body :source))))
+          (reset! question-html (-> response :body :source))
+          (reset! possible-correct-semantics (-> response :body :source-sem))))
     (fn []
       [:div.main
        [:div
@@ -37,6 +38,15 @@
         [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
          [:div {:style {:float "left" :width "100%"}}
           @question-html]
+         [:div {:style {:float "left" :width "100%" :border "1px dashed blue"}}
+          [:h3 "possible correct semantics"]
+          [:ul
+           (doall
+            (->> (range 0 (count @possible-correct-semantics))
+                 (map (fn [i]
+                        (let [sem (nth @possible-correct-semantics i)]
+                          [:li {:key i}
+                           (str sem)])))))]]
          [:div {:style {:float "right" :width "100%"}}
           [:div
            [:input {:type "text"
