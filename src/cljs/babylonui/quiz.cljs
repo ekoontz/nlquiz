@@ -65,36 +65,43 @@
         
         [dropdown/expressions expression-index]
         [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
-         [:div {:style {:float "left" :width "100%"}}
-          @question-html]
-         [:div {:style {:float "left" :width "40%" :border "1px dashed blue"}}
-          [:h3 "possible correct semantics"]
-          [:ul
-           (doall
-            (->> (range 0 (count @possible-correct-semantics))
-                 (map (fn [i]
-                        (let [sem (nth @possible-correct-semantics i)]
-                          [:li {:key i}
-                           (str sem)])))))]]
 
-        [:div {:style {:float "right" :width "40%" :border "1px dashed green"}}
-         [:h3 "guess semantics"]
-         [:ul
-          (doall
-           (map (fn [i]
-                  (let [sem (nth @semantics-of-guess i)]
-                    [:li {:key i}
-                     (str sem)]))
-                (range 0 (count @semantics-of-guess))))]]
-         
+         [:div {:style {:float "left" :width "auto"}}
+          @question-html]
+
          [:div {:style {:float "right"}}
           [:div
            [:input {:type "text"
                     :size 50
                     :value @guess-text
-                    :on-change #(submit-guess guess-text % parse-html semantics-of-guess possible-correct-semantics)}]]]
+                    :on-change (fn [input-element]
+                                 (submit-guess guess-text
+                                               (-> input-element .-target .-value)
+                                               parse-html semantics-of-guess possible-correct-semantics))}]]]
 
-         [:div {:style {:float "left" :width "100%"}} @parse-html]]
+         [:div {:style {:float "left" :width "100%"}}
+          [:div {:style {:float "left" :width "40%" :border "1px dashed blue"}}
+           [:h3 "possible correct semantics"]
+           [:ul
+            (doall
+             (->> (range 0 (count @possible-correct-semantics))
+                  (map (fn [i]
+                         (let [sem (nth @possible-correct-semantics i)]
+                           [:li {:key i}
+                            (str sem)])))))]]
+
+          [:div {:style {:float "right" :width "40%" :border "1px dashed green"}}
+           [:h3 "guess semantics"]
+           [:ul
+            (doall
+             (map (fn [i]
+                    (let [sem (nth @semantics-of-guess i)]
+                      [:li {:key i}
+                       (str sem)]))
+                  (range 0 (count @semantics-of-guess))))]]]
+
+         [:div {:style {:float "left" :width "100%"}} @parse-html]
+         ]
 
         ]
        ]
@@ -122,7 +129,7 @@
       (new-question expression-index question-html possible-correct-semantics))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
-  (reset! guess-text (-> the-input-element .-target .-value))
+  (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
