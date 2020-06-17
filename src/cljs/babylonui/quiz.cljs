@@ -138,7 +138,5 @@
           (if (not (empty? @semantics-of-guess))
             (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
                            @possible-correct-semantics " result:"
-                           (evaluate-guess @semantics-of-guess @possible-correct-semantics eval-atom))))
-          (if false
-            (log/info (str "comparing guesses: " @semantics-of-guess " with correct answer:"
-                           @possible-correct-semantics)))))))
+                           (evaluate-guess @semantics-of-guess @possible-correct-semantics eval-atom))))))))
+
