@@ -52,7 +52,7 @@
            [:input {:type "text"
                     :size 50
                     :value @guess-text
-                    :on-change #(submit-guess guess-text % parse-html semantics-of-guess)}]]]
+                    :on-change #(submit-guess guess-text % parse-html semantics-of-guess possible-correct-semantics)}]]]
 
          [:div {:style {:float "left" :width "100%"}} @parse-html]]
 
@@ -66,7 +66,17 @@
                      (str sem)]))
                 (range 0 (count @semantics-of-guess))))]]]])))
 
-(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess]
+(defn evaluate-guess [guesses corrects]
+  (log/info (str "evaluating your guesses!! " guesses))
+  (not (empty?
+        (remove #(= :fail %)
+                (mapcat (fn [g]
+                          (map (fn [c]
+                                 (dag_unify.core/unify c g))
+                               correct))
+                        guesses)))))
+
+(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
   (reset! guess-text (-> the-input-element .-target .-value))
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
@@ -78,5 +88,14 @@
                                 {:tree (nth trees index)
                                  :index index})))]
           (log/debug (str "trees with indices: " trees))
-          (reset! semantics-of-guess (-> response :body :sem))))))
+          (reset! semantics-of-guess (-> response :body :sem))
+          (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
+                         @possible-correct-semantics " result:"
+                         (evaluate-guess @semantics-of-guess @possible-correct-semantics)))
+          (if false
+            (log/info (str "comparing guesses: " @semantics-of-guess " with correct answer:"
+                           @possible-correct-semantics)))))))
+
+
+                         
 
