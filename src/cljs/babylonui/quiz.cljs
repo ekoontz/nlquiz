@@ -20,9 +20,9 @@
   (let [expression-index (atom 0)
         guess-text (r/atom "")
         parse-html (r/atom "")
-        sem-html (r/atom "")
         question-html (r/atom "")
-        parse-list (r/atom [])]
+        semantics-of-guess (r/atom [])
+        possible-correct-semantics (r/atom [])]
     (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
                                           @expression-index)))]
           (log/info (str "one correct answer to this question is: '"
@@ -34,8 +34,7 @@
         {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
         [:h3 "Quiz"]
         [dropdown/expressions expression-index]
-        [:div {:style {:margin-top "1em"
-                       :float "left" :width "100%"}}
+        [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
          [:div {:style {:float "left" :width "100%"}}
           @question-html]
          [:div {:style {:float "right" :width "100%"}}
@@ -43,22 +42,21 @@
            [:input {:type "text"
                     :size 50
                     :value @guess-text
-                    :on-change #(submit-guess guess-text % parse-html sem-html parse-list)}]]]
+                    :on-change #(submit-guess guess-text % parse-html semantics-of-guess)}]]]
 
-         [:div {:style {:float "left" :width "100%"}} @parse-html]
-         [:div {:style {:float "left" :width "100%"}} @sem-html]]
+         [:div {:style {:float "left" :width "100%"}} @parse-html]]
 
         [:div {:style {:float "left" :width "100%" :border "1px dashed green"}}
          [:h3 "semantics list:"]
          [:ul
           (doall
            (map (fn [i]
-                  (let [sem (nth @parse-list i)]
+                  (let [sem (nth @semantics-of-guess i)]
                     [:li {:key i}
                      (str sem)]))
-                (range 0 (count @parse-list))))]]]])))
+                (range 0 (count @semantics-of-guess))))]]]])))
 
-(defn submit-guess [guess-text the-input-element parse-html sem-html parse-list]
+(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess]
   (reset! guess-text (-> the-input-element .-target .-value))
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
@@ -70,5 +68,5 @@
                                 {:tree (nth trees index)
                                  :index index})))]
           (log/debug (str "trees with indices: " trees))
-          (reset! parse-list (-> response :body :sem))))))
+          (reset! semantics-of-guess (-> response :body :sem))))))
 
