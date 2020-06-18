@@ -37,50 +37,41 @@
     (new-question expression-index question-html possible-correct-semantics)
     (fn []
       [:div.main
-       [:div
-        {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
-        [:h3 "Quiz"]
-
-        [:div {:style {:float "left" :width "100%" :border "2px dashed yellow"}}
-
-         [:table
-          [:thead [:tr [:th] [:th "source"] [:th "target"]]]
-          [:tbody
-           (doall
-            (->> (range 0 (count @question-table))
-                 (map (fn [i]
-                        [:tr {:key i}
-                         [:th (+ 1 i)]
-                         [:td (-> @question-table (nth i) :source)]
-                         [:td (-> @question-table (nth i) :target)]
-                         ]))))
-           ]
-          ]
-         
-         ]
-         
+       [:h3 "Quiz"]
+              
+       
+       [dropdown/expressions expression-index]
+       [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
         
-        [dropdown/expressions expression-index]
-        [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
+        [:div {:style {:float "left" :width "auto"}}
+         @question-html]
+        
+        [:div {:style {:float "right"}}
+         [:div
+          [:input {:type "text"
+                   :size 50
+                   :value @guess-text
+                   :on-change (fn [input-element]
+                                (submit-guess guess-text
+                                              (-> input-element .-target .-value)
+                                              parse-html semantics-of-guess possible-correct-semantics))}]]]
+        
+        [:div {:style {:float "left" :width "100%"}} @parse-html]]
+       
+       [:div {:style {:float "left" :width "100%"}}
+        [:table
+         [:thead [:tr [:th] [:th "source"] [:th "target"]]]
+         [:tbody
+          (doall
+           (->> (range 0 (count @question-table))
+                (map (fn [i]
+                       [:tr {:key i}
+                        [:th (+ 1 i)]
+                        [:td (-> @question-table (nth i) :source)]
+                        [:td (-> @question-table (nth i) :target)]
+                        ]))))]]]
 
-         [:div {:style {:float "left" :width "auto"}}
-          @question-html]
-
-         [:div {:style {:float "right"}}
-          [:div
-           [:input {:type "text"
-                    :size 50
-                    :value @guess-text
-                    :on-change (fn [input-element]
-                                 (submit-guess guess-text
-                                               (-> input-element .-target .-value)
-                                               parse-html semantics-of-guess possible-correct-semantics))}]]]
-
-         [:div {:style {:float "left" :width "100%"}} @parse-html]
-         ]
-
-        ]
-       ]
+       ] ;; div.main
 
       )))
 
