@@ -109,24 +109,25 @@
       )))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
-  (let [guesses-semantics-set (map :sem guesses-semantics-set)
+  (let [guesses-semantics-set guesses-semantics-set
         correct-semantics-set correct-semantics-set 
         result
-        (not (empty?
-              (->> guesses-semantics-set
-                   (mapcat (fn [guess]
-                             (->> correct-semantics-set
-                                  (map (fn [correct-semantics]
-                                         (let [result (u/unify correct-semantics guess)]
-                                           (if (= result :fail)
-                                             (log/info (str "fail: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
-                                             (log/info (str "guess was correct: " guess)))
-                                           result))))))
-                   (remove #(= :fail %)))))]
+        (->> guesses-semantics-set
+             (mapcat (fn [guess]
+                       (->> correct-semantics-set
+                            (map (fn [correct-semantics]
+                                   (let [result (u/unify correct-semantics (:sem guess))]
+                                     (if (= result :fail)
+                                       (log/info (str "fail: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
+                                       (log/info (str "guess was correct: SURFACE FORM:" (:surface guess))))
+                                     (if (not (= result :fail))
+                                       (:surface guess)
+                                       :fail)))))))
+             (remove #(= :fail %)))]
     (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))
     (when result
       (reset! question-table
-              (cons {:source "foo" :target "bar"}
+              (cons {:source "foo" :target (first result)}
                     @question-table))
       (new-question expression-index question-html possible-correct-semantics))))
 
