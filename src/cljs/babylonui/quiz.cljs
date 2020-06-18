@@ -108,10 +108,12 @@
 
       )))
 
-(defn evaluate-guess [guesses correct-semantics-set]
-  (let [result
+(defn evaluate-guess [guesses-semantics-set correct-semantics-set]
+  (let [guesses-semantics-set (map :sem guesses-semantics-set)
+        correct-semantics-set correct-semantics-set 
+        result
         (not (empty?
-              (->> guesses
+              (->> guesses-semantics-set
                    (mapcat (fn [guess]
                              (->> correct-semantics-set
                                   (map (fn [correct-semantics]
@@ -138,5 +140,9 @@
           (if (not (empty? @semantics-of-guess))
             (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
                            @possible-correct-semantics " result:"
-                           (evaluate-guess @semantics-of-guess @possible-correct-semantics eval-atom))))))))
+                           (evaluate-guess (map (fn [x]
+                                                  {:surface guess-string
+                                                   :sem x})
+                                                @semantics-of-guess)
+                                           @possible-correct-semantics eval-atom))))))))
 
