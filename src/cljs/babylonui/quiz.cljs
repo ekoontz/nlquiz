@@ -17,6 +17,7 @@
 (declare submit-guess)
 
 (def eval-atom (r/atom "UNDEFINED...???"))
+(def guess-text (r/atom ""))
 (def question-table (r/atom []))
 (def expression-index (atom 0))
 (def question-html (r/atom ""))
@@ -28,11 +29,11 @@
         (log/info (str "one correct answer to this question is: '"
                        (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
+        (reset! guess-text "")
         (reset! possible-correct-semantics (-> response :body :source-sem)))))
 
 (defn quiz-component []
-  (let [guess-text (r/atom "")
-        parse-html (r/atom "")
+  (let [parse-html (r/atom "")
         semantics-of-guess (r/atom [])]
     (new-question expression-index question-html possible-correct-semantics)
     (fn []
@@ -127,7 +128,7 @@
     (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))
     (when result
       (reset! question-table
-              (cons {:source "foo" :target (first result)}
+              (cons {:source @question-html :target @guess-text}
                     @question-table))
       (new-question expression-index question-html possible-correct-semantics))))
 
