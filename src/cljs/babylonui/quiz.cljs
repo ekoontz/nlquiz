@@ -16,7 +16,6 @@
 
 (declare submit-guess)
 
-(def eval-atom (r/atom "UNDEFINED...???"))
 (def guess-text (r/atom ""))
 (def question-table (r/atom []))
 (def expression-index (atom 0))
@@ -42,9 +41,6 @@
         {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
         [:h3 "Quiz"]
 
-        [:div {:style {:float "right" :border "5px dashed blue"}}
-         @eval-atom]
-
         [:div {:style {:float "left" :width "100%" :border "2px dashed yellow"}}
 
          [:table
@@ -54,7 +50,7 @@
             (->> (range 0 (count @question-table))
                  (map (fn [i]
                         [:tr {:key i}
-                         [:th i]
+                         [:th (+ 1 i)]
                          [:td (-> @question-table (nth i) :source)]
                          [:td (-> @question-table (nth i) :target)]
                          ]))))
@@ -80,27 +76,6 @@
                                                (-> input-element .-target .-value)
                                                parse-html semantics-of-guess possible-correct-semantics))}]]]
 
-         [:div {:style {:float "left" :width "100%"}}
-          [:div {:style {:float "left" :width "40%" :border "1px dashed blue"}}
-           [:h3 "possible correct semantics"]
-           [:ul
-            (doall
-             (->> (range 0 (count @possible-correct-semantics))
-                  (map (fn [i]
-                         (let [sem (nth @possible-correct-semantics i)]
-                           [:li {:key i}
-                            (str sem)])))))]]
-
-          [:div {:style {:float "right" :width "40%" :border "1px dashed green"}}
-           [:h3 "guess semantics"]
-           [:ul
-            (doall
-             (map (fn [i]
-                    (let [sem (nth @semantics-of-guess i)]
-                      [:li {:key i}
-                       (str sem)]))
-                  (range 0 (count @semantics-of-guess))))]]]
-
          [:div {:style {:float "left" :width "100%"}} @parse-html]
          ]
 
@@ -124,11 +99,10 @@
                                      (if (not (= result :fail))
                                        result)))))))
              (remove #(= :fail %)))]
-    (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))
     (when result
       (reset! question-table
-              (cons {:source @question-html :target @guess-text}
-                    @question-table))
+              (concat @question-table
+                      [{:source @question-html :target @guess-text}]))
       (new-question expression-index question-html possible-correct-semantics))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
