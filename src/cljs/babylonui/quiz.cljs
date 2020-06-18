@@ -71,21 +71,18 @@
       )))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
-  (let [guesses-semantics-set guesses-semantics-set
-        correct-semantics-set correct-semantics-set 
-        result
+  (let [result
         (->> guesses-semantics-set
              (mapcat (fn [guess]
                        (->> correct-semantics-set
                             (map (fn [correct-semantics]
                                    (let [result (u/unify correct-semantics guess)]
                                      (if (= result :fail)
-                                       (log/info (str "fail: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
+                                       (log/info (str "guess was NOT correct: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
                                        (log/info (str "guess was correct! " @guess-text)))
-                                     (if (not (= result :fail))
-                                       result)))))))
+                                     result))))))
              (remove #(= :fail %)))]
-    (when result
+    (when (not (empty? result))
       (reset! question-table
               (concat @question-table
                       [{:source @question-html :target @guess-text}]))
