@@ -14,8 +14,6 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(declare submit-guess)
-
 (def guess-text (r/atom ""))
 (def question-table (r/atom []))
 (def expression-index (atom 0))
