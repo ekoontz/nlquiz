@@ -5,12 +5,9 @@
    [babylonui.dropdown :as dropdown]
    [dag_unify.core :as u]
    [dag_unify.serialization :as s]
-   [clerk.core :as clerk]
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [reagent.core :as r]
-   [reagent.session :as session]
-   [reitit.frontend :as reitit]
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
