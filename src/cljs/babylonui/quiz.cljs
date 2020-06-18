@@ -117,13 +117,12 @@
              (mapcat (fn [guess]
                        (->> correct-semantics-set
                             (map (fn [correct-semantics]
-                                   (let [result (u/unify correct-semantics (:sem guess))]
+                                   (let [result (u/unify correct-semantics guess)]
                                      (if (= result :fail)
                                        (log/info (str "fail: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
-                                       (log/info (str "guess was correct: SURFACE FORM:" (:surface guess))))
+                                       (log/info (str "guess was correct! " @guess-text)))
                                      (if (not (= result :fail))
-                                       (:surface guess)
-                                       :fail)))))))
+                                       result)))))))
              (remove #(= :fail %)))]
     (reset! eval-atom (if result "GOOOD!!!" "BAD!!!"))
     (when result
@@ -142,9 +141,6 @@
           (if (not (empty? @semantics-of-guess))
             (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
                            @possible-correct-semantics " result:"
-                           (evaluate-guess (map (fn [x]
-                                                  {:surface guess-string
-                                                   :sem x})
-                                                @semantics-of-guess)
+                           (evaluate-guess @semantics-of-guess
                                            @possible-correct-semantics eval-atom))))))))
 
