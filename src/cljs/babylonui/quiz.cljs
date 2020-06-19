@@ -35,7 +35,8 @@
     (new-question expression-index question-html possible-correct-semantics)
     (fn []
       [:div.main
-       [dropdown/expressions expression-index]
+       [:div {:style {:float "right"}}
+        [dropdown/expressions expression-index]]
        [:div {:style {:float "left" :width "100%"}}
         [:div {:style {:float "left" :width "50%"}}
          @question-html]
