@@ -77,8 +77,6 @@
              (mapcat (fn [guess]
                        (->> correct-semantics-set
                             (map (fn [correct-semantics]
-                                   (log/info (str "ONE CORRECT:"
-                                                  correct-semantics))
                                    (let [result (u/unify correct-semantics guess)]
                                      (if (= result :fail)
                                        (log/info (str "guess was NOT correct: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
@@ -110,8 +108,8 @@
                        (map cljs.reader/read-string)
                        (map dag_unify.serialization/deserialize)))
           (if (not (empty? @semantics-of-guess))
-            (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
-                           @possible-correct-semantics " result:"
-                           (evaluate-guess @semantics-of-guess
-                                           @possible-correct-semantics eval-atom))))))))
+            (log/debug (str "comparing guess: " @semantics-of-guess " with correct answer:"
+                            @possible-correct-semantics "; result:"
+                            (evaluate-guess @semantics-of-guess
+                                            @possible-correct-semantics eval-atom))))))))
 
