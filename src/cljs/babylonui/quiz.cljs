@@ -76,6 +76,8 @@
              (mapcat (fn [guess]
                        (->> correct-semantics-set
                             (map (fn [correct-semantics]
+                                   (log/info (str "ONE CORRECT:"
+                                                  correct-semantics))
                                    (let [result (u/unify correct-semantics guess)]
                                      (if (= result :fail)
                                        (log/info (str "guess was NOT correct: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
@@ -88,13 +90,24 @@
                       [{:source @question-html :target @guess-text}]))
       (new-question expression-index question-html possible-correct-semantics))))
 
+;; (-> (let [a (atom "hello")] {:surface a :b a}) dag_unify.serialization/serialize str read-string dag_unify.serialization/deserialize)
+;; (-> (let [keyword-atom (atom :foo) keyword-string (atom "bar")] {:surface keyword-atom :b keyword-atom :bar keyword-string :baz keyword-string}) dag_unify.serialization/serialize str read-string dag_unify.serialization/deserialize)
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
                                      {:query-params {"q" guess-string}}))]
-          (reset! semantics-of-guess (-> response :body :sem))
+          (log/info (str "sem1: " (-> response :body :sem)))
+          (log/info (str "sem2: " (->> (-> response :body :sem)
+                                       (map cljs.reader/read-string))))
+          (log/info (str "sem3: " (->> (-> response :body :sem)
+                                       (map cljs.reader/read-string)
+                                       (map dag_unify.serialization/deserialize))))
+          (reset! semantics-of-guess
+                  (->> (-> response :body :sem)
+                       (map cljs.reader/read-string)
+                       (map dag_unify.serialization/deserialize)))
           (if (not (empty? @semantics-of-guess))
             (log/info (str "comparing guess: " @semantics-of-guess " with correct answer:"
                            @possible-correct-semantics " result:"

@@ -28,6 +28,10 @@
      :source-sem source-semantics
      :target (-> target-expression nl/morph)}))
 
+(defn dag-to-string [dag]
+  (-> dag dag_unify.serialization/serialize str))
+
+;; (-> (let [a (atom "hello")] {:surface a :b a}) dag_unify.serialization/serialize str read-string dag_unify.serialization/deserialize)
 (defn parse [_request]
   (let [string-to-parse
         (get
@@ -36,6 +40,13 @@
     (let [parses (->> string-to-parse nl/parse)
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
+       :whole (->> parses
+                   (map dag-to-string))
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
-                 (map u/pprint))})))
+                 (map dag-to-string))})))
+
+
+       
+
+
