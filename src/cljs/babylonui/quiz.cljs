@@ -36,12 +36,10 @@
     (fn []
       [:div.main
        [dropdown/expressions expression-index]
-       [:div {:style {:margin-top "1em" :float "left"}}
-        
-        [:div {:style {:float "left" :width "auto"}}
+       [:div {:style {:float "left" :width "100%"}}
+        [:div {:style {:float "left" :width "50%"}}
          @question-html]
-        
-        [:div {:style {:float "right"}}
+        [:div {:style {:float "right" :width "50%"}}
          [:div
           [:input {:type "text"
                    :size 50
@@ -52,8 +50,7 @@
                                               parse-html
                                               semantics-of-guess
                                               possible-correct-semantics))}]]]]
-       
-       [:div {:style {:float "left"}}
+       [:div {:style {:float "left" :width "100%"}}
         [:table
          [:tbody
           (doall
@@ -61,12 +58,11 @@
                 (map (fn [i]
                        [:tr {:key i}
                         [:th (+ 1 i)]
-                        [:td (-> @question-table (nth i) :source)]
-                        [:td (-> @question-table (nth i) :target)]
+                        [:td.source (-> @question-table (nth i) :source)]
+                        [:td.target (-> @question-table (nth i) :target)]
                         ]))))]]]
 
        ] ;; div.main
-
       )))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
@@ -85,8 +81,10 @@
              (remove #(= :fail %)))]
     (when (not (empty? result))
       (reset! question-table
-              (concat @question-table
-                      [{:source @question-html :target @guess-text}]))
+              (concat
+               [{:source @question-html :target @guess-text}]
+               @question-table))
+                      
       (new-question expression-index question-html possible-correct-semantics))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]

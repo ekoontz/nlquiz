@@ -38,9 +38,7 @@ a:hover {
 
 header {
     float:left;
-    width:45%;
-    left:1%;
-    top:0;
+    width:100%;
 }
 
 footer {
@@ -57,4 +55,13 @@ input {
     padding:0.5em;
     margin:0.5em;
     border-radius: 5px;
+}
+
+td.source {
+    text-align:left;
+    padding-right:1em;
+}
+
+td.target {
+    text-align:right;
 }
