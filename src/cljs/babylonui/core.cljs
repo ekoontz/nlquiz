@@ -70,7 +70,7 @@
    {:nav-handler
     (fn [path]
       (let [match (reitit/match-by-path router path)
-            current-page (:name (:data  match))
+            current-page (:name (:data match))
             route-params (:path-params match)]
         (r/after-render clerk/after-render!)
         (session/put! :route {:current-page (page-for current-page)

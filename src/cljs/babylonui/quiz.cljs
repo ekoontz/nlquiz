@@ -36,7 +36,7 @@
     (fn []
       [:div.main
        [dropdown/expressions expression-index]
-       [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
+       [:div {:style {:margin-top "1em" :float "left"}}
         
         [:div {:style {:float "left" :width "auto"}}
          @question-html]
@@ -51,13 +51,10 @@
                                               (-> input-element .-target .-value)
                                               parse-html
                                               semantics-of-guess
-                                              possible-correct-semantics))}]]]
-        
-        [:div {:style {:float "left" :width "100%"}} @parse-html]]
+                                              possible-correct-semantics))}]]]]
        
-       [:div {:style {:float "left" :width "100%"}}
+       [:div {:style {:float "left"}}
         [:table
-         [:thead [:tr [:th] [:th "source"] [:th "target"]]]
          [:tbody
           (doall
            (->> (range 0 (count @question-table))
