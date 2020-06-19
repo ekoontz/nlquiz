@@ -38,7 +38,7 @@
             [lein-asset-minifier "0.4.6"
              :exclusions [org.clojure/clojure]]
             [lein-ring "0.12.5"]]
-
+  
   :ring {:handler babylonui.handler/app
          :uberwar-name "babylonui.war"}
 

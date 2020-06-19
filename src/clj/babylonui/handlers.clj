@@ -36,7 +36,7 @@
   (let [string-to-parse
         (get
          (-> _request :query-params) "q")]
-    (log/info (str "parsing input: " string-to-parse))
+    (log/debug (str "parsing input: " string-to-parse))
     (let [parses (->> string-to-parse nl/parse)
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
