@@ -16,6 +16,9 @@
 (def expression-index (atom 0))
 (def question-html (r/atom ""))
 (def possible-correct-semantics (r/atom []))
+(def initial-state-is-enabled? true)
+(def initial-button-state (if initial-state-is-enabled? "" "disabled"))
+(def ik-weet-niet-button-state (r/atom initial-button-state))
 
 (defn new-question [expression-index question-html possible-correct-semantics]
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
@@ -50,7 +53,9 @@
                                               (-> input-element .-target .-value)
                                               parse-html
                                               semantics-of-guess
-                                              possible-correct-semantics))}]]]]
+                                              possible-correct-semantics))}]
+          [:button {:disabled @ik-weet-niet-button-state} "ik weet niet"]]]]
+          
        [:div {:style {:float "left" :width "100%"}}
         [:table
          [:tbody
