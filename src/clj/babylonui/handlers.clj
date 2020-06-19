@@ -15,21 +15,21 @@
   (filter #(= true (u/get-in % [:menuable?] true))
           nl/expressions))
 
+(defn dag-to-string [dag]
+  (-> dag dag_unify.serialization/serialize str))
+
 (defn generate [_request]
   (let [spec-index (-> _request :path-params :spec)
         spec (nth nl-expressions (Integer. spec-index))
         debug (log/info (str "generating a question with spec: " spec))
         target-expression (-> spec nl/generate)
         source-expression (-> target-expression tr/nl-to-en-spec en/generate)
-        source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])) (map u/pprint))]
+        source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
     (log/info (str "generated: '" (-> source-expression en/morph) "'"
                    " -> '"  (-> target-expression nl/morph) "'"))
     {:source (-> source-expression en/morph)
-     :source-sem source-semantics
+     :source-sem (map dag-to-string source-semantics)
      :target (-> target-expression nl/morph)}))
-
-(defn dag-to-string [dag]
-  (-> dag dag_unify.serialization/serialize str))
 
 ;; (-> (let [a (atom "hello")] {:surface a :b a}) dag_unify.serialization/serialize str read-string dag_unify.serialization/deserialize)
 (defn parse [_request]
@@ -40,8 +40,6 @@
     (let [parses (->> string-to-parse nl/parse)
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
-       :whole (->> parses
-                   (map dag-to-string))
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
                  (map dag-to-string))})))

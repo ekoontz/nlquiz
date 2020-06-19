@@ -24,7 +24,10 @@
                        (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
         (reset! guess-text "")
-        (reset! possible-correct-semantics (-> response :body :source-sem)))))
+        (reset! possible-correct-semantics
+                (->> (-> response :body :source-sem)
+                     (map cljs.reader/read-string)
+                     (map dag_unify.serialization/deserialize))))))
 
 (defn quiz-component []
   (let [parse-html (r/atom "")
@@ -49,7 +52,9 @@
                    :on-change (fn [input-element]
                                 (submit-guess guess-text
                                               (-> input-element .-target .-value)
-                                              parse-html semantics-of-guess possible-correct-semantics))}]]]
+                                              parse-html
+                                              semantics-of-guess
+                                              possible-correct-semantics))}]]]
         
         [:div {:style {:float "left" :width "100%"}} @parse-html]]
        
@@ -98,12 +103,12 @@
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "http://localhost:3449/parse"
                                      {:query-params {"q" guess-string}}))]
-          (log/info (str "sem1: " (-> response :body :sem)))
-          (log/info (str "sem2: " (->> (-> response :body :sem)
+          (log/debug (str "sem1: " (-> response :body :sem)))
+          (log/debug (str "sem2: " (->> (-> response :body :sem)
                                        (map cljs.reader/read-string))))
-          (log/info (str "sem3: " (->> (-> response :body :sem)
-                                       (map cljs.reader/read-string)
-                                       (map dag_unify.serialization/deserialize))))
+          (log/debug (str "sem3: " (->> (-> response :body :sem)
+                                        (map cljs.reader/read-string)
+                                        (map dag_unify.serialization/deserialize))))
           (reset! semantics-of-guess
                   (->> (-> response :body :sem)
                        (map cljs.reader/read-string)
