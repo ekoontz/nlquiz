@@ -36,8 +36,7 @@ header {
     float:left;
     width:45%;
     left:1%;
-    position:absolute;
-    bottom:0;
+    top:0;
 }
 
 footer {

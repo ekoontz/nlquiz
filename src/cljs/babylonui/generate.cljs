@@ -14,7 +14,6 @@
     (fn []
       [:div.main
        [:div {:style {:float "left" :margin-left "10%" :width "80%" :border "0px dashed green"}}
-        [:h1 "Expression generator"]
         [dropdown/expressions spec-atom]
         [controls
 

@@ -35,9 +35,6 @@
     (new-question expression-index question-html possible-correct-semantics)
     (fn []
       [:div.main
-       [:h3 "Quiz"]
-              
-       
        [dropdown/expressions expression-index]
        [:div {:style {:margin-top "1em" :float "left" :width "100%"}}
         
@@ -95,8 +92,6 @@
                       [{:source @question-html :target @guess-text}]))
       (new-question expression-index question-html possible-correct-semantics))))
 
-;; (-> (let [a (atom "hello")] {:surface a :b a}) dag_unify.serialization/serialize str read-string dag_unify.serialization/deserialize)
-;; (-> (let [keyword-atom (atom :foo) keyword-string (atom "bar")] {:surface keyword-atom :b keyword-atom :bar keyword-string :baz keyword-string}) dag_unify.serialization/serialize str read-string dag_unify.serialization/deserialize)
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]

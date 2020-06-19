@@ -22,7 +22,7 @@
 (defn current-page []
   (fn []
     (let [page (:current-page (session/get :route))]
-      [:div
+      [:div {:style {:float "left"}}
        [:header
         [:p
          [:a {:href (path-for :index)} "Generate"] " | "
