@@ -18,6 +18,8 @@
 (def possible-correct-semantics (r/atom []))
 (def initial-state-is-enabled? true)
 (def initial-button-state (if initial-state-is-enabled? "" "disabled"))
+(def show-answer (r/atom "...geen antwoord.."))
+(def show-answer-display (r/atom "none"))
 (def ik-weet-niet-button-state (r/atom initial-button-state))
 
 (defn new-question [expression-index question-html possible-correct-semantics]
@@ -27,10 +29,16 @@
                        (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
         (reset! guess-text "")
+        (reset! show-answer (-> response :body :target))
+        (reset! show-answer-display "none")
         (reset! possible-correct-semantics
                 (->> (-> response :body :source-sem)
                      (map cljs.reader/read-string)
                      (map dag_unify.serialization/deserialize))))))
+
+(defn show-possible-answer []
+  (reset! show-answer-display "block")
+  (js/setTimeout #(swap! show-answer-display (fn [x] "none")) 1000))
 
 (defn quiz-component []
   (let [parse-html (r/atom "")
@@ -38,6 +46,7 @@
     (new-question expression-index question-html possible-correct-semantics)
     (fn []
       [:div.main
+       [:div#answer {:style {:display @show-answer-display}} @show-answer]
        [:div {:style {:float "right"}}
         [dropdown/expressions expression-index]]
        [:div {:style {:float "left" :width "100%"}}
@@ -54,7 +63,9 @@
                                               parse-html
                                               semantics-of-guess
                                               possible-correct-semantics))}]
-          [:button {:disabled @ik-weet-niet-button-state} "ik weet niet"]]]]
+          [:button {:on-click (fn [input-element]
+                                 (show-possible-answer))
+                    :disabled @ik-weet-niet-button-state} "ik weet niet"]]]]
           
        [:div {:style {:float "left" :width "100%"}}
         [:table
