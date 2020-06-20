@@ -110,12 +110,18 @@
              (mapcat (fn [guess]
                        (->> correct-semantics-set
                             (map (fn [correct-semantics]
-                                   (let [result (u/unify correct-semantics guess)]
-                                     (if (= result :fail)
-                                       (log/info (str "guess was NOT correct: " (dag_unify.diagnostics/fail-path correct-semantics guess)))
+                                   (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
+                                                       (>= (count (str guess))
+                                                           (count (str correct-semantics))))]
+                                     (if (not correct?)
+                                       (log/info (str "guess: '" @guess-text "' was NOT correct: "
+                                                      "fail-path: "
+                                                      (dag_unify.diagnostics/fail-path correct-semantics guess) "; "
+                                                      "size of guess semantics: " (count (str guess)) "; "
+                                                      "size of correct semantics: " (count (str correct-semantics))))
                                        (log/info (str "guess was correct! " @guess-text)))
-                                     result))))))
-             (remove #(= :fail %)))]
+                                     correct?))))))
+             (remove #(= false %)))]
     (when (not (empty? result))
       ;; got it right!
       (show-praise)
