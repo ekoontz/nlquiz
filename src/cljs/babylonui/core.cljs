@@ -22,18 +22,24 @@
 (defn current-page []
   (fn []
     (let [page (:current-page (session/get :route))]
-      [:div {:style {:float "left"}}
+      [:div
        [:header
         [:p
          [:a {:href (path-for :quiz)} "Quiz"] " | "
          [:a {:href (path-for :index)} "Generate"]]]
        [page]
        [:footer
-        [:p "Powered by:"
+        [:p "Powered by: "
+         [:a {:href "https://github.com/ekoontz/babylonui"}
+          "babylonui"] " | "
+         [:a {:href "https://github.com/ekoontz/babylon"}
+          "babylon"] " | "
+         [:a {:href "https://github.com/ekoontz/dag-unify"}
+          "dag-unify"] " | "
          [:a {:href "https://github.com/reagent-project/reagent-template"}
           "Reagent Template"] " | "
-         [:a {:href "https://github.com/ekoontz/babylon"}
-          "Babylon"] ""]]])))
+         [:a {:href "https://clojure.org"}
+          "Clojure"]]]])))
 
 ;; -------------------------
 ;; Routes

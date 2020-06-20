@@ -62,12 +62,14 @@ a:hover {
 }
 
 header {
+    padding:0;
+    margin:0.5em;    
     float:left;
-    width:100%;
 }
 
 footer {
     float:right;
+    margin:0.5em;
     width:50%;
     right:0;
     position:absolute;
