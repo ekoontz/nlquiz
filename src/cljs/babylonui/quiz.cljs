@@ -20,8 +20,12 @@
 (def possible-correct-semantics (r/atom []))
 (def question-table (r/atom []))
 (def question-html (r/atom ""))
-(def show-answer (r/atom "...geen antwoord.."))
+(def show-answer (r/atom ""))
 (def show-answer-display (r/atom "none"))
+(def show-praise-text (r/atom ""))
+(def show-praise-display (r/atom "none"))
+
+(def praises ["precies!😁" "prima!!😎 " "geweldig..!🇳🇱"])
 
 (defn new-question [expression-index question-html possible-correct-semantics]
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
@@ -45,6 +49,11 @@
   (.focus (.getElementById js/document "input-guess"))  
   (js/setTimeout #(reset! show-answer-display "none") 1000))
 
+(defn show-praise []
+  (reset! show-praise-display "block")
+  (reset! show-praise-text (-> praises shuffle first))
+  (js/setTimeout #(reset! show-praise-display "none") 1000))
+
 (defn quiz-component []
   (let [parse-html (r/atom "")
         semantics-of-guess (r/atom [])]
@@ -52,27 +61,27 @@
     (fn []
       [:div.main
        [:div#answer {:style {:display @show-answer-display}} @show-answer]
+       [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
        [:div {:style {:float "right"}}
         [dropdown/expressions expression-index]]
-       [:div {:style {:float "left" :width "100%"}}
-        [:div {:style {:float "left" :width "50%"}}
+       [:div.question-and-guess
+        [:div {:style {:float "left"}}
          @question-html]
-        [:div {:style {:float "right" :width "50%"}}
-         [:div
-          [:input {:type "text"
-                   :id "input-guess"
-                   :size 50
-                   :value @guess-text
-                   :disabled @input-state
-                   :on-change (fn [input-element]
-                                (submit-guess guess-text
-                                              (-> input-element .-target .-value)
-                                              parse-html
-                                              semantics-of-guess
-                                              possible-correct-semantics))}]
+        [:div {:style {:float "right"}}
+         [:input {:type "text"
+                  :id "input-guess"
+                  :size 50
+                  :value @guess-text
+                  :disabled @input-state
+                  :on-change (fn [input-element]
+                               (submit-guess guess-text
+                                             (-> input-element .-target .-value)
+                                             parse-html
+                                             semantics-of-guess
+                                             possible-correct-semantics))}]
           [:button {:on-click (fn [input-element]
                                  (show-possible-answer))
-                    :disabled @ik-weet-niet-button-state} "ik weet niet"]]]]
+                    :disabled @ik-weet-niet-button-state} "ik weet niet"]]]
           
        [:div {:style {:float "left" :width "100%"}}
         [:table
@@ -102,6 +111,8 @@
                                      result))))))
              (remove #(= :fail %)))]
     (when (not (empty? result))
+      ;; got it right!
+      (show-praise)
       (reset! input-state "disabled")
       (reset! question-table
               (concat
