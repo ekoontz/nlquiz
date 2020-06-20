@@ -25,16 +25,15 @@
       [:div {:style {:float "left"}}
        [:header
         [:p
-         [:a {:href (path-for :index)} "Generate"] " | "
          [:a {:href (path-for :quiz)} "Quiz"] " | "
-         [:a {:href (path-for :about)} "About"]]]
+         [:a {:href (path-for :index)} "Generate"]]]
        [page]
        [:footer
         [:p "Powered by:"
          [:a {:href "https://github.com/reagent-project/reagent-template"}
           "Reagent Template"] " | "
-         [:a {:href "https://github.com/ekoontz/menard"}
-          "Menard"] ""]]])))
+         [:a {:href "https://github.com/ekoontz/babylon"}
+          "Babylon"] ""]]])))
 
 ;; -------------------------
 ;; Routes
