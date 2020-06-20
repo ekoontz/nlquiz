@@ -15,14 +15,19 @@
                :on-change #(reset! expression-chosen-atom
                                    (js/parseInt
                                     (dommy/value (dommy/sel1 :#expressionchooser))))}
-      (map (fn [item-id]
-             (let [expression (nth show-these-expressions item-id)]
-               [:option {:name item-id
-                         :value item-id
-                         :key (str "item-" item-id)}
-                (if (> (count (:note expression)) 15)
-                  (str (subs (:note expression) 0 15) "..")
-                  (:note expression))]))
-           (range 0 (count show-these-expressions)))]))
+      (->>
+       (range 0 (count show-these-expressions))
+       (map (fn [item-id]
+              (let [expression (nth show-these-expressions item-id)]
+                (if (:example expression)
+                  [:option {:name item-id
+                            :value item-id
+                            :key (str "item-" item-id)}
+                   (if (> (count (:example expression)) 15)
+                     (str (subs (:example expression) 0 15) "..")
+                     (:example expression))]))))
+       (remove nil?))]))
+
+
 
 
