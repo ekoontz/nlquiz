@@ -129,7 +129,7 @@
       (reset! question-table
               (concat
                [{:source @question-html :target @guess-text}]
-               (take 3 @question-table)))
+               (take 4 @question-table)))
                       
       (new-question expression-index question-html possible-correct-semantics))))
 
