@@ -84,6 +84,25 @@ input {
     font-size:80%;
 }
 
+table {
+    margin:0.5em;
+    border-collapse:collapse;
+}
+
+th {
+    padding-right:1em;
+}
+
+td {
+    padding-left:0.5em;
+    padding-right:0.5em;
+}
+
+
+tr.even {
+    background:lightblue;
+}
+
 td.source {
     width: 25em;
     text-align:left;

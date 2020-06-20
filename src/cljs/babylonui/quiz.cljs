@@ -95,7 +95,7 @@
           (doall
            (->> (range 0 (count @question-table))
                 (map (fn [i]
-                       [:tr {:key i}
+                       [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
                         [:th (+ 1 i)]
                         [:td.source (-> @question-table (nth i) :source)]
                         [:td.target (-> @question-table (nth i) :target)]
