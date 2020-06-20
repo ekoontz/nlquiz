@@ -74,6 +74,7 @@
          @question-html]
         [:div {:style {:float "right"}}
          [:input {:type "text"
+                  :placeholder "wat is dit in Nederlands?"
                   :id "input-guess"
                   :size 50
                   :value @guess-text
