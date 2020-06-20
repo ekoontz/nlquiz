@@ -103,9 +103,10 @@ div.question-and-guess {
     border-radius: 5px;
 }
 
-p.question {
+div.question {
     font-size:80%;
     margin:0.5em;
+    float:left;
 }
 
 footer > p {
