@@ -25,7 +25,12 @@
 (def show-praise-text (r/atom ""))
 (def show-praise-display (r/atom "none"))
 
-(def praises ["precies!😁" "prima!!😎 " "geweldig..!🇳🇱"])
+(def praises ["precies!😁"
+              "prima!!😎 "
+              "geweldig!🇳🇱"
+              "dat is leuk! 🚲"
+              "oké! 🌷"
+              ])
 
 (defn new-question [expression-index question-html possible-correct-semantics]
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
