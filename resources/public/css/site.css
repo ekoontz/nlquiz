@@ -7,10 +7,10 @@
     left: 50%;
     top: 50%;
     font-size:large;
-    background:blue;
-    color:#eee;
+    background:lightblue;
+    color:red;
     border-radius: 5px;
-    border:2px solid lightblue;
+    border:2px solid blue;
     padding:0.5em;
 }
 
