@@ -11,34 +11,38 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(def guess-text (r/atom ""))
-(def question-table (r/atom []))
 (def expression-index (atom 0))
-(def question-html (r/atom ""))
-(def possible-correct-semantics (r/atom []))
+(def guess-text (r/atom ""))
+(def ik-weet-niet-button-state (r/atom initial-button-state))
 (def initial-state-is-enabled? true)
 (def initial-button-state (if initial-state-is-enabled? "" "disabled"))
+(def input-state (r/atom "disabled"))
+(def possible-correct-semantics (r/atom []))
+(def question-table (r/atom []))
+(def question-html (r/atom ""))
 (def show-answer (r/atom "...geen antwoord.."))
 (def show-answer-display (r/atom "none"))
-(def ik-weet-niet-button-state (r/atom initial-button-state))
 
 (defn new-question [expression-index question-html possible-correct-semantics]
   (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
                                         @expression-index)))]
-        (log/info (str "one correct answer to this question is: '"
-                       (-> response :body :target) "'"))
+        (log/debug (str "one possible correct answer to this question is: '"
+                        (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
         (reset! guess-text "")
         (reset! show-answer (-> response :body :target))
         (reset! show-answer-display "none")
+        (reset! input-state "")
         (reset! possible-correct-semantics
                 (->> (-> response :body :source-sem)
                      (map cljs.reader/read-string)
-                     (map dag_unify.serialization/deserialize))))))
+                     (map dag_unify.serialization/deserialize)))
+        (.focus (.getElementById js/document "input-guess")))))
 
 (defn show-possible-answer []
   (reset! show-answer-display "block")
   (reset! guess-text "")
+  (.focus (.getElementById js/document "input-guess"))  
   (js/setTimeout #(reset! show-answer-display "none") 1000))
 
 (defn quiz-component []
@@ -56,8 +60,10 @@
         [:div {:style {:float "right" :width "50%"}}
          [:div
           [:input {:type "text"
+                   :id "input-guess"
                    :size 50
                    :value @guess-text
+                   :disabled @input-state
                    :on-change (fn [input-element]
                                 (submit-guess guess-text
                                               (-> input-element .-target .-value)
@@ -96,6 +102,7 @@
                                      result))))))
              (remove #(= :fail %)))]
     (when (not (empty? result))
+      (reset! input-state "disabled")
       (reset! question-table
               (concat
                [{:source @question-html :target @guess-text}]
