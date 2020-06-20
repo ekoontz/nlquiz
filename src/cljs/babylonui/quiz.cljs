@@ -111,14 +111,12 @@
                        (->> correct-semantics-set
                             (map (fn [correct-semantics]
                                    (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
-                                                       (>= (count (str guess))
-                                                           (count (str correct-semantics))))]
+                                                       (u/subsumes? correct-semantics guess))]
                                      (if (not correct?)
                                        (log/info (str "guess: '" @guess-text "' was NOT correct: "
                                                       "fail-path: "
                                                       (dag_unify.diagnostics/fail-path correct-semantics guess) "; "
-                                                      "size of guess semantics: " (count (str guess)) "; "
-                                                      "size of correct semantics: " (count (str correct-semantics))))
+                                                      "subsumes? " (u/subsumes? correct-semantics guess)))
                                        (log/info (str "guess was correct! " @guess-text)))
                                      correct?))))))
              (remove #(= false %)))]
