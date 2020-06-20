@@ -38,7 +38,8 @@
 
 (defn show-possible-answer []
   (reset! show-answer-display "block")
-  (js/setTimeout #(swap! show-answer-display (fn [x] "none")) 1000))
+  (reset! guess-text "")
+  (js/setTimeout #(reset! show-answer-display "none") 1000))
 
 (defn quiz-component []
   (let [parse-html (r/atom "")
