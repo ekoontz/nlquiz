@@ -24,9 +24,8 @@
     (let [page (:current-page (session/get :route))]
       [:div
        [:header
-        [:p
-         [:a {:href (path-for :quiz)} "Quiz"] " | "
-         [:a {:href (path-for :index)} "Generate"]]]
+        [:a {:href (path-for :quiz)} "Quiz"] " | "
+        [:a {:href (path-for :index)} "Generate"]]
        [page]
        [:footer
         [:p "Powered by: "

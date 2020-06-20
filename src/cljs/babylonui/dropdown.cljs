@@ -20,7 +20,9 @@
                [:option {:name item-id
                          :value item-id
                          :key (str "item-" item-id)}
-                (:note expression)]))
+                (if (> (count (:note expression)) 15)
+                  (str (subs (:note expression) 0 15) "..")
+                  (:note expression))]))
            (range 0 (count show-these-expressions)))]))
 
 

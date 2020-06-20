@@ -70,7 +70,6 @@ header {
 footer {
     float:right;
     margin:0.5em;
-    width:50%;
     right:0;
     position:absolute;
     bottom:0;
@@ -82,9 +81,11 @@ input {
     padding:0.5em;
     margin:0.5em;
     border-radius: 5px;
+    font-size:80%;
 }
 
 td.source {
+    width: 25em;
     text-align:left;
     padding-right:1em;
 }
@@ -94,9 +95,19 @@ td.target {
 }
 
 div.question-and-guess {
+    width:95%;
     margin:0.5em;
     padding:0.25em;
     float:left;
     border:3px solid lightblue;
     border-radius: 5px;
+}
+
+p.question {
+    font-size:80%;
+    margin:0.5em;
+}
+
+footer > p {
+    white-space:nowrap;
 }

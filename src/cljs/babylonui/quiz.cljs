@@ -70,7 +70,7 @@
        [:div {:style {:float "right"}}
         [dropdown/expressions expression-index]]
        [:div.question-and-guess
-        [:div {:style {:float "left"}}
+        [:div.question
          @question-html]
         [:div {:style {:float "right"}}
          [:input {:type "text"
