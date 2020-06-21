@@ -1,11 +1,11 @@
 ;; top-level, mostly-generic http handler configuration;
-;; See babylonui.handlers for more domain-specific http handlers.
-(ns babylonui.handler
+;; See nlquiz.handlers for more domain-specific http handlers.
+(ns nlquiz.handler
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
-   [babylonui.handlers :refer [generate parse]]
-   [babylonui.middleware :refer [middleware]]
+   [nlquiz.handlers :refer [generate parse]]
+   [nlquiz.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
    [dag_unify.core :as u]
@@ -15,7 +15,7 @@
 
 (def mount-target
   [:div#app
-   [:h2 "Welcome to babylonui"]
+   [:h2 "Welcome to nlquiz"]
    [:p "please wait while Figwheel is waking up ..."]
    [:p "(Check the js console for hints if nothing exciting happens.)"]])
 
@@ -54,7 +54,7 @@
    :headers {"Content-Type" "application/json"}
    :body (write-str (handler _request))})
 
-;; see: src/cljs/babylonui/core.cljs for the subset of
+;; see: src/cljs/nlquiz/core.cljs for the subset of
 ;; these routes below that are handled by html-response:
 ;; i.e. "/","/quiz", and "/about":
 (def app

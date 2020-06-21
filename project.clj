@@ -1,4 +1,4 @@
-(defproject babylonui "0.1.0-SNAPSHOT"
+(defproject nlquiz "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -39,12 +39,12 @@
              :exclusions [org.clojure/clojure]]
             [lein-ring "0.12.5"]]
   
-  :ring {:handler babylonui.handler/app
-         :uberwar-name "babylonui.war"}
+  :ring {:handler nlquiz.handler/app
+         :uberwar-name "nlquiz.war"}
 
   :min-lein-version "2.5.0"
-  :uberjar-name "babylonui.jar"
-  :main babylonui.server
+  :uberjar-name "nlquiz.jar"
+  :main nlquiz.server
   :clean-targets ^{:protect false}
   [:target-path
    [:cljsbuild :builds :app :compiler :output-dir]
@@ -53,7 +53,7 @@
   :source-paths ["src/clj" "src/cljc" "src/cljs"]
   :resource-paths ["resources" "target/cljsbuild"]
 
-  ;; if you want to add new css files, you also need to add them to: src/clj/babylonui/handler:head.
+  ;; if you want to add new css files, you also need to add them to: src/clj/nlquiz/handler:head.
   :minify-assets
   [[:css {:source "resources/public/css/site.css"
           :target "resources/public/css/site.min.css"}]
@@ -71,7 +71,7 @@
              :compiler
 
              ;; this value must be the same as what is used in the (if optimized? ..)
-             ;; part of src/clj/babylonui/handler.clj:(defn loading-page).
+             ;; part of src/clj/nlquiz/handler.clj:(defn loading-page).
              {:output-to        "target/cljsbuild/public/js/app-optimized.js"
 
               :output-dir       "target/cljsbuild/public/js"
@@ -81,13 +81,13 @@
               :pretty-print  false}}
             :app
             {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
-             :figwheel {:on-jsload "babylonui.core/mount-root"}
+             :figwheel {:on-jsload "nlquiz.core/mount-root"}
              :compiler
-             {:main "babylonui.dev"
+             {:main "nlquiz.dev"
               :asset-path "/js/out"
               ;; this value must be the same as what is used in the
               ;; else part of the (if optimized? ..)
-              ;; part of src/clj/babylonui/handler.clj:(defn loading-page).
+              ;; part of src/clj/nlquiz/handler.clj:(defn loading-page).
               :output-to "target/cljsbuild/public/js/app.js"
               :output-dir "target/cljsbuild/public/js/out"
               :source-map true
@@ -102,9 +102,9 @@
    :nrepl-middleware [cider.piggieback/wrap-cljs-repl]
    
    :css-dirs ["resources/public/css"]
-   :ring-handler babylonui.handler/app}
+   :ring-handler nlquiz.handler/app}
 
-  :profiles {:dev {:repl-options {:init-ns babylonui.repl
+  :profiles {:dev {:repl-options {:init-ns nlquiz.repl
                                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
                    :dependencies [[cider/piggieback "0.5.0"]
                                   [binaryage/devtools "0.9.11"]

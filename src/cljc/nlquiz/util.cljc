@@ -1,4 +1,4 @@
-(ns babylonui.util)
+(ns nlquiz.util)
 
 (defn foo-cljc [x]
   "I don't do a whole lot."

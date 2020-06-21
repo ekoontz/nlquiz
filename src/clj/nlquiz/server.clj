@@ -1,6 +1,6 @@
-(ns babylonui.server
+(ns nlquiz.server
     (:require
-     [babylonui.handler :refer [app]]
+     [nlquiz.handler :refer [app]]
      [config.core :refer [env]]
      [ring.adapter.jetty :refer [run-jetty]])
     (:gen-class))

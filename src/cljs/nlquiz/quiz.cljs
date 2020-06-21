@@ -1,8 +1,8 @@
-(ns babylonui.quiz
+(ns nlquiz.quiz
   (:require
    [accountant.core :as accountant]
-   [babylonui.generate :as generate]
-   [babylonui.dropdown :as dropdown]
+   [nlquiz.generate :as generate]
+   [nlquiz.dropdown :as dropdown]
    [dag_unify.core :as u]
    [dag_unify.serialization :as s]
    [cljs-http.client :as http]

@@ -1,8 +1,8 @@
-(ns babylonui.core
+(ns nlquiz.core
   (:require
    [accountant.core :as accountant]
-   [babylonui.generate :as generate]
-   [babylonui.quiz :as quiz]
+   [nlquiz.generate :as generate]
+   [nlquiz.quiz :as quiz]
    [clerk.core :as clerk]
    [cljs-http.client :as http]
    [cljslog.core :as log]

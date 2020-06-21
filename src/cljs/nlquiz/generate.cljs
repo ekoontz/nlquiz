@@ -1,9 +1,9 @@
-(ns babylonui.generate
+(ns nlquiz.generate
   (:require
    [menard.english :as en]
    [menard.nederlands :as nl]
    [menard.translate :as tr]
-   [babylonui.dropdown :as dropdown]
+   [nlquiz.dropdown :as dropdown]
    [cljslog.core :as log]
    [reagent.core :as r]))
 

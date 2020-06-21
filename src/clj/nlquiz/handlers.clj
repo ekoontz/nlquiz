@@ -1,11 +1,11 @@
-(ns babylonui.handlers
+(ns nlquiz.handlers
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
    [menard.english :as en]
    [menard.nederlands :as nl]
    [menard.translate :as tr]
-   [babylonui.middleware :refer [middleware]]
+   [nlquiz.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
    [dag_unify.core :as u]
