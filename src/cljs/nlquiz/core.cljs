@@ -13,8 +13,13 @@
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn about-component []
-  (fn [] [:span.main
-          [:h1 "About nlquiz"]]))
+  (fn []
+    [:div {:style {:float "left" :margin "0.5em"}}
+     [:h3 "About nlquiz"]
+     [:p "This is a way to drill some short phrases in Dutch. Choose a phrase from the dropdown menu, and you'll get similar phrases to what you've chosen.
+By default, the first kind phrase is chosen: 'ongewoon slim' which means 'unusually smart'."]
+     [:p "Problems or questions? Please create an issue on " [:a {:href "https://github.com/ekoontz/nlquiz/issues"} "github"]
+      " or " [:a {:href "mailto:ekoontz@hiro-tan.org"} "email me."]]]))
 
 ;; -------------------------
 ;; Page mounting component
@@ -25,7 +30,7 @@
       [:div
        [:header
         [:a {:href (path-for :quiz)} "Quiz"] " | "
-        [:a {:href (path-for :index)} "Generate"]]
+        [:a {:href (path-for :about)} "About"]]
        [page]
        [:footer
         [:p [:a {:href "https://github.com/ekoontz/nlquiz"} "nlquiz"] " is powered by "
@@ -58,7 +63,7 @@
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
-    :index #'generate/generate-component
+    :index #'quiz/quiz-component
     :quiz #'quiz/quiz-component
     :about #'about-component))
 

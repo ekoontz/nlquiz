@@ -72,7 +72,7 @@
        [:div.question-and-guess
         [:div.question
          @question-html]
-        [:div {:style {:float "right"}}
+        [:div.guess
          [:input {:type "text"
                   :placeholder "wat is dit in Nederlands?"
                   :id "input-guess"
