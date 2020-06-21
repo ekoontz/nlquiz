@@ -28,7 +28,7 @@
         [:a {:href (path-for :index)} "Generate"]]
        [page]
        [:footer
-        [:p "nlquiz is powered by: "
+        [:p [:a {:href "https://github.com/ekoontz/nlquiz"} "nlquiz"] " is powered by "
          [:a {:href "https://github.com/ekoontz/menard"}
           "menard"] " | "
          [:a {:href "https://github.com/ekoontz/dag-unify"}
@@ -36,7 +36,9 @@
          [:a {:href "https://github.com/reagent-project/reagent-template"}
           "Reagent Template"] " | "
          [:a {:href "https://clojure.org"}
-          "Clojure"]]]])))
+          "Clojure"][:a {:href "https://clojurescript.org"}
+          "/script"]]]])))
+
 
 ;; -------------------------
 ;; Routes
