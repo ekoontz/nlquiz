@@ -1,8 +1,8 @@
 (ns babylonui.dropdown
   (:require
-   [babylon.english :as en]
-   [babylon.nederlands :as nl]
-   [babylon.translate :as tr]
+   [menard.english :as en]
+   [menard.nederlands :as nl]
+   [menard.translate :as tr]
    [cljslog.core :as log]
    [dag_unify.core :as u]
    [dommy.core :as dommy]))

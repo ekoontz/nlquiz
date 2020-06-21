@@ -14,7 +14,7 @@
 
 (defn about-component []
   (fn [] [:span.main
-          [:h1 "About babylon UI"]]))
+          [:h1 "About nlquiz"]]))
 
 ;; -------------------------
 ;; Page mounting component
@@ -28,11 +28,9 @@
         [:a {:href (path-for :index)} "Generate"]]
        [page]
        [:footer
-        [:p "Powered by: "
-         [:a {:href "https://github.com/ekoontz/babylonui"}
-          "babylonui"] " | "
-         [:a {:href "https://github.com/ekoontz/babylon"}
-          "babylon"] " | "
+        [:p "nlquiz is powered by: "
+         [:a {:href "https://github.com/ekoontz/menard"}
+          "menard"] " | "
          [:a {:href "https://github.com/ekoontz/dag-unify"}
           "dag-unify"] " | "
          [:a {:href "https://github.com/reagent-project/reagent-template"}

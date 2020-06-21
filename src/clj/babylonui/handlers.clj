@@ -2,9 +2,9 @@
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
-   [babylon.english :as en]
-   [babylon.nederlands :as nl]
-   [babylon.translate :as tr]
+   [menard.english :as en]
+   [menard.nederlands :as nl]
+   [menard.translate :as tr]
    [babylonui.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]

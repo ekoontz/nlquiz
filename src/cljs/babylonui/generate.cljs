@@ -1,8 +1,8 @@
 (ns babylonui.generate
   (:require
-   [babylon.english :as en]
-   [babylon.nederlands :as nl]
-   [babylon.translate :as tr]
+   [menard.english :as en]
+   [menard.nederlands :as nl]
+   [menard.translate :as tr]
    [babylonui.dropdown :as dropdown]
    [cljslog.core :as log]
    [reagent.core :as r]))
