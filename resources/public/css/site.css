@@ -7,7 +7,7 @@
     left: 50%;
     top: 50%;
     font-size:large;
-    background:lightblue;
+    background:aliceblue;
     color:red;
     border-radius: 5px;
     border:2px solid blue;
@@ -100,7 +100,7 @@ td {
 
 
 tr.even {
-    background:lightblue;
+    background:aliceblue;
 }
 
 td.source {
@@ -125,6 +125,10 @@ div.question-and-guess {
 div.question {
     font-size:80%;
     margin:0.5em;
+    float:left;
+}
+
+div.guess {
     float:left;
 }
 
