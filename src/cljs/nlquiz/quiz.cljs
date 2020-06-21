@@ -33,7 +33,7 @@
               ])
 
 (defn new-question [expression-index question-html possible-correct-semantics]
-  (go (let [response (<! (http/get (str "http://localhost:3449/generate/"
+  (go (let [response (<! (http/get (str "/generate/"
                                         @expression-index)))]
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
@@ -135,7 +135,7 @@
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
-    (go (let [response (<! (http/get "http://localhost:3449/parse"
+    (go (let [response (<! (http/get "/parse"
                                      {:query-params {"q" guess-string}}))]
           (log/debug (str "sem1: " (-> response :body :sem)))
           (log/debug (str "sem2: " (->> (-> response :body :sem)
