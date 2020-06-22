@@ -92,15 +92,6 @@ By default, the first kind phrase is chosen: 'ongewoon slim' which means 'unusua
   (accountant/dispatch-current!)
   (mount-root))
 
-
-;; not used yet:
-(def source-node (r/atom []))
-(def target-node (r/atom []))
-(defn generate-from-server []
-  (go (let [response (<! (http/get (str "http://localhost:3449/generate/" 0)))]
-        (reset! source-node (-> response :source))
-        (reset! target-node (-> response :target)))))
-
 (set! (.-onload js/window)
       (fn []))
 
