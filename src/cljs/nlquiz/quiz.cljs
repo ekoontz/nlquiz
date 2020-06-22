@@ -151,5 +151,6 @@
             (log/debug (str "comparing guess: " @semantics-of-guess " with correct answer:"
                             @possible-correct-semantics "; result:"
                             (evaluate-guess @semantics-of-guess
-                                            @possible-correct-semantics eval-atom))))))))
+                                            @possible-correct-semantics))))))))
+
 
