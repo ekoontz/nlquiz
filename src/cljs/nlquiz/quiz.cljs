@@ -138,12 +138,6 @@
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get "/nlquiz/parse"
                                      {:query-params {"q" guess-string}}))]
-          (log/debug (str "sem1: " (-> response :body :sem)))
-          (log/debug (str "sem2: " (->> (-> response :body :sem)
-                                       (map cljs.reader/read-string))))
-          (log/debug (str "sem3: " (->> (-> response :body :sem)
-                                        (map cljs.reader/read-string)
-                                        (map dag_unify.serialization/deserialize))))
           (reset! semantics-of-guess
                   (->> (-> response :body :sem)
                        (map cljs.reader/read-string)
