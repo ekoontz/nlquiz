@@ -15,3 +15,5 @@ pom.xml.asc
 /.sass-cache
 *~
 .rebel_readline_history
+*.min.css
+*.min.js
