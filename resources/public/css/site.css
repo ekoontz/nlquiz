@@ -4,11 +4,12 @@
 
 #answer {
     position: absolute;
-    left: 50%;
-    top: 50%;
+    right: 10%;
+    top: 15%;
     font-size:large;
     background:aliceblue;
     color:red;
+    font-size:200%;    
     border-radius: 5px;
     border:2px solid blue;
     padding:0.5em;
@@ -16,8 +17,8 @@
 
 #praise {
     position: absolute;
-    left: 45%;
-    bottom: 25%;
+    left: 10%;
+    top: 15%;
     font-weight:bold;
     font-size:200%;
     background:orange;
@@ -94,8 +95,6 @@ th {
 }
 
 td {
-    padding-left:0.5em;
-    padding-right:0.5em;
 }
 
 
@@ -104,7 +103,6 @@ tr.even {
 }
 
 td.source {
-    width: 25em;
     text-align:left;
     padding-right:1em;
 }
@@ -114,7 +112,6 @@ td.target {
 }
 
 div.question-and-guess {
-    width:95%;
     margin:0.5em;
     padding:0.25em;
     float:left;
@@ -122,9 +119,12 @@ div.question-and-guess {
     border-radius: 5px;
 }
 
+div.question-and-guess button {
+    float:right;
+}
+
 div.question {
     font-size:80%;
-    margin:0.5em;
     float:left;
 }
 

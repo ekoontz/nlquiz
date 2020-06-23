@@ -76,7 +76,7 @@
          [:input {:type "text"
                   :placeholder "wat is dit in Nederlands?"
                   :id "input-guess"
-                  :size 50
+                  :size 20
                   :value @guess-text
                   :disabled @input-state
                   :on-change (fn [input-element]
@@ -84,10 +84,11 @@
                                              (-> input-element .-target .-value)
                                              parse-html
                                              semantics-of-guess
-                                             possible-correct-semantics))}]
-          [:button {:on-click (fn [input-element]
-                                 (show-possible-answer))
-                    :disabled @ik-weet-niet-button-state} "ik weet niet"]]]
+                                             possible-correct-semantics))}]]
+        [:div
+         [:button {:on-click (fn [input-element]
+                               (show-possible-answer))
+                   :disabled @ik-weet-niet-button-state} "ik weet niet"]]]
           
        [:div {:style {:float "left" :width "100%"}}
         [:table
