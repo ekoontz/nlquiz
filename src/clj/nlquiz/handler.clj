@@ -24,23 +24,18 @@
    [:meta {:charset "utf-8"}]
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1"}]
-   (include-css (if (env :dev) "/css/site.css" "/css/site.min.css"))
-   (include-css (if (env :dev) "/css/debug.css" "/css/debug.min.css"))
-   (include-css (if (env :dev) "/css/expression.css" "/css/expression.min.css"))])
+   (include-css (if (env :dev) "/nlquiz/css/site.css" "/nlquiz/css/site.min.css"))
+   (include-css (if (env :dev) "/nlquiz/css/debug.css" "/nlquiz/css/debug.min.css"))
+   (include-css (if (env :dev) "/nlquiz/css/expression.css" "/nlquiz/css/expression.min.css"))])
 
-;; TODO: use environment to control which version of the js (normal or optimized) is included.
 (defn loading-page []
   (html5
    (head)
    [:body {:class "body-container"}
     mount-target
-    (if optimized?
-
-      ;; the following include-js path must be the
-      ;; same as in: project.clj:cljsbuild:builds:min:compiler:output-to :
-      (include-js "/js/app-optimized.js")
-
-      (include-js "/js/app.js"))]))
+    (if (env :dev)
+      (include-js "/nlquiz/js/app.js")
+      (include-js "/nlquiz/js/app-optimized.js"))]))
 
 (defn html-response
   [_request]
@@ -61,15 +56,18 @@
   (reitit-ring/ring-handler
    (reitit-ring/router
     [;; routes which return a html response:
-     ["/"      {:get {:handler html-response}}]
-     ["/about" {:get {:handler html-response}}]
-     ["/quiz"  {:get {:handler html-response}}]
+
+     ;; TODO: redirect 302 to /nlquiz
+     ["/"                      {:get {:handler html-response}}]
+
+     ["/nlquiz/about"          {:get {:handler html-response}}]
+     ["/nlquiz"                {:get {:handler html-response}}]     
      
      ;; routes which return a json response:
-     ["/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]
-     ["/parse"          {:get {:handler (fn [request] (json-response request parse))}}]])
+     ["/nlquiz/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]
+     ["/nlquiz/parse"          {:get {:handler (fn [request] (json-response request parse))}}]])
 
    (reitit-ring/routes
-    (reitit-ring/create-resource-handler {:path "/" :root "/public"})
+    (reitit-ring/create-resource-handler {:path "/nlquiz" :root "/public"})
     (reitit-ring/create-default-handler))
    {:middleware middleware}))

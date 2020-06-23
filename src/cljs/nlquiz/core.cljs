@@ -29,7 +29,7 @@ By default, the first kind phrase is chosen: 'ongewoon slim' which means 'unusua
     (let [page (:current-page (session/get :route))]
       [:div
        [:header
-        [:a {:href (path-for :quiz)} "Quiz"] " | "
+        [:a {:href (path-for :index)} "Quiz"] " | "
         [:a {:href (path-for :about)} "About"]]
        [page]
        [:footer
@@ -50,9 +50,8 @@ By default, the first kind phrase is chosen: 'ongewoon slim' which means 'unusua
 
 (def router
   (reitit/router
-   [["/" :index]
-    ["/quiz" :quiz]
-    ["/about" :about]]))
+   [["/nlquiz" :index]
+    ["/nlquiz/about" :about]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -63,8 +62,8 @@ By default, the first kind phrase is chosen: 'ongewoon slim' which means 'unusua
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
+    nil #'quiz/quiz-component
     :index #'quiz/quiz-component
-    :quiz #'quiz/quiz-component
     :about #'about-component))
 
 ;; -------------------------
