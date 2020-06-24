@@ -68,7 +68,8 @@
        [:div#answer {:style {:display @show-answer-display}} @show-answer]
        [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
        [:div {:style {:float "right"}}
-        [dropdown/expressions expression-index]]
+        [dropdown/expressions expression-index
+         (fn [] (new-question expression-index question-html possible-correct-semantics))]]
        [:div.question-and-guess
         [:div.question
          @question-html]
