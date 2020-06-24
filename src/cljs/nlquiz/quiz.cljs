@@ -88,7 +88,7 @@
         [:div
          [:button {:on-click (fn [input-element]
                                (show-possible-answer))
-                   :disabled @ik-weet-niet-button-state} "ik weet niet"]]]
+                   :disabled @ik-weet-niet-button-state} "ik weet het niet"]]]
           
        [:div {:style {:float "left" :width "100%"}}
         [:table
