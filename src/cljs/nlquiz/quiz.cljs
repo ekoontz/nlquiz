@@ -25,6 +25,8 @@
 (def show-praise-text (r/atom ""))
 (def show-praise-display (r/atom "none"))
 
+(defonce root-path "/nlquiz/")
+
 (def praises ["precies!😁"
               "prima!!😎 "
               "geweldig!🇳🇱"
@@ -33,7 +35,7 @@
               ])
 
 (defn new-question [expression-index question-html possible-correct-semantics]
-  (go (let [response (<! (http/get (str "generate/"
+  (go (let [response (<! (http/get (str root-path "generate/"
                                         @expression-index)))]
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
@@ -137,7 +139,7 @@
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
-    (go (let [response (<! (http/get "parse"
+    (go (let [response (<! (http/get (str root-path "parse")
                                      {:query-params {"q" guess-string}}))]
           (reset! semantics-of-guess
                   (->> (-> response :body :sem)
