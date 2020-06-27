@@ -1,0 +1,13 @@
+[Unit]
+Description=nlquiz service (green)
+[Service]
+WorkingDirectory=/home/ekoontz/nlquiz
+ExecStart=/usr/bin/java -jar /home/ekoontz/nlquiz/target/nlquiz-green.jar
+User=ekoontz
+Type=simple
+Environment=COLOR=green
+Environment=DEV=
+Environment=PORT=3002
+Environment=ROOT_PATH=/nlquiz/
+[Install]
+WantedBy=multi-user.target
