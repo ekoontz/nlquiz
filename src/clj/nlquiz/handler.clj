@@ -13,6 +13,8 @@
 
 (def optimized? true)
 
+(defonce root-path (or (env :root-path) "/"))
+
 (def mount-target
   [:div#app
    [:h2 "Welcome to nlquiz"]
@@ -24,9 +26,9 @@
    [:meta {:charset "utf-8"}]
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1"}]
-   (include-css (if (env :dev) "/nlquiz/css/site.css" "/nlquiz/css/site.min.css"))
-   (include-css (if (env :dev) "/nlquiz/css/debug.css" "/nlquiz/css/debug.min.css"))
-   (include-css (if (env :dev) "/nlquiz/css/expression.css" "/nlquiz/css/expression.min.css"))])
+   (include-css (str root-path (if (env :dev) "css/site.css" "css/site.min.css")))
+   (include-css (str root-path (if (env :dev) "css/debug.css" "css/debug.min.css")))
+   (include-css (str root-path (if (env :dev) "css/expression.css" "css/expression.min.css")))])
 
 (defn loading-page []
   (html5
@@ -34,8 +36,8 @@
    [:body {:class "body-container"}
     mount-target
     (if (env :dev)
-      (include-js "/nlquiz/js/app.js")
-      (include-js "/nlquiz/js/app-optimized.js"))]))
+      (include-js (str root-path "js/app.js"))
+      (include-js (str root-path "js/app-optimized.js")))]))
 
 (defn html-response
   [_request]
@@ -72,6 +74,6 @@
      ["/nlquiz/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]])
 
    (reitit-ring/routes
-    (reitit-ring/create-resource-handler {:path "/nlquiz" :root "/public"})
+    (reitit-ring/create-resource-handler {:path root-path :root "/public"})
     (reitit-ring/create-default-handler))
    {:middleware middleware}))
