@@ -33,7 +33,7 @@
               ])
 
 (defn new-question [expression-index question-html possible-correct-semantics]
-  (go (let [response (<! (http/get (str "/nlquiz/generate/"
+  (go (let [response (<! (http/get (str "generate/"
                                         @expression-index)))]
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
@@ -137,7 +137,7 @@
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
-    (go (let [response (<! (http/get "/nlquiz/parse"
+    (go (let [response (<! (http/get "parse"
                                      {:query-params {"q" guess-string}}))]
           (reset! semantics-of-guess
                   (->> (-> response :body :sem)

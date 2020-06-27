@@ -50,8 +50,8 @@ By default, the first kind phrase is chosen: 'ongewoon slim' which means 'unusua
 
 (def router
   (reitit/router
-   [["/nlquiz" :index]
-    ["/nlquiz/about" :about]]))
+   [["/" :index]
+    ["/about" :about]]))
 
 (defn path-for [route & [params]]
   (if params

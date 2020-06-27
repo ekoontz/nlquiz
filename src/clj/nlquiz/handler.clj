@@ -58,14 +58,18 @@
     [;; routes which return a html response:
 
      ;; TODO: redirect 302 to /nlquiz
-     ["/"                      {:get {:handler html-response}}]
-
-     ["/nlquiz/about"          {:get {:handler html-response}}]
-     ["/nlquiz"                {:get {:handler html-response}}]     
+     ["/"               {:get {:handler html-response}}]
+     ["/nlquiz"         {:get {:handler html-response}}]
+     
+     ["/about"          {:get {:handler html-response}}]
+     ["/nlquiz/about"   {:get {:handler html-response}}]
      
      ;; routes which return a json response:
-     ["/nlquiz/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]
-     ["/nlquiz/parse"          {:get {:handler (fn [request] (json-response request parse))}}]])
+     ["/parse"                 {:get {:handler (fn [request] (json-response request parse))}}]
+     ["/nlquiz/parse"          {:get {:handler (fn [request] (json-response request parse))}}]
+
+     ["/generate/:spec"        {:get {:handler (fn [request] (json-response request generate))}}]
+     ["/nlquiz/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]])
 
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path "/nlquiz" :root "/public"})
