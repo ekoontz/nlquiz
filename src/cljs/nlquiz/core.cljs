@@ -50,8 +50,8 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
 
 (def router
   (reitit/router
-   [["/" :index]
-    ["/about" :about]]))
+   [["/nlquiz" :index]
+    ["/nlquiz/about" :about]]))
 
 (defn path-for [route & [params]]
   (if params
