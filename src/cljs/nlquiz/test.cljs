@@ -21,6 +21,15 @@
                           (fn [] (parse-possible-answer @possible-answer possible-answer-parses)))
     (fn []
       [:div#test
+       [:button
+        {:on-click (fn [input-element]
+                     (get-generation-tuple
+                      expression-index
+                      generation-tuple source possible-answer
+                      (fn [] (parse-possible-answer
+                              @possible-answer
+                              possible-answer-parses))))}
+        "Regenerate"]
        [:div [:h4 "source"] @source]
        [:div [:h4 "possible answer"] @possible-answer]
        [:div [:h4 "parses of possible-answer"]
