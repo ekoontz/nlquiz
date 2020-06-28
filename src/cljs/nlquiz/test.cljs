@@ -23,21 +23,16 @@
          (log/info (str "source: " (-> source-expression en/morph)))
          (update-expressions! target-expression-history target-expression)
          (update-expressions! source-expression-history source-expression)
-         [:div         
-          [:div {:class ["expressions" "target"]}
+         [:table
+          [:tbody
            (doall
             (map (fn [i]
-                   (let [target-expression (nth @target-expression-history i)]
-                     [:div.expression {:key (str "target-" i)}
-                      [:span (nl/morph target-expression)]]))
-                 (range 0 (count @target-expression-history))))]
-          [:div {:class ["expressions" "source"]}
-           (doall
-            (map (fn [i]
-                   (let [expression-node (nth @source-expression-history i)]
-                     [:div.expression {:key (str "source-" i)}
-                      [:span (en/morph expression-node)]]))
-                 (range 0 (count @source-expression-history))))]])])))
+                   (let [target-expression (nth @target-expression-history i)
+                         source-expression (nth @source-expression-history i)]
+                     [:tr {:key (str "target-" i)}
+                      [:td (nl/morph target-expression)]
+                      [:td (en/morph source-expression)]]))
+                 (range 0 (count @target-expression-history))))]])])))
 
 (defn update-expressions! [expression-history new-expression]
   (swap! expression-history
