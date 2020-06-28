@@ -163,3 +163,8 @@ h4 {
     border:0px dashed red;
     margin:0.25em;
 }
+
+p.code {
+    font-family: monospace;
+}
+
