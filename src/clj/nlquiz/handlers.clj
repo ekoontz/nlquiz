@@ -31,14 +31,25 @@
      :source-sem (map dag-to-string source-semantics)
      :target (-> target-expression nl/morph)}))
 
-;; (-> (let [a (atom "hello")] {:surface a :b a}) dag_unify.serialization/serialize str read-string dag_unify.serialization/deserialize)
-(defn parse [_request]
+(defn parse-nl [_request]
   (let [string-to-parse
         (get
          (-> _request :query-params) "q")]
     (log/debug (str "parsing input: " string-to-parse))
     (let [parses (->> string-to-parse clojure.string/lower-case nl/parse)
           syntax-trees (->> parses (map nl/syntax-tree))]
+      {:trees syntax-trees
+       :sem (->> parses
+                 (map #(u/get-in % [:sem]))
+                 (map dag-to-string))})))
+
+(defn parse-en [_request]
+  (let [string-to-parse
+        (get
+         (-> _request :query-params) "q")]
+    (log/debug (str "parsing input: " string-to-parse))
+    (let [parses (->> string-to-parse clojure.string/lower-case en/parse)
+          syntax-trees (->> parses (map en/syntax-tree))]
       {:trees syntax-trees
        :sem (->> parses
                  (map #(u/get-in % [:sem]))

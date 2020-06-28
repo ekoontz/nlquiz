@@ -140,7 +140,7 @@
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
-    (go (let [response (<! (http/get (str root-path "parse")
+    (go (let [response (<! (http/get (str root-path "parse/nl")
                                      {:query-params {"q" guess-string}}))]
           (reset! semantics-of-guess
                   (->> (-> response :body :sem)
