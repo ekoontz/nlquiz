@@ -39,7 +39,14 @@
         "Regenerate"]
        [:div [:h4 "source"] @source]
        [:div [:h4 "source semantics"]
-        [:p.code (clojure.string/join "," @source-semantics)]]
+        [:ul.code
+         (doall
+          (->> (range 0 (count @source-semantics))
+               (map (fn [i]
+                      [:li {:key i}
+                       (-> (nth @source-semantics i)
+                           dag_unify.core/pprint
+                           str)]))))]]
        [:div [:h4 "possible answer"] @possible-answer]
        [:div [:h4 "parses of possible-answer"]
         [:ul.code
@@ -54,7 +61,10 @@
           (->> (range 0 (count @target-semantics))
                (map (fn [i]
                       [:li {:key i}
-                       (nth @target-semantics i)]))))]]])))
+                       (-> (nth @target-semantics i)
+                           dag_unify.core/pprint
+                           str
+                           )]))))]]])))
 
 (defn get-generation-tuple [expression-index generation-tuple
                             source source-semantics possible-answer next-step-fn]
@@ -76,9 +86,7 @@
         (reset! put-semantics-here
                 (->> (-> response :body :sem)
                      (map cljs.reader/read-string)
-                     (map deserialize)
-                     (map dag_unify.core/pprint)
-                     (map str))))))
+                     (map deserialize))))))
 
 
         
