@@ -9,7 +9,7 @@
 #answer {
     position: absolute;
     right: 10%;
-    top: 15%;
+    top: 20%;
     font-size:large;
     background:aliceblue;
     color:red;
@@ -21,10 +21,10 @@
 
 #praise {
     position: absolute;
-    left: 10%;
+    left: 20%;
     top: 15%;
     font-weight:bold;
-    font-size:200%;
+    font-size:large;
     background:orange;
     color:white;
     border-radius: 5px;
@@ -76,7 +76,6 @@ footer {
     float:right;
     margin:0.5em;
     right:0;
-    position:absolute;
     bottom:0;
     text-align:right;
     font-size:small;

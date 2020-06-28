@@ -33,15 +33,17 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
         [:a {:href (path-for :about)} "About"]]
        [page]
        [:footer
-        [:p [:a {:href "https://github.com/ekoontz/nlquiz"} "nlquiz"] " is powered by "
+        [:p
+         [:a {:href "https://github.com/ekoontz/nlquiz"}
+          "nlquiz"] " | "
          [:a {:href "https://github.com/ekoontz/menard"}
           "menard"] " | "
          [:a {:href "https://github.com/ekoontz/dag-unify"}
           "dag-unify"] " | "
-         [:a {:href "https://github.com/reagent-project/reagent-template"}
-          "Reagent Template"] " | "
+         [:a {:href "https://github.com/reagent-project"}
+          "reagent"] " | "
          [:a {:href "https://clojure.org"}
-          "Clojure"][:a {:href "https://clojurescript.org"}
+          "clojure"][:a {:href "https://clojurescript.org"}
           "/script"]]]])))
 
 
