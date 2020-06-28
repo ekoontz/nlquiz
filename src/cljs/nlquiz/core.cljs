@@ -1,15 +1,17 @@
 (ns nlquiz.core
   (:require
    [accountant.core :as accountant]
+   [clerk.core :as clerk]
+   [cljs.core.async :refer [<!]]
+   [cljslog.core :as log]
+   [cljs-http.client :as http]
    [nlquiz.generate :as generate]
    [nlquiz.quiz :as quiz]
-   [clerk.core :as clerk]
-   [cljs-http.client :as http]
-   [cljslog.core :as log]
+   [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
-   [reitit.frontend :as reitit]
-   [cljs.core.async :refer [<!]])
+   [reitit.frontend :as reitit])
+
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn about-component []
@@ -30,6 +32,7 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
       [:div
        [:header
         [:a {:href (path-for :index)} "Quiz"] " | "
+        [:a {:href (path-for :test)} "Test"] " | "
         [:a {:href (path-for :about)} "About"]]
        [page]
        [:footer
@@ -53,6 +56,7 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
 (def router
   (reitit/router
    [["/nlquiz" :index]
+    ["/nlquiz/test" :test]
     ["/nlquiz/about" :about]]))
 
 (defn path-for [route & [params]]
@@ -66,7 +70,8 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
   (case route
     nil #'quiz/quiz-component
     :index #'quiz/quiz-component
-    :about #'about-component))
+    :about #'about-component
+    :test #'test/test-component))
 
 ;; -------------------------
 ;; Initialize app

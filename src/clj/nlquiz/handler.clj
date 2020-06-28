@@ -65,6 +65,9 @@
      
      ["/about"          {:get {:handler html-response}}]
      ["/nlquiz/about"   {:get {:handler html-response}}]
+
+     ["/nlquiz/test"    {:get {:handler html-response}}]
+
      
      ;; routes which return a json response:
      ["/parse"                 {:get {:handler (fn [request] (json-response request parse))}}]
