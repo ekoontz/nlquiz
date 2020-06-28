@@ -41,9 +41,19 @@
         [:p.code (clojure.string/join "," @source-semantics)]]
        [:div [:h4 "possible answer"] @possible-answer]
        [:div [:h4 "parses of possible-answer"]
-        [:p.code (clojure.string/join "," @possible-answer-parses)]]
+        [:ul.code
+         (doall
+          (->> (range 0 (count @possible-answer-parses))
+               (map (fn [i]
+                      [:li {:key i}
+                       (nth @possible-answer-parses i)]))))]]
        [:div [:h4 "semantics of possible-answer parses"]
-        [:p.code (clojure.string/join "," @target-semantics)]]])))
+        [:ul.code
+         (doall
+          (->> (range 0 (count @target-semantics))
+               (map (fn [i]
+                      [:li {:key i}
+                       (nth @target-semantics i)]))))]]])))
 
 (defn get-generation-tuple [expression-index generation-tuple
                             source source-semantics possible-answer next-step-fn]

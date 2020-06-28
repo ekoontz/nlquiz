@@ -165,9 +165,12 @@ h4 {
 }
 
 p.code {
+    font-family:monospace;
+}
+
+ul.code li {
     width:100%;
     float:left;
-    border:0px dashed lightblue;
     font-family: monospace;
 }
 
