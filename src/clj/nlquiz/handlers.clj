@@ -36,7 +36,11 @@
         (get
          (-> _request :query-params) "q")]
     (log/debug (str "parsing input: " string-to-parse))
-    (let [parses (->> string-to-parse clojure.string/lower-case nl/parse)
+    (let [parses (->> string-to-parse clojure.string/lower-case nl/parse
+                      (filter #(or (= [] (u/get-in % [:subcat]))
+                                   (= :top (u/get-in % [:subcat]))
+                                   (= ::none (u/get-in % [:subcat] ::none))))
+                      (filter #(= nil (u/get-in % [:mod] nil))))
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
        :sem (->> parses
@@ -48,14 +52,13 @@
         (get
          (-> _request :query-params) "q")]
     (log/debug (str "parsing input: " string-to-parse))
-    (let [parses (->> string-to-parse clojure.string/lower-case en/parse)
+    (let [parses (->> string-to-parse clojure.string/lower-case en/parse
+                      (filter #(or (= [] (u/get-in % [:subcat]))
+                                   (= :top (u/get-in % [:subcat]))
+                                   (= ::none (u/get-in % [:subcat] ::none))))
+                      (filter #(= nil (u/get-in % [:mod] nil))))
           syntax-trees (->> parses (map en/syntax-tree))]
       {:trees syntax-trees
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
                  (map dag-to-string))})))
-
-
-       
-
-
