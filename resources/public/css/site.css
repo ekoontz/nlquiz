@@ -179,3 +179,6 @@ ul.code li {
     font-family: monospace;
 }
 
+table.eval th,td {
+    text-align:left;
+}

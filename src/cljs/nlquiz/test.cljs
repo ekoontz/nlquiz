@@ -2,7 +2,9 @@
   (:require
    [cljs-http.client :as http]
    [cljslog.core :as log]
+   [dag_unify.diagnostics :refer [fail-path]]
    [dag_unify.serialization :refer [deserialize]]
+   [dag_unify.core :as u]
    [menard.english :as en]
    [menard.nederlands :as nl]
    [menard.translate :as tr]
@@ -67,17 +69,44 @@
                            str
                            )]))))]]
        [:div [:h4 "evaluations"]
-        [:table
+        [:table.eval
          [:tbody
+          [:tr
+           [:th]
+           (doall
+            (->> (range 0 (count @source-semantics))
+                 (map (fn [i]
+                         [:th {:key (str "thc" i)}
+                          (str "s" i)]))))]
           (doall
            (->> (range 0 (count @target-semantics))
                 (map (fn [i]
-                       [:tr
-                        [:td.code
-                         (str "target:"
-                              (-> (nth @target-semantics i)
-                                  dag_unify.core/pprint
-                                  str))]]))))]]]])))
+                       [:tr {:key (str "tr" i)}
+                        [:th {:key (str "thr" i)}
+                         (str "t" i)]
+                        (doall
+                         (->> (range 0 (count @source-semantics))
+                              (map (fn [j]
+                                     (let [u? (u/unify (nth @target-semantics i)
+                                                       (nth @source-semantics j))]
+                                       [:td {:key (str "td" i "-" j)}
+                                        [:table.eval
+                                         [:tbody
+                                          [:tr [:th "u?"]
+                                           (if (= u? :fail)
+                                             [:th "fp"])]
+                                          [:tr
+                                           [:td
+                                            (-> u?
+                                                u/pprint str)]
+                                           (if (= u? :fail)
+                                             [:td
+                                              (->
+                                               (fail-path
+                                                (nth @target-semantics i)
+                                                (nth @source-semantics j))
+                                               :path str)])]]]])))))]))))]]]])))
+
 
 (defn get-generation-tuple [expression-index generation-tuple
                             source source-semantics possible-answer next-step-fn]
