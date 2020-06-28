@@ -156,6 +156,11 @@ footer > p {
     text-align:right;
 }
 
+#test > table {
+    text-align:left;
+}
+
+
 h4 {
     float:left;
     width:auto;
@@ -164,7 +169,7 @@ h4 {
     margin:0.25em;
 }
 
-p.code {
+.code {
     font-family:monospace;
 }
 

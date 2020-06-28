@@ -19,8 +19,7 @@
         source-semantics (r/atom nil)
         target-semantics (r/atom nil)
         possible-answer (r/atom nil)
-        possible-answer-parses (r/atom nil)
-        evaluations (r/atom nil)]
+        possible-answer-parses (r/atom nil)]
     (get-generation-tuple expression-index generation-tuple
                           source source-semantics
                           possible-answer
@@ -35,7 +34,9 @@
                                            possible-answer
                                            (fn [] (parse-possible-answer
                                                    @possible-answer
-                                                   possible-answer-parses target-semantics))))}
+                                                   possible-answer-parses
+                                                   target-semantics
+                                                   evaluations))))}
         "Regenerate"]
        [:div [:h4 "source"] @source]
        [:div [:h4 "source semantics"]
@@ -64,7 +65,19 @@
                        (-> (nth @target-semantics i)
                            dag_unify.core/pprint
                            str
-                           )]))))]]])))
+                           )]))))]]
+       [:div [:h4 "evaluations"]
+        [:table
+         [:tbody
+          (doall
+           (->> (range 0 (count @target-semantics))
+                (map (fn [i]
+                       [:tr
+                        [:td.code
+                         (str "target:"
+                              (-> (nth @target-semantics i)
+                                  dag_unify.core/pprint
+                                  str))]]))))]]]])))
 
 (defn get-generation-tuple [expression-index generation-tuple
                             source source-semantics possible-answer next-step-fn]
@@ -79,7 +92,7 @@
         (reset! possible-answer (-> response :body :target))
         (next-step-fn))))
 
-(defn parse-possible-answer [possible-answer put-parses-here put-semantics-here]
+(defn parse-possible-answer [possible-answer put-parses-here put-semantics-here put-evaluation-here]
   (go (let [response (<! (http/get (str root-path "parse/nl")
                                    {:query-params {"q" possible-answer}}))]
         (reset! put-parses-here (-> response :body :trees))
