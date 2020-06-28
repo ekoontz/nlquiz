@@ -88,24 +88,39 @@
                          (->> (range 0 (count @source-semantics))
                               (map (fn [j]
                                      (let [u? (u/unify (nth @target-semantics i)
-                                                       (nth @source-semantics j))]
+                                                       (nth @source-semantics j))
+                                           the-fp (if (= u? :fail)
+                                                (fail-path
+                                                 (nth @target-semantics i)
+                                                 (nth @source-semantics j)))]
+                                       (if the-fp (log/info (str "FP: " the-fp)))
+                                       (if the-fp (log/info (str "path(fp): " (-> the-fp :path str))))
                                        [:td {:key (str "td" i "-" j)}
                                         [:table.eval
                                          [:tbody
                                           [:tr [:th "u?"]
                                            (if (= u? :fail)
-                                             [:th "fp"])]
+                                             [:th "fp"])
+                                           (if (= u? :fail)
+                                             [:th "v(t)"])
+                                           (if (= u? :fail)
+                                             [:th "v(s)"])]
+
                                           [:tr
-                                           [:td
+                                           [:td.code
                                             (-> u?
                                                 u/pprint str)]
                                            (if (= u? :fail)
-                                             [:td
-                                              (->
-                                               (fail-path
-                                                (nth @target-semantics i)
-                                                (nth @source-semantics j))
-                                               :path str)])]]]])))))]))))]]]])))
+                                             [:td.code
+                                              (-> the-fp :path str)])
+                                           (if the-fp
+                                             [:td.code
+                                              (-> the-fp :arg1 deserialize u/pprint str)])
+                                           (if (and false (= u? :fail))
+                                             [:td.code
+                                              (-> the-fp :arg2)])]]]])))))]))))]]]])))
+                                               
+                                             
 
 
 (defn get-generation-tuple [expression-index generation-tuple
