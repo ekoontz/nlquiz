@@ -142,7 +142,7 @@ footer > p {
 
 #test {
     float: left;
-    border: 1px dashed green;
+    border: 0px dashed green;
     font-size:small;
     width:90%;
 }

@@ -29,12 +29,12 @@
       [:div#test
        [:button
         {:on-click (fn [input-element]
-                     (get-generation-tuple
-                      expression-index
-                      generation-tuple source possible-answer
-                      (fn [] (parse-possible-answer
-                              @possible-answer
-                              possible-answer-parses))))}
+                     (get-generation-tuple expression-index generation-tuple
+                                           source source-semantics
+                                           possible-answer
+                                           (fn [] (parse-possible-answer
+                                                   @possible-answer
+                                                   possible-answer-parses target-semantics))))}
         "Regenerate"]
        [:div [:h4 "source"] @source]
        [:div [:h4 "source semantics"]
