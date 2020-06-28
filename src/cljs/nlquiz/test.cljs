@@ -15,11 +15,12 @@
 (defn test-component []
   (let [expression-index (r/atom 0)
         generation-tuple (r/atom nil)
-        source (r/atom "")
-        source-semantics (r/atom [])
-        target-semantics (r/atom [])
-        possible-answer (r/atom "")
-        possible-answer-parses (r/atom [])]
+        source (r/atom nil)
+        source-semantics (r/atom nil)
+        target-semantics (r/atom nil)
+        possible-answer (r/atom nil)
+        possible-answer-parses (r/atom nil)
+        evaluations (r/atom nil)]
     (get-generation-tuple expression-index generation-tuple
                           source source-semantics
                           possible-answer
