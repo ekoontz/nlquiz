@@ -165,6 +165,9 @@ h4 {
 }
 
 p.code {
+    width:100%;
+    float:left;
+    border:0px dashed lightblue;
     font-family: monospace;
 }
 

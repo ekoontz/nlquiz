@@ -17,13 +17,14 @@
         generation-tuple (r/atom nil)
         source (r/atom "")
         source-semantics (r/atom [])
+        target-semantics (r/atom [])
         possible-answer (r/atom "")
         possible-answer-parses (r/atom [])]
     (get-generation-tuple expression-index generation-tuple
                           source source-semantics
                           possible-answer
                           (fn [] (parse-possible-answer
-                                  @possible-answer possible-answer-parses)))
+                                  @possible-answer possible-answer-parses target-semantics)))
     (fn []
       [:div#test
        [:button
@@ -40,8 +41,9 @@
         [:p.code (clojure.string/join "," @source-semantics)]]
        [:div [:h4 "possible answer"] @possible-answer]
        [:div [:h4 "parses of possible-answer"]
-        [:p.code (clojure.string/join "," @possible-answer-parses)]]])))
-
+        [:p.code (clojure.string/join "," @possible-answer-parses)]]
+       [:div [:h4 "semantics of possible-answer parses"]
+        [:p.code (clojure.string/join "," @target-semantics)]]])))
 
 (defn get-generation-tuple [expression-index generation-tuple
                             source source-semantics possible-answer next-step-fn]
@@ -56,17 +58,16 @@
         (reset! possible-answer (-> response :body :target))
         (next-step-fn))))
 
-(defn parse-possible-answer [possible-answer put-parses-here]
+(defn parse-possible-answer [possible-answer put-parses-here put-semantics-here]
   (go (let [response (<! (http/get (str root-path "parse/nl")
                                    {:query-params {"q" possible-answer}}))]
         (reset! put-parses-here (-> response :body :trees))
-        (doall
-         (->> (-> response :body :trees)
-              (map (fn [tree]
-                     (log/info (str "tree: " tree)))))))))
-
-
-
+        (reset! put-semantics-here
+                (->> (-> response :body :sem)
+                     (map cljs.reader/read-string)
+                     (map deserialize)
+                     (map dag_unify.core/pprint)
+                     (map str))))))
 
 
         
