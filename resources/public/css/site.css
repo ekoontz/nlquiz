@@ -117,8 +117,7 @@ td.target {
 div.question-and-guess {
     margin-top:0.25em;
     float:left;
-    border:3px solid lightblue;
-    border-radius: 5px;
+    width:100%;
 }
 
 div.question-and-guess button {
@@ -128,10 +127,12 @@ div.question-and-guess button {
 div.question {
     font-size:80%;
     float:left;
+    width:100%;
 }
 
 div.guess {
     float:left;
+    width:100%;
 }
 
 footer > p {
