@@ -126,12 +126,13 @@
              (remove #(= false %)))]
     (when (not (empty? result))
       ;; got it right!
-      (show-praise)
-      (reset! input-state "disabled")
-      (reset! question-table
-              (concat
-               [{:source @question-html :target @guess-text}]
-               (take 4 @question-table)))
+      (let [correct-answer @guess-text]
+        (show-praise)
+        (reset! input-state "disabled")
+        (reset! question-table
+                (concat
+                 [{:source @question-html :target correct-answer}]
+                 (take 4 @question-table))))
                       
       (new-question expression-index question-html possible-correct-semantics))))
 
