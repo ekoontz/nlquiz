@@ -107,9 +107,11 @@
                                              [:th "v(s)"])]
 
                                           [:tr
-                                           [:td.code
-                                            (-> u?
-                                                u/pprint str)]
+                                           (if (= u? :fail)
+                                             [:td.code
+                                              (-> u? u/pprint str)]
+                                             [:td {:class "code ok"}
+                                              (-> u? u/pprint str)])
                                            (if (= u? :fail)
                                              [:td.code
                                               (-> the-fp :path str)])
