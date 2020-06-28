@@ -116,12 +116,9 @@
                                            (if the-fp
                                              [:td.code
                                               (-> the-fp :arg1 deserialize u/pprint str)])
-                                           (if (and false (= u? :fail))
+                                           (if the-fp
                                              [:td.code
-                                              (-> the-fp :arg2)])]]]])))))]))))]]]])))
-                                               
-                                             
-
+                                              (-> the-fp :arg2 deserialize u/pprint str)])]]]])))))]))))]]]])))
 
 (defn get-generation-tuple [expression-index generation-tuple
                             source source-semantics possible-answer next-step-fn]
