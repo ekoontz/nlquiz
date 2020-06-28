@@ -139,3 +139,27 @@ div.guess {
 footer > p {
     white-space:nowrap;
 }
+
+#test {
+    float: left;
+    border: 1px dashed green;
+    font-size:small;
+    width:90%;
+}
+
+#test > div {
+    border:0px dashed blue;
+    margin:0.25em;
+    padding:0;
+    float:left;
+    width:90%;
+    text-align:right;
+}
+
+h4 {
+    float:left;
+    width:auto;
+    text-align:left;
+    border:0px dashed red;
+    margin:0.25em;
+}

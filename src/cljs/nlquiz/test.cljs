@@ -12,67 +12,44 @@
 (defonce root-path "/nlquiz/")
 
 (defn test-component []
-  (let [target-expression-history (r/atom [])
-        source-expression-history (r/atom [])
-        spec-atom (atom 0)]
+  (let [expression-index (r/atom 0)
+        generation-tuple (r/atom nil)
+        source (r/atom "")
+        possible-answer (r/atom "")
+        possible-answer-parses (r/atom [])]
+    (get-generation-tuple expression-index generation-tuple source possible-answer
+                          (fn [] (parse-possible-answer @possible-answer possible-answer-parses)))
     (fn []
-      [:div {:style {:float "left"
-                     :margin-left "10%"
-                     :width "80%"
-                     :border "1px dashed green"}}
-       (if false
-         (do
-           (js/setTimeout
-            #(generate-new-pair spec-atom target-expression-history source-expression-history)
-            1000)
-           nil))
-       [:table
-        [:tbody
-         (doall
-          (map (fn [i]
-                 (let [target-expression (nth @target-expression-history i)
-                       source-expression (nth @source-expression-history i)
-                       tree-atom (r/atom [])]
-                   [:tr {:key (str "target-" i) :class (if (= 0 (mod i 2)) "even" "odd")}
-                    [:th (str (+ 1 i))]
-                    [:td (nl/morph target-expression)]
-                    [:td (en/morph source-expression)]
-                    [:td
-                     (do (-> source-expression en/morph (source-parse tree-atom))
-                         (log/info (str "tree-atom: " @tree-atom))
-                         (clojure.string/join " " @tree-atom))]]))
-               (range 0 (count @target-expression-history))))]]])))
+      [:div#test
+       [:div [:h4 "source"] @source]
+       [:div [:h4 "possible answer"] @possible-answer]
+       [:div [:h4 "parses of possible-answer"]
+        (clojure.string/join "," @possible-answer-parses)]])))
 
-(defn source-parse [source-string tree-atom]
-  (go (let [response (<! (http/get (str root-path "parse/en")
-                                   {:query-params {"q" source-string}}))]
-        (log/info (str "the parse trees are: " (-> response :body :trees)))
-        (reset! tree-atom (-> response :body :trees))))
-  (log/info (str "and now the tree-atom is: " @tree-atom)))
+(defn get-generation-tuple [expression-index generation-tuple source possible-answer next-step-fn]
+  (go (let [response (<! (http/get (str root-path "generate/"
+                                        @expression-index)))]
+        (log/debug (str "one possible correct answer to this question is: '" (-> response :body :target) "'"))
+        (reset! generation-tuple (-> response :body))
+        (reset! source (-> response :body :source))
+        (reset! possible-answer (-> response :body :target))
+        (next-step-fn))))
+
+(defn parse-possible-answer [possible-answer put-parses-here]
+  (log/info (str "GOT HERE IN PARSING WITH POSSIBLE ANSWER: " possible-answer))
+  (go (let [response (<! (http/get (str root-path "parse/nl")
+                                   {:query-params {"q" possible-answer}}))]
+        (log/info (str "response: " (-> response :body :trees)))
+        (reset! put-parses-here (-> response :body :trees))
+        (doall
+         (->> (-> response :body :trees)
+              (map (fn [tree]
+                     (log/info (str "tree: " tree)))))))))
+
+
+
+
+
         
-(defn generate-new-pair [spec-atom target-expression-history source-expression-history]
-  (let [target-expression (nl/generate (nth nl/expressions @spec-atom))
-        source-expression (do-the-source-expression target-expression)]
-    (log/info (str "target: " (-> target-expression nl/morph)))
-    (log/info (str "source: " (-> source-expression en/morph)))
-    (update-expressions! target-expression-history target-expression)
-    (update-expressions! source-expression-history source-expression)))
-    
-(defn update-expressions! [expression-history new-expression]
-  (swap! expression-history
-         (fn [existing-expression-history]
-           (if (> (count existing-expression-history) 5)
-             (cons new-expression (butlast existing-expression-history))
-             (cons new-expression existing-expression-history))))
-  nil)
 
-(defn do-the-source-expression [target-expression]
-  (try
-    (-> target-expression
-        tr/nl-to-en-spec
-        en/generate)
-    (catch js/Error e
-      (do
-        (log/warn (str "failed to generate: " e))
-        "??"))))
 
