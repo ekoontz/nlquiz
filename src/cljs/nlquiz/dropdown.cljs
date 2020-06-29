@@ -7,10 +7,11 @@
    [dag_unify.core :as u]
    [dommy.core :as dommy]))
 
-(defn expressions [expression-chosen-atom onchange]
+(defn expressions [expression-chosen-atom onchange n]
   (let [show-these-expressions
         (filter #(= true (u/get-in % [:menuable?] true))
-                nl/expressions)]
+                nl/expressions)
+        n (or n 15)]
      [:select {:id "expressionchooser"
                :on-change #(do (reset! expression-chosen-atom
                                        (js/parseInt
@@ -26,8 +27,8 @@
                   [:option {:name item-id
                             :value item-id
                             :key (str "item-" item-id)}
-                   (if (> (count (:example expression)) 15)
-                     (str (subs (:example expression) 0 15) "..")
+                   (if (> (count (:example expression)) n)
+                     (str (subs (:example expression) 0 n) "..")
                      (:example expression))]))))
        (remove nil?))]))
 

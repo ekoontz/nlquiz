@@ -15,7 +15,7 @@
 (defonce root-path "/nlquiz/")
 
 (defn test-component []
-  (let [expression-index (r/atom 1)
+  (let [expression-index (r/atom 4)
         generation-tuple (r/atom nil)
         source (r/atom nil)
         source-semantics (r/atom nil)
@@ -41,6 +41,10 @@
                                                    evaluations))))}
         "Regenerate"]
 
+       [:div {:style {:float "left"}}
+        [dropdown/expressions expression-index
+         (fn []) 70]]
+       
        [:div [:h4 "evaluations"]
         [:table.eval
          [:tbody
