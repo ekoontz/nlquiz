@@ -15,7 +15,7 @@
 (defonce root-path "/nlquiz/")
 
 (defn test-component []
-  (let [expression-index (r/atom 0)
+  (let [expression-index (r/atom 1)
         generation-tuple (r/atom nil)
         source (r/atom nil)
         source-semantics (r/atom nil)
@@ -26,7 +26,7 @@
                           source source-semantics
                           possible-answer
                           (fn [] (parse-possible-answer
-                                  @possible-answer possible-answer-parses target-semantics)))
+                                  @possible-answer possible-answer-parses target-semantics evaluations)))
     (fn []
       [:div#test
        [:button
