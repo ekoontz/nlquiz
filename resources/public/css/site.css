@@ -187,3 +187,7 @@ table.eval th,td {
     text-align:left;
     border:1px solid black;
 }
+
+a.debug {
+    font-family:monospace;
+}
