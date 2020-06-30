@@ -27,12 +27,13 @@
 
 (defonce root-path "/nlquiz/")
 
-(def praises ["precies!😁"
-              "prima!!😎 "
+(def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
-              "dat is leuk! 🚲"
+              "mooi..🌷"
               "oké! 🌷"
-              ])
+              "prachtig.."
+              "precies!😁"
+              "prima!!😎 "])
 
 (defn new-question [expression-index question-html possible-correct-semantics]
   (go (let [response (<! (http/get (str root-path "generate/"
