@@ -118,7 +118,6 @@ td.target {
 div.question-and-guess {
     margin-top:0.25em;
     float:left;
-    width:100%;
 }
 
 div.question-and-guess button {
@@ -133,7 +132,6 @@ div.question {
 
 div.guess {
     float:left;
-    width:100%;
 }
 
 footer > p {
@@ -183,7 +181,7 @@ ul.code li {
     font-family: monospace;
 }
 
-table.eval th,td {
+table.eval th, table.eval td {
     text-align:left;
     border:1px solid black;
 }
