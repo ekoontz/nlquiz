@@ -5,6 +5,7 @@
    [cljs.core.async :refer [<!]]
    [cljslog.core :as log]
    [cljs-http.client :as http]
+   [nlquiz.curriculum :as curriculum]
    [nlquiz.generate :as generate]
    [nlquiz.quiz :as quiz]
    [nlquiz.test :as test]
@@ -59,7 +60,8 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
   (reitit/router
    [["/nlquiz" :index]
     ["/nlquiz/test" :test]
-    ["/nlquiz/about" :about]]))
+    ["/nlquiz/about" :about]
+    ["/nlquiz/curriculum" :curriculum]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -73,7 +75,8 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
     nil #'quiz/quiz-component
     :index #'quiz/quiz-component
     :about #'about-component
-    :test #'test/test-component))
+    :test #'test/test-component
+    :curriculum #'curriculum/quiz-component))
 
 ;; -------------------------
 ;; Initialize app

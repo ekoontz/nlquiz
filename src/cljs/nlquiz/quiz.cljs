@@ -114,6 +114,7 @@
       )))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
+  (log/info (str "guess-text: '" @guess-text "' has " (count correct-semantics-set) " semantic interpretation" (if (= 1 (count correct-semantics)) "s") "."))
   (let [result
         (->> guesses-semantics-set
              (mapcat (fn [guess]
@@ -122,11 +123,11 @@
                                    (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
                                                        (u/subsumes? correct-semantics guess))]
                                      (if (not correct?)
-                                       (log/info (str "guess: '" @guess-text "' was NOT correct: "
+                                       (log/info (str "semantics of guess: '" @guess-text "' are NOT correct: "
                                                       "fail-path: "
                                                       (dag_unify.diagnostics/fail-path correct-semantics guess) "; "
                                                       "subsumes? " (u/subsumes? correct-semantics guess)))
-                                       (log/info (str "guess was correct! " @guess-text)))
+                                       (log/info (str "This interpretation of the guess matched the correct semantics! " @guess-text)))
                                      correct?))))))
              (remove #(= false %)))]
     (when (not (empty? result))

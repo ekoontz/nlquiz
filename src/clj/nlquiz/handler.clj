@@ -60,10 +60,11 @@
     [;; routes which return a html response:
 
      ;; TODO: redirect 302 to /nlquiz
-     ["/"               {:get {:handler html-response}}]
-     ["/nlquiz"         {:get {:handler html-response}}]
-     ["/nlquiz/about"   {:get {:handler html-response}}]
-     ["/nlquiz/test"    {:get {:handler html-response}}]
+     ["/"                      {:get {:handler html-response}}]
+     ["/nlquiz"                {:get {:handler html-response}}]
+     ["/nlquiz/about"          {:get {:handler html-response}}]
+     ["/nlquiz/curriculum"     {:get {:handler html-response}}]
+     ["/nlquiz/test"           {:get {:handler html-response}}]
      ;; routes which return a json response:
      ["/nlquiz/parse/nl"       {:get {:handler (fn [request] (json-response request parse-nl))}}]
      ["/nlquiz/parse/en"       {:get {:handler (fn [request] (json-response request parse-en))}}]

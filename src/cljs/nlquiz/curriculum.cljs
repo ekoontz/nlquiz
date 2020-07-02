@@ -9,16 +9,24 @@
 
 (defn tree []
   [:div.curriculum
-   [:h1 [:a {:href "/curriculum/adjectives"} "Adjectives"]]
-   [:h1 [:a {:href "/curriculum/nouns"} "Nouns"]]
+   [:h1 [:a {:href "/nlquiz/curriculum"} "(whole curriculum)"]]
+   [:h1 [:a {:href "/nlquiz/curriculum/adjectives"} "Adjectives"]]
+   [:h1 [:a {:href "/nlquiz/curriculum/nouns"} "Nouns"]]
    [:ul
-    [:li [:a {:href "/curriculum/nouns/art"} "Definite and indefinite articles"]]
-    [:li [:a {:href "/curriculum/nouns/poss"} "Possessive articles"]]]
+    [:li [:a {:href "/nlquiz/curriculum/nouns/art"} "Definite and indefinite articles"]]
+    [:li [:a {:href "/nlquiz/curriculum/nouns/poss"} "Possessive articles"]]]
    [:h1 "Verbs"]
    [:ul
     [:li "Present Tense"]
     [:li "Transitive"]
     [:li "Reflexive"]]])
+
+(defn quiz-component []
+  (fn []
+    [:div
+     [:h1 "WELCOME TO DA CURRICULUM QUIZ!"]
+     ]))
+
 
 
     
