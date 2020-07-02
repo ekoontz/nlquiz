@@ -1,6 +1,7 @@
 (ns nlquiz.quiz
   (:require
    [accountant.core :as accountant]
+   [nlquiz.curriculum :as curriculum]
    [nlquiz.generate :as generate]
    [nlquiz.dropdown :as dropdown]
    [dag_unify.core :as u]
@@ -93,6 +94,9 @@
                               (show-possible-answer))
                   :disabled @ik-weet-niet-button-state} "ik weet het niet"]
         ]
+
+       [:div {:style {:float "right"}}
+        [curriculum/tree]]
           
        [:div {:style {:float "left" :width "100%"}}
         [:table

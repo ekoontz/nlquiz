@@ -121,7 +121,7 @@ div.question-and-guess {
 }
 
 div.question-and-guess button {
-    float:right;
+    float:left;
 }
 
 div.question {
@@ -188,4 +188,14 @@ table.eval th, table.eval td {
 
 a.debug {
     font-family:monospace;
+}
+
+div.curriculum {
+    padding:0.25em;
+    border:1px dashed green;
+    font-size:small;
+}
+
+div.curriculum h1 {
+    font-size:small;
 }
