@@ -62,22 +62,11 @@
      ;; TODO: redirect 302 to /nlquiz
      ["/"               {:get {:handler html-response}}]
      ["/nlquiz"         {:get {:handler html-response}}]
-     
-     ["/about"          {:get {:handler html-response}}]
      ["/nlquiz/about"   {:get {:handler html-response}}]
-
      ["/nlquiz/test"    {:get {:handler html-response}}]
-
-     
      ;; routes which return a json response:
-     ["/parse/nl"                 {:get {:handler (fn [request] (json-response request parse-nl))}}]
-     ["/nlquiz/parse/nl"          {:get {:handler (fn [request] (json-response request parse-nl))}}]
-
-     ;; routes which return a json response:
-     ["/parse/en"              {:get {:handler (fn [request] (json-response request parse-en))}}]
+     ["/nlquiz/parse/nl"       {:get {:handler (fn [request] (json-response request parse-nl))}}]
      ["/nlquiz/parse/en"       {:get {:handler (fn [request] (json-response request parse-en))}}]
-     
-     ["/generate/:spec"        {:get {:handler (fn [request] (json-response request generate))}}]
      ["/nlquiz/generate/:spec" {:get {:handler (fn [request] (json-response request generate))}}]])
 
    (reitit-ring/routes
