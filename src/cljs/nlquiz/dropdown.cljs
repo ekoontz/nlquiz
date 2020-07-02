@@ -31,8 +31,3 @@
                      (str (subs (:example expression) 0 n) "..")
                      (:example expression))]))))
        (remove nil?))]))
-
-
-
-
-
