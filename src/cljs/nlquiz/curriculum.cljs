@@ -21,12 +21,23 @@
     [:li "Transitive"]
     [:li "Reflexive"]]])
 
-(defn quiz-component []
+(defn quiz []
   (fn []
     [:div
      [:h1 "WELCOME TO DA CURRICULUM QUIZ!"]
      ]))
 
+(defn quiz-major []
+  (fn []
+    [:div
+     [:h1 "WELCOME TO DA CURRICULUM QUIZ (Major)!"]
+     ]))
+
+(defn quiz-minor []
+  (fn []
+    [:div
+     [:h1 "WELCOME TO DA CURRICULUM QUIZ (Minor)!"]
+     ]))
 
 
     

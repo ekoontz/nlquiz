@@ -58,10 +58,12 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
 
 (def router
   (reitit/router
-   [["/nlquiz" :index]
-    ["/nlquiz/test" :test]
-    ["/nlquiz/about" :about]
-    ["/nlquiz/curriculum" :curriculum]]))
+   [["/nlquiz"                          :index]
+    ["/nlquiz/test"                     :test]
+    ["/nlquiz/about"                    :about]
+    ["/nlquiz/curriculum"               :curriculum]
+    ["/nlquiz/curriculum/:major"        :curriculum-major]
+    ["/nlquiz/curriculum/:major/:minor" :curriculum-minor]]))
 
 (defn path-for [route & [params]]
   (if params
@@ -76,7 +78,9 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
     :index #'quiz/quiz-component
     :about #'about-component
     :test #'test/test-component
-    :curriculum #'curriculum/quiz-component))
+    :curriculum #'curriculum/quiz
+    :curriculum-major #'curriculum/quiz-major
+    :curriculum-minor #'curriculum/quiz-minor))
 
 ;; -------------------------
 ;; Initialize app
