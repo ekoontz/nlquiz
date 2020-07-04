@@ -1,7 +1,6 @@
 (ns nlquiz.quiz
   (:require
    [accountant.core :as accountant]
-   [nlquiz.curriculum :as curriculum]
    [nlquiz.generate :as generate]
    [nlquiz.dropdown :as dropdown]
    [dag_unify.core :as u]

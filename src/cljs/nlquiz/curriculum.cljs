@@ -6,7 +6,8 @@
    [menard.translate :as tr]
    [cljslog.core :as log]
    [dag_unify.core :as u]
-   [dommy.core :as dommy]))
+   [dommy.core :as dommy]
+   [nlquiz.quiz :as quiz]))
 
 (defn tree []
   [:div.curriculum
@@ -40,6 +41,12 @@
 
 (defn quiz-minor []
   (fn []
-    [:div
-     [:h1 "WELCOME TO DA CURRICULUM QUIZ (Minor)!"]
-     ]))
+    (let [routing-data (session/get :route)
+          major (get-in routing-data [:route-params :major])
+          minor (get-in routing-data [:route-params :minor])]
+      [:div.curr-major
+       (tree)       
+       [:h2
+        "Let's study " major " and in particular " minor "!"]])))
+
+
