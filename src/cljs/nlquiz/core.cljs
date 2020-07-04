@@ -61,8 +61,10 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
    [["/nlquiz"                          :index]
     ["/nlquiz/test"                     :test]
     ["/nlquiz/about"                    :about]
-    ["/nlquiz/curriculum"               :curriculum]
-    ["/nlquiz/curriculum/:major"        :curriculum-major]
+    ["/nlquiz/curriculum"               
+     ["" {:name :curriculum}]
+     ["/:major" {:parameters {:path [:major]}
+                 :name :curriculum-major}]]
     ["/nlquiz/curriculum/:major/:minor" :curriculum-minor]]))
 
 (defn path-for [route & [params]]

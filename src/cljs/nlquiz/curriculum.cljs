@@ -1,5 +1,6 @@
 (ns nlquiz.curriculum
   (:require
+   [reagent.session :as session]
    [menard.english :as en]
    [menard.nederlands :as nl]
    [menard.translate :as tr]
@@ -29,15 +30,15 @@
 
 (defn quiz-major []
   (fn []
-    [:div
-     [:h1 "WELCOME TO DA CURRICULUM QUIZ (Major)!"]
      ]))
+    (let [routing-data (session/get :route)
+          major (get-in routing-data [:route-params :major])]
+      [:div
+       [:h2
+        "MAJOR CATEGORY OF: " major]])))
 
 (defn quiz-minor []
   (fn []
     [:div
      [:h1 "WELCOME TO DA CURRICULUM QUIZ (Minor)!"]
      ]))
-
-
-    
