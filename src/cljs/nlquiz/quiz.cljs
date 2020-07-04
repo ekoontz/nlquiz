@@ -35,9 +35,16 @@
               "precies!😁"
               "prima!!😎 "])
 
+(defn expression-based-generate []
+  (str root-path "generate/"
+       @expression-index))
+
+(defn curriculum-based-generate []
+  (str root-path "curriculum/generate/"
+       @expression-index))
+
 (defn new-question [expression-index question-html possible-correct-semantics]
-  (go (let [response (<! (http/get (str root-path "generate/"
-                                        @expression-index)))]
+  (go (let [response (<! (http/get (expression-based-generate)))]
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
