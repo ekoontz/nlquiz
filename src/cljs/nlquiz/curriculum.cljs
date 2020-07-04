@@ -31,9 +31,10 @@
   (fn []
     (let [routing-data (session/get :route)
           major (get-in routing-data [:route-params :major])]
-      [:div
+      [:div.curr-major
+       (tree)       
        [:h2
-        "MAJOR CATEGORY OF: " major]])))
+        "Let's study " major "!"]])))
 
 (defn quiz-minor []
   (fn []

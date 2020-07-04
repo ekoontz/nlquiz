@@ -192,10 +192,17 @@ a.debug {
 
 div.curriculum {
     padding:0.25em;
-    border:1px dashed green;
+    border:0px dashed green;
     font-size:small;
+    float:right;
 }
 
 div.curriculum h1 {
     font-size:small;
+}
+
+div.curr-major {
+    width:100%;
+    float:left;
+    border:0px dashed blue;
 }
