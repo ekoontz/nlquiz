@@ -10,13 +10,12 @@
 
 (defn tree []
   [:div.curriculum
-   [:h1 [:a {:href "/nlquiz/curriculum"} "(whole curriculum)"]]
    [:h1 [:a {:href "/nlquiz/curriculum/adjectives"} "Adjectives"]]
    [:h1 [:a {:href "/nlquiz/curriculum/nouns"} "Nouns"]]
    [:ul
     [:li [:a {:href "/nlquiz/curriculum/nouns/art"} "Definite and indefinite articles"]]
     [:li [:a {:href "/nlquiz/curriculum/nouns/poss"} "Possessive articles"]]]
-   [:h1 "Verbs"]
+   [:h1 [:a {:href "/nlquiz/curriculum/verbs"} "Verbs"]]
    [:ul
     [:li "Present Tense"]
     [:li "Transitive"]
