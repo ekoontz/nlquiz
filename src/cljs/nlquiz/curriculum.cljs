@@ -23,9 +23,11 @@
 
 (defn quiz []
   (fn []
-    [:div
-     [:h1 "WELCOME TO DA CURRICULUM QUIZ!"]
-     ]))
+    (let [routing-data (session/get :route)]
+      [:div.curr-major
+       (tree)       
+       [:h2
+        "Choose a topic to study."]])))
 
 (defn quiz-major []
   (fn []

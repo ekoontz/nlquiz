@@ -33,6 +33,7 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
       [:div
        [:header
         [:a {:href (path-for :index)} "Quiz"] " | "
+        [:a {:href (path-for :curriculum)} "Curriculum"] " | "
         [:a {:href (path-for :about)} "About"] " || "
         [:a.debug {:href (path-for :test)} "Debug"]
 
