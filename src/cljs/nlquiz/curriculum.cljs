@@ -30,7 +30,6 @@
 
 (defn quiz-major []
   (fn []
-     ]))
     (let [routing-data (session/get :route)
           major (get-in routing-data [:route-params :major])]
       [:div
