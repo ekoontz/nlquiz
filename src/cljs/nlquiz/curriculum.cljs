@@ -9,7 +9,8 @@
    [dag_unify.core :as u]
    [dommy.core :as dommy]
    [nlquiz.quiz :as quiz]
-   [reagent.core :as r]))
+   [reagent.core :as r])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 ;; TODO: move to core.
 (defonce root-path "/nlquiz/")
@@ -77,30 +78,27 @@
     (log/info (str "returning a function from the expression index: " @quiz/expression-index))
     (http/get (str root-path "generate/" @quiz/expression-index))))
 
+(defn new-question [specification-fn]
+  (log/info (str "NEW QUESTION:..."))
+  (go (let [response (<! (specification-fn))]
+        (log/debug (str "new-expression response: " reponse))
+        (log/debug (str "one possible correct answer to this question is: '"
+                        (-> response :body :target) "'"))
+        (reset! quiz/question-html (-> response :body :source))
+        (reset! quiz/guess-text "")
+        (reset! quiz/show-answer (-> response :body :target))
+        (reset! quiz/show-answer-display "none")
+        (reset! quiz/input-state "")
+        (reset! quiz/possible-correct-semantics
+                (->> (-> response :body :source-sem)
+                     (map cljs.reader/read-string)
+                     (map dag_unify.serialization/deserialize)))
+        (.focus (.getElementById js/document "input-guess")))))
+
 (defn quiz-component [get-question-fn]
-  (quiz/new-question get-question-fn)
+  (new-question get-question-fn)
   #(quiz/quiz-layout get-question-fn))
-
-(defn choose-question-from-dropdown [get-question-fn]
-  (if (nil? @expression-index)
-    (reset! expression-index 0))
-  [:div {:style {:float "right"}}
-   [dropdown/expressions expression-index
-    
-    ;; what to call if dropdown's choice is changed (generate a new question):
-    (fn [] (new-question get-question-fn))]])
-
-(defn quiz-component-old [spec-set]
-  (log/info (str "got here..." spec-set))
-  (log/info (str "THE FOO IS: " foo))
   
-  (let [parse-html (r/atom "")
-        semantics-of-guess (r/atom [])]
-    [:div
-     [:div (str "HELLO: " spec-set)]
-     [:h4 (str "some stuff.."
-               (-> curriculum (nth 0) :adjectives))]]))
-
 (defn curriculum-based-get [curriculum-key]
   (log/info (str "returning a function from the curriculum-key: " curriculum-key))
   (if false
