@@ -36,20 +36,17 @@
               "precies!😁"
               "prima!!😎 "])
 
-(defn expression-based-get [expression-index]
-  (log/debug (str "returning a function from the expression index: " expression-index))
-  (fn []
-    (http/get (str root-path "generate/" expression-index))))
+(defn expression-based-get []
+  (log/debug (str "returning a function from the expression index: " @expression-index))
+  (http/get (str root-path "generate/" @expression-index)))
 
 (defn curriculum-based-get [curriculum-key]
   (log/info (str "returning a function from the curriculum-key: " curriculum-key))
   (let [spec {:cat :noun}]
-    (fn []
-      (http/get (str root-path "generate") {:query-params {"q" spec}}))))
+    (http/get (str root-path "generate") {:query-params {"q" spec}})))
 
-(defn new-question [specification-fn expression-index question-html possible-correct-semantics]
-  (log/debug (str "expression index: " @expression-index))
-  (go (let [response (<! ((expression-based-get @expression-index)))]
+(defn new-question [specification-fn question-html possible-correct-semantics]
+  (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
@@ -84,7 +81,7 @@
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
    [:div {:style {:float "right"}}
     [dropdown/expressions expression-index
-     (fn [] (new-question expression-index question-html possible-correct-semantics))]]
+     (fn [] (new-question expression-based-get question-html possible-correct-semantics))]]
    [:div.question-and-guess
     [:div.question
      @question-html]
@@ -111,8 +108,7 @@
                                                      (concat
                                                       [{:source @question-html :target correct-answer}]
                                                       (take 4 @question-table))))
-                                           (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics))))}]]
-                                         
+                                           (new-question expression-based-get question-html possible-correct-semantics))))}]]
     [:button {:on-click (fn [input-element]
                           (show-possible-answer))
               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]
@@ -136,7 +132,7 @@
   (let [parse-html (r/atom "")]
     (if (nil? @expression-index)
       (reset! expression-index 0))
-    (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics)
+    (new-question expression-based-get question-html possible-correct-semantics)
     quiz-layout))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
