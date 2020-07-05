@@ -37,7 +37,7 @@
               "prima!!😎 "])
 
 (defn expression-based-get [expression-index]
-  (log/info (str "returning a function from the expression index: " expression-index))
+  (log/debug (str "returning a function from the expression index: " expression-index))
   (fn []
     (http/get (str root-path "generate/" expression-index))))
 
@@ -47,7 +47,7 @@
     (fn []
       (http/get (str root-path "generate") {:query-params {"q" spec}}))))
 
-(defn new-question [expression-index question-html possible-correct-semantics]
+(defn new-question [specification-fn expression-index question-html possible-correct-semantics]
   (log/debug (str "expression index: " @expression-index))
   (go (let [response (<! ((expression-based-get @expression-index)))]
         (log/debug (str "new-expression response: " reponse))
@@ -75,6 +75,8 @@
   (reset! show-praise-text (-> praises shuffle first))
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
+
+;; quiz-layout -> submit-guess -> evaluate-guess -> new-question
 (defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -121,11 +123,10 @@
   (let [parse-html (r/atom "")]
     (if (nil? @expression-index)
       (reset! expression-index 0))
-    (new-question expression-index question-html possible-correct-semantics)
+    (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics)
     quiz-layout))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
-  (log/info (str "guess-text: '" @guess-text "' has " (count correct-semantics-set) " semantic interpretation" (if (= 1 (count correct-semantics)) "s") "."))
   (let [result
         (->> guesses-semantics-set
              (mapcat (fn [guess]
@@ -141,7 +142,7 @@
                                                       "fail-path: "
                                                       (dag_unify.diagnostics/fail-path correct-semantics guess) "; "
                                                       "subsumes? " (u/subsumes? correct-semantics guess)))
-                                       (log/info (str "This interpretation of the guess matched the correct semantics! " @guess-text)))
+                                       (log/info (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
                                      correct?))))))
              (remove #(= false %)))]
     (when (not (empty? result))
@@ -154,7 +155,7 @@
                  [{:source @question-html :target correct-answer}]
                  (take 4 @question-table))))
                       
-      (new-question expression-index question-html possible-correct-semantics))))
+      (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
   (log/debug (str "submitting guess: " guess-text))
@@ -171,7 +172,3 @@
                        (map dag_unify.serialization/deserialize)))
           (evaluate-guess @semantics-of-guess
                           @possible-correct-semantics)))))
-
-
-
-
