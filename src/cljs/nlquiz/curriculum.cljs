@@ -82,6 +82,3 @@
 (defn curriculum-component [get-question-fn]
   (quiz/new-question get-question-fn)
   #(quiz/quiz-layout get-question-fn quiz/choose-question-from-dropdown))
-
-
-
