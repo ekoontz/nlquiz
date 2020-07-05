@@ -76,7 +76,8 @@
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
 
-;; quiz-layout -> submit-guess -> evaluate-guess -> new-question
+;; quiz-layout -> submit-guess -> evaluate-guess
+;;                             -> new-question
 (defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -145,17 +146,7 @@
                                        (log/info (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
                                      correct?))))))
              (remove #(= false %)))]
-    (when (not (empty? result))
-      ;; got it right!
-      (let [correct-answer @guess-text]
-        (show-praise)
-        (reset! input-state "disabled")
-        (reset! question-table
-                (concat
-                 [{:source @question-html :target correct-answer}]
-                 (take 4 @question-table))))
-                      
-      (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics))))
+    (not (empty? result))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
   (log/debug (str "submitting guess: " guess-text))
@@ -170,5 +161,17 @@
                   (->> (-> response :body :sem)
                        (map cljs.reader/read-string)
                        (map dag_unify.serialization/deserialize)))
-          (evaluate-guess @semantics-of-guess
-                          @possible-correct-semantics)))))
+          (when (evaluate-guess @semantics-of-guess
+                                @possible-correct-semantics)
+            ;; got it right!
+            (let [correct-answer @guess-text]
+              (show-praise)
+              (reset! input-state "disabled")
+              (reset! question-table
+                      (concat
+                       [{:source @question-html :target correct-answer}]
+                       (take 4 @question-table))))
+            
+            (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics))))))
+
+
