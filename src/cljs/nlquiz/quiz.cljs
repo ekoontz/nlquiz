@@ -147,10 +147,6 @@
   (new-question get-question-fn question-html possible-correct-semantics)
   #(quiz-layout get-question-fn question-type-chooser-fn))
 
-(defn curriculum-component [get-question-fn]
-  (new-question get-question-fn question-html possible-correct-semantics)
-  #(quiz-layout get-question-fn choose-question-from-dropdown))
-
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (let [result
         (->> guesses-semantics-set
