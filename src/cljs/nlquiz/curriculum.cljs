@@ -72,20 +72,20 @@
         "Let's study " major " and, in particular, " minor "!"]
        (log/info (str "ok..."))])))
 
-(defn get-expression []
+(defn get-expression [major minor]
   (log/info (str "creating a function for getting an expression.."))
+  (log/info (str "MAJOR: " major))
+  (log/info (str "MINOR: " minor))
   (fn []
     (log/info (str "returning a function from the expression index: " 0))
     (http/get (str root-path "generate/" 0))))
 
-(defn quiz-component [get-question-fn]
+(defn quiz-component []
   (let [routing-data (session/get :route)
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
-    (log/info (str "MAJOR: " major))
-    (log/info (str "MINOR: " minor))
-    (quiz/new-question get-question-fn)
-    #(quiz/quiz-layout get-question-fn)))
+    (quiz/new-question (get-expression major minor))
+    #(quiz/quiz-layout (get-expression major minor))))
   
 (defn curriculum-based-get [curriculum-key]
   (log/info (str "returning a function from the curriculum-key: " curriculum-key))
