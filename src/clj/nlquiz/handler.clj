@@ -4,7 +4,9 @@
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
-   [nlquiz.handlers :refer [generate parse-en parse-nl]]
+   [nlquiz.handlers :refer [generate-by-expression-index
+                            generate-by-spec
+                            parse-en parse-nl]]
    [nlquiz.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
@@ -70,7 +72,8 @@
      ;; routes which return a json response:
      ["/nlquiz/parse/nl"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
      ["/nlquiz/parse/en"                     {:get {:handler (fn [request] (json-response request parse-en))}}]
-     ["/nlquiz/generate/:spec"               {:get {:handler (fn [request] (json-response request generate))}}]])
+     ["/nlquiz/generate"                     {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
+     ["/nlquiz/generate/:expression-index"   {:get {:handler (fn [request] (json-response request generate-by-expression-index))}}]])
 
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path root-path :root "/public"})

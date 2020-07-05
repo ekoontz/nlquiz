@@ -13,10 +13,9 @@
 (defn dag-to-string [dag]
   (-> dag dag_unify.serialization/serialize str))
 
-(defn generate [_request]
-  (let [spec-index (-> _request :path-params :spec)
-        spec (nth nl-expressions (Integer. spec-index))
-        debug (log/info (str "generating a question with spec: " spec))
+(defn generate [spec]
+  (let [debug (log/info (str "generating a question with spec: " spec))
+        debug (log/info (str "input spec type: " (type spec)))
         target-expression (-> spec nl/generate)
         source-expression (-> target-expression tr/nl-to-en-spec en/generate)
         source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
@@ -25,6 +24,18 @@
     {:source (-> source-expression en/morph)
      :source-sem (map dag-to-string source-semantics)
      :target (-> target-expression nl/morph)}))
+
+(defn generate-by-expression-index [_request]
+  (let [expression-index (-> _request :path-params :expression-index)
+        spec (nth nl-expressions (Integer. expression-index))]
+    (generate spec)))
+
+(defn generate-by-spec [_request]
+  (let [spec (get (-> _request :query-params) "q")]
+    (log/info (str "spec pre-decode: " spec))
+    (let [spec (-> spec read-string dag_unify.serialization/deserialize)]
+      (log/info (str "spec decoded: " spec))
+      (generate spec))))
 
 (defn parse-nl [_request]
   (let [string-to-parse
