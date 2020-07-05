@@ -78,11 +78,11 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
 (defn page-for [route]
   (case route
     nil
-    #(quiz/quiz-component
+    #(quiz/expression-list-quiz-component
       quiz/expression-based-get
       quiz/choose-question-from-dropdown)
     :index
-    #(quiz/quiz-component
+    #(quiz/expression-list-quiz-component
       quiz/expression-based-get
       quiz/choose-question-from-dropdown)
     :about #'about-component

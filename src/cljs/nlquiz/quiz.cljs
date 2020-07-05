@@ -134,7 +134,7 @@
    ] ;; div.main
   )
 
-(defn quiz-component [get-question-fn chooser]
+(defn expression-list-quiz-component [get-question-fn chooser]
   (new-question get-question-fn)
   #(quiz-layout get-question-fn chooser))
 
