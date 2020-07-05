@@ -83,5 +83,14 @@
   (quiz/new-question get-question-fn)
   #(quiz/quiz-layout get-question-fn chooser))
 
+(defn curriculum-based-get [curriculum-key]
+  (log/info (str "returning a function from the curriculum-key: " curriculum-key))
+  (if false
+    (let [spec {:cat :noun}]
+      (http/get (str root-path "generate") {:query-params {"q" spec}}))
+    quiz/quiz-choose-question-from-dropdown))
+
+      
+
 
 

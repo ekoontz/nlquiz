@@ -40,11 +40,6 @@
   (log/debug (str "returning a function from the expression index: " @expression-index))
   (http/get (str root-path "generate/" @expression-index)))
 
-(defn curriculum-based-get [curriculum-key]
-  (log/info (str "returning a function from the curriculum-key: " curriculum-key))
-  (let [spec {:cat :noun}]
-    (http/get (str root-path "generate") {:query-params {"q" spec}})))
-
 (defn new-question [specification-fn]
   (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
