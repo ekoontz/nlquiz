@@ -73,14 +73,13 @@
 
 (defn get-expression [expression-index]
   (log/info (str "creating a function from: " @quiz/expression-index))
-  (log/info (str "    expression-index is fucking nil? " (nil? quiz/expression-index)))
   (fn []
     (log/info (str "returning a function from the expression index: " @quiz/expression-index))
     (http/get (str root-path "generate/" @quiz/expression-index))))
 
-(defn quiz-component [get-question-fn chooser]
+(defn quiz-component [get-question-fn]
   (quiz/new-question get-question-fn)
-  #(quiz/quiz-layout get-question-fn chooser))
+  #(quiz/quiz-layout get-question-fn))
 
 (defn choose-question-from-dropdown [get-question-fn]
   (if (nil? @expression-index)
@@ -101,10 +100,6 @@
      [:div (str "HELLO: " spec-set)]
      [:h4 (str "some stuff.."
                (-> curriculum (nth 0) :adjectives))]]))
-
-(defn curriculum-component [get-question-fn chooser]
-  (quiz/new-question get-question-fn)
-  #(quiz/quiz-layout get-question-fn chooser))
 
 (defn curriculum-based-get [curriculum-key]
   (log/info (str "returning a function from the curriculum-key: " curriculum-key))

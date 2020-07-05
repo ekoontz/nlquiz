@@ -79,11 +79,11 @@
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
-(defn quiz-layout [get-question-fn question-type-chooser-fn]
+(defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
-   (question-type-chooser-fn get-question-fn)
+   (if question-type-chooser-fn (question-type-chooser-fn get-question-fn))
    [:div.question-and-guess
     [:div.question
      @question-html]
