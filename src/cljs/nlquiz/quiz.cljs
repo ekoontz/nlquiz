@@ -154,20 +154,18 @@
       (new-question expression-index question-html possible-correct-semantics))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
-  (log/info (str "SUBMITTING THE GUESS: " guess-text))
+  (log/debug (str "submitting guess: " guess-text))
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get (str root-path "parse/nl")
                                      {:query-params {"q" guess-string}}))]
-          (log/info (str "PARSE RESPONSE: " response))
-          (log/info (str "SEMANTICS OF GUESS: " semantics-of-guess))
-          (log/info (str "SEMANTICS OF GUESS TYPE: " (type semantics-of-guess)))
+          (log/debug (str "parse response: " response))
+          (log/debug (str "semantics of guess: " semantics-of-guess))
           (reset! semantics-of-guess
                   (->> (-> response :body :sem)
                        (map cljs.reader/read-string)
                        (map dag_unify.serialization/deserialize)))
-          (log/info (str "GOT HERE (1)"))
           (if (not (empty? @semantics-of-guess))
             (log/debug (str "comparing guess: " @semantics-of-guess " with correct answer:"
                             @possible-correct-semantics "; result:"
