@@ -117,6 +117,7 @@ td.target {
 
 div.question-and-guess {
     margin-top:0.25em;
+    width:100%;
     float:left;
 }
 
