@@ -11,8 +11,8 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(def expression-index (atom 0))
-(def guess-text (r/atom ""))
+(def expression-index (atom nil))
+(def guess-text (r/atom nil))
 (def ik-weet-niet-button-state (r/atom initial-button-state))
 (def initial-state-is-enabled? true)
 (def initial-button-state (if initial-state-is-enabled? "" "disabled"))
@@ -119,6 +119,8 @@
 
 (defn quiz-component []
   (let [parse-html (r/atom "")]
+    (if (nil? @expression-index)
+      (reset! expression-index 0))
     (new-question expression-index question-html possible-correct-semantics)
     quiz-layout))
 
