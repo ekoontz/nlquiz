@@ -72,32 +72,20 @@
         "Let's study " major " and, in particular, " minor "!"]
        (log/info (str "ok..."))])))
 
-(defn get-expression [expression-index]
-  (log/info (str "creating a function from: " @quiz/expression-index))
+(defn get-expression []
+  (log/info (str "creating a function for getting an expression.."))
   (fn []
-    (log/info (str "returning a function from the expression index: " @quiz/expression-index))
-    (http/get (str root-path "generate/" @quiz/expression-index))))
-
-(defn new-question [specification-fn]
-  (log/info (str "NEW QUESTION:..."))
-  (go (let [response (<! (specification-fn))]
-        (log/debug (str "new-expression response: " reponse))
-        (log/debug (str "one possible correct answer to this question is: '"
-                        (-> response :body :target) "'"))
-        (reset! quiz/question-html (-> response :body :source))
-        (reset! quiz/guess-text "")
-        (reset! quiz/show-answer (-> response :body :target))
-        (reset! quiz/show-answer-display "none")
-        (reset! quiz/input-state "")
-        (reset! quiz/possible-correct-semantics
-                (->> (-> response :body :source-sem)
-                     (map cljs.reader/read-string)
-                     (map dag_unify.serialization/deserialize)))
-        (.focus (.getElementById js/document "input-guess")))))
+    (log/info (str "returning a function from the expression index: " 0))
+    (http/get (str root-path "generate/" 0))))
 
 (defn quiz-component [get-question-fn]
-  (new-question get-question-fn)
-  #(quiz/quiz-layout get-question-fn))
+  (let [routing-data (session/get :route)
+        major (get-in routing-data [:route-params :major])
+        minor (get-in routing-data [:route-params :minor])]
+    (log/info (str "MAJOR: " major))
+    (log/info (str "MINOR: " minor))
+    (quiz/new-question get-question-fn)
+    #(quiz/quiz-layout get-question-fn)))
   
 (defn curriculum-based-get [curriculum-key]
   (log/info (str "returning a function from the curriculum-key: " curriculum-key))
