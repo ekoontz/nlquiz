@@ -67,8 +67,11 @@
         "Let's study " major " and, in particular, " minor "!"]
        (log/info (str "ok..."))])))
 
+(defn quiz-component [get-question-fn chooser]
+  (quiz/new-question get-question-fn)
+  #(quiz/quiz-layout get-question-fn chooser))
 
-(defn quiz-component [spec-set]
+(defn quiz-component-old [spec-set]
   (log/info (str "got here..." spec-set))
   (log/info (str "THE FOO IS: " foo))
   
