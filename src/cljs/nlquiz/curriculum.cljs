@@ -79,6 +79,9 @@
      [:h4 (str "some stuff.."
                (-> curriculum (nth 0) :adjectives))]]))
 
-(defn curriculum-component [get-question-fn]
+(defn curriculum-component [get-question-fn chooser]
   (quiz/new-question get-question-fn)
-  #(quiz/quiz-layout get-question-fn quiz/choose-question-from-dropdown))
+  #(quiz/quiz-layout get-question-fn chooser))
+
+
+

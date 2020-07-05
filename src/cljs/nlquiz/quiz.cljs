@@ -83,11 +83,11 @@
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
-(defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
+(defn quiz-layout [get-question-fn question-type-chooser-fn]
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
-   (if question-type-chooser-fn (question-type-chooser-fn get-question-fn) [:h4 "er is niets hier..."])
+   (question-type-chooser-fn get-question-fn)
    [:div.question-and-guess
     [:div.question
      @question-html]
@@ -134,18 +134,9 @@
    ] ;; div.main
   )
 
-(defn small-component [get-question-fn]
-  (do
-    (new-question get-question-fn)
-    [:div
-     [:h4 (str "a small component...")]
-     (quiz-layout get-question-fn question-tupe-chooser-fn)
-     [:h4 (str "more stuff..")]
-     ]))
-
-(defn quiz-component [get-question-fn & [question-type-chooser-fn]]
+(defn quiz-component [get-question-fn chooser]
   (new-question get-question-fn)
-  #(quiz-layout get-question-fn question-type-chooser-fn))
+  #(quiz-layout get-question-fn chooser))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (let [result
