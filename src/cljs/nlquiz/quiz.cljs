@@ -77,7 +77,7 @@
 
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
-;;                             -> new-question
+;;             -> new-question (in scope of quiz-layout, but called from within evaluate-guess, if guess is correct)
 (defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -100,7 +100,19 @@
                                          (-> input-element .-target .-value)
                                          parse-html
                                          semantics-of-guess
-                                         possible-correct-semantics))}]]
+                                         possible-correct-semantics
+
+                                         ;; function that will called if the user guessed correctly:
+                                         (fn []
+                                           (let [correct-answer @guess-text]
+                                             (show-praise)
+                                             (reset! input-state "disabled")
+                                             (reset! question-table
+                                                     (concat
+                                                      [{:source @question-html :target correct-answer}]
+                                                      (take 4 @question-table))))
+                                           (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics))))}]]
+                                         
     [:button {:on-click (fn [input-element]
                           (show-possible-answer))
               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]
@@ -148,7 +160,7 @@
              (remove #(= false %)))]
     (not (empty? result))))
 
-(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics]
+(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
   (log/debug (str "submitting guess: " guess-text))
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
@@ -164,14 +176,4 @@
           (when (evaluate-guess @semantics-of-guess
                                 @possible-correct-semantics)
             ;; got it right!
-            (let [correct-answer @guess-text]
-              (show-praise)
-              (reset! input-state "disabled")
-              (reset! question-table
-                      (concat
-                       [{:source @question-html :target correct-answer}]
-                       (take 4 @question-table))))
-            
-            (new-question (expression-based-get expression-index) expression-index question-html possible-correct-semantics))))))
-
-
+            (if-correct-fn))))))
