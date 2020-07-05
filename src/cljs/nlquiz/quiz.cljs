@@ -134,9 +134,22 @@
    ] ;; div.main
   )
 
+(defn small-component [get-question-fn]
+  (do
+    (new-question get-question-fn question-html possible-correct-semantics)
+    [:div
+     [:h4 (str "a small component...")]
+     (quiz-layout get-question-fn question-tupe-chooser-fn)
+     [:h4 (str "more stuff..")]
+     ]))
+
 (defn quiz-component [get-question-fn & [question-type-chooser-fn]]
   (new-question get-question-fn question-html possible-correct-semantics)
   #(quiz-layout get-question-fn question-type-chooser-fn))
+
+(defn curriculum-component [get-question-fn]
+  (new-question get-question-fn question-html possible-correct-semantics)
+  #(quiz-layout get-question-fn choose-question-from-dropdown))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (let [result
