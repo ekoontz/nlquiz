@@ -72,15 +72,24 @@
        (log/info (str "ok..."))])))
 
 (defn get-expression [expression-index]
-  (log/info (str "creating a function from: " expression-index))
-  (log/info (str "    expression-index is fucking nil? " (nil? expression-index)))
+  (log/info (str "creating a function from: " @quiz/expression-index))
+  (log/info (str "    expression-index is fucking nil? " (nil? quiz/expression-index)))
   (fn []
-    (log/info (str "returning a function from the expression index: " @expression-index))
-    (http/get (str root-path "generate/" @expression-index))))
+    (log/info (str "returning a function from the expression index: " @quiz/expression-index))
+    (http/get (str root-path "generate/" @quiz/expression-index))))
 
 (defn quiz-component [get-question-fn chooser]
   (quiz/new-question get-question-fn)
   #(quiz/quiz-layout get-question-fn chooser))
+
+(defn choose-question-from-dropdown [get-question-fn]
+  (if (nil? @expression-index)
+    (reset! expression-index 0))
+  [:div {:style {:float "right"}}
+   [dropdown/expressions expression-index
+    
+    ;; what to call if dropdown's choice is changed (generate a new question):
+    (fn [] (new-question get-question-fn))]])
 
 (defn quiz-component-old [spec-set]
   (log/info (str "got here..." spec-set))
