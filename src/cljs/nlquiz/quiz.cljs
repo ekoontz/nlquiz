@@ -1,7 +1,7 @@
 (ns nlquiz.quiz
   (:require
    [accountant.core :as accountant]
-   [nlquiz.generate :as generate]
+
    [nlquiz.dropdown :as dropdown]
    [dag_unify.core :as u]
    [dag_unify.serialization :as s]
@@ -45,7 +45,7 @@
   (let [spec {:cat :noun}]
     (http/get (str root-path "generate") {:query-params {"q" spec}})))
 
-(defn new-question [specification-fn possible-correct-semantics]
+(defn new-question [specification-fn]
   (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
         (log/debug (str "one possible correct answer to this question is: '"
@@ -79,7 +79,7 @@
    [dropdown/expressions expression-index
     
     ;; what to call if dropdown's choice is changed (generate a new question):
-    (fn [] (new-question get-question-fn possible-correct-semantics))]])
+    (fn [] (new-question get-question-fn))]])
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
@@ -114,7 +114,7 @@
                                                      (concat
                                                       [{:source @question-html :target correct-answer}]
                                                       (take 4 @question-table))))
-                                           (new-question get-question-fn possible-correct-semantics))))}]]
+                                           (new-question get-question-fn))))}]]
     [:button {:on-click (fn [input-element]
                           (show-possible-answer))
               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]
@@ -136,7 +136,7 @@
 
 (defn small-component [get-question-fn]
   (do
-    (new-question get-question-fn possible-correct-semantics)
+    (new-question get-question-fn)
     [:div
      [:h4 (str "a small component...")]
      (quiz-layout get-question-fn question-tupe-chooser-fn)
@@ -144,7 +144,7 @@
      ]))
 
 (defn quiz-component [get-question-fn & [question-type-chooser-fn]]
-  (new-question get-question-fn possible-correct-semantics)
+  (new-question get-question-fn)
   #(quiz-layout get-question-fn question-type-chooser-fn))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
