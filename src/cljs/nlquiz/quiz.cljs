@@ -166,10 +166,9 @@
                   (->> (-> response :body :sem)
                        (map cljs.reader/read-string)
                        (map dag_unify.serialization/deserialize)))
-          (if (not (empty? @semantics-of-guess))
-            (log/debug (str "comparing guess: " @semantics-of-guess " with correct answer:"
-                            @possible-correct-semantics "; result:"
-                            (evaluate-guess @semantics-of-guess
-                                            @possible-correct-semantics))))))))
+          (evaluate-guess @semantics-of-guess
+                          @possible-correct-semantics)))))
+
+
 
 
