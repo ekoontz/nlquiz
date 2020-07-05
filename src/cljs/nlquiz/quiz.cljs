@@ -72,19 +72,20 @@
   (reset! show-praise-text (-> praises shuffle first))
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
+(defn choose-question-from-dropdown [get-question-fn]
+  [:div {:style {:float "right"}}
+   [dropdown/expressions expression-index
+    
+    ;; what to call if dropdown's choice is changed (generate a new question):
+    (fn [] (new-question get-question-fn question-html possible-correct-semantics))]])
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
-;;             -> new-question (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
-(defn quiz-layout [get-question-fn]
+;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
+(defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
-   [:div {:style {:float "right"}}
-    [dropdown/expressions expression-index
-
-     ;; what to call if dropdown's choice is changed (generate a new question):
-     (fn [] (new-question get-question-fn question-html possible-correct-semantics))]]
-
+   (if question-type-chooser-fn (question-type-chooser-fn get-question-fn) [:h4 "er is niets hier..."])
    [:div.question-and-guess
     [:div.question
      @question-html]
@@ -131,12 +132,12 @@
    ] ;; div.main
   )
 
-(defn quiz-component [get-question-fn]
+(defn quiz-component [get-question-fn & [question-type-chooser-fn]]
   (let [parse-html (r/atom "")]
     (if (nil? @expression-index)
       (reset! expression-index 0))
     (new-question get-question-fn question-html possible-correct-semantics)
-    #(quiz-layout get-question-fn)))
+    #(quiz-layout get-question-fn question-type-chooser-fn)))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (let [result
