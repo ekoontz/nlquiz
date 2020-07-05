@@ -131,6 +131,9 @@
              (mapcat (fn [guess]
                        (->> correct-semantics-set
                             (map (fn [correct-semantics]
+                                   ;; the guess is correct if and only if there is a semantic interpretation _guess_ of the guess where both of these are true:
+                                   ;; - unifying _guess_ with some member _correct-semantics_ of the set of correct semantics is not :fail.
+                                   ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
                                    (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
                                                        (u/subsumes? correct-semantics guess))]
                                      (if (not correct?)
