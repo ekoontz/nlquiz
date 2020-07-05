@@ -22,8 +22,8 @@
 (def question-html (r/atom nil))
 (def semantics-of-guess (r/atom nil))
 (def show-answer (r/atom nil))
-(def show-answer-display (r/atom nil))
 (def show-praise-text (r/atom nil))
+(def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 
 (defonce root-path "/nlquiz/")
@@ -50,7 +50,7 @@
 (defn new-question [expression-index question-html possible-correct-semantics]
   (log/debug (str "expression index: " @expression-index))
   (go (let [response (<! ((expression-based-get @expression-index)))]
-        (log/info (str "GOT BACK RESPONSE: " reponse))
+        (log/debug (str "new-expression response: " reponse))
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
