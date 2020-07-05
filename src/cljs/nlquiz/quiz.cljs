@@ -17,13 +17,13 @@
 (def initial-state-is-enabled? true)
 (def initial-button-state (if initial-state-is-enabled? "" "disabled"))
 (def input-state (r/atom "disabled"))
-(def possible-correct-semantics (r/atom []))
-(def question-table (r/atom []))
-(def question-html (r/atom ""))
+(def possible-correct-semantics (r/atom nil))
+(def question-table (r/atom nil))
+(def question-html (r/atom nil))
 (def semantics-of-guess (r/atom nil))
-(def show-answer (r/atom ""))
-(def show-answer-display (r/atom "none"))
-(def show-praise-text (r/atom ""))
+(def show-answer (r/atom nil))
+(def show-answer-display (r/atom nil))
+(def show-praise-text (r/atom nil))
 (def show-praise-display (r/atom "none"))
 
 (defonce root-path "/nlquiz/")
@@ -48,7 +48,7 @@
       (http/get (str root-path "generate") {:query-params {"q" spec}}))))
 
 (defn new-question [expression-index question-html possible-correct-semantics]
-  (log/info (str "THE EXPRESSION INDEX IS: " @expression-index))
+  (log/debug (str "expression index: " @expression-index))
   (go (let [response (<! ((expression-based-get @expression-index)))]
         (log/info (str "GOT BACK RESPONSE: " reponse))
         (log/debug (str "one possible correct answer to this question is: '"
