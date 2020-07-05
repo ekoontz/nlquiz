@@ -73,6 +73,8 @@
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
 (defn choose-question-from-dropdown [get-question-fn]
+  (if (nil? @expression-index)
+    (reset! expression-index 0))
   [:div {:style {:float "right"}}
    [dropdown/expressions expression-index
     
@@ -133,11 +135,8 @@
   )
 
 (defn quiz-component [get-question-fn & [question-type-chooser-fn]]
-  (let [parse-html (r/atom "")]
-    (if (nil? @expression-index)
-      (reset! expression-index 0))
-    (new-question get-question-fn question-html possible-correct-semantics)
-    #(quiz-layout get-question-fn question-type-chooser-fn)))
+  (new-question get-question-fn question-html possible-correct-semantics)
+  #(quiz-layout get-question-fn question-type-chooser-fn))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (let [result
