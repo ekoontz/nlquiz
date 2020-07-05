@@ -74,14 +74,17 @@
 
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
-;;             -> new-question (in scope of quiz-layout, but called from within evaluate-guess, if guess is correct)
+;;             -> new-question (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
 (defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
    [:div {:style {:float "right"}}
     [dropdown/expressions expression-index
+
+     ;; what to call if dropdown's choice is changed (generate a new question):
      (fn [] (new-question expression-based-get question-html possible-correct-semantics))]]
+
    [:div.question-and-guess
     [:div.question
      @question-html]
