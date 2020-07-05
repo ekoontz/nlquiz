@@ -85,16 +85,10 @@
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
     (quiz/new-question (get-expression major minor))
-    #(quiz/quiz-layout (get-expression major minor))))
-  
-(defn curriculum-based-get [curriculum-key]
-  (log/info (str "returning a function from the curriculum-key: " curriculum-key))
-  (if false
-    (let [spec {:cat :noun}]
-      (http/get (str root-path "generate") {:query-params {"q" spec}}))
-    quiz/quiz-choose-question-from-dropdown))
-
-      
-
+    (fn []
+      [:div.curr-major {:style {:border "2px dashed blue" :float "left"}}
+       [:h4 "curriculum.."]
+       (tree)
+       (quiz/quiz-layout (get-expression major minor))])))
 
 
