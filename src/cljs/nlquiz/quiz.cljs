@@ -11,7 +11,7 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(def expression-index (atom nil))
+(def expression-index (atom 0))
 (def guess-text (r/atom nil))
 (def ik-weet-niet-button-state (r/atom initial-button-state))
 (def initial-state-is-enabled? true)
@@ -26,6 +26,7 @@
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 
+;; TODO: move to core.
 (defonce root-path "/nlquiz/")
 
 (def praises ["dat is leuk! 🚲"

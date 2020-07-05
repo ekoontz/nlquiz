@@ -1,5 +1,6 @@
 (ns nlquiz.curriculum
   (:require
+   [cljs-http.client :as http]
    [reagent.session :as session]
    [menard.english :as en]
    [menard.nederlands :as nl]
@@ -9,6 +10,9 @@
    [dommy.core :as dommy]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r]))
+
+;; TODO: move to core.
+(defonce root-path "/nlquiz/")
 
 (def curriculum
   [{:adjectives
@@ -66,6 +70,13 @@
        [:h2
         "Let's study " major " and, in particular, " minor "!"]
        (log/info (str "ok..."))])))
+
+(defn get-expression [expression-index]
+  (log/info (str "creating a function from: " expression-index))
+  (log/info (str "    expression-index is fucking nil? " (nil? expression-index)))
+  (fn []
+    (log/info (str "returning a function from the expression index: " @expression-index))
+    (http/get (str root-path "generate/" @expression-index))))
 
 (defn quiz-component [get-question-fn chooser]
   (quiz/new-question get-question-fn)

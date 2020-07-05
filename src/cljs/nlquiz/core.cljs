@@ -91,7 +91,7 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
     :curriculum-major #'curriculum/quiz-major
     :curriculum-minor
     #(curriculum/quiz-component
-      quiz/expression-based-get
+      (curriculum/get-expression quiz/expression-index)
       quiz/choose-question-from-dropdown)))
 
 ;; -------------------------
