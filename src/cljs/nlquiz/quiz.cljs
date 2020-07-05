@@ -75,7 +75,7 @@
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
-(defn quiz-layout []
+(defn quiz-layout [get-question-fn]
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
@@ -83,7 +83,7 @@
     [dropdown/expressions expression-index
 
      ;; what to call if dropdown's choice is changed (generate a new question):
-     (fn [] (new-question expression-based-get question-html possible-correct-semantics))]]
+     (fn [] (new-question get-question-fn question-html possible-correct-semantics))]]
 
    [:div.question-and-guess
     [:div.question
@@ -111,7 +111,7 @@
                                                      (concat
                                                       [{:source @question-html :target correct-answer}]
                                                       (take 4 @question-table))))
-                                           (new-question expression-based-get question-html possible-correct-semantics))))}]]
+                                           (new-question get-question-fn question-html possible-correct-semantics))))}]]
     [:button {:on-click (fn [input-element]
                           (show-possible-answer))
               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]
@@ -131,12 +131,12 @@
    ] ;; div.main
   )
 
-(defn quiz-component []
+(defn quiz-component [get-question-fn]
   (let [parse-html (r/atom "")]
     (if (nil? @expression-index)
       (reset! expression-index 0))
-    (new-question expression-based-get question-html possible-correct-semantics)
-    quiz-layout))
+    (new-question get-question-fn question-html possible-correct-semantics)
+    #(quiz-layout get-question-fn)))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (let [result

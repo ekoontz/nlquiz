@@ -77,8 +77,8 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
-    nil #'quiz/quiz-component
-    :index #'quiz/quiz-component
+    nil (fn [] (quiz/quiz-component quiz/expression-based-get))
+    :index (fn [] (quiz/quiz-component quiz/expression-based-get))
     :about #'about-component
     :test #'test/test-component
     :curriculum #'curriculum/quiz
