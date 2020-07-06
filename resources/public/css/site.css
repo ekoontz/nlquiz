@@ -62,8 +62,6 @@ a {
   color: #09f;
   padding-left:0.25em;
   padding-right:0.25em;
-  padding-bottom:0.25em;
-  padding-top:0.25em;
 }
 
 a:hover {
@@ -75,7 +73,7 @@ header {
     margin:0.5em;    
     float:left;
     border-bottom:3px lightblue solid;
-    line-height:1.2em;
+    line-height:1em;
 }
 
 footer {
@@ -191,6 +189,7 @@ table.eval th, table.eval td {
 }
 
 a.debug {
+    display:none;
     font-family:monospace;
 }
 
@@ -216,6 +215,13 @@ div.curr-major h4 {
     text-orientation: inherit;
     width:auto;
 }
+
+div.curr-major h4.normal {
+    writing-mode: inherit;
+    text-orientation: inherit;
+    width:auto;
+}
+
 
 a.selected {
     padding-left:0.25em;

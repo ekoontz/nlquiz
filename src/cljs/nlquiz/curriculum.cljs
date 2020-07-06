@@ -129,8 +129,8 @@
       (log/info (str "curriculum quiz with path:" path))
       [:div.curr-major
        (tree path)
-       [:h4
-        "Choose a topic to study."]])))
+       [:h4.normal
+        "Choose a topic to study from the links on the right."]])))
 
 (defn get-expression [major & [minor]]
   (log/info (str "get-expression: major: " major))

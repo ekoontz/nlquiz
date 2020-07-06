@@ -38,8 +38,6 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
           path (session/get :path)]
       [:div
        [:header
-        [:a {:class (if (= path (path-for :index) path) "selected" "")
-             :href (path-for :index)} "Quiz"] " "
         [:a {:class (if (prefix? (path-for :curriculum) path) "selected" "")
              :href (path-for :curriculum)} "Curriculum"] " "
         [:a {:class (if (prefix? (path-for :about) path) "selected" "")
@@ -88,10 +86,7 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
     #(quiz/expression-list-quiz-component
       quiz/expression-based-get
       quiz/choose-question-from-dropdown)
-    :index
-    #(quiz/expression-list-quiz-component
-      quiz/expression-based-get
-      quiz/choose-question-from-dropdown)
+    :index #'curriculum/quiz
     :about #'about-component
     :test #'test/test-component
     :curriculum #'curriculum/quiz
