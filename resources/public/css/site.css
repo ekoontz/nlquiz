@@ -206,3 +206,7 @@ div.curr-major {
     float:left;
     border:0px dashed blue;
 }
+
+div.curr-major h4 {
+    width:30%;
+}

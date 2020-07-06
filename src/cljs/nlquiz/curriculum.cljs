@@ -67,18 +67,8 @@
     (let [routing-data (session/get :route)]
       [:div.curr-major
        (tree)
-       [:h2
+       [:h4
         "Choose a topic to study."]])))
-
-(defn quiz-major []
-  (fn []
-    (let [routing-data (session/get :route)
-          major (get-in routing-data [:route-params :major])]
-      [:div.curr-major
-       (tree)       
-       [:h2
-        "Let's study " major "!"]
-       (quiz-component [{:cat :noun}])])))
 
 (defn get-expression [major & [minor]]
   (log/info (str "creating a function for getting an expression.."))
@@ -97,9 +87,10 @@
         minor (get-in routing-data [:route-params :minor])]
     (quiz/new-question (get-expression major minor))
     (fn []
-      [:div.curr-major {:style {:border "2px dashed blue" :float "left"}}
-       [:h4 (str major (if minor (str " : " minor)))]
+      [:div.curr-major
        (tree)
+       [:h4 (str major (if minor (str " : " minor)))]
        (quiz/quiz-layout (get-expression major minor))])))
+
 
 
