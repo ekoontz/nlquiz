@@ -60,6 +60,10 @@ h3 {
 a {
   text-decoration: none;
   color: #09f;
+  padding-left:0.25em;
+  padding-right:0.25em;
+  padding-bottom:0.25em;
+  padding-top:0.25em;
 }
 
 a:hover {
@@ -70,6 +74,8 @@ header {
     padding:0;
     margin:0.5em;    
     float:left;
+    border-bottom:3px lightblue solid;
+    line-height:1.2em;
 }
 
 footer {
@@ -210,4 +216,10 @@ div.curr-major {
 div.curr-major h4 {
     width:30%;
 }
+
+a.selected {
+    padding-left:0.25em;
     padding-right:0.25em;
+    background:lightblue;
+}
+
