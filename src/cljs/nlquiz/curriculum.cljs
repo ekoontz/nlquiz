@@ -46,12 +46,15 @@
                      (not (empty? (filter #(= % minor)
                                           (get spec :minor-tags)))))))))
   
-(defn tree []
+(defn tree [selected-path]
   [:div.curriculum
    [:h1 [:a {:href "/nlquiz/curriculum/adjectives"} "Adjectives"]]
    [:h1 [:a {:href "/nlquiz/curriculum/nouns"} "Nouns"]]
    [:ul
-    [:li [:a {:href "/nlquiz/curriculum/nouns/articles"}
+    [:li [:a {:class (if (= selected-path
+                            "/nlquiz/curriculum/nouns/articles")
+                       "selected" "")
+              :href "/nlquiz/curriculum/nouns/articles"}
           "Definite and indefinite articles"]]
     [:li [:a {:href "/nlquiz/curriculum/nouns/poss"}
           "Possessive articles"]]]
@@ -64,9 +67,11 @@
 
 (defn quiz []
   (fn []
-    (let [routing-data (session/get :route)]
+    (let [routing-data (session/get :route)
+          path (session/get :path)]
+      (log/info (str "curriculum quiz with path:" path))
       [:div.curr-major
-       (tree)
+       (tree path)
        [:h4
         "Choose a topic to study."]])))
 
@@ -83,12 +88,13 @@
 
 (defn quiz-component []
   (let [routing-data (session/get :route)
+        path (session/get :path)
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major
-       (tree)
+       (tree path)
        [:h4 (str major (if minor (str " : " minor)))]
        (quiz/quiz-layout (get-expression major minor))])))
 
