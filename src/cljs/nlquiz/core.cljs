@@ -27,17 +27,26 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
 ;; -------------------------
 ;; Page mounting component
 
+(defn prefix?
+  "return true iff a is a prefix of b"
+  [a b]
+  (= (subs b 0 (count a)) a))
+
 (defn current-page []
   (fn []
-    (let [page (:current-page (session/get :route))]
+    (let [page (:current-page (session/get :route))
+          path (session/get :path)]
       [:div
        [:header
-        [:a {:href (path-for :index)} "Quiz"] " | "
-        [:a {:href (path-for :curriculum)} "Curriculum"] " | "
-        [:a {:href (path-for :about)} "About"] " || "
-        [:a.debug {:href (path-for :test)} "Debug"]
-
-        ]
+        [:a {:class (if (= path (path-for :index) path) "selected" "")
+             :href (path-for :index)} "Quiz"] " "
+        [:a {:class (if (prefix? (path-for :curriculum) path) "selected" "")
+             :href (path-for :curriculum)} "Curriculum"] " "
+        [:a {:class (if (prefix? (path-for :about) path) "selected" "")
+             :href (path-for :about)} "About"] " "
+        [:a.debug
+         {:class (if (prefix? (path-for :test) path) "selected" "")
+          :href (path-for :test)} "Debug"]]
        [page]
        [:footer
         [:p
@@ -53,7 +62,6 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
           "clojure"][:a {:href "https://clojurescript.org"}
           "/script"]]]])))
 
-
 ;; -------------------------
 ;; Routes
 
@@ -64,8 +72,7 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
     ["/nlquiz/about"                    :about]
     ["/nlquiz/curriculum"               
      ["" {:name :curriculum}]
-     ["/:major" {:parameters {:path [:major]}
-                 :name :curriculum-major}]]
+     ["/:major" {:name :curriculum-major}]]
     ["/nlquiz/curriculum/:major/:minor" :curriculum-minor]]))
 
 (defn path-for [route & [params]]
@@ -105,9 +112,11 @@ By default, phrases like the first are shown: 'ongewoon slim' which means 'unusu
       (let [match (reitit/match-by-path router path)
             current-page (:name (:data match))
             route-params (:path-params match)]
+        (log/info (str "PATH: " path))
         (r/after-render clerk/after-render!)
         (session/put! :route {:current-page (page-for current-page)
                               :route-params route-params})
+        (session/put! :path path)
         (clerk/navigate-page! path)
         ))
     :path-exists?
