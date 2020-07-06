@@ -72,8 +72,6 @@
     :comp {:phrasal false
            :sem {:pred :she}}}])
 
-   
-
 (defn find-matching-specs [major & [minor]]
   (->> specs
        (filter (fn [spec]
@@ -98,17 +96,21 @@
 
 (def n (atom 0))
 
-(defn tree-node [node]
+(defn tree-node [node selected-path]
+  (log/info (str "selected-path: " selected-path))
   [:li {:key (str "node-" (swap! n inc))}
    [:h1
     (if (:href node)
-      [:a {:href (str "/nlquiz/curriculum/" (:href node))}
-       (:name node)]
+      (let [url (str "/nlquiz/curriculum/" (:href node))]
+        [:a {:class (if (= url selected-path)
+                      "selected" "")
+             :href (str "/nlquiz/curriculum/" (:href node))}
+         (:name node)])
       (:name node))]
    [:ul
     (doall
      (map (fn [child]
-            (tree-node child))
+            (tree-node child selected-path))
           (:child node)))]])
 
 (defn tree [selected-path]
@@ -116,7 +118,7 @@
   [:div.curriculum
    [:ul
     (doall (map (fn [node]
-                   (tree-node node))
+                   (tree-node node selected-path))
                 curriculum))]])
 
 (defn quiz []
