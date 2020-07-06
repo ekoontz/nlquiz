@@ -131,9 +131,7 @@ div.question-and-guess button {
 }
 
 div.question {
-    font-size:80%;
     float:left;
-    width:100%;
 }
 
 div.guess {
@@ -214,7 +212,7 @@ div.curr-major {
 }
 
 div.curr-major h4 {
-    width:30%;
+    width:auto;
 }
 
 a.selected {

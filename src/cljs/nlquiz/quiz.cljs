@@ -85,9 +85,10 @@
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
    (if question-type-chooser-fn (question-type-chooser-fn get-question-fn))
    [:div.question-and-guess
+    [:div.guess
     [:div.question
      @question-html]
-    [:div.guess
+    [:div
      [:input {:type "text"
               :placeholder "wat is dit in Nederlands?"
               :id "input-guess"
@@ -110,10 +111,20 @@
                                                      (concat
                                                       [{:source @question-html :target correct-answer}]
                                                       (take 4 @question-table))))
-                                           (new-question get-question-fn))))}]]
-    [:button {:on-click (fn [input-element]
-                          (show-possible-answer))
-              :disabled @ik-weet-niet-button-state} "ik weet het niet"]]
+                                           (new-question get-question-fn))))}]
+
+     ]
+
+     ]
+
+    [:div
+     [:button {:on-click (fn [input-element]
+                           (show-possible-answer))
+               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]
+     
+
+
+    ] ;; </div.question-and-guess>
    
    [:div {:style {:float "left" :width "100%"}}
     [:table
