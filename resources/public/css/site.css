@@ -223,3 +223,6 @@ a.selected {
     background:lightblue;
 }
 
+div.answertable {
+    float:left;
+}

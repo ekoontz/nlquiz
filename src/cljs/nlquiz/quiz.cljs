@@ -126,7 +126,7 @@
 
     ] ;; </div.question-and-guess>
    
-   [:div {:style {:float "left" :width "100%"}}
+   [:div.answertable
     [:table
      [:tbody
       (doall
