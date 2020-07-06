@@ -85,6 +85,7 @@
   [{:name "Adjectives"
     :href "adjectives"}
    {:name "Nouns"
+    :href "nouns"
     :child [{:name "Definite and indefinite articles"
              :href "nouns/articles"}
             {:name "Possessive articles"
