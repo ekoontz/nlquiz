@@ -45,25 +45,26 @@
                  (or (nil? minor)
                      (not (empty? (filter #(= % minor)
                                           (get spec :minor-tags)))))))))
-  
+(def curriculum
+  [{:name "Adjectives"
+    :href "/nlquiz/curriculum/adjectives"}
+   {:name "Nouns"
+    :child [{:name "Definite and indefinite articles"
+             :href "/nlquiz/curriculum/nouns/articles"}
+            {:name "Possessive articles"
+             :href "/nlquiz/curriculum/nouns/poss"}]}
+   {:name "Verbs"
+    :child [{:name "Present Tense"} ;; also intransitive
+            {:name "Transitive Verbs"}
+            {:name "Reflexive Verbs"}]}])
+
 (defn tree [selected-path]
+  (log/info (str "tree: selected-path: " selected-path))
   [:div.curriculum
-   [:h1 [:a {:href "/nlquiz/curriculum/adjectives"} "Adjectives"]]
-   [:h1 [:a {:href "/nlquiz/curriculum/nouns"} "Nouns"]]
-   [:ul
-    [:li [:a {:class (if (= selected-path
-                            "/nlquiz/curriculum/nouns/articles")
-                       "selected" "")
-              :href "/nlquiz/curriculum/nouns/articles"}
-          "Definite and indefinite articles"]]
-    [:li [:a {:href "/nlquiz/curriculum/nouns/poss"}
-          "Possessive articles"]]]
-   [:h1 [:a {:href "/nlquiz/curriculum/verbs"}
-         "Verbs"]]
-   [:ul
-    [:li "Present Tense"]
-    [:li "Transitive"]
-    [:li "Reflexive"]]])
+   (doall (map (fn [node]
+                 [:h1 [:a {:href (:href node)}
+                       (:name node)]])
+               curriculum))])
 
 (defn quiz []
   (fn []
@@ -76,9 +77,8 @@
         "Choose a topic to study."]])))
 
 (defn get-expression [major & [minor]]
-  (log/info (str "creating a function for getting an expression.."))
-  (log/info (str "MAJOR: " major))
-  (log/info (str "MINOR: " minor))
+  (log/info (str "get-expression: major: " major))
+  (log/info (str "get-expression: minor: " minor))
   (fn []
     (let [specs (find-matching-specs major minor)
           spec (-> specs shuffle first)
