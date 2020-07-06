@@ -200,6 +200,15 @@ div.curriculum {
     float:right;
 }
 
+div.curriculum ul {
+    list-style:none;
+}
+
+div.minimized {
+    width:30%;
+}
+    
+
 div.curriculum h1 {
     font-size:small;
 }

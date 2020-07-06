@@ -114,13 +114,18 @@
             (tree-node child selected-path))
           (:child node)))]])
 
-(defn tree [selected-path]
-  (log/info (str "tree: selected-path: " selected-path))
-  [:div.curriculum
-   [:ul
-    (doall (map (fn [node]
-                   (tree-node node selected-path))
-                curriculum))]])
+(defn tree [selected-path & [class]]
+  (let [show-carats (nil? class)
+        class (or class "curriculum minimized")]
+    (log/info (str "tree: selected-path: " selected-path))
+    [:div {:class class}
+     (if show-carats
+       [:h4.normal [:a {:href "/nlquiz/curriculum"}
+                    "<<"]])
+     [:ul
+      (doall (map (fn [node]
+                    (tree-node node selected-path))
+                  curriculum))]]))
 
 (defn quiz []
   (fn []
@@ -128,9 +133,9 @@
           path (session/get :path)]
       (log/info (str "curriculum quiz with path:" path))
       [:div.curr-major
-       (tree path)
        [:h4.normal
-        "Choose a topic to study from the links on the right."]])))
+        "Choose a topic to study."]
+       (tree path "curriculum full")])))
 
 (defn get-expression [major & [minor]]
   (log/info (str "get-expression: major: " major))
