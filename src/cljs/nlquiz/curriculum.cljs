@@ -47,24 +47,39 @@
                                           (get spec :minor-tags)))))))))
 (def curriculum
   [{:name "Adjectives"
-    :href "/nlquiz/curriculum/adjectives"}
+    :href "adjectives"}
    {:name "Nouns"
     :child [{:name "Definite and indefinite articles"
-             :href "/nlquiz/curriculum/nouns/articles"}
+             :href "nouns/articles"}
             {:name "Possessive articles"
-             :href "/nlquiz/curriculum/nouns/poss"}]}
+             :href "nouns/poss"}]}
    {:name "Verbs"
     :child [{:name "Present Tense"} ;; also intransitive
             {:name "Transitive Verbs"}
             {:name "Reflexive Verbs"}]}])
 
+(def n (atom 0))
+
+(defn tree-node [node]
+  [:li {:key (str "node-" (swap! n inc))}
+   [:h1
+    (if (:href node)
+      [:a {:href (str "/nlquiz/curriculum/" (:href node))}
+       (:name node)]
+      (:name node))]
+   [:ul
+    (doall
+     (map (fn [child]
+            (tree-node child))
+          (:child node)))]])
+
 (defn tree [selected-path]
   (log/info (str "tree: selected-path: " selected-path))
   [:div.curriculum
-   (doall (map (fn [node]
-                 [:h1 [:a {:href (:href node)}
-                       (:name node)]])
-               curriculum))])
+   [:ul
+    (doall (map (fn [node]
+                   (tree-node node))
+                curriculum))]])
 
 (defn quiz []
   (fn []
