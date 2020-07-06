@@ -12,28 +12,51 @@
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-;; TODO: move to core.
+;; TODO: move root-path to core:
 (defonce root-path "/nlquiz/")
 
-(def curriculum
-  [{:adjectives
-    [{:note "intensifier adjective"
-      :example "ongewoon slim"
-      :cat :adjective
-      :mod nil
-      :subcat []
-      :phrasal true
-      :head {:phrasal false}
-      :comp {:phrasal false}}]}])
+(def specs
+  [{:note "intensifier adjective"
+    :major-tags ["adjectives"]
+    :example "ongewoon slim"
+    :cat :adjective
+    :mod nil
+    :subcat []
+    :phrasal true
+    :head {:phrasal false}
+    :comp {:phrasal false}}
+   {:note "article+noun"
+    :major-tags ["nouns"]
+    :minor-tags ["articles"]
+    :example "de kat"
+    :cat :noun
+    :subcat []
+    :phrasal true
+    :head {:phrasal false
+           :subcat {:1 {:cat :det}}}
+    :comp {:phrasal false}}])
 
+(defn find-matching-specs [major & [minor]]
+  (->> specs
+       (filter (fn [spec]
+                 (not (empty? (filter #(= % major)
+                                      (get spec :major-tags))))))
+       (filter (fn [spec]
+                 (or (nil? minor)
+                     (not (empty? (filter #(= % minor)
+                                          (get spec :minor-tags)))))))))
+  
 (defn tree []
   [:div.curriculum
    [:h1 [:a {:href "/nlquiz/curriculum/adjectives"} "Adjectives"]]
    [:h1 [:a {:href "/nlquiz/curriculum/nouns"} "Nouns"]]
    [:ul
-    [:li [:a {:href "/nlquiz/curriculum/nouns/art"} "Definite and indefinite articles"]]
-    [:li [:a {:href "/nlquiz/curriculum/nouns/poss"} "Possessive articles"]]]
-   [:h1 [:a {:href "/nlquiz/curriculum/verbs"} "Verbs"]]
+    [:li [:a {:href "/nlquiz/curriculum/nouns/articles"}
+          "Definite and indefinite articles"]]
+    [:li [:a {:href "/nlquiz/curriculum/nouns/poss"}
+          "Possessive articles"]]]
+   [:h1 [:a {:href "/nlquiz/curriculum/verbs"}
+         "Verbs"]]
    [:ul
     [:li "Present Tense"]
     [:li "Transitive"]
@@ -57,28 +80,16 @@
         "Let's study " major "!"]
        (quiz-component [{:cat :noun}])])))
 
-(defn quiz-minor []
-  (fn []
-    (let [routing-data (session/get :route)
-          major (get-in routing-data [:route-params :major])
-          minor (get-in routing-data [:route-params :minor])]
-      (log/info (str "NEW QUESTION-FN: " quiz/expression-based-get))
-      (log/info (str "QUESTION-HTML: " quiz/question-html))
-      (log/info (str "PCS: " quiz/possible-correct-semantics))
-;;      (quiz/new-question quiz/expression-based-get quiz/question-html quiz/possible-correct-semantics)
-      [:div.curr-major
-       (tree)       
-       [:h2
-        "Let's study " major " and, in particular, " minor "!"]
-       (log/info (str "ok..."))])))
-
-(defn get-expression [major minor]
+(defn get-expression [major & [minor]]
   (log/info (str "creating a function for getting an expression.."))
   (log/info (str "MAJOR: " major))
   (log/info (str "MINOR: " minor))
   (fn []
-    (log/info (str "returning a function from the expression index: " 0))
-    (http/get (str root-path "generate/" 0))))
+    (let [specs (find-matching-specs major minor)
+          spec (-> specs shuffle first)
+          serialized-spec (-> spec dag_unify.serialization/serialize str)]
+      (log/info (str "generating with spec: " spec))
+      (http/get (str root-path "generate") {:query-params {"q" serialized-spec}}))))
 
 (defn quiz-component []
   (let [routing-data (session/get :route)
@@ -87,7 +98,7 @@
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major {:style {:border "2px dashed blue" :float "left"}}
-       [:h4 "curriculum.."]
+       [:h4 (str major (if minor (str " : " minor)))]
        (tree)
        (quiz/quiz-layout (get-expression major minor))])))
 
