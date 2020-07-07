@@ -19,8 +19,8 @@
   (fn []
     [:div {:style {:float "left" :margin "0.5em"}}
      [:h3 "About nlquiz"]
-     [:p "This is a way to drill some short phrases in Dutch. Choose a 
-topic in the curriculum to drill on that type of phrase."]
+     [:p "This is a way to practice writing some short phrases in Dutch. Choose a 
+topic in the curriculum to practice with that type of phrase."]
      [:p "Problems or questions? Please create an issue on " [:a {:href "https://github.com/ekoontz/nlquiz/issues"} "github"]
       " or " [:a {:href "mailto:ekoontz@hiro-tan.org"} "email me."]]]))
 

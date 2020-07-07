@@ -34,6 +34,9 @@
    [:h1
     (if (:href node)
       (let [url (str "/nlquiz/curriculum/" (:href node))]
+        (if (and (not (empty? selected-path))
+                 (= url selected-path))
+         (reset! topic-name (:name node)))
         [:a {:class (if (= url selected-path)
                       "selected" "")
              :href (str "/nlquiz/curriculum/" (:href node))}
@@ -45,38 +48,19 @@
             (tree-node child selected-path))
           (:child node)))]])
 
-(defonce curriculum-minimized-width "3%")
-(defonce curriculum-minimized-height "10em")
-(def curriculum-width (r/atom "auto"))
-(def curriculum-height (r/atom "auto"))
-
-(defn toggle-width []
-  (if (= @curriculum-width "auto")
-    (reset! curriculum-width curriculum-minimized-width)
-    (reset! curriculum-width "auto"))
-  (if (= @curriculum-height "auto")
-    (reset! curriculum-height curriculum-minimized-height)
-    (reset! curriculum-heigth "auto")))
-
-(defn tree [selected-path & [class]]
-  (let [show-carats (nil? class)
-        class (or class "curriculum")]
-    (log/debug (str "tree: selected-path: " selected-path))
-    (fn []
-      [:div {:on-click (fn [input-element] (toggle-width))
-             :class class :style {:width @curriculum-width :height @curriculum-height}}
-       [:ul
-        (doall (map (fn [node]
-                      (tree-node node selected-path))
-                    curriculum))]])))
-
+(defn tree [selected-path]
+  (log/debug (str "tree: selected-path: " selected-path))
+  (fn []
+    [:div.curriculum
+     [:ul
+      (doall (map (fn [node]
+                    (tree-node node selected-path))
+                  curriculum))]]))
 (defn quiz []
   (fn []
     (let [routing-data (session/get :route)
           path (session/get :path)]
       (log/info (str "curriculum quiz with path:" path))
-      (reset! curriculum-width "auto")
-      (reset! curriculum-height "auto")
       [:div.curr-major
        [:h4.normal
         "Choose a topic to study."]
@@ -97,14 +81,10 @@
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
-    (reset! curriculum-width curriculum-minimized-width)
-    (reset! curriculum-height curriculum-minimized-height)
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major
        [tree path]
-       [:h4 (str major (if minor (str " : " minor)))]
+       [:h4 @topic-name]
        (quiz/quiz-layout (get-expression major minor))])))
-
-
 
