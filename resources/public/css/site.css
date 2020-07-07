@@ -1,5 +1,4 @@
 .main {
-    width:60%;
     padding:0.25em;
 }
 
@@ -123,6 +122,10 @@ td.target {
 div.question-and-guess {
     margin-top:0.25em;
     float:left;
+    border:3px solid #eff;
+    border-radius:10px;
+    background:#eee;
+
 }
 
 div.question-and-guess button {
