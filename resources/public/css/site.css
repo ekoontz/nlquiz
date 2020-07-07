@@ -194,24 +194,25 @@ a.debug {
 }
 
 div.curriculum {
-    padding:0.25em;
+    right:0;
     border:3px solid #eff;
-    overflow:hidden;
+    overflow:scroll;
     border-radius:10px;
     font-size:small;
     float:right;
     background:#eee;
+    position:relative;
+}
+
+div.curriculum:hover {
+    border:3px solid #dee;
 }
 
 div.curriculum ul {
+    padding-left:0.5em;
     list-style:none;
     list-style-position: inside;
 }
-
-div.minimized {
-    width:30%;
-}
-    
 
 div.curriculum h1 {
     font-size:small;
@@ -224,9 +225,12 @@ div.curr-major {
 }
 
 div.curr-major div.button {
-    float:right;
-    text-align:right;
-    width:2em;
+    width:100%;
+    float:left;
+    border:1px dashed red;
+    position:relative;
+    right:0;
+    top:0;
 }
 
 div.dontknow {
@@ -257,5 +261,6 @@ a.selected {
 }
 
 div.answertable {
+    width:95%;
     float:left;
 }

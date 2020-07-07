@@ -15,6 +15,8 @@
 ;; TODO: move root-path to core:
 (defonce root-path "/nlquiz/")
 
+(defonce curriculum-minimized-width "3%")
+
 (def specs
   [{:note "intensifier adjective"
     :major-tags ["adjectives"]
@@ -141,19 +143,20 @@
             (tree-node child selected-path))
           (:child node)))]])
 
-(def curriculum-width (r/atom "2em"))
+(def curriculum-width (r/atom "auto"))
 
 (defn toggle-width []
-  (if (= @curriculum-width "100%")
-    (reset! curriculum-width "2em")
-    (reset! curriculum-width "100%")))
+  (if (= @curriculum-width "auto")
+    (reset! curriculum-width curriculum-minimized-width)
+    (reset! curriculum-width "auto")))
 
 (defn tree [selected-path & [class]]
   (let [show-carats (nil? class)
-        class (or class "curriculum minimized")]
+        class (or class "curriculum")]
     (log/debug (str "tree: selected-path: " selected-path))
     (fn []
-      [:div {:class class :style {:width @curriculum-width}}
+      [:div {:on-click (fn [input-element] (toggle-width))
+             :class class :style {:width @curriculum-width}}
        [:ul
         (doall (map (fn [node]
                       (tree-node node selected-path))
@@ -185,15 +188,10 @@
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
-    (reset! curriculum-width "2em")
+    (reset! curriculum-width curriculum-minimized-width)
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major
-       [:div.button
-        [:button {:on-click (fn [input-element] (toggle-width))}
-         (if (= @curriculum-width "100%")
-           ">>"
-           "<<")]]
        [tree path]
        [:h4 (str major (if minor (str " : " minor)))]
        (quiz/quiz-layout (get-expression major minor))])))
