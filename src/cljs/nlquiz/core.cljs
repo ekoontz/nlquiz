@@ -38,7 +38,8 @@ topic in the curriculum to drill on that type of phrase."]
           path (session/get :path)]
       [:div
        [:header
-        [:a {:class (if (prefix? (path-for :curriculum) path) "selected" "")
+        [:a {:class (if (or (= path "/")
+                            (prefix? (path-for :curriculum) path)) "selected" "")
              :href (path-for :curriculum)} "Curriculum"] " "
         [:a {:class (if (prefix? (path-for :about) path) "selected" "")
              :href (path-for :about)} "About"] " "
@@ -82,10 +83,7 @@ topic in the curriculum to drill on that type of phrase."]
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
-    nil
-    #(quiz/expression-list-quiz-component
-      quiz/expression-based-get
-      quiz/choose-question-from-dropdown)
+    nil #'curriculum/quiz
     :index #'curriculum/quiz
     :about #'about-component
     :test #'test/test-component
