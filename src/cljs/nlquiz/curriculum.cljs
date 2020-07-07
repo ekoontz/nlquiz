@@ -33,6 +33,7 @@
     :cat :noun
     :subcat []
     :phrasal true
+    :agr {:number :sing}
     :head {:phrasal false
            :subcat {:1 {:cat :det}}}
     :comp {:phrasal false
@@ -45,6 +46,32 @@
     :cat :noun
     :subcat []
     :phrasal true
+    :agr {:number :plur}
+    :head {:phrasal false
+           :subcat {:1 {:cat :det}}}
+    :comp {:phrasal false
+           :sem {:pred :the}}}
+
+   {:note "article+noun"
+    :major-tags ["nouns"]
+    :minor-tags ["articles"]
+    :example "de kat"
+    :cat :noun
+    :subcat []
+    :phrasal true
+    :head {:phrasal false
+           :subcat {:1 {:cat :det}}}
+    :comp {:phrasal false
+           :sem {:pred :some}}}
+
+   {:note "article+noun"
+    :major-tags ["nouns"]
+    :minor-tags ["articles"]
+    :example "de kat"
+    :cat :noun
+    :subcat []
+    :phrasal true
+    :agr {:number :sing}
     :head {:phrasal false
            :subcat {:1 {:cat :det}}}
     :comp {:phrasal false
