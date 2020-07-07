@@ -57,8 +57,8 @@ topic in the curriculum to drill on that type of phrase."]
          [:a {:href "https://github.com/reagent-project"}
           "reagent"] " | "
          [:a {:href "https://clojure.org"}
-          "clojure"][:a {:href "https://clojurescript.org"}
-          "/script"]]]])))
+          "clojure"] "/" [:a {:href "https://clojurescript.org"}
+          "script"]]]])))
 
 ;; -------------------------
 ;; Routes
