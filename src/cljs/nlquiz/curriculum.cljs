@@ -8,96 +8,15 @@
    [cljslog.core :as log]
    [dag_unify.core :as u]
    [dommy.core :as dommy]
+   [nlquiz.curriculum.specs :refer [curriculum specs]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 ;; TODO: move root-path to core:
 (defonce root-path "/nlquiz/")
-
-(def specs
-  [{:note "intensifier adjective"
-    :major-tags ["adjectives"]
-    :example "ongewoon slim"
-    :cat :adjective
-    :mod nil
-    :subcat []
-    :phrasal true
-    :head {:phrasal false}
-    :comp {:phrasal false}}
-
-   {:note "article+noun"
-    :major-tags ["nouns"]
-    :minor-tags ["articles"]
-    :example "de kat"
-    :cat :noun
-    :subcat []
-    :phrasal true
-    :agr {:number :sing}
-    :head {:phrasal false
-           :subcat {:1 {:cat :det}}}
-    :comp {:phrasal false
-           :sem {:pred :the}}}
-
-   {:note "article+noun"
-    :major-tags ["nouns"]
-    :minor-tags ["articles"]
-    :example "de kat"
-    :cat :noun
-    :subcat []
-    :phrasal true
-    :agr {:number :plur}
-    :head {:phrasal false
-           :subcat {:1 {:cat :det}}}
-    :comp {:phrasal false
-           :sem {:pred :the}}}
-
-   {:note "article+noun"
-    :major-tags ["nouns"]
-    :minor-tags ["articles"]
-    :example "de kat"
-    :cat :noun
-    :subcat []
-    :phrasal true
-    :head {:phrasal false
-           :subcat {:1 {:cat :det}}}
-    :comp {:phrasal false
-           :sem {:pred :some}}}
-
-   {:note "article+noun"
-    :major-tags ["nouns"]
-    :minor-tags ["articles"]
-    :example "de kat"
-    :cat :noun
-    :subcat []
-    :phrasal true
-    :agr {:number :sing}
-    :head {:phrasal false
-           :subcat {:1 {:cat :det}}}
-    :comp {:phrasal false
-           :sem {:pred :some}}}
-
-   {:major-tags ["nouns"]
-    :minor-tags ["poss"]
-    :example "zijn kat"
-    :cat :noun
-    :subcat []
-    :phrasal true
-    :head {:phrasal false
-           :subcat {:1 {:cat :det}}}
-    :comp {:phrasal false
-           :sem {:pred :he}}}
-
-   {:major-tags ["nouns"]
-    :minor-tags ["poss"]
-    :example "zijn kat"
-    :cat :noun
-    :subcat []
-    :phrasal true
-    :head {:phrasal false
-           :subcat {:1 {:cat :det}}}
-    :comp {:phrasal false
-           :sem {:pred :she}}}])
+(def n (atom 0))
+(def topic-name (r/atom ""))
 
 (defn find-matching-specs [major & [minor]]
   (->> specs
@@ -108,21 +27,6 @@
                  (or (nil? minor)
                      (not (empty? (filter #(= % minor)
                                           (get spec :minor-tags)))))))))
-(def curriculum
-  [{:name "Adjectives"
-    :href "adjectives"}
-   {:name "Nouns"
-    :href "nouns"
-    :child [{:name "Definite and indefinite articles"
-             :href "nouns/articles"}
-            {:name "Possessive articles"
-             :href "nouns/poss"}]}
-   {:name "Verbs"
-    :child [{:name "Present Tense"} ;; also intransitive
-            {:name "Transitive Verbs"}
-            {:name "Reflexive Verbs"}]}])
-
-(def n (atom 0))
 
 (defn tree-node [node selected-path]
   (log/debug (str "selected-path: " selected-path))
