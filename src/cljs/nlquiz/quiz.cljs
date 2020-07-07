@@ -11,6 +11,7 @@
    [cljs.core.async :refer [<!]])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+(def answer-count (atom 0))
 (def expression-index (atom 0))
 (def guess-text (r/atom nil))
 (def ik-weet-niet-button-state (r/atom initial-button-state))
@@ -106,6 +107,7 @@
                                          (fn []
                                            (let [correct-answer @guess-text]
                                              (show-praise)
+                                             (swap! answer-count inc)
                                              (reset! input-state "disabled")
                                              (reset! question-table
                                                      (concat
@@ -133,7 +135,7 @@
        (->> (range 0 (count @question-table))
             (map (fn [i]
                    [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
-                    [:th (+ 1 i)]
+                    [:th (- @answer-count i)]
                     [:td.source (-> @question-table (nth i) :source)]
                     [:td.target (-> @question-table (nth i) :target)]
                     ]))))]]]
