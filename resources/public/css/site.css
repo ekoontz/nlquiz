@@ -219,6 +219,10 @@ div.curr-major {
     border:0px dashed blue;
 }
 
+div.curr-major button {
+    float:right;
+}
+
 div.curr-major h4 {
     writing-mode: vertical-lr;
     text-orientation: inherit;

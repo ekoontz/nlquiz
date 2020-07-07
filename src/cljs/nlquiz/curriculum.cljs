@@ -141,28 +141,34 @@
             (tree-node child selected-path))
           (:child node)))]])
 
+(def curriculum-width (r/atom "2em"))
+
+(defn toggle-width []
+  (if (= @curriculum-width "100%")
+    (reset! curriculum-width "2em")
+    (reset! curriculum-width "100%")))
+
 (defn tree [selected-path & [class]]
   (let [show-carats (nil? class)
         class (or class "curriculum minimized")]
     (log/info (str "tree: selected-path: " selected-path))
-    [:div {:class class}
-     (if show-carats
-       [:h4.normal [:a {:href "/nlquiz/curriculum"}
-                    "<<"]])
-     [:ul
-      (doall (map (fn [node]
-                    (tree-node node selected-path))
-                  curriculum))]]))
+    (fn []
+      [:div {:class class :style {:width @curriculum-width}}
+       [:ul
+        (doall (map (fn [node]
+                      (tree-node node selected-path))
+                    curriculum))]])))
 
 (defn quiz []
   (fn []
     (let [routing-data (session/get :route)
           path (session/get :path)]
       (log/info (str "curriculum quiz with path:" path))
+      (reset! curriculum-width "100%")
       [:div.curr-major
        [:h4.normal
         "Choose a topic to study."]
-       (tree path "curriculum full")])))
+       [tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
   (log/info (str "get-expression: major: " major))
@@ -179,10 +185,12 @@
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
+    (reset! curriculum-width "2em")
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major
-       (tree path)
+       [:button {:on-click (fn [input-element] (toggle-width))} "<<"]
+       [tree path]
        [:h4 (str major (if minor (str " : " minor)))]
        (quiz/quiz-layout (get-expression major minor))])))
 
