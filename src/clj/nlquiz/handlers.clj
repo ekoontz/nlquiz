@@ -17,8 +17,8 @@
   "generate a Dutch expression from _spec_ and translate to English, and return this pair
    along with the semantics of the English specification also."
   [spec]
-  (let [debug (log/info (str "generating a question with spec: " spec))
-        debug (log/info (str "input spec type: " (type spec)))
+  (let [debug (log/debug (str "generating a question with spec: " spec))
+        debug (log/debug (str "input spec type: " (type spec)))
         target-expression (-> spec nl/generate)
         source-expression (-> target-expression tr/nl-to-en-spec en/generate)
         source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
@@ -39,9 +39,9 @@
   "decode a spec from the input request and generate with it."
   [_request]
   (let [spec (get (-> _request :query-params) "q")]
-    (log/info (str "spec pre-decode: " spec))
+    (log/debug (str "spec pre-decode: " spec))
     (let [spec (-> spec read-string dag_unify.serialization/deserialize)]
-      (log/info (str "spec decoded: " spec))
+      (log/debug (str "spec decoded: " spec))
       (generate spec))))
 
 (defn parse-nl [_request]
