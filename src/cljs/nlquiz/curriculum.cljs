@@ -189,7 +189,11 @@
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major
-       [:button {:on-click (fn [input-element] (toggle-width))} "<<"]
+       [:div.button
+        [:button {:on-click (fn [input-element] (toggle-width))}
+         (if (= @curriculum-width "100%")
+           ">>"
+           "<<")]]
        [tree path]
        [:h4 (str major (if minor (str " : " minor)))]
        (quiz/quiz-layout (get-expression major minor))])))

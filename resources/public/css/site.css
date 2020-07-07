@@ -219,6 +219,11 @@ div.curr-major {
     border:0px dashed blue;
 }
 
+div.curr-major div.button {
+    float:right;
+    border:1px dashed green;
+}
+
 div.curr-major button {
     float:right;
 }
