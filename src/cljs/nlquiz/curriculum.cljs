@@ -125,7 +125,7 @@
 (def n (atom 0))
 
 (defn tree-node [node selected-path]
-  (log/info (str "selected-path: " selected-path))
+  (log/debug (str "selected-path: " selected-path))
   [:li {:key (str "node-" (swap! n inc))}
    [:h1
     (if (:href node)
@@ -151,7 +151,7 @@
 (defn tree [selected-path & [class]]
   (let [show-carats (nil? class)
         class (or class "curriculum minimized")]
-    (log/info (str "tree: selected-path: " selected-path))
+    (log/debug (str "tree: selected-path: " selected-path))
     (fn []
       [:div {:class class :style {:width @curriculum-width}}
        [:ul
@@ -171,8 +171,8 @@
        [tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
-  (log/info (str "get-expression: major: " major))
-  (log/info (str "get-expression: minor: " minor))
+  (log/debug (str "get-expression: major: " major))
+  (log/debug (str "get-expression: minor: " minor))
   (fn []
     (let [specs (find-matching-specs major minor)
           spec (-> specs shuffle first)

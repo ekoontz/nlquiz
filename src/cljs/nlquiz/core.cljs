@@ -36,6 +36,7 @@ topic in the curriculum to drill on that type of phrase."]
   (fn []
     (let [page (:current-page (session/get :route))
           path (session/get :path)]
+      (log/debug (str "current path: " path))
       [:div
        [:header
         [:a {:class (if (or (= path "/")
@@ -105,7 +106,6 @@ topic in the curriculum to drill on that type of phrase."]
       (let [match (reitit/match-by-path router path)
             current-page (:name (:data match))
             route-params (:path-params match)]
-        (log/info (str "PATH: " path))
         (r/after-render clerk/after-render!)
         (session/put! :route {:current-page (page-for current-page)
                               :route-params route-params})
