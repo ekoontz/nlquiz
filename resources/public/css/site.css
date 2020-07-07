@@ -125,8 +125,11 @@ div.question-and-guess {
     border:3px solid #eff;
     border-radius:10px;
     background:#eee;
-
+    padding:0.25em;
+    box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
 }
+
+
 
 div.question-and-guess button {
     float:left;
@@ -208,6 +211,7 @@ div.curriculum {
     float:right;
     background:#eee;
     width:20%;
+    box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
 }
 
 div.curriculum:hover {
