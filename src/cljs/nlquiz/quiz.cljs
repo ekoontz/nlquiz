@@ -119,7 +119,7 @@
 
      ]
 
-    [:div
+    [:div.dontknow
      [:button {:on-click (fn [input-element]
                            (show-possible-answer))
                :disabled @ik-weet-niet-button-state} "ik weet het niet"]]

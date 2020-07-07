@@ -195,13 +195,17 @@ a.debug {
 
 div.curriculum {
     padding:0.25em;
-    border:0px dashed green;
+    border:3px solid #eff;
+    overflow:hidden;
+    border-radius:10px;
     font-size:small;
     float:right;
+    background:#eee;
 }
 
 div.curriculum ul {
     list-style:none;
+    list-style-position: inside;
 }
 
 div.minimized {
@@ -221,7 +225,12 @@ div.curr-major {
 
 div.curr-major div.button {
     float:right;
-    border:1px dashed green;
+    text-align:right;
+    width:2em;
+}
+
+div.dontknow {
+    margin:0.5em;
 }
 
 div.curr-major button {
