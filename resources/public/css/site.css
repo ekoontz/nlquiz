@@ -122,7 +122,6 @@ td.target {
 div.question-and-guess {
     margin-top:0.25em;
     float:left;
-    border:3px solid #eff;
     border-radius:10px;
     background:#eee;
     padding:0.25em;
@@ -202,9 +201,8 @@ a.debug {
 
 div.curriculum {
     position:absolute;
-    right:0;
-    top:0;
-    border:3px solid #eff;
+    right:1%;
+    top:2%;
     overflow:scroll;
     border-radius:10px;
     font-size:small;
