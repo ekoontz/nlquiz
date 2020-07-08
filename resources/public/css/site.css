@@ -93,16 +93,13 @@ input {
 }
 
 table {
-    margin:0.5em;
     border-collapse:collapse;
 }
 
 th {
-    padding-right:1em;
 }
 
 td {
-    padding:0.25em;
 }
 
 
@@ -208,12 +205,8 @@ div.curriculum {
     font-size:small;
     float:right;
     background:#eee;
-    width:20%;
+    width:30%;
     box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
-}
-
-div.curriculum:hover {
-    border:3px solid #dee;
 }
 
 div.curriculum ul {
@@ -224,6 +217,7 @@ div.curriculum ul {
 
 div.curriculum h1 {
     font-size:small;
+    margin:0;
 }
 
 div.curr-major {
@@ -269,6 +263,44 @@ a.selected {
 }
 
 div.answertable {
-    width:95%;
-    float:left;
+    left:3em;
+    width:75%;
+    overflow:scroll;
+    white-space:nowrap;
+    padding:0;
+    margin:0;
+    padding-top:1em;
+    position:relative;
+}
+
+div.answertable table {
+    width:100%;
+    border-collapse:collapse;
+}
+
+/* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
+/* ----------- iPhone 6, 6S, 7 and 8 ----------- */
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2) { 
+    div.curriculum {
+	width:25%;
+	max-height:28%;
+	left:64%;
+    }
+
+    div.answertable {
+	left:0.5em;
+    }
+
+    div.answertable th {
+	width:auto;
+	padding:0.125em;
+    }
+    div.answertable td {
+	width:auto;
+	padding:0.125em;
+    }
 }
