@@ -41,6 +41,7 @@ topic in the curriculum to practice with that type of phrase."]
        [:header
         [:a {:class (if (or (= path "/")
                             (= path "/nlquiz")
+                            (= path "/nlquiz/")
                             (prefix? (path-for :curriculum) path)) "selected" "")
              :href (path-for :curriculum)} "Curriculum"] " "
         [:a {:class (if (prefix? (path-for :about) path) "selected" "")
