@@ -109,11 +109,10 @@ tr.even {
 
 td.source {
     text-align:left;
-    padding-right:1em;
 }
 
 td.target {
-    text-align:right;
+    text-align:left;
 }
 
 div.question-and-guess {

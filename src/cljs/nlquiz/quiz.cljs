@@ -136,8 +136,8 @@
             (map (fn [i]
                    [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
                     [:th (- @answer-count i)]
-                    [:td.source (-> @question-table (nth i) :source)]
                     [:td.target (-> @question-table (nth i) :target)]
+                    [:td.source (-> @question-table (nth i) :source)]
                     ]))))]]]
    
    ] ;; div.main
