@@ -113,20 +113,11 @@
                                                      (concat
                                                       [{:source @question-html :target correct-answer}]
                                                       (take 4 @question-table))))
-                                           (new-question get-question-fn))))}]
-
-     ]
-
-     ]
-
+                                           (new-question get-question-fn))))}]]]
     [:div.dontknow
      [:button {:on-click (fn [input-element]
                            (show-possible-answer))
-               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]
-     
-
-
-    ] ;; </div.question-and-guess>
+               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]] ;; </div.question-and-guess>
    
    [:div.answertable
     [:table
