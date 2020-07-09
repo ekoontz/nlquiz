@@ -73,7 +73,7 @@
     (let [specs (find-matching-specs major minor)
           spec (-> specs shuffle first)
           serialized-spec (-> spec dag_unify.serialization/serialize str)]
-      (log/info (str "generating with spec: " spec))
+      (log/debug (str "generating with spec: " spec))
       (http/get (str root-path "generate") {:query-params {"q" serialized-spec}}))))
 
 (defn quiz-component []
