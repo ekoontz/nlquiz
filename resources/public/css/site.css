@@ -77,10 +77,10 @@ header {
 }
 
 footer {
+    scroll:overflow;
     position:absolute;
     float:right;
-    width:100%;
-    left:0;
+    left:3em;
     font-size:small;
     bottom:0;
 }
