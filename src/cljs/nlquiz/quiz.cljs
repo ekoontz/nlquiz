@@ -168,6 +168,7 @@
     (go (let [response (<! (http/get (str root-path "parse/nl")
                                      {:query-params {"q" guess-string}}))]
           (reset! input-state "")
+          (.focus (.getElementById js/document "input-guess"))
           (log/debug (str "parse response: " response))
           (log/debug (str "semantics of guess: " semantics-of-guess))
           (reset! semantics-of-guess
