@@ -20,9 +20,9 @@
 (use 'ruiyun.tools.timer)
 (run-task! #(do
               (log/info (str "reloading nl model.."))
-              (nl/load-model))
-              (log/info (str "reloaded."))
-              :period 60000)
+              (nl/load-model)
+              (log/info (str "reloaded.")))
+           :period 60000)
 
 (defonce root-path (or (env :root-path) "/"))
 
