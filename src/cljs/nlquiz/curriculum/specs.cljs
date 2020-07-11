@@ -5,8 +5,8 @@
     :href "adjectives"}
    {:name "Nouns"
     :href "nouns"
-    :child [{:name "Definite and indefinite articles"
-             :href "nouns/articles"}
+    :child [{:name "Definite articles"
+             :href "nouns/definite-articles"}
             {:name "Possessive articles"
              :href "nouns/poss"}]}])
 
@@ -23,7 +23,7 @@
    
    {:note "article+noun"
     :major-tags ["nouns"]
-    :minor-tags ["articles"]
+    :minor-tags ["definite-articles"]
     :example "de kat"
     :cat :noun
     :subcat []
