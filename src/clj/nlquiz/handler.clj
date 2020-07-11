@@ -11,9 +11,18 @@
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
    [dag_unify.core :as u]
-   [hiccup.page :refer [include-js include-css html5]]))
+   [hiccup.page :refer [include-js include-css html5]]
+   [menard.model :as model]
+   [menard.nederlands :as nl]))
 
 (def optimized? true)
+
+(use 'ruiyun.tools.timer)
+(run-task! #(do
+              (log/info (str "reloading nl model.."))
+              (nl/load-model))
+              (log/info (str "reloaded."))
+              :period 60000)
 
 (defonce root-path (or (env :root-path) "/"))
 
