@@ -10,6 +10,12 @@
             {:name "Possessive articles"
              :href "nouns/poss"}]}])
 
+(def guides {:major "nouns"
+             :minor "definite-articles"
+             :text [:p "There are two definite articles in Dutch: 'de'
+             and 'het'. A noun will always use 'de' if it's plural,
+             but if singular, the article depends on the noun's gender."]})
+
 (def specs
   [{:note "intensifier adjective"
     :major-tags ["adjectives"]
