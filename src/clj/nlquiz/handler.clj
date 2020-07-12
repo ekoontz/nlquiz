@@ -13,6 +13,7 @@
    [dag_unify.core :as u]
    [hiccup.page :refer [include-js include-css html5]]
    [menard.model :as model]
+   [menard.english :as en]
    [menard.nederlands :as nl]))
 
 (def optimized? true)
@@ -21,8 +22,11 @@
 (run-task! #(do
               (log/info (str "reloading nl model.."))
               (nl/load-model)
+              (log/info (str "reloaded."))
+              (log/info (str "reloading en model.."))
+              (en/load-model)
               (log/info (str "reloaded.")))
-           :period 60000)
+           :period (* 5 60 1000)) ;; reload every 5 minutes.
 
 (defonce root-path (or (env :root-path) "/"))
 
