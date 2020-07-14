@@ -10,11 +10,16 @@
             {:name "Possessive articles"
              :href "nouns/poss"}]}])
 
-(def guides {:major "nouns"
-             :minor "definite-articles"
-             :text [:p "There are two definite articles in Dutch: 'de'
-             and 'het'. A noun will always use 'de' if it's plural,
-             but if singular, the article depends on the noun's gender."]})
+(def guides
+  [{:major "nouns"
+    :minor "definite-articles"
+    :text [:div
+           [:p "There are two definite articles in Dutch: " [:i "de"]
+            " and " [:i "het"] ". A noun will always use " [:i "de"] " if it's plural,"
+            "but if singular, the article depends on the noun's gender:"]
+           [:li
+            [:ul "If the noun is of " [:b "common"] "gender, then the definite article is " [:i "de"]]
+            [:ul "If the noun is of " [:b "neuter"] "gender, then the definite article is " [:i "het"]]]]}])
 
 (def specs
   [{:note "intensifier adjective"
