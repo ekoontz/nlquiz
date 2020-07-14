@@ -1,7 +1,7 @@
 (ns nlquiz.quiz
   (:require
    [accountant.core :as accountant]
-
+   [nlquiz.constants :refer [root-path]]
    [nlquiz.dropdown :as dropdown]
    [dag_unify.core :as u]
    [dag_unify.serialization :as s]
@@ -26,9 +26,6 @@
 (def show-praise-text (r/atom nil))
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
-
-;; TODO: move to core.
-(defonce root-path "/nlquiz/")
 
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
