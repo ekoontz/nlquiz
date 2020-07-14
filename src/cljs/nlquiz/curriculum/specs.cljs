@@ -11,14 +11,20 @@
              :href "nouns/poss"}]}])
 
 (def guides
-  [{:href "nouns/definite-articles"
-    :text [:div
-           [:p "There are two definite articles in Dutch: " [:i "de"]
-            " and " [:i "het"] ". A noun will always use " [:i "de"] " if it's plural,"
-            "but if singular, the article depends on the noun's gender:"]
-           [:li
-            [:ul "If the noun is of " [:b "common"] "gender, then the definite article is " [:i "de"]]
-            [:ul "If the noun is of " [:b "neuter"] "gender, then the definite article is " [:i "het"]]]]}])
+  {"nouns"
+   {"definite-articles"
+    (fn []
+      [:div
+       [:p "There are two definite articles in Dutch: " [:i "de"]
+        " and " [:i "het"] ". A noun will always use " [:i "de"] " when it's plural,"
+        " but when singular, the article used depends on the noun's gender:"]
+       [:ul
+        [:li "If the noun is of " [:b "common"] " gender, then the definite article is " [:i "de"] "."]
+        [:li "If the noun is of " [:b "neuter"] " gender, then the definite article is " [:i "het"] "."]]])
+    "poss"
+    (fn []
+      [:div
+       [:p "Here's some stuff about possessive articles."]])}})
 
 (def specs
   [{:note "intensifier adjective"

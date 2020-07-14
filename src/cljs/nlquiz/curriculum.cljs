@@ -9,7 +9,7 @@
    [dag_unify.core :as u]
    [dommy.core :as dommy]
    [nlquiz.constants :refer [root-path]]
-   [nlquiz.curriculum.specs :refer [curriculum specs]]
+   [nlquiz.curriculum.specs :refer [curriculum guides specs]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -52,7 +52,7 @@
           (:child node)))]])
 
 (defn tree [selected-path]
-  (log/debug (str "tree: selected-path: " selected-path))
+  (log/info (str "tree: selected-path: " selected-path))
   (fn []
     [:div.curriculum
      [:ul
@@ -89,5 +89,12 @@
       [:div.curr-major
        [tree path]
        [:h4 @topic-name]
-       (quiz/quiz-layout (get-expression major minor))])))
+       (quiz/quiz-layout (get-expression major minor))
+       (cond (and major minor guides (get guides major)
+                  (-> guides (get major) (get minor)))
+             [:div.guide [(-> guides (get major) (get minor))]]
+             true "")])))
+
+
+
 
