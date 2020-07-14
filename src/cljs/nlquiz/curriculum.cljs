@@ -15,8 +15,10 @@
 
 ;; TODO: move root-path to core:
 (defonce root-path "/nlquiz/")
-(def n (atom 0))
 (def topic-name (r/atom ""))
+
+;; this atom is used to add :key values to list items and table rows:
+(def i (atom 0))
 
 (defn find-matching-specs [major & [minor]]
   (->> specs
@@ -30,7 +32,7 @@
 
 (defn tree-node [node selected-path]
   (log/debug (str "selected-path: " selected-path))
-  [:li {:key (str "node-" (swap! n inc))}
+  [:li {:key (str "node-" (swap! i inc))}
    [:h1
     (if (:href node)
       (let [url (str "/nlquiz/curriculum/" (:href node))]
