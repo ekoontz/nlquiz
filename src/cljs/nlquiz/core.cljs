@@ -94,6 +94,10 @@ topic in the curriculum to practice with that type of phrase."]
     :curriculum-major #'curriculum/quiz-component
     :curriculum-minor #'curriculum/quiz-component))
 
+;; used by e.g. quiz.cljs to know how to prefix links
+;; when generating html:
+(defonce root-path "/nlquiz/")
+
 ;; -------------------------
 ;; Initialize app
 

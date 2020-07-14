@@ -11,8 +11,7 @@
              :href "nouns/poss"}]}])
 
 (def guides
-  [{:major "nouns"
-    :minor "definite-articles"
+  [{:href "nouns/definite-articles"
     :text [:div
            [:p "There are two definite articles in Dutch: " [:i "de"]
             " and " [:i "het"] ". A noun will always use " [:i "de"] " if it's plural,"

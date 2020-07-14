@@ -1,7 +1,7 @@
 (ns nlquiz.quiz
   (:require
    [accountant.core :as accountant]
-
+   [nlquiz.core :refer [root-path]]
    [nlquiz.dropdown :as dropdown]
    [dag_unify.core :as u]
    [dag_unify.serialization :as s]
@@ -27,9 +27,6 @@
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 
-;; TODO: move to core.
-(defonce root-path "/nlquiz/")
-
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
               "mooi..🌷"
@@ -37,10 +34,6 @@
               "prachtig.."
               "precies!😁"
               "prima!!😎 "])
-
-(defn expression-based-get []
-  (log/debug (str "returning a function from the expression index: " @expression-index))
-  (http/get (str root-path "generate/" @expression-index)))
 
 (defn new-question [specification-fn]
   (go (let [response (<! (specification-fn))]
