@@ -8,12 +8,13 @@
    [cljslog.core :as log]
    [dag_unify.core :as u]
    [dommy.core :as dommy]
-   [nlquiz.core :refer [root-path]]
-   [nlquiz.curriculum.specs :refer [curriculum guides specs]]
+   [nlquiz.curriculum.specs :refer [curriculum specs]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+;; TODO: move root-path to core:
+(defonce root-path "/nlquiz/")
 (def topic-name (r/atom ""))
 
 ;; this atom is used to add :key values to list items and table rows:
