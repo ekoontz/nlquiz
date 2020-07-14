@@ -8,23 +8,24 @@
 
 #answer {
     position: absolute;
-    right: 10%;
+    left:40%;
     top: 20%;
+    font-weight:bold;
     font-size:large;
     background:aliceblue;
-    color:red;
+    color:pink;
     font-size:200%;    
     border-radius: 5px;
-    border:2px solid blue;
+    border:2px solid lightblue;
     padding:0.5em;
 }
 
 #praise {
     position: absolute;
-    left: 20%;
-    top: 15%;
+    left: 40%;
+    top: 20%;
     font-weight:bold;
-    font-size:large;
+    font-size:300%;
     background:orange;
     color:white;
     border-radius: 5px;
@@ -278,6 +279,16 @@ div.answertable table {
     border-collapse:collapse;
 }
 
+h1 a {
+    padding:0.25em;
+    margin:0.25em;
+}
+
+h1 a.selected {
+    border-radius:3px;
+    border:1px solid lightblue;
+}
+
 /* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
 /* ----------- iPhone 6, 6S, 7 and 8 ----------- */
 /* Portrait and Landscape */
@@ -286,11 +297,25 @@ div.answertable table {
   and (max-device-width: 667px) 
   and (-webkit-min-device-pixel-ratio: 2) { 
     div.curriculum {
-	width:25%;
+	display:block;
+	font-size:small;
+	width:23%;
 	max-height:28%;
-	left:64%;
+	left:65%;
     }
 
+    div#answer {
+	font-size:200%;
+	left:5%;
+	top:12%;
+    }
+
+    div#praise {
+	font-size:200%;
+	left:5%;
+	top:12%;
+    }
+    
     div.answertable {
 	left:0.5em;
     }
