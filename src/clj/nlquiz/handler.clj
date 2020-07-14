@@ -79,16 +79,16 @@
      ["/nlquiz/generate/:expression-index"   {:get {:handler (fn [request] (json-response request generate-by-expression-index))}}]
 
 
-     ["/about"                        {:get {:handler html-response}}]
-     ["/curriculum"                   {:get {:handler html-response}}]
-     ["/curriculum/:major"            {:get {:handler html-response}}]
-     ["/curriculum/:major/:minor"     {:get {:handler html-response}}]
-     ["/test"                         {:get {:handler html-response}}]
+     ["/about"                               {:get {:handler html-response}}]
+     ["/curriculum"                          {:get {:handler html-response}}]
+     ["/curriculum/:major"                   {:get {:handler html-response}}]
+     ["/curriculum/:major/:minor"            {:get {:handler html-response}}]
+     ["/test"                                {:get {:handler html-response}}]
      ;; routes which return a json response:
-     ["/parse/nl"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
-     ["/parse/en"                     {:get {:handler (fn [request] (json-response request parse-en))}}]
-     ["/generate"                     {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
-     ["/generate/:expression-index"   {:get {:handler (fn [request] (json-response request generate-by-expression-index))}}]])
+     ["/parse/nl"                            {:get {:handler (fn [request] (json-response request parse-nl))}}]
+     ["/parse/en"                            {:get {:handler (fn [request] (json-response request parse-en))}}]
+     ["/generate"                            {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
+     ["/generate/:expression-index"          {:get {:handler (fn [request] (json-response request generate-by-expression-index))}}]])
 
 
    (reitit-ring/routes
