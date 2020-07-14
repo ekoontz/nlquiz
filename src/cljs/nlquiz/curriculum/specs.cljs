@@ -24,7 +24,14 @@
     "poss"
     (fn []
       [:div
-       [:p "Here's some stuff about possessive articles."]])}})
+       [:p "Here's some stuff about possessive articles."]
+       [:table
+        [:tr
+         [:th "fruit"][:th "count"]]
+        [:tr
+         [:td "appel"][:th "3"]]
+        [:tr
+         [:td "sinasappel"][:th "8"]]]])}})
 
 (def specs
   [{:note "intensifier adjective"
