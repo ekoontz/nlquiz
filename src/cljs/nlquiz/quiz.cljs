@@ -38,10 +38,6 @@
               "precies!😁"
               "prima!!😎 "])
 
-(defn expression-based-get []
-  (log/debug (str "returning a function from the expression index: " @expression-index))
-  (http/get (str root-path "generate/" @expression-index)))
-
 (defn new-question [specification-fn]
   (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
