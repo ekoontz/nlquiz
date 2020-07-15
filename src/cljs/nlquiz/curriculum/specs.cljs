@@ -8,7 +8,9 @@
     :child [{:name "Definite articles"
              :href "nouns/definite-articles"}
             {:name "Possessive articles"
-             :href "nouns/poss"}]}])
+             :href "nouns/poss"}
+            {:name "Nouns with indefinite articles and adjectives"
+             :href "nouns/indef-adj"}]}])
 
 (def guides
   {"nouns"
@@ -21,7 +23,7 @@
        [:ul
         [:li "If the noun is of " [:b "common"] " gender, then the definite article is " [:i "de"] "."]
         [:li "If the noun is of " [:b "neuter"] " gender, then the definite article is " [:i "het"] "."]]])
-    "poss"
+    "poss-not-shown" ;; change to "poss" when this is ready to show.
     (fn []
       [:div
        [:p "Here's some stuff about possessive articles."]
@@ -31,7 +33,19 @@
         [:tr
          [:td "appel"][:th "3"]]
         [:tr
-         [:td "sinasappel"][:th "8"]]]])}})
+         [:td "sinasappel"][:th "8"]]]])
+
+    "indef-adj"
+    (fn []
+      [:div
+       [:p "Normally, when an adjective modifies a noun, the adjective will"
+           " have an -e at the end."]
+       [:p "However, if:"]
+       [:ul
+        [:li "the noun is singular,"]
+        [:li "the noun is of " [:b "neuter"] " gender, and"]
+        [:li "the article is indefinite (" [:i "een"] ")"]]
+       [:p "then the adjective will " [:b "not"] " have an -e ending."]])}})
 
 (def specs
   [{:note "intensifier adjective"
@@ -115,6 +129,18 @@
     :head {:phrasal false
            :subcat {:1 {:cat :det}}}
     :comp {:phrasal false
-           :sem {:pred :she}}}])
+           :sem {:pred :she}}}
 
+   {:major-tags ["nouns"]
+    :minor-tags ["indef-adj"]
+    :example "een oud huis"
+    :sem {:mod {:first {:number? false}
+                :rest []}
+          :quant :some
+          :ref {:number :sing}}
+    :subcat []
+    :phrasal true
+    :cat :noun
+    :head {:phrasal true}
+    :comp {:phrasal false}}])
 
