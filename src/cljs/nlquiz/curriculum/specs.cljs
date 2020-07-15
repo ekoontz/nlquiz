@@ -44,7 +44,7 @@
        [:ul
         [:li "the noun is singular,"]
         [:li "the noun is of " [:b "neuter"] " gender, and"]
-        [:li "the article is indefinite (" [:i "een"] ")"]]
+        [:li "the article is indefinite (" [:i "een"] "),"]]
        [:p "then the adjective will " [:b "not"] " have an -e ending."]])}})
 
 (def specs
