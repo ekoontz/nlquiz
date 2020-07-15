@@ -18,6 +18,7 @@
     border-radius: 5px;
     border:2px solid lightblue;
     padding:0.5em;
+    z-index:5;
 }
 
 #praise {
@@ -31,6 +32,7 @@
     border-radius: 5px;
     border:2px solid blue;
     padding:0.5em;
+    z-index:5;
 }
 
 .body-container {
