@@ -1,4 +1,10 @@
-(ns nlquiz.curriculum.specs)
+(ns nlquiz.curriculum.specs
+  (:require
+   [cljs-http.client :as http]
+   [cljslog.core :as log]
+   [cljs.core.async :refer [<!]]
+   [reagent.core :as r])
+  (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (def curriculum
   [{:name "Adjectives"
@@ -11,6 +17,27 @@
              :href "nouns/poss"}
             {:name "Nouns with indefinite articles and adjectives"
              :href "nouns/indef-adj"}]}])
+
+(def answer-count (atom 0))
+(def question-table (r/atom nil))
+
+(defn show-examples [specs]
+  (reset! question-table
+          [{:target "rot" :source "red"}
+           {:target "blauw" :source "blue"}])
+  (reset! answer-count (count @question-table))
+  (fn []
+    [:div.answertable
+     [:table
+      [:tbody
+       (doall
+        (->> (range 0 (count @question-table))
+             (map (fn [i]
+                    [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
+                     [:th (+ 1 i)]
+                     [:td.target (-> @question-table (nth i) :target)]
+                     [:td.source (-> @question-table (nth i) :source)]
+                     ]))))]]]))
 
 (def guides
   {"nouns"
@@ -39,13 +66,36 @@
     (fn []
       [:div
        [:p "Normally, when an adjective modifies a noun, the adjective will"
-           " have an -e at the end."]
+        " have an -e at the end. For example:"]
+
+       [show-examples [{:cat :noun
+                        :agr {:number :plur}
+                        :sem {:mod {:first {:number? false}
+                                    :rest []}
+                              :quant :some}
+                        :subcat []
+                        :phrasal true
+                        :head {:phrasal true}
+                        :comp {:phrasal false}}]]
+
        [:p "However, if:"]
        [:ul
         [:li "the noun is singular,"]
         [:li "the noun is of " [:b "neuter"] " gender, and"]
         [:li "the article is indefinite (" [:i "een"] "),"]]
-       [:p "then the adjective will " [:b "not"] " have an -e ending."]])}})
+       [:p "then the adjective will " [:b "not"] " have an -e ending, "
+        "for example: "]
+       [show-examples [{:cat :noun
+                        :agr {:number :sing
+                              :gender :neuter}
+                        :sem {:mod {:first {:number? false}
+                                    :rest []}
+                              :quant :some}
+                        :subcat []
+                        :phrasal true
+                        :head {:phrasal true}
+                        :comp {:phrasal false}}]]])}})
+        
 
 (def specs
   [{:note "intensifier adjective"
