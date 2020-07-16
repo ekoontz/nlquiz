@@ -40,7 +40,6 @@
                   {:source (-> response :body :source)
                    :target (-> response :body :target)})))))
 
-
 (defn show-row [question-row]
   (fn []
     [:tr
@@ -49,14 +48,32 @@
      [:td.source (:source @question-row)]]))
 
 (defn show-examples [specs]
-  (let [question-row (r/atom [])]
+  (let [question-row (r/atom nil)
+        question-row-1 (r/atom nil)
+        question-row-array [(r/atom [])]
+        expressions (r/atom [])]
     (new-pair question-row)
+    (new-pair question-row-1)
     (fn []
-      [:div.answertable
-       [:table
-        [:tbody
-         [show-row question-row]]]])))
-         
+      [:div {:style {:border "1px dashed blue"}}
+       [:div.answertable
+        [:table
+         [:tbody
+          [show-row question-row]
+          [show-row question-row-1]]]]
+
+       [:div.answertable
+        [:table
+         [:tbody
+          (doall
+           (map (fn [i]
+                  (let [expression (nth @expressions i)]
+                    [:tr {:key (str "row-" i)}
+                     [:th (+ i 1)]
+                     [:td.target (:target expression)]
+                     [:td.source (:source expression)]]))
+                (range 0 (count @expressions))))]]]])))
+
 (def guides
   {"nouns"
    {"definite-articles"
