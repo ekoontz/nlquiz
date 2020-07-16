@@ -122,8 +122,7 @@
                     [:th (- @answer-count i)]
                     [:td.target (-> @question-table (nth i) :target)]
                     [:td.source (-> @question-table (nth i) :source)]
-                    ]))))]]]
-   
+                    ]))))]]]  
    ] ;; div.main
   )
 
