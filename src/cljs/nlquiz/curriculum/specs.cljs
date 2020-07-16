@@ -21,11 +21,32 @@
 (def answer-count (atom 0))
 (def question-table (r/atom nil))
 
+(defn new-pair [source-node]
+  (let [spec {:note "intensifier adjective"
+              :major-tags ["adjectives"]
+              :example "ongewoon slim"
+              :cat :adjective
+              :mod nil
+              :subcat []
+              :phrasal true
+              :head {:phrasal false}
+              :comp {:phrasal false}}
+        serialized-spec (-> spec dag_unify.serialization/serialize str)
+        get-pair-fn
+        (http/get (str root-path "generate") {:query-params {"q" serialized-spec}})]
+    (go (let [response (<! (get-pair-fn))]
+          (log/debug (str "new-expression response: " reponse))
+          (log/debug (str "one possible correct answer to this question is: '"
+                          (-> response :body :target) "'"))
+          {:source (-> response :body :source)
+           :target (-> response :body :source)}))))
+
+(defn example-table []
+  [{:target "rot" :source "red"}
+   {:target "blauw" :source "blue"}])
+  
 (defn show-examples [specs]
-  (reset! question-table
-          [{:target "rot" :source "red"}
-           {:target "blauw" :source "blue"}])
-  (reset! answer-count (count @question-table))
+  (reset! question-table (example-table))
   (fn []
     [:div.answertable
      [:table
