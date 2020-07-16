@@ -77,6 +77,7 @@
      ["/nlquiz/parse/en"                     {:get {:handler (fn [request] (json-response request parse-en))}}]
      ["/nlquiz/generate"                     {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
      ["/nlquiz/generate/:expression-index"   {:get {:handler (fn [request] (json-response request generate-by-expression-index))}}]
+     ["/nlquiz/generate/pair"                {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
 
 
      ["/about"                               {:get {:handler html-response}}]
