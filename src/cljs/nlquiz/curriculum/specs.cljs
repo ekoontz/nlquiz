@@ -3,6 +3,7 @@
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
+   [nlquiz.constants :refer [root-path]]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
@@ -18,10 +19,7 @@
             {:name "Nouns with indefinite articles and adjectives"
              :href "nouns/indef-adj"}]}])
 
-(def answer-count (atom 0))
-(def question-table (r/atom nil))
-
-(defn new-pair [source-node]
+(defn new-pair [input]
   (let [spec {:note "intensifier adjective"
               :major-tags ["adjectives"]
               :example "ongewoon slim"
@@ -32,34 +30,33 @@
               :head {:phrasal false}
               :comp {:phrasal false}}
         serialized-spec (-> spec dag_unify.serialization/serialize str)
-        get-pair-fn
-        (http/get (str root-path "generate") {:query-params {"q" serialized-spec}})]
+        get-pair-fn (fn [] (http/get (str root-path "generate") {:query-params {"q" serialized-spec}}))]
     (go (let [response (<! (get-pair-fn))]
-          (log/debug (str "new-expression response: " reponse))
-          (log/debug (str "one possible correct answer to this question is: '"
-                          (-> response :body :target) "'"))
-          {:source (-> response :body :source)
-           :target (-> response :body :source)}))))
+          (log/info (str "PAIR: source: " 
+                         (-> response :body :source)))
+          (log/info (str "PAIR: target: "
+                         (-> response :body :target)))
+          (reset! input
+                  {:source (-> response :body :source)
+                   :target (-> response :body :target)})))))
 
-(defn example-table []
-  [{:target "rot" :source "red"}
-   {:target "blauw" :source "blue"}])
-  
-(defn show-examples [specs]
-  (reset! question-table (example-table))
+
+(defn show-row [question-row]
   (fn []
-    [:div.answertable
-     [:table
-      [:tbody
-       (doall
-        (->> (range 0 (count @question-table))
-             (map (fn [i]
-                    [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
-                     [:th (+ 1 i)]
-                     [:td.target (-> @question-table (nth i) :target)]
-                     [:td.source (-> @question-table (nth i) :source)]
-                     ]))))]]]))
+    [:tr
+     [:th 42]
+     [:td.target (:target @question-row)]
+     [:td.source (:source @question-row)]]))
 
+(defn show-examples [specs]
+  (let [question-row (r/atom [])]
+    (new-pair question-row)
+    (fn []
+      [:div.answertable
+       [:table
+        [:tbody
+         [show-row question-row]]]])))
+         
 (def guides
   {"nouns"
    {"definite-articles"
@@ -106,9 +103,9 @@
         [:li "the article is indefinite (" [:i "een"] "),"]]
        [:p "then the adjective will " [:b "not"] " have an -e ending, "
         "for example: "]
+
        [show-examples [{:cat :noun
-                        :agr {:number :sing
-                              :gender :neuter}
+                        :agr {:number :plur}
                         :sem {:mod {:first {:number? false}
                                     :rest []}
                               :quant :some}
@@ -116,7 +113,6 @@
                         :phrasal true
                         :head {:phrasal true}
                         :comp {:phrasal false}}]]])}})
-        
 
 (def specs
   [{:note "intensifier adjective"
