@@ -30,7 +30,8 @@
               :head {:phrasal false}
               :comp {:phrasal false}}
         serialized-spec (-> spec dag_unify.serialization/serialize str)
-        get-pair-fn (fn [] (http/get (str root-path "generate") {:query-params {"q" serialized-spec}}))]
+        get-pair-fn (fn [] (http/get (str root-path "generate")
+                                     {:query-params {"q" serialized-spec}}))]
     (go (let [response (<! (get-pair-fn))]
           (log/info (str "PAIR: source: " 
                          (-> response :body :source)))
@@ -40,39 +41,27 @@
                   {:source (-> response :body :source)
                    :target (-> response :body :target)})))))
 
-(defn show-row [question-row]
+(defn add-one [expressions]
+  (swap! expressions
+         (fn [expressions]
+           (cons (r/atom {:source "foo" :target "bar"})
+                 expressions))))
+
+(defn show-examples [expressions specs]
+  (add-one expressions)
+  (add-one expressions)  
   (fn []
-    [:tr
-     [:th 42]
-     [:td.target (:target @question-row)]
-     [:td.source (:source @question-row)]]))
-
-(defn show-examples [specs]
-  (let [question-row (r/atom nil)
-        question-row-1 (r/atom nil)
-        question-row-array [(r/atom [])]
-        expressions (r/atom [])]
-    (new-pair question-row)
-    (new-pair question-row-1)
-    (fn []
-      [:div {:style {:border "1px dashed blue"}}
-       [:div.answertable
-        [:table
-         [:tbody
-          [show-row question-row]
-          [show-row question-row-1]]]]
-
-       [:div.answertable
-        [:table
-         [:tbody
-          (doall
-           (map (fn [i]
-                  (let [expression (nth @expressions i)]
-                    [:tr {:key (str "row-" i)}
-                     [:th (+ i 1)]
-                     [:td.target (:target expression)]
-                     [:td.source (:source expression)]]))
-                (range 0 (count @expressions))))]]]])))
+    [:div.answertable
+     [:table
+      [:tbody
+       (doall
+        (map (fn [i]
+               (let [expression @(nth @expressions i)]
+                 [:tr {:key (str "row-" i)}
+                  [:th (+ i 1)]
+                  [:td.target (:target expression)]
+                  [:td.source (:source expression)]]))
+             (range 0 (count @expressions))))]]]))
 
 (def guides
   {"nouns"
@@ -103,15 +92,16 @@
        [:p "Normally, when an adjective modifies a noun, the adjective will"
         " have an -e at the end. For example:"]
 
-       [show-examples [{:cat :noun
-                        :agr {:number :plur}
-                        :sem {:mod {:first {:number? false}
-                                    :rest []}
-                              :quant :some}
-                        :subcat []
-                        :phrasal true
-                        :head {:phrasal true}
-                        :comp {:phrasal false}}]]
+       [show-examples (r/atom [])
+        [{:cat :noun
+          :agr {:number :plur}
+          :sem {:mod {:first {:number? false}
+                      :rest []}
+                :quant :some}
+          :subcat []
+          :phrasal true
+          :head {:phrasal true}
+          :comp {:phrasal false}}]]
 
        [:p "However, if:"]
        [:ul
@@ -121,15 +111,16 @@
        [:p "then the adjective will " [:b "not"] " have an -e ending, "
         "for example: "]
 
-       [show-examples [{:cat :noun
-                        :agr {:number :plur}
-                        :sem {:mod {:first {:number? false}
-                                    :rest []}
-                              :quant :some}
-                        :subcat []
-                        :phrasal true
-                        :head {:phrasal true}
-                        :comp {:phrasal false}}]]])}})
+       [show-examples (r/atom [])
+        [{:cat :noun
+          :agr {:number :plur}
+          :sem {:mod {:first {:number? false}
+                      :rest []}
+                :quant :some}
+          :subcat []
+          :phrasal true
+          :head {:phrasal true}
+          :comp {:phrasal false}}]]])}})
 
 (def specs
   [{:note "intensifier adjective"
