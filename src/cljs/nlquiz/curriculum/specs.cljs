@@ -77,8 +77,8 @@
     "indef-adj"
     (fn []
       [:div
-       [:p "Normally, when an adjective modifies a noun, the adjective will"
-        " have an -e at the end. For example:"]
+       [:p "In most cases, when an adjective modifies a noun, the adjective will"
+        " have an " [:i "-e"] " at the end. For example:"]
 
        [show-examples (r/atom [])
         [{:cat :noun
