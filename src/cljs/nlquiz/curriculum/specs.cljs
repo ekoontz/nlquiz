@@ -41,10 +41,14 @@
                   {:source (-> response :body :source)
                    :target (-> response :body :target)})))))
 
+(defn really-add [the-atom]
+  (reset! the-atom {:source "foo" :target "bar"})
+  the-atom)
+
 (defn add-one [expressions]
   (swap! expressions
          (fn [expressions]
-           (cons (r/atom {:source "foo" :target "bar"})
+           (cons (really-add (r/atom nil))
                  expressions))))
 
 (defn show-examples [expressions specs]
