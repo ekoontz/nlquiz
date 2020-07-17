@@ -37,7 +37,7 @@
                    [(new-pair spec)]))))
 
 (defn show-examples [expressions specs]
-  (doall (take 3 (repeatedly #(add-one expressions (first (shuffle specs))))))
+  (doall (take 5 (repeatedly #(add-one expressions (first (shuffle specs))))))
   (fn []
     [:div.exampletable
      [:table
