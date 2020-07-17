@@ -281,6 +281,23 @@ div.answertable table {
     border-collapse:collapse;
 }
 
+
+div.exampletable {
+    left:3em;
+    width:75%;
+    overflow:scroll;
+    white-space:nowrap;
+    padding:0;
+    margin:0;
+    padding-top:0;
+    position:relative;
+}
+
+div.exampletable table {
+    width:100%;
+    border-collapse:collapse;
+}
+
 h1 a {
     padding:0.25em;
     margin:0.25em;

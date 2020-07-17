@@ -39,7 +39,7 @@
 (defn show-examples [expressions specs]
   (doall (take 3 (repeatedly #(add-one expressions (first (shuffle specs))))))
   (fn []
-    [:div.answertable
+    [:div.exampletable
      [:table
       [:tbody
        (doall
@@ -100,7 +100,20 @@
           :subcat []
           :phrasal true
           :head {:phrasal true}
-          :comp {:phrasal false}}]]
+          :comp {:phrasal false}}
+
+         {:cat :noun
+          :agr {:number :sing
+                :gender :common}
+          :sem {:mod {:first {:number? false}
+                      :rest []}
+                :quant :the}
+          :subcat []
+          :phrasal true
+          :head {:phrasal true}
+          :comp {:phrasal false}}
+
+         ]]
          
 
        [:p "However, if:"]
