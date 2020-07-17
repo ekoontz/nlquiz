@@ -33,8 +33,8 @@
 (defn add-one [expressions spec]
   (swap! expressions
          (fn [expressions]
-           (cons (new-pair spec)
-                 expressions))))
+           (concat expressions
+                   [(new-pair spec)]))))
 
 (defn show-examples [expressions specs]
   (doall (take 3 (repeatedly #(add-one expressions (first (shuffle specs))))))
