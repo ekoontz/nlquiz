@@ -19,17 +19,8 @@
             {:name "Nouns with indefinite articles and adjectives"
              :href "nouns/indef-adj"}]}])
 
-(defn new-pair [input]
-  (let [spec {:note "intensifier adjective"
-              :major-tags ["adjectives"]
-              :example "ongewoon slim"
-              :cat :adjective
-              :mod nil
-              :subcat []
-              :phrasal true
-              :head {:phrasal false}
-              :comp {:phrasal false}}
-        serialized-spec (-> spec dag_unify.serialization/serialize str)
+(defn new-pair [input spec]
+  (let [serialized-spec (-> spec dag_unify.serialization/serialize str)
         get-pair-fn (fn [] (http/get (str root-path "generate")
                                      {:query-params {"q" serialized-spec}}))]
     (go (let [response (<! (get-pair-fn))]
@@ -42,14 +33,14 @@
                    :target (-> response :body :target)})))
     input))
 
-(defn add-one [expressions]
+(defn add-one [expressions spec]
   (swap! expressions
          (fn [expressions]
-           (cons (new-pair (r/atom nil))
+           (cons (new-pair (r/atom nil) spec)
                  expressions))))
 
 (defn show-examples [expressions specs]
-  (doall (take 3 (repeatedly #(add-one expressions))))
+  (doall (take 3 (repeatedly #(add-one expressions (first (shuffle specs))))))
   (fn []
     [:div.answertable
      [:table
@@ -101,7 +92,19 @@
           :subcat []
           :phrasal true
           :head {:phrasal true}
+          :comp {:phrasal false}}
+
+         {:cat :noun
+          :agr {:number :sing
+                :gender :common}
+          :sem {:mod {:first {:number? false}
+                      :rest []}
+                :quant :some}
+          :subcat []
+          :phrasal true
+          :head {:phrasal true}
           :comp {:phrasal false}}]]
+         
 
        [:p "However, if:"]
        [:ul
@@ -113,7 +116,8 @@
 
        [show-examples (r/atom [])
         [{:cat :noun
-          :agr {:number :plur}
+          :agr {:number :sing
+                :gender :neuter}
           :sem {:mod {:first {:number? false}
                       :rest []}
                 :quant :some}
