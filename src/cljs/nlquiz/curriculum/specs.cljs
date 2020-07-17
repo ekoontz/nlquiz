@@ -39,21 +39,17 @@
                          (-> response :body :target)))
           (reset! input
                   {:source (-> response :body :source)
-                   :target (-> response :body :target)})))))
-
-(defn really-add [the-atom]
-  (reset! the-atom {:source "foo" :target "bar"})
-  the-atom)
+                   :target (-> response :body :target)})))
+    input))
 
 (defn add-one [expressions]
   (swap! expressions
          (fn [expressions]
-           (cons (really-add (r/atom nil))
+           (cons (new-pair (r/atom nil))
                  expressions))))
 
 (defn show-examples [expressions specs]
-  (add-one expressions)
-  (add-one expressions)  
+  (doall (take 3 (repeatedly #(add-one expressions))))
   (fn []
     [:div.answertable
      [:table
