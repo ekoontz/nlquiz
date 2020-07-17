@@ -19,15 +19,12 @@
             {:name "Nouns with indefinite articles and adjectives"
              :href "nouns/indef-adj"}]}])
 
-(defn new-pair [input spec]
-  (let [serialized-spec (-> spec dag_unify.serialization/serialize str)
+(defn new-pair [spec]
+  (let [input (r/atom nil)
+        serialized-spec (-> spec dag_unify.serialization/serialize str)
         get-pair-fn (fn [] (http/get (str root-path "generate")
                                      {:query-params {"q" serialized-spec}}))]
     (go (let [response (<! (get-pair-fn))]
-          (log/info (str "PAIR: source: " 
-                         (-> response :body :source)))
-          (log/info (str "PAIR: target: "
-                         (-> response :body :target)))
           (reset! input
                   {:source (-> response :body :source)
                    :target (-> response :body :target)})))
@@ -36,7 +33,7 @@
 (defn add-one [expressions spec]
   (swap! expressions
          (fn [expressions]
-           (cons (new-pair (r/atom nil) spec)
+           (cons (new-pair spec)
                  expressions))))
 
 (defn show-examples [expressions specs]
