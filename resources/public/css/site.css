@@ -301,6 +301,10 @@ div.exampletable table {
     border-collapse:collapse;
 }
 
+th.index {
+    width:1em;
+}
+
 th.speak {
     width:0.7em;
 }
