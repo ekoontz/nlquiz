@@ -20,14 +20,25 @@
   (let [debug (log/debug (str "generating a question with spec: " spec))
         debug (log/debug (str "input spec type: " (type spec)))
         target-expression (-> spec nl/generate)
-        source-expression (-> target-expression tr/nl-to-en-spec en/generate)
+        ;; try twice to generate a source expression: fails occasionally for unknown reasons:
+        source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
+                               (take 2)
+                               (filter #(not (empty? %)))
+                               first)
         source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
     (log/info (str "generated: '" (-> source-expression en/morph) "'"
                    " -> '"  (-> target-expression nl/morph) "'"))
-    {:source (-> source-expression en/morph)
-     :source-sem (map dag-to-string source-semantics)
-     :target (-> target-expression nl/morph)}))
-
+    (let [result
+          {:source (-> source-expression en/morph)
+           :source-sem (map dag-to-string source-semantics)
+           :target (-> target-expression nl/morph)}]
+      (when (empty? source-expression)
+        (log/warn (str "source expression was null for spec: " spec "; target expression: "
+                       (nl/syntax-tree target-expression)))
+        (log/warn (str " tried to generate from: "
+                       (dag_unify.serialization/serialize (-> target-expression tr/nl-to-en-spec)))))
+      result)))
+    
 (defn generate-by-expression-index
   "look up a specification in the 'nl-expressions' array and generate with it."
   [_request]
