@@ -2,7 +2,7 @@
   :href "adjectives"}
  {:name "Nouns"
   :href "nouns"
-  :child [{:name "Definite articles"
+  :child [{:name "Definite articles with singular nouns"
            :href "nouns/definite-articles"}
           {:name "Possessive articles"
            :href "nouns/poss"}
