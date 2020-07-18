@@ -9,13 +9,14 @@
    [dag_unify.core :as u]
    [dommy.core :as dommy]
    [nlquiz.constants :refer [root-path]]
-   [nlquiz.curriculum.specs :refer [guides specs]]
+   [nlquiz.curriculum.specs :refer [guides]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (def topic-name (r/atom ""))
 (def curriculum-atom (r/atom nil))
+(def specs-atom (r/atom nil))
 
 ;; this atom is used to add :key values to list items and table rows:
 (def i (atom 0))
@@ -24,8 +25,14 @@
   (go (let [response (<! (http/get "/edn/curriculum.edn"))]
         (reset! curriculum-atom (-> response :body)))))
 
+(defn get-specs []
+  (go (let [response (<! (http/get "/edn/specs.edn"))]
+        (log/info (str "GOT THIS MANY SPECS!: " (-> response :body count)))
+        (reset! specs-atom (-> response :body)))))
+
 (defn find-matching-specs [major & [minor]]
-  (->> specs
+  (get-specs)
+  (->> @specs-atom
        (filter (fn [spec]
                  (not (empty? (filter #(= % major)
                                       (get spec :major-tags))))))
