@@ -71,6 +71,18 @@
     ;; what to call if dropdown's choice is changed (generate a new question):
     (fn [] (new-question get-question-fn))]])
 
+(defn speak-dutch [input]
+  (let [synth (. js/window -speechSynthesis)
+        utterThis (new js/SpeechSynthesisUtterance input)
+        nl-voice
+        (first
+         (->> (.getVoices synth)
+              (filter #(= "nl-NL" (-> % .-lang)))))]
+    (if nl-voice
+      (do (aset utterThis "voice" nl-voice)
+          (.speak synth utterThis))
+      (log/warn (str "could not find a nl-NL voice to speak Dutch on this device; will not attempt speech.")))))
+
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
@@ -99,6 +111,7 @@
                                          ;; function that will called if the user guessed correctly:
                                          (fn []
                                            (let [correct-answer @guess-text]
+                                             (speak-dutch correct-answer)
                                              (show-praise)
                                              (swap! answer-count inc)
                                              (reset! input-state "disabled")
