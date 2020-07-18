@@ -82,6 +82,8 @@
   (log/debug (str "get-expression: minor: " minor))
   (fn []
     (let [specs (find-matching-specs major minor)
+          error (if (empty? specs)
+                  (log/error (str "no specs found matching major=" major " and minor=" minor "!!")))
           spec (-> specs shuffle first)
           serialized-spec (-> spec dag_unify.serialization/serialize str)]
       (log/debug (str "generating with spec: " spec))
