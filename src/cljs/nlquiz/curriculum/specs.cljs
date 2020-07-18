@@ -21,11 +21,33 @@
     (fn []
       [:div
        [:p "There are two definite articles in Dutch: " [:i "de"]
-        " and " [:i "het"] ". A noun will always use " [:i "de"] " when it's plural,"
-        " but when singular, the article used depends on the noun's gender:"]
+        " and " [:i "het"] ". A noun will always use " [:i "de"] " when it's plural:"]
+       [show-examples
+        [{:cat :noun
+          :phrasal true
+          :subcat []
+          :sem {:quant :the}
+          :agr {:number :plur}}]]
+       [:p " but when singular, the article used depends on the noun's gender:"]
        [:ul
-        [:li "If the noun is of " [:b "common"] " gender, then the definite article is " [:i "de"] "."]
-        [:li "If the noun is of " [:b "neuter"] " gender, then the definite article is " [:i "het"] "."]]])
+        [:li "If the noun is of " [:b "common"] " gender, then the definite article is " [:i "de"] ", for example:"
+         [show-examples
+          [{:cat :noun
+            :subcat []
+            :sem {:quant :the}
+            :agr {:gender :common
+                  :number :sing}
+            :phrasal true
+            :head {:phrasal false}}]]]
+        [:li "If the noun is of " [:b "neuter"] " gender, then the definite article is " [:i "het"] ", for example:"
+         [show-examples
+          [{:cat :noun
+            :subcat []
+            :sem {:quant :the}
+            :agr {:gender :neuter
+                  :number :sing}
+            :phrasal true
+            :head {:phrasal false}}]]]]])
     "poss-not-shown" ;; change to "poss" when this is ready to show.
     (fn []
       [:div
