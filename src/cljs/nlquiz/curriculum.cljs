@@ -9,17 +9,20 @@
    [dag_unify.core :as u]
    [dommy.core :as dommy]
    [nlquiz.constants :refer [root-path]]
-   [nlquiz.curriculum.specs :refer [curriculum guides specs]]
+   [nlquiz.curriculum.specs :refer [guides specs]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-;; TODO: move root-path to core:
-;;(defonce root-path "/nlquiz/")
 (def topic-name (r/atom ""))
+(def curriculum-atom (r/atom nil))
 
 ;; this atom is used to add :key values to list items and table rows:
 (def i (atom 0))
+
+(defn get-curriculum []
+  (go (let [response (<! (http/get "/edn/curriculum.edn"))]
+        (reset! curriculum-atom (-> response :body)))))
 
 (defn find-matching-specs [major & [minor]]
   (->> specs
@@ -52,13 +55,14 @@
           (:child node)))]])
 
 (defn tree [selected-path]
-  (log/info (str "tree: selected-path: " selected-path))
+  (get-curriculum)
   (fn []
     [:div.curriculum
      [:ul
       (doall (map (fn [node]
                     (tree-node node selected-path))
-                  curriculum))]]))
+                  @curriculum-atom))]]))
+
 (defn quiz []
   (fn []
     (let [routing-data (session/get :route)

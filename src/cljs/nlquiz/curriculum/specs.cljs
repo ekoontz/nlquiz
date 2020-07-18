@@ -3,18 +3,6 @@
    [nlquiz.curriculum.functions :refer [show-examples]]
    [reagent.core :as r]))
 
-(def curriculum
-  [{:name "Adjectives"
-    :href "adjectives"}
-   {:name "Nouns"
-    :href "nouns"
-    :child [{:name "Definite articles"
-             :href "nouns/definite-articles"}
-            {:name "Possessive articles"
-             :href "nouns/poss"}
-            {:name "Nouns with indefinite articles and adjectives"
-             :href "nouns/indef-adj"}]}])
-
 (def guides
   {"nouns"
    {"definite-articles"
