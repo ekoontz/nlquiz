@@ -101,6 +101,10 @@
        (cond (and major minor guides (get guides major)
                   (-> guides (get major) (get minor)))
              [:div.guide [(-> guides (get major) (get minor))]]
+             (and major guides (fn? (get guides major)))
+             [:div.guide [(-> guides (get major))]]
+             (and major guides (fn? (-> guides (get major) :general)))
+             [:div.guide [(-> guides (get major) :general)]]
              true "")])))
 
 
