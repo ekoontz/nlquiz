@@ -82,8 +82,6 @@
      ["/nlquiz/generate"                     {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
      ["/nlquiz/generate/pair"                {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
 
-
-
      ["/about"                               {:get {:handler html-response}}]
      ["/curriculum"                          {:get {:handler html-response}}]
      ["/curriculum/:major"                   {:get {:handler html-response}}]
@@ -102,3 +100,6 @@
 
 (defmacro inline-resource [resource-path]
   (slurp (clojure.java.io/resource resource-path)))
+
+
+  
