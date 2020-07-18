@@ -142,6 +142,43 @@
           :subcat []
           :phrasal true
           :head {:phrasal true}
-          :comp {:phrasal false}}]]])}})
+          :comp {:phrasal false}}]]])
+
+    "numbers"
+    (fn []
+      [:div
+       [:p "The order of the digits in numbers is reversed from that of English, as shown in these examples:"]
+       [show-examples
+        [{:example "de vier kliene vogels"
+          :cat :noun
+          :mod nil
+          :sem {:mod {:first {:number? true}
+                      :rest {:first {:number? false}
+                             :rest []}}}
+          :phrasal true
+          :training-wheels {:head {:comp {:phrasal false}
+                                   :head {:comp {:phrasal false}
+                                          :head {:phrasal false}}}
+                            :comp {:cat :det}}}
+         
+         {:major-tags ["nouns"]
+          :minor-tags ["numbers"]
+          :example "de vier en twintig kleine vogels"
+          :cat :noun
+          :subcat []
+          :sem {:ref {:number :plur}
+                :mod {:first {:number? true}
+                      :rest {:first {:number? false
+                                     :rest []}}}}
+          :phrasal true
+          :training-wheels {:comp {:cat :det}
+                            :head {:comp {:comp {:phrasal false}
+                                          :head {:head {:phrasal false
+                                                        :sem {:number? true}}
+                                                 :comp {:phrasal false}}}
+                                   :head {:head {:phrasal false}
+                                          :comp {:phrasal false}}}}}]]])}})
+  
+
 
 
