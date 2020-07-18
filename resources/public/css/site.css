@@ -274,6 +274,7 @@ div.answertable {
     margin:0;
     padding-top:1em;
     position:relative;
+    margin-bottom:0.5em;
 }
 
 div.answertable table {
@@ -312,7 +313,7 @@ div.guide {
     float:left;
     border:0px dashed blue;
     width:80%;
-    margin-left:10%;
+    margin-left:5%;
     overflow:scroll;
     border-radius:10px;
     background:#eee;
