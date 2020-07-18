@@ -19,11 +19,11 @@
                      cljs.reader/read-string)))
 
 (defn get-curriculum []
-  (go (let [response (<! (http/get "/edn/curriculum.edn"))]
+  (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
         (reset! curriculum-atom (-> response :body)))))
 
 (defn get-specs []
-  (go (let [response (<! (http/get "/edn/specs.edn"))]
+  (go (let [response (<! (http/get (str root-path "edn/specs.edn")))]
         (reset! specs-atom (-> response :body)))))
 
 (defn find-matching-specs [major & [minor]]
