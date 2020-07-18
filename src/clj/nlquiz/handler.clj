@@ -95,3 +95,6 @@
     (reitit-ring/create-resource-handler {:path root-path :root "/public"})
     (reitit-ring/create-default-handler))
    {:middleware middleware}))
+
+(defmacro inline-resource [resource-path]
+  (slurp (clojure.java.io/resource resource-path)))

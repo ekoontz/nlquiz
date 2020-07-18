@@ -12,11 +12,15 @@
    [nlquiz.curriculum.specs :refer [guides]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r])
-  (:require-macros [cljs.core.async.macros :refer [go]]))
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [nlquiz.handler :refer [inline-resource]]))
 
 (def topic-name (r/atom ""))
 (def curriculum-atom (r/atom nil))
-(def specs-atom (r/atom nil))
+(def specs-atom (r/atom
+                 (-> "public/edn/specs.edn"
+                     inline-resource 
+                     cljs.reader/read-string)))
 
 ;; this atom is used to add :key values to list items and table rows:
 (def i (atom 0))
@@ -26,6 +30,7 @@
         (reset! curriculum-atom (-> response :body)))))
 
 (defn get-specs []
+  (log/info (str "specs atom!! " (type @specs-atom)))
   (go (let [response (<! (http/get "/edn/specs.edn"))]
         (log/info (str "GOT THIS MANY SPECS!: " (-> response :body count)))
         (reset! specs-atom (-> response :body)))))
