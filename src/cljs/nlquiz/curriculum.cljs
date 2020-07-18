@@ -1,17 +1,13 @@
 (ns nlquiz.curriculum
   (:require
-   [cljs-http.client :as http]
-   [reagent.session :as session]
-   [menard.english :as en]
-   [menard.nederlands :as nl]
-   [menard.translate :as tr]
    [cljslog.core :as log]
+   [cljs-http.client :as http]
    [dag_unify.core :as u]
-   [dommy.core :as dommy]
    [nlquiz.constants :refer [root-path]]
    [nlquiz.curriculum.guides :refer [guides]]
    [nlquiz.quiz :as quiz]
-   [reagent.core :as r])
+   [reagent.core :as r]
+   [reagent.session :as session])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [inline-resource]]))
 
@@ -22,17 +18,12 @@
                      inline-resource 
                      cljs.reader/read-string)))
 
-;; this atom is used to add :key values to list items and table rows:
-(def i (atom 0))
-
 (defn get-curriculum []
   (go (let [response (<! (http/get "/edn/curriculum.edn"))]
         (reset! curriculum-atom (-> response :body)))))
 
 (defn get-specs []
-  (log/info (str "specs atom!! " (type @specs-atom)))
   (go (let [response (<! (http/get "/edn/specs.edn"))]
-        (log/info (str "GOT THIS MANY SPECS!: " (-> response :body count)))
         (reset! specs-atom (-> response :body)))))
 
 (defn find-matching-specs [major & [minor]]
@@ -46,7 +37,7 @@
                      (not (empty? (filter #(= % minor)
                                           (get spec :minor-tags)))))))))
 
-(defn tree-node [node selected-path]
+(defn tree-node [i node selected-path]
   (log/debug (str "selected-path: " selected-path))
   [:li {:key (str "node-" (swap! i inc))}
    [:h1
@@ -63,17 +54,18 @@
    [:ul
     (doall
      (map (fn [child]
-            (tree-node child selected-path))
+            (tree-node i child selected-path))
           (:child node)))]])
 
 (defn tree [selected-path]
   (get-curriculum)
-  (fn []
-    [:div.curriculum
-     [:ul
-      (doall (map (fn [node]
-                    (tree-node node selected-path))
-                  @curriculum-atom))]]))
+  (let [i (atom 0)]
+    (fn []
+      [:div.curriculum
+       [:ul
+        (doall (map (fn [node]
+                      (tree-node i node selected-path))
+                    @curriculum-atom))]])))
 
 (defn quiz []
   (fn []
