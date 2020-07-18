@@ -35,7 +35,7 @@
           (map (fn [i]
                  (let [expression @(nth @expressions i)]
                    [:tr {:key (str "row-" i)}
-                    [:th (+ i 1)]
+                    [:th.index (+ i 1)]
                     [:th.speak [:button {:on-click #(speak-dutch (:target expression))} "🔊"]]
                     [:td.target (:target expression)]
                     [:td.source (:source expression)]]))
