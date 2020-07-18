@@ -22,7 +22,9 @@
 
 ;; this macro lets clojurescript to know the server's root-path
 ;; so that it can properly create URLs to do HTTP requests to the server:
-(defmacro root-path-from-env [] root-path)
+(defmacro root-path-from-env []
+  (log/info (str "root-path-from-env: root-path is: " (env :root-path)))
+  (or (env :root-path) "/"))
 
 (def mount-target
   [:div#app
