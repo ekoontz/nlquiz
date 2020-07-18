@@ -22,10 +22,12 @@
   (do (log/info (str "environment ROOT_PATH: " (env :root-path)))
       (or (env :root-path) "/")))
 
-;; this macro lets clojurescript to know the server's root-path
-;; so that it can properly create URLs to do HTTP requests to the server:
+;; this macro is supposed to let clojurescript to know the server's root-path
+;; so that it can properly create URLs to do HTTP requests to the server,
+;; but it doesn't work right yet: it thinks the environment doesn't have the value
+;; defined, even though it is.
 (defmacro root-path-from-env []
-  (or (System/getenv "ROOT_PATH") "//ROOTPATHNOTSET//"))
+  (or (System/getenv "ROOT_PATH") "/nlquiz/"))
 
 (def mount-target
   [:div#app
