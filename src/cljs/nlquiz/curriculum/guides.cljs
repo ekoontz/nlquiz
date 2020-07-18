@@ -19,7 +19,8 @@
    {:general
     (fn []
       [:div
-       [:p "A noun usually refers to a person, place, thing, or event."]])
+       [:p "A noun usually refers to a person, place, thing, or event. The quiz for this section cover all of the noun-related subsections, but "
+        " you might want to first practice specific subsections before trying this more general section."]])
     "definite-articles"
     (fn []
       [:div
