@@ -286,8 +286,8 @@ div.answertable table {
 
 
 div.exampletable {
-    left:3em;
-    width:75%;
+    left:0.5em;
+    width:100%;
     overflow:scroll;
     white-space:nowrap;
     padding:0;
