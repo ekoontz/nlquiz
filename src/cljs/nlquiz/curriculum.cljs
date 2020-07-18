@@ -9,7 +9,7 @@
    [reagent.core :as r]
    [reagent.session :as session])
   (:require-macros [cljs.core.async.macros :refer [go]]
-                   [nlquiz.handler :refer [inline-resource]]))
+                   [nlquiz.handler :refer [root-path-from-env inline-resource]]))
 
 (def topic-name (r/atom ""))
 (def curriculum-atom (r/atom nil))
@@ -19,12 +19,14 @@
                      cljs.reader/read-string)))
 
 (defn get-curriculum []
-  (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
-        (reset! curriculum-atom (-> response :body)))))
+  (let [root-path (root-path-from-env)]
+    (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
+          (reset! curriculum-atom (-> response :body))))))
 
 (defn get-specs []
-  (go (let [response (<! (http/get (str root-path "edn/specs.edn")))]
-        (reset! specs-atom (-> response :body)))))
+  (let [root-path (root-path-from-env)]
+    (go (let [response (<! (http/get (str root-path "edn/specs.edn")))]
+          (reset! specs-atom (-> response :body))))))
 
 (defn find-matching-specs [major & [minor]]
   (get-specs)

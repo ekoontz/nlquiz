@@ -20,6 +20,10 @@
 
 (defonce root-path (or (env :root-path) "/"))
 
+;; this macro lets clojurescript to know the server's root-path
+;; so that it can properly create URLs to do HTTP requests to the server:
+(defmacro root-path-from-env [] root-path)
+
 (def mount-target
   [:div#app
    [:h2 "Welcome to nlquiz"]
