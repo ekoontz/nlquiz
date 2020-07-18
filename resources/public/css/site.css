@@ -301,6 +301,10 @@ div.exampletable table {
     border-collapse:collapse;
 }
 
+th.speak {
+    width:0.7em;
+}
+
 h1 a {
     padding:0.25em;
     margin:0.25em;
