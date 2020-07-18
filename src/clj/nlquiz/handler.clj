@@ -18,13 +18,14 @@
 
 (def optimized? true)
 
-(defonce root-path (or (env :root-path) "/"))
+(defonce root-path
+  (do (log/info (str "environment ROOT_PATH: " (env :root-path)))
+      (or (env :root-path) "/")))
 
 ;; this macro lets clojurescript to know the server's root-path
 ;; so that it can properly create URLs to do HTTP requests to the server:
 (defmacro root-path-from-env []
-  (log/info (str "root-path-from-env: root-path is: " (env :root-path)))
-  (or (env :root-path) "/"))
+  (or (System/getenv "ROOT_PATH") "//ROOTPATHNOTSET//"))
 
 (def mount-target
   [:div#app
@@ -102,6 +103,3 @@
 
 (defmacro inline-resource [resource-path]
   (slurp (clojure.java.io/resource resource-path)))
-
-
-  
