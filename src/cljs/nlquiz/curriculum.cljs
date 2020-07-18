@@ -9,7 +9,7 @@
    [dag_unify.core :as u]
    [dommy.core :as dommy]
    [nlquiz.constants :refer [root-path]]
-   [nlquiz.curriculum.specs :refer [guides]]
+   [nlquiz.curriculum.guides :refer [guides]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]

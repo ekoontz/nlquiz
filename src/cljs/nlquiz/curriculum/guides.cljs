@@ -1,4 +1,4 @@
-(ns nlquiz.curriculum.specs
+(ns nlquiz.curriculum.guides
   (:require
    [nlquiz.curriculum.functions :refer [show-examples]]
    [reagent.core :as r]))
