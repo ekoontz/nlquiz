@@ -23,20 +23,18 @@
            (concat expressions
                    [(new-pair spec)]))))
 
-(defn show-examples [expressions specs]
-  (doall (take 5 (repeatedly #(add-one expressions (first (shuffle specs))))))
-  (fn []
-    [:div.exampletable
-     [:table
-      [:tbody
-       (doall
-        (map (fn [i]
-               (let [expression @(nth @expressions i)]
-                 [:tr {:key (str "row-" i)}
-                  [:th (+ i 1)]
-                  [:td.target (:target expression)]
-                  [:td.source (:source expression)]]))
-             (range 0 (count @expressions))))]]]))
-
-   
-  
+(defn show-examples [specs]
+  (let [expressions (r/atom [])]
+    (doall (take 5 (repeatedly #(add-one expressions (first (shuffle specs))))))
+    (fn []
+      [:div.exampletable
+       [:table
+        [:tbody
+         (doall
+          (map (fn [i]
+                 (let [expression @(nth @expressions i)]
+                   [:tr {:key (str "row-" i)}
+                    [:th (+ i 1)]
+                    [:td.target (:target expression)]
+                    [:td.source (:source expression)]]))
+               (range 0 (count @expressions))))]]])))

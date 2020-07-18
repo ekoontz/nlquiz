@@ -44,7 +44,7 @@
        [:p "In most cases, when an adjective modifies a noun, the adjective will"
         " have an " [:i "-e"] " at the end. For example:"]
 
-       [show-examples (r/atom [])
+       [show-examples
         [{:cat :noun
           :agr {:number :plur}
           :sem {:mod {:first {:number? false}
@@ -88,7 +88,7 @@
        [:p "then the adjective will " [:b "not"] " have an -e ending, "
         "for example: "]
 
-       [show-examples (r/atom [])
+       [show-examples
         [{:cat :noun
           :agr {:number :sing
                 :gender :neuter}
