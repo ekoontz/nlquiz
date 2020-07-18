@@ -152,7 +152,8 @@
         [{:example "de vier kliene vogels"
           :cat :noun
           :mod nil
-          :sem {:mod {:first {:number? true}
+          :sem {:quant :the
+                :mod {:first {:number? true}
                       :rest {:first {:number? false}
                              :rest []}}}
           :phrasal true
@@ -166,7 +167,8 @@
           :example "de vier en twintig kleine vogels"
           :cat :noun
           :subcat []
-          :sem {:ref {:number :plur}
+          :sem {:quant :the
+                :ref {:number :plur}
                 :mod {:first {:number? true}
                       :rest {:first {:number? false
                                      :rest []}}}}
