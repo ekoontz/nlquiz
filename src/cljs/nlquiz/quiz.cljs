@@ -113,6 +113,8 @@
                                          ;; function that will called if the user guessed correctly:
                                          (fn []
                                            (let [correct-answer @guess-text]
+                                             ;; TODO: set an atom to disable resubmitting to prevent duplicate
+                                             ;; entry.
                                              (speak-dutch correct-answer)
                                              (show-praise)
                                              (swap! answer-count inc)
