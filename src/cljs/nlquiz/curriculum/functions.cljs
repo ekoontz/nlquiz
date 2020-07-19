@@ -3,7 +3,7 @@
             [cljslog.core :as log]
             [cljs.core.async :refer [<!]]
             [nlquiz.constants :refer [root-path]]
-            [nlquiz.quiz :refer [speak-dutch]]
+            [nlquiz.speak :as speak]
             [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
@@ -39,7 +39,7 @@
                  (let [expression @(nth @expressions i)]
                    [:tr {:key (str "row-" i)}
                     [:th.index (+ i 1)]
-                    [:th.speak [:button {:on-click #(speak-dutch (:target expression))} "🔊"]]
+                    [:th.speak [:button {:on-click #(speak/nederlands (:target expression))} "🔊"]]
                     [:td.target (:target expression)]
                     [:td.source (:source expression)]]))
                (range 0 (count @expressions))))]]])))

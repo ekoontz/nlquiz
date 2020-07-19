@@ -1,14 +1,15 @@
 (ns nlquiz.quiz
   (:require
    [accountant.core :as accountant]
-   [nlquiz.constants :refer [root-path]]
-   [nlquiz.dropdown :as dropdown]
-   [dag_unify.core :as u]
-   [dag_unify.serialization :as s]
    [cljs-http.client :as http]
    [cljslog.core :as log]
-   [reagent.core :as r]
-   [cljs.core.async :refer [<!]])
+   [cljs.core.async :refer [<!]]
+   [dag_unify.core :as u]
+   [dag_unify.serialization :as s]
+   [nlquiz.constants :refer [root-path]]
+   [nlquiz.dropdown :as dropdown]
+   [nlquiz.speak :as speak]
+   [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (def answer-count (atom 0))
@@ -53,7 +54,7 @@
 
 (defn show-possible-answer []
   (reset! show-answer-display "block")
-  (speak-dutch @show-answer)
+  (speak/nederlands @show-answer)
   (reset! guess-text "")
   (.focus (.getElementById js/document "input-guess"))  
   (js/setTimeout #(reset! show-answer-display "none") 1000))
@@ -71,18 +72,6 @@
     
     ;; what to call if dropdown's choice is changed (generate a new question):
     (fn [] (new-question get-question-fn))]])
-
-(defn speak-dutch [input]
-  (let [synth (. js/window -speechSynthesis)
-        utterThis (new js/SpeechSynthesisUtterance input)
-        nl-voice
-        (first
-         (->> (.getVoices synth)
-              (filter #(= "nl-NL" (-> % .-lang)))))]
-    (if nl-voice
-      (do (aset utterThis "voice" nl-voice)
-          (.speak synth utterThis))
-      (log/warn (str "could not find a nl-NL voice to speak Dutch on this device; will not attempt speech.")))))
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
@@ -115,7 +104,7 @@
                                            (let [correct-answer @guess-text]
                                              ;; TODO: set an atom to disable resubmitting to prevent duplicate
                                              ;; entry.
-                                             (speak-dutch correct-answer)
+                                             (speak/nederlands correct-answer)
                                              (show-praise)
                                              (swap! answer-count inc)
                                              (reset! input-state "disabled")
@@ -137,7 +126,7 @@
             (map (fn [i]
                    [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
                     [:th (- @answer-count i)]
-                    [:th.speak [:button {:on-click #(speak-dutch (-> @question-table (nth i) :target))} "🔊"]]
+                    [:th.speak [:button {:on-click #(speak/nederlands (-> @question-table (nth i) :target))} "🔊"]]
                     [:td.target (-> @question-table (nth i) :target)]
                     [:td.source (-> @question-table (nth i) :source)]
                     ]))))]]]  
