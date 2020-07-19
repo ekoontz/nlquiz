@@ -45,6 +45,10 @@
   line-height: 1.5em;
 }
 
+button {
+    background:#eee;
+}
+
 h1, h2, h3 {
   color: #000;
 }
