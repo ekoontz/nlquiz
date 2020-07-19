@@ -20,13 +20,25 @@
 
 (defn get-curriculum []
   (let [root-path (root-path-from-env)]
-    (log/info (str "get-curriculum: root-path from server env: " root-path))
     (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
           (reset! curriculum-atom (-> response :body))))))
 
+(defn get-name-or-children [node]
+  (cond (and (:child node) (:name node)) 
+        (cons node (map get-name-or-children (:child node)))
+        (:child node)
+        (map get-name-or-children (:child node))
+        true node))
+
+(defn get-title-for [major & [minor]]
+  (->> @curriculum-atom
+       (map get-name-or-children)
+       flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
+                            (and (nil? minor) (= (:href %) major))))
+       (map :name) first))
+
 (defn get-specs []
   (let [root-path (root-path-from-env)]
-    (log/info (str "get-specs: root-path from server env: " root-path))    
     (go (let [response (<! (http/get (str root-path "edn/specs.edn")))]
           (reset! specs-atom (-> response :body))))))
 
@@ -42,7 +54,6 @@
                                           (get spec :minor-tags)))))))))
 
 (defn tree-node [i node selected-path]
-  (log/debug (str "selected-path: " selected-path))
   [:div {:key (str "node-" (swap! i inc))}
    [:h1
     (if (:href node)
@@ -73,7 +84,6 @@
   (fn []
     (let [routing-data (session/get :route)
           path (session/get :path)]
-      (log/info (str "curriculum quiz with path:" path))
       [:div.curr-major
        [:h4.normal
         "Choose a topic to study."]
@@ -92,6 +102,7 @@
       (http/get (str root-path "generate") {:query-params {"q" serialized-spec}}))))
 
 (defn quiz-component []
+  (get-curriculum)
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
@@ -99,17 +110,21 @@
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major
-       [:h4 @topic-name]
        (quiz/quiz-layout (get-expression major minor))
        (cond (and major minor guides (get guides major)
                   (-> guides (get major) (get minor)))
-             [:div.guide [(-> guides (get major) (get minor))]]
+             [:div.guide
+              [:div.h4
+               [:h4 (get-title-for major minor)]]
+              [:div.content [(-> guides (get major) (get minor))]]]
+
              (and major guides (fn? (get guides major)))
-             [:div.guide [(-> guides (get major))]]
+             [:div.guide
+              [:div.h4
+               [:h4 (get-title-for major)]]
+              [:div.content [(-> guides (get major))]]]
+
              (and major guides (fn? (-> guides (get major) :general)))
-             [:div.guide [(-> guides (get major) :general)]]
+             [:div.guide
+              [(-> guides (get major) :general)]]
              true "")])))
-
-
-
-
