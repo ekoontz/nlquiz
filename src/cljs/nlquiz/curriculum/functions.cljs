@@ -11,7 +11,10 @@
   (let [input (r/atom nil)
         serialized-spec (-> spec dag_unify.serialization/serialize str)
         get-pair-fn (fn [] (http/get (str root-path "generate")
-                                     {:query-params {"q" serialized-spec}}))]
+                                     {:query-params {"q" serialized-spec
+                                                     ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
+                                                     "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))
+                                                     }}))]
     (go (let [response (<! (get-pair-fn))]
           (reset! input
                   {:source (-> response :body :source)
