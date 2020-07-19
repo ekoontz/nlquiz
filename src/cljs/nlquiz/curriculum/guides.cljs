@@ -147,7 +147,7 @@
     "numbers"
     (fn []
       [:div
-       [:p "The order of the digits in numbers is reversed from that of English, as shown in these examples:"]
+       [:p "In English, when we want to say a number between 19 and 100, we give the 10's word: 'twenty', 'seventy', etc, and then the base 1 word: the 'four' in 'twenty four'. But in Dutch, the word order is reversed, so 'twenty four' is " [:i "vier en twintig"] "."]
        [show-examples
         [{:example "de vier kliene vogels"
           :cat :noun
