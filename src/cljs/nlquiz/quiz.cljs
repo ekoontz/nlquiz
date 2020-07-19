@@ -99,6 +99,7 @@
      [:input {:type "text"
               :placeholder "wat is dit in Nederlands?"
               :id "input-guess"
+              :autocomplete "off"
               :size 20
               :value @guess-text
               :disabled @input-state
