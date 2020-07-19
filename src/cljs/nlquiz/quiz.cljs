@@ -100,7 +100,7 @@
               :placeholder "wat is dit in Nederlands?"
               :id "input-guess"
               :autoComplete "off"
-              :size 20
+              :size 25
               :value @guess-text
               :disabled @input-state
               :on-change (fn [input-element]

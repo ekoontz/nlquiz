@@ -244,6 +244,11 @@ div.dontknow {
 
 div.curr-major button {
     float:right;
+    padding:0.25em;
+    border-radius: 5px;
+    border:1px solid #ccc;
+    box-shadow: -1px 1px 1px 0px rgba(209,209,209,1);
+    
 }
 
 div.curr-major h4 {
@@ -262,7 +267,7 @@ div.curr-major h4.normal {
 a.selected {
     padding-left:0.25em;
     padding-right:0.25em;
-    background:lightblue;
+    background:#ddd;
 }
 
 div.answertable {
@@ -301,23 +306,26 @@ th.index {
 }
 
 th.speak {
-    width:0.7em;
+    width:1em;
 }
+
+th.speak button {
+    padding:0.75em;
+    border-radius: 5px;
+    border:1px solid #ccc;
+    box-shadow: -1px 1px 1px 0px rgba(209,209,209,1);
+}
+
 
 h1 a {
     padding:0.25em;
     margin:0.25em;
 }
 
-h1 a.selected {
-    border-radius:3px;
-    border:1px solid lightblue;
-}
-
 div.guide {
     float:left;
     border:0px dashed blue;
-    width:80%;
+    width:90%;
     margin-top:1em;
     margin-left:5%;
     overflow:scroll;
@@ -326,6 +334,11 @@ div.guide {
     box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
     padding:0.25em;
 }
+
+div.guide li {
+    margin-top: 1em;
+}
+
 
 /* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
 /* ----------- iPhone 6, 6S, 7 and 8 ----------- */
