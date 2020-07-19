@@ -135,6 +135,7 @@
             (map (fn [i]
                    [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
                     [:th (- @answer-count i)]
+                    [:th.speak [:button {:on-click #(speak-dutch (-> @question-table (nth i) :target))} "🔊"]]
                     [:td.target (-> @question-table (nth i) :target)]
                     [:td.source (-> @question-table (nth i) :source)]
                     ]))))]]]  
