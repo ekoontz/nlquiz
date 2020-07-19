@@ -8,8 +8,8 @@
 
 #answer {
     position: absolute;
-    left:40%;
-    top: 20%;
+    left:30%;
+    top: 0%;
     font-weight:bold;
     font-size:large;
     background:aliceblue;
@@ -23,10 +23,10 @@
 
 #praise {
     position: absolute;
-    left: 40%;
-    top: 20%;
+    left: 30%;
+    top: 0%;
     font-weight:bold;
-    font-size:300%;
+    font-size:200%;
     background:orange;
     color:white;
     border-radius: 5px;
@@ -271,6 +271,7 @@ div.answertable {
     white-space:nowrap;
     padding:0;
     padding-top:1em;
+    padding-right:1em;
     position:relative;
 }
 
