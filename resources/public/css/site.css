@@ -112,7 +112,8 @@ tr.even {
 }
 
 td.source {
-    text-align:left;
+    padding-left:1em;
+    text-align:right;
 }
 
 td.target {
@@ -200,28 +201,25 @@ a.debug {
 }
 
 div.curriculum {
-    position:absolute;
-    right:1%;
-    top:2%;
-    overflow:scroll;
-    border-radius:10px;
-    font-size:small;
-    float:right;
-    background:#eee;
-    width:30%;
-    box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
-    height:8em;
+    width:100%;
+    float:left;
 }
 
-div.curriculum ul {
-    padding-left:0.5em;
-    list-style:none;
-    list-style-position: inside;
+div.curriculum > div {
+    float:left;
+    width:10em;
+    border-radius:10px;
+    border:1px dashed #eee;
+    background:#eee;
+    margin:0.25em;
+    padding:0.5em;
+    box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
 }
 
 div.curriculum h1 {
-    font-size:small;
-    margin:0;
+    background:#eee;
+    font-size:100%;
+
 }
 
 div.curr-major {
@@ -268,15 +266,12 @@ a.selected {
 }
 
 div.answertable {
-    left:3em;
-    width:75%;
+    float:right;
     overflow:scroll;
     white-space:nowrap;
     padding:0;
-    margin:0;
     padding-top:1em;
     position:relative;
-    margin-bottom:0.5em;
 }
 
 div.answertable table {
@@ -297,7 +292,6 @@ div.exampletable {
 }
 
 div.exampletable table {
-    width:100%;
     border-collapse:collapse;
 }
 
@@ -323,6 +317,7 @@ div.guide {
     float:left;
     border:0px dashed blue;
     width:80%;
+    margin-top:1em;
     margin-left:5%;
     overflow:scroll;
     border-radius:10px;

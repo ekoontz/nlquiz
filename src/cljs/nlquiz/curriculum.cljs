@@ -43,7 +43,7 @@
 
 (defn tree-node [i node selected-path]
   (log/debug (str "selected-path: " selected-path))
-  [:li {:key (str "node-" (swap! i inc))}
+  [:div {:key (str "node-" (swap! i inc))}
    [:h1
     (if (:href node)
       (let [url (str "/nlquiz/curriculum/" (:href node))]
@@ -55,21 +55,19 @@
              :href (str "/nlquiz/curriculum/" (:href node))}
          (:name node)])
       (:name node))]
-   [:ul
-    (doall
-     (map (fn [child]
-            (tree-node i child selected-path))
-          (:child node)))]])
+   (doall
+    (map (fn [child]
+           (tree-node i child selected-path))
+         (:child node)))])
 
 (defn tree [selected-path]
   (get-curriculum)
   (let [i (atom 0)]
     (fn []
       [:div.curriculum
-       [:ul
-        (doall (map (fn [node]
-                      (tree-node i node selected-path))
-                    @curriculum-atom))]])))
+       (doall (map (fn [node]
+                     (tree-node i node selected-path))
+                   @curriculum-atom))])))
 
 (defn quiz []
   (fn []
@@ -101,7 +99,6 @@
     (quiz/new-question (get-expression major minor))
     (fn []
       [:div.curr-major
-       [tree path]
        [:h4 @topic-name]
        (quiz/quiz-layout (get-expression major minor))
        (cond (and major minor guides (get guides major)
