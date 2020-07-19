@@ -86,7 +86,7 @@
           path (session/get :path)]
       [:div.curr-major
        [:h4.normal
-        "Choose a topic to study."]
+        "Welcome to nlquiz! Choose a topic to study."]
        [tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
