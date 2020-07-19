@@ -127,6 +127,7 @@ div.question-and-guess {
     background:#eee;
     padding:0.25em;
     box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
+    margin-left:2%;
 }
 
 
@@ -327,7 +328,7 @@ div.guide {
     border:0px dashed blue;
     width:90%;
     margin-top:1em;
-    margin-left:5%;
+    margin-left:2%;
     overflow:scroll;
     border-radius:10px;
     background:#eee;
