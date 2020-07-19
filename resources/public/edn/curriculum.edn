@@ -1,7 +1,8 @@
-[{:name "Adjectives and Adverbs"
-  :href "adjectives"}
+[{:name "Adjectives"
+  :child [{:name "Adjectives and Adverbs"
+           :href "adjectives"}]}
  {:name "Nouns"
-  :child [{:name "Definite articles with singular nouns"
+  :child [{:name "Gender"
            :href "nouns/definite-articles"}
           {:name "Possessive articles"
            :href "nouns/poss"}
@@ -9,4 +10,3 @@
            :href "nouns/indef-adj"}
           {:name "Nouns with numbers"
            :href "nouns/numbers"}]}]
-
