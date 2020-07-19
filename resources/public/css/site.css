@@ -111,6 +111,11 @@ tr.even {
     background:aliceblue;
 }
 
+div.exampletable tr.even {
+    background:rgb(249,249,250);
+}
+
+
 td.source {
     padding-left:1em;
     text-align:right;
@@ -252,7 +257,14 @@ div.curr-major button {
     
 }
 
+div.h4 {
+    width:1em;
+    border:0px dashed blue;
+    float:left;
+}
+
 div.curr-major h4 {
+    font-size:150%;
     writing-mode: vertical-lr;
     text-orientation: inherit;
     width:auto;
@@ -274,7 +286,6 @@ a.selected {
 div.answertable {
     float:right;
     overflow:scroll;
-    white-space:nowrap;
     padding:0;
     padding-top:1em;
     padding-right:1em;
@@ -282,7 +293,7 @@ div.answertable {
 }
 
 div.answertable table {
-    width:100%;
+    width:95%;
     border-collapse:collapse;
 }
 
@@ -291,7 +302,6 @@ div.exampletable {
     left:0.5em;
     width:100%;
     overflow:scroll;
-    white-space:nowrap;
     padding:0;
     margin:0;
     padding-top:0;
@@ -299,6 +309,7 @@ div.exampletable {
 }
 
 div.exampletable table {
+    width:95%;
     border-collapse:collapse;
 }
 
@@ -335,6 +346,13 @@ div.guide {
     box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
     padding:0.25em;
 }
+
+div.guide div.content {
+    float:right;
+    border:0px dashed green;
+    width:90%;
+}
+
 
 div.guide li {
     margin-top: 1em;

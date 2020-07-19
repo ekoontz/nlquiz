@@ -37,7 +37,7 @@
          (doall
           (map (fn [i]
                  (let [expression @(nth @expressions i)]
-                   [:tr {:key (str "row-" i)}
+                   [:tr {:key (str "row-" i) :class (if (= 0 (mod i 2)) "even" "odd")}
                     [:th.index (+ i 1)]
                     [:th.speak [:button {:on-click #(speak/nederlands (:target expression))} "🔊"]]
                     [:td.target (:target expression)]
