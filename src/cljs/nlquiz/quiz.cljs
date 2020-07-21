@@ -100,18 +100,16 @@
                                          possible-correct-semantics
 
                                          ;; function that will called if the user guessed correctly:
-                                         (fn []
-                                           (let [correct-answer @guess-text]
-                                             ;; TODO: set an atom to disable resubmitting to prevent duplicate
-                                             ;; entry.
-                                             (speak/nederlands correct-answer)
-                                             (show-praise)
-                                             (swap! answer-count inc)
-                                             (reset! input-state "disabled")
-                                             (reset! question-table
-                                                     (concat
-                                                      [{:source @question-html :target correct-answer}]
-                                                      (take 4 @question-table))))
+                                         (fn [correct-answer]
+                                           ;; TODO: (reset! guess-text "")
+                                           (speak/nederlands correct-answer)
+                                           (show-praise)
+                                           (swap! answer-count inc)
+                                           (reset! input-state "disabled")
+                                           (reset! question-table
+                                                   (concat
+                                                    [{:source @question-html :target correct-answer}]
+                                                    (take 4 @question-table)))
                                            (new-question get-question-fn))))}]]]
     [:div.dontknow
      [:button {:on-click (fn [input-element]
@@ -176,4 +174,4 @@
           (when (evaluate-guess @semantics-of-guess
                                 @possible-correct-semantics)
             ;; got it right!
-            (if-correct-fn))))))
+            (if-correct-fn guess-string))))))
