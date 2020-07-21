@@ -101,11 +101,11 @@
 
                                          ;; function that will called if the user guessed correctly:
                                          (fn [correct-answer]
-                                           ;; TODO: (reset! guess-text "")
+                                           (reset! input-state "disabled")
+                                           (reset! guess-text "")
                                            (speak/nederlands correct-answer)
                                            (show-praise)
                                            (swap! answer-count inc)
-                                           (reset! input-state "disabled")
                                            (reset! question-table
                                                    (concat
                                                     [{:source @question-html :target correct-answer}]
