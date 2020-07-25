@@ -79,7 +79,6 @@
   (show-possible-answer)
   (.focus (.getElementById js/document "input-guess"))
   (.click (.getElementById js/document "input-guess")))
-  
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
@@ -132,11 +131,14 @@
                                              (reset! guess-text "")
                                              (.focus (.getElementById js/document "input-guess"))
                                              (.click (.getElementById js/document "input-guess"))
-
+                                             (.reset (.getElementById js/document "quiz"))
                                              )))}]]]
      [:div.dontknow
       [:input {:type "submit" :value "ik weet het niet"
-               :disabled @ik-weet-niet-button-state}]]]] ;; </div.question-and-guess>
+               :disabled @ik-weet-niet-button-state}] ;; </div.question-and-guess>
+      [:button {:on-click #(do ;;(.reset (.getElementById js/document "quiz"))
+                               (reset! guess-text "")
+                               (.preventDefault %))} "Reset"]]]]
    
    [:div.answertable
     [:table
