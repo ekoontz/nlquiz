@@ -113,25 +113,21 @@
                                                (.requestSubmit (.getElementById js/document "quiz"))
                                                (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
                                              (reset! input-state "disabled")
-                                             (reset! guess-text "")
-                                             (log/info (str "focusing.."))
-                                             (.focus (.getElementById js/document "input-guess"))
-                                             (.click (.getElementById js/document "input-guess"))
-                                             (log/info (str "focused."))
+                                             (reset! show-answer correct-answer)
+                                             (.reset (.getElementById js/document "quiz"))
                                              (reset! guess-text "")
                                              (show-praise)
                                              (swap! answer-count inc)
+                                             (.reset (.getElementById js/document "quiz"))
+                                             (reset! guess-text "")
                                              (reset! question-table
                                                      (concat
                                                       [{:source @question-html :target correct-answer}]
                                                       (take 4 @question-table)))
                                              (new-question get-question-fn)
-                                             (.click (.getElementById js/document "input-guess"))
-                                             (log/info (str "focused(2)"))
-                                             (reset! guess-text "")
-                                             (.focus (.getElementById js/document "input-guess"))
-                                             (.click (.getElementById js/document "input-guess"))
                                              (.reset (.getElementById js/document "quiz"))
+                                             (reset! guess-text "")
+                                             
                                              )))}]]]
      [:div.dontknow
       [:input {:type "submit" :value "ik weet het niet"
