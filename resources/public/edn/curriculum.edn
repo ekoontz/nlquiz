@@ -2,7 +2,9 @@
   :child [{:name "Adjectives and Adverbs"
            :href "adjectives"}]}
  {:name "Nouns"
-  :child [{:name "Gender"
+  :child [{:name "Number"
+           :href "nouns/number"}
+          {:name "Gender"
            :href "nouns/definite-articles"}
           {:name "Possessive articles"
            :href "nouns/poss"}

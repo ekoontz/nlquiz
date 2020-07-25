@@ -27,7 +27,8 @@
        [:p "Unlike in English, but as in German or Romance languages, nouns"
         " in Dutch have a gender. There are two genders: " [:b "common"] " and " [:b "neuter"] "."]
        [:p "There are two definite articles in Dutch: " [:i "de"]
-        " and " [:i "het"] ". A noun will always use " [:i "de"] " when it's plural, regardless of the noun's gender:"]
+        " and " [:i "het"] ". A noun will always use " [:i "de"] " when it's "
+        [:a {:href "number"} "plural"] ", regardless of the noun's gender:"]
        [show-examples
         [{:cat :noun
           :phrasal true
@@ -54,6 +55,22 @@
                   :number :sing}
             :phrasal true
             :head {:phrasal false}}]]]]])
+
+    "number"
+    (fn []
+      [:div
+       [:p "A noun can be singular or plural."]
+       [:p "Examples of plural noun phrases:"]
+       [show-examples
+        [{:agr {:number :plur}
+          :sem {:quant :the}
+          :cat :noun
+          :subcat []
+          :phrasal true
+          :head {:phrasal false
+                 :subcat {:1 {:cat :det}}}
+          :comp {:phrasal false}}]]])
+    
     "poss" 
     (fn []
       [:div

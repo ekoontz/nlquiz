@@ -60,6 +60,18 @@
          :sem {:pred :some}}}
  
  {:major-tags ["nouns"]
+  :minor-tags ["number"]
+  :example "de katten"
+  :agr {:number :plur}
+  :sem {:quant :the}
+  :cat :noun
+  :subcat []
+  :phrasal true
+  :head {:phrasal false
+         :subcat {:1 {:cat :det}}}
+  :comp {:phrasal false}}
+
+ {:major-tags ["nouns"]
   :minor-tags ["poss"]
   :example "zijn kat"
   :cat :noun
