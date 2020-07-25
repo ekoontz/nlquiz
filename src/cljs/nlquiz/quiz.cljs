@@ -57,7 +57,8 @@
   (speak/nederlands @show-answer)
   (reset! guess-text "")
   (.focus (.getElementById js/document "input-guess"))  
-  (js/setTimeout #(reset! show-answer-display "none") 1000))
+  (js/setTimeout #(reset! show-answer-display "none") 1000)
+  false)
 
 (defn show-praise []
   (reset! show-praise-display "block")
@@ -73,6 +74,16 @@
     ;; what to call if dropdown's choice is changed (generate a new question):
     (fn [] (new-question get-question-fn))]])
 
+(def quiz-form (r/atom {}))
+
+(def submit-fn
+  (r/atom (fn [e]
+            (log/info (str "ON-SUBMIT!!"))
+            (.preventDefault e)
+            (log/info (str "DOING THE SUBMIT!!!!"))
+            (do (show-possible-answer)
+                false))))
+
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
@@ -81,40 +92,52 @@
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
    (if question-type-chooser-fn (question-type-chooser-fn get-question-fn))
    [:div.question-and-guess
-    [:div.guess
-    [:div.question
-     @question-html]
-    [:div
-     [:input {:type "text"
-              :placeholder "wat is dit in Nederlands?"
-              :id "input-guess"
-              :autoComplete "off"
-              :size 25
-              :value @guess-text
-              :disabled @input-state
-              :on-change (fn [input-element]
-                           (submit-guess guess-text
-                                         (-> input-element .-target .-value)
-                                         parse-html
-                                         semantics-of-guess
-                                         possible-correct-semantics
-
-                                         ;; function that will called if the user guessed correctly:
-                                         (fn [correct-answer]
-                                           (reset! input-state "disabled")
-                                           (reset! guess-text "")
-                                           (speak/nederlands correct-answer)
-                                           (show-praise)
-                                           (swap! answer-count inc)
-                                           (reset! question-table
-                                                   (concat
-                                                    [{:source @question-html :target correct-answer}]
-                                                    (take 4 @question-table)))
-                                           (new-question get-question-fn))))}]]]
-    [:div.dontknow
-     [:button {:on-click (fn [input-element]
-                           (show-possible-answer))
-               :disabled @ik-weet-niet-button-state} "ik weet het niet"]]] ;; </div.question-and-guess>
+    [:form#quiz {:ref #(swap! quiz-form assoc :form %)
+                 :on-submit @submit-fn}
+     [:div.guess
+      [:div.question
+       @question-html]
+      [:div
+       [:input {:type "text"
+                :placeholder "wat is dit in Nederlands?"
+                :id "input-guess"
+                :autoComplete "off"
+                :size 25
+                :value @guess-text
+                :disabled @input-state
+                :on-change (fn [input-element]
+                             (submit-guess guess-text
+                                           (-> input-element .-target .-value)
+                                           parse-html
+                                           semantics-of-guess
+                                           possible-correct-semantics
+                                           
+                                           ;; function called if the user guessed correctly:
+                                           (fn [correct-answer]
+                                             (if (.-requestSubmit (.getElementById js/document "quiz"))
+                                               (.requestSubmit (.getElementById js/document "quiz"))
+                                               (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
+                                             (reset! input-state "disabled")
+                                             (reset! guess-text "")
+                                             (log/info (str "focusing.."))
+                                             (.focus (.getElementById js/document "input-guess"))
+                                             (.click (.getElementById js/document "input-guess"))
+                                             (log/info (str "focused."))
+                                             (reset! guess-text "")
+                                             (show-praise)
+                                             (swap! answer-count inc)
+                                             (reset! question-table
+                                                     (concat
+                                                      [{:source @question-html :target correct-answer}]
+                                                      (take 4 @question-table)))
+                                             (new-question get-question-fn)
+                                             (.click (.getElementById js/document "input-guess"))
+                                             (log/info (str "focused(2)"))
+                                             (reset! guess-text "")
+                                             )))}]]]
+     [:div.dontknow
+      [:input {:type "submit" :value "ik weet het niet"
+               :disabled @ik-weet-niet-button-state}]]]] ;; </div.question-and-guess>
    
    [:div.answertable
     [:table
