@@ -54,7 +54,6 @@
 
 (defn show-possible-answer []
   (reset! show-answer-display "block")
-  (speak/nederlands @show-answer)
   (reset! guess-text "")
   (.focus (.getElementById js/document "input-guess"))  
   (js/setTimeout #(reset! show-answer-display "none") 1000)
@@ -79,6 +78,7 @@
 
 (defn on-submit [e]
   (.preventDefault e)
+  (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
     (do
       (show-praise)
