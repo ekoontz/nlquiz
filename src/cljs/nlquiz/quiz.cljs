@@ -74,15 +74,12 @@
     ;; what to call if dropdown's choice is changed (generate a new question):
     (fn [] (new-question get-question-fn))]])
 
-(def quiz-form (r/atom {}))
-
-(def submit-fn
-  (r/atom (fn [e]
-            (log/info (str "ON-SUBMIT!!"))
-            (.preventDefault e)
-            (log/info (str "DOING THE SUBMIT!!!!"))
-            (do (show-possible-answer)
-                false))))
+(defn on-submit [e]
+  (.preventDefault e)
+  (show-possible-answer)
+  (.focus (.getElementById js/document "input-guess"))
+  (.click (.getElementById js/document "input-guess")))
+  
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
@@ -92,8 +89,7 @@
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
    (if question-type-chooser-fn (question-type-chooser-fn get-question-fn))
    [:div.question-and-guess
-    [:form#quiz {:ref #(swap! quiz-form assoc :form %)
-                 :on-submit @submit-fn}
+    [:form#quiz {:on-submit on-submit}
      [:div.guess
       [:div.question
        @question-html]
@@ -134,6 +130,9 @@
                                              (.click (.getElementById js/document "input-guess"))
                                              (log/info (str "focused(2)"))
                                              (reset! guess-text "")
+                                             (.focus (.getElementById js/document "input-guess"))
+                                             (.click (.getElementById js/document "input-guess"))
+
                                              )))}]]]
      [:div.dontknow
       [:input {:type "submit" :value "ik weet het niet"
