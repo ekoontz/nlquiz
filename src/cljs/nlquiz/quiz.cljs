@@ -74,9 +74,24 @@
     ;; what to call if dropdown's choice is changed (generate a new question):
     (fn [] (new-question get-question-fn))]])
 
+(def got-it-right? (atom false))
+(def get-question-fn-atom (atom (fn [] (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
+
 (defn on-submit [e]
   (.preventDefault e)
-  (show-possible-answer)
+  (if (= true @got-it-right?)
+    (do
+      (show-praise)
+      (swap! answer-count inc)
+      (reset! got-it-right? false)
+      (reset! question-table
+              (concat
+               [{:source @question-html :target @show-answer}]
+               (take 4 @question-table)))
+      (new-question @get-question-fn-atom))
+    ;; else
+    (show-possible-answer))
+    
   (.focus (.getElementById js/document "input-guess"))
   (.click (.getElementById js/document "input-guess")))
 
@@ -109,33 +124,19 @@
                                            
                                            ;; function called if the user guessed correctly:
                                            (fn [correct-answer]
+                                             (reset! got-it-right? true)
+                                             (reset! get-question-fn-atom get-question-fn)
                                              (if (.-requestSubmit (.getElementById js/document "quiz"))
                                                (.requestSubmit (.getElementById js/document "quiz"))
                                                (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
                                              (reset! input-state "disabled")
-                                             (reset! show-answer correct-answer)
-                                             (.reset (.getElementById js/document "quiz"))
-                                             (reset! guess-text "")
-                                             (show-praise)
-                                             (swap! answer-count inc)
-                                             (.reset (.getElementById js/document "quiz"))
-                                             (reset! guess-text "")
-                                             (reset! question-table
-                                                     (concat
-                                                      [{:source @question-html :target correct-answer}]
-                                                      (take 4 @question-table)))
-                                             (new-question get-question-fn)
-                                             (.reset (.getElementById js/document "quiz"))
-                                             (reset! guess-text "")
-                                             
-                                             )))}]]]
+                                             (reset! show-answer correct-answer))))}]]]
      [:div.dontknow
       [:input {:type "submit" :value "ik weet het niet"
                :disabled @ik-weet-niet-button-state}] ;; </div.question-and-guess>
       [:button {:on-click #(do ;;(.reset (.getElementById js/document "quiz"))
                                (reset! guess-text "")
                                (.preventDefault %))} "Reset"]]]]
-   
    [:div.answertable
     [:table
      [:tbody
