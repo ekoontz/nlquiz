@@ -126,6 +126,7 @@
                                            (fn [correct-answer]
                                              (reset! got-it-right? true)
                                              (reset! get-question-fn-atom get-question-fn)
+                                             (reset! show-answer correct-answer)
                                              (if (.-requestSubmit (.getElementById js/document "quiz"))
                                                (.requestSubmit (.getElementById js/document "quiz"))
                                                (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
