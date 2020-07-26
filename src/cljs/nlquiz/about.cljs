@@ -1,4 +1,6 @@
-(ns nlquiz.about)
+(ns nlquiz.about
+  (:require
+   [nlquiz.speak :as speak]))
 
 (defn component []
   (fn []

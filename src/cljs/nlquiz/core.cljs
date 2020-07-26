@@ -9,7 +9,6 @@
    [nlquiz.curriculum :as curriculum]
    [nlquiz.generate :as generate]
    [nlquiz.quiz :as quiz]
-   [nlquiz.speak :as speak]
    [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
