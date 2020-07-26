@@ -239,7 +239,7 @@ div.curr-major {
 }
 
 div.dontknow {
-    margin:0.5em;
+    margin:0;
 }
 
 button.weetniet {
@@ -391,4 +391,15 @@ div.guide li {
 	width:auto;
 	padding:0.125em;
     }
+
+    button.weetniet {
+	padding:0.25em;
+	margin:0.5em;
+	font-size:80%;
+	border-radius: 10px;
+	border:1px solid black;
+	box-shadow: -0px 0px 0px 0px rgba(209,209,209,1);
+    }
+
+    
 }
