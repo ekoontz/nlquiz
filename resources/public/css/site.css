@@ -93,7 +93,7 @@ footer {
     bottom:0;
 }
 
-input {
+input.weetniet {
     padding:0.5em;
     margin:0.5em;
     border-radius: 5px;
@@ -238,29 +238,17 @@ div.curr-major {
     border:0px dashed blue;
 }
 
-div.curr-major div.button {
-    width:100%;
-    float:left;
-    border:1px dashed red;
-    position:relative;
-    right:0;
-    top:0;
-}
-
 div.dontknow {
-    width:90%;
     margin:0.5em;
 }
 
-div.curr-major button {
-    float:right;
+button.weetniet {
     padding:0.5em;
     margin:0.5em;
     font-size:80%;
     border-radius: 5px;
     border:1px solid #ccc;
     box-shadow: -1px 1px 1px 0px rgba(209,209,209,1);
-    
 }
 
 div.h4 {
@@ -327,13 +315,12 @@ th.speak {
     width:1em;
 }
 
-th.speak button {
+th.speak button, button.speak {
     padding:0.75em;
     border-radius: 5px;
     border:1px solid #ccc;
     box-shadow: -1px 1px 1px 0px rgba(209,209,209,1);
 }
-
 
 h1 a {
     padding:0.25em;

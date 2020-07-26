@@ -133,10 +133,10 @@
                                              (reset! input-state "disabled")
                                              (reset! show-answer correct-answer))))}]]]
      [:div.dontknow
-      [:input {:type "submit" :value "ik weet het niet"
+      [:input {:class "weetniet" :type "submit" :value "Ik weet het niet"
                :disabled @ik-weet-niet-button-state}] ;; </div.question-and-guess>
-      [:button {:on-click #(do ;;(.reset (.getElementById js/document "quiz"))
-                               (reset! guess-text "")
+      [:button {:class "weetniet" :style {:float :right}
+                :on-click #(do (reset! guess-text "")
                                (.preventDefault %))} "Reset"]]]]
    [:div.answertable
     [:table

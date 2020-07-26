@@ -8,6 +8,7 @@
    [nlquiz.curriculum :as curriculum]
    [nlquiz.generate :as generate]
    [nlquiz.quiz :as quiz]
+   [nlquiz.speak :as speak]
    [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
@@ -19,8 +20,23 @@
   (fn []
     [:div {:style {:float "left" :margin "0.5em"}}
      [:h3 "About nlquiz"]
-     [:p "This is a way to practice writing some short phrases in Dutch. Choose a 
-topic in the curriculum to practice with that type of phrase."]
+     [:p "This is a way to practice writing some short phrases in Dutch."]
+     [:p "Choose a topic in the curriculum to practice with that type of phrase. You'll get English phrases of that type, which you should try to translate to Dutch."]
+     [:p "If you don't know how to translate a phrase, just hit the " [:button.weetniet "Ik weet het niet"] " ('I don't know') button, and you'll be shown the question so that you can try again."]
+     [:p "If you see a " [:button.speak {:on-click #(speak/nederlands "de kat")} "🔊"] " button next to a phrase, you can click it to hear the pronunciation of that phrase, for example:"]
+     (let [i 0]
+       [:div
+        [:table
+         [:tbody
+          [:tr {:key i
+                :class (if (= 0 (mod i 2)) "even" "odd")}
+           [:th (+ i 1)]
+           [:th.speak [:button.speak {:on-click #(speak/nederlands "de kat")} "🔊"]]
+           [:td.target "de kat"]
+           [:td.source "the cat"]]]]])
+
+     [:p "You may need to use headphones to hear the sound on mobile devices; I'm not sure yet why this is sometimes required."]
+     [:p "⚠ Caution⚠ There are likely many errors because I am only a beginning at learning Dutch. Not to be used as a substitute for a real class or learning materials."]
      [:p "Problems or questions? Please create an issue on " [:a {:href "https://github.com/ekoontz/nlquiz/issues"} "github"]
       " or " [:a {:href "mailto:ekoontz@hiro-tan.org"} "email me."]]]))
 
