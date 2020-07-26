@@ -4,7 +4,7 @@
   (fn []
     [:div {:style {:float "left" :margin "0.5em"}}
      [:h3 "About nlquiz"]
-     [:p "This is a way to practice learning some short phrases in Dutch."]
+     [:p "This is a way to learn some vocabulary and short phrases in Dutch."]
      [:p "Choose a topic in the curriculum to practice with that type of phrase. You'll get English phrases of that type, which you should try to translate to Dutch."]
      [:p "If you don't know how to translate a phrase, just hit the " [:button.weetniet "Ik weet het niet"] " ('I don't know') button, and you'll be shown the question so that you can try again."]
      [:p "If you see a " [:button.speak {:on-click #(speak/nederlands "de kat")} "🔊"] " button next to a phrase, you can click it to hear the pronunciation of that phrase, for example:"]
