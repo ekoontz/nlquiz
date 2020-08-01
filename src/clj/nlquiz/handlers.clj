@@ -33,10 +33,10 @@
            :source-sem (map dag-to-string source-semantics)
            :target (-> target-expression nl/morph)}]
       (when (empty? source-expression)
-        (log/warn (str "source expression was null for spec: " spec "; target expression: "
+        (log/error (str "failed to generate a source expression for spec: " spec "; target expression: "
                        (nl/syntax-tree target-expression)))
-        (log/warn (str " tried to generate from: "
-                       (dag_unify.serialization/serialize (-> target-expression tr/nl-to-en-spec)))))
+        (log/error (str " tried to generate from: "
+                        (dag_unify.serialization/serialize (-> target-expression tr/nl-to-en-spec)))))
       result)))
     
 (defn generate-by-expression-index
