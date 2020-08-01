@@ -85,7 +85,6 @@
      ["/nlquiz/parse/nl"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
      ["/nlquiz/parse/en"                     {:get {:handler (fn [request] (json-response request parse-en))}}]
      ["/nlquiz/generate"                     {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
-     ["/nlquiz/generate/pair"                {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
 
      ["/about"                               {:get {:handler html-response}}]
      ["/curriculum"                          {:get {:handler html-response}}]
@@ -96,7 +95,7 @@
      ["/parse/nl"                            {:get {:handler (fn [request] (json-response request parse-nl))}}]
      ["/parse/en"                            {:get {:handler (fn [request] (json-response request parse-en))}}]
      ["/generate"                            {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
-     ["/generate/pair"                       {:get {:handler (fn [request] (json-response request generate-by-spec))}}]])
+     ])
 
    (reitit-ring/routes
     (reitit-ring/create-resource-handler {:path root-path :root "/public"})
