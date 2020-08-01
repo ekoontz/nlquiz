@@ -144,6 +144,170 @@
           :head {:phrasal true}
           :comp {:phrasal false}}]]])
 
+    "number"
+    (fn []
+      [:div
+       [:p "A noun's pluralization depends on its singular form, as shown in "
+        "the following examples:"]
+       [:ul
+        [:li "Nouns where the plural is formed by adding 's':"
+         [:ul
+          [:li "singular"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :s}}]]]
+          
+          [:li "plural"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :s}}]]]]]
+
+
+        [:li "Nouns where the plural is formed by adding 'en':"
+         [:ul
+          [:li "singular"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :en}}]]]
+          
+          [:li "plural"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :en}}]]]]]
+        
+        [:li "Nouns with a repeated vowel"
+         [:ul
+          [:li "singular"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :repeated-vowel}}]]]
+          
+          [:li "plural"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :repeated-vowel}}]]]]]
+
+        [:li "Nouns that end in a repeated consonant"
+         [:ul
+          [:li "singular"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :repeated-consonant}}]]]
+          
+          [:li "plural"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :repeated-consonant}}]]]]]
+
+        [:li "Nouns that end in 'f' or 's'"
+         [:ul
+          [:li "singular"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :f2v}}
+             {:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :s2z}}]]]
+          
+          [:li "plural"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :f2v}}
+             {:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :s2z}}]]]]]
+
+        [:li "Nouns that end in 'heid'"
+         [:ul
+          [:li "singular"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :heid}}]]]
+          
+          [:li "plural"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :heid}}]]]]]
+        
+        [:li "'s"
+         [:ul
+          [:li "singular"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :sing}}
+              :phrasal true
+              :head {:inflection :apostrophe-s}}]]]
+          
+          [:li "plural"
+           [show-examples
+            [{:cat :noun
+              :mod nil
+              :sem {:quant :the
+                    :ref {:number :plur}}
+              :phrasal true
+              :head {:inflection :apostrophe-s}}]]]]]
+
+
+        ]])
+
+        
+       
     "numbers"
     (fn []
       [:div

@@ -94,20 +94,26 @@
   :head {:phrasal true}
   :comp {:phrasal false}}
 
+
+ {:major-tags ["nouns"]
+  :minor-tags ["number"]
+  :example "een oud huis"
+  :sem {:mod []
+        :quant :the
+        :ref {:number :plur}}
+  :subcat []
+  :phrasal true
+  :cat :noun
+  :head {:phrasal false}
+  :comp {:phrasal false}}
+ 
  {:major-tags ["nouns"]
   :minor-tags ["numbers"]
   :example "de vier kliene vogels"
   :cat :noun
   :mod nil
-  :sem {:quant :the
-        :mod {:first {:number? true}
-              :rest {:first {:number? false}
-                     :rest []}}}
-  :phrasal true
-  :training-wheels {:head {:comp {:phrasal false}
-                           :head {:comp {:phrasal false}
-                                  :head {:phrasal false}}}
-                    :comp {:cat :det}}}
+  :sem {:quant :the}
+  :phrasal true}
   
  {:major-tags ["nouns"]
   :minor-tags ["numbers"]
