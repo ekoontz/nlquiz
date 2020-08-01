@@ -159,7 +159,8 @@
               :sem {:quant :the
                     :ref {:number :sing}}
               :phrasal true
-              :head {:inflection :s}}]]]
+              :head {:phrasal false
+                     :inflection :s}}]]]
           
           [:li "plural"
            [show-examples
@@ -168,7 +169,8 @@
               :sem {:quant :the
                     :ref {:number :plur}}
               :phrasal true
-              :head {:inflection :s}}]]]]]
+              :head {:phrasal false
+                     :inflection :s}}]]]]]
 
 
         [:li "Nouns where the plural is formed by adding 'en':"
@@ -180,7 +182,8 @@
               :sem {:quant :the
                     :ref {:number :sing}}
               :phrasal true
-              :head {:inflection :en}}]]]
+              :head {:phrasal false
+                     :inflection :en}}]]]
           
           [:li "plural"
            [show-examples
@@ -189,7 +192,8 @@
               :sem {:quant :the
                     :ref {:number :plur}}
               :phrasal true
-              :head {:inflection :en}}]]]]]
+              :head {:phrasal false
+                     :inflection :en}}]]]]]
         
         [:li "Nouns with a repeated vowel"
          [:ul
@@ -200,7 +204,8 @@
               :sem {:quant :the
                     :ref {:number :sing}}
               :phrasal true
-              :head {:inflection :repeated-vowel}}]]]
+              :head {:phrasal false
+                     :inflection :repeated-vowel}}]]]
           
           [:li "plural"
            [show-examples
@@ -209,7 +214,8 @@
               :sem {:quant :the
                     :ref {:number :plur}}
               :phrasal true
-              :head {:inflection :repeated-vowel}}]]]]]
+              :head {:phrasal false
+                     :inflection :repeated-vowel}}]]]]]
 
         [:li "Nouns that end in a repeated consonant"
          [:ul
@@ -220,7 +226,8 @@
               :sem {:quant :the
                     :ref {:number :sing}}
               :phrasal true
-              :head {:inflection :repeated-consonant}}]]]
+              :head {:phrasal false
+                     :inflection :repeated-consonant}}]]]
           
           [:li "plural"
            [show-examples
@@ -229,7 +236,8 @@
               :sem {:quant :the
                     :ref {:number :plur}}
               :phrasal true
-              :head {:inflection :repeated-consonant}}]]]]]
+              :head {:phrasal false
+                     :inflection :repeated-consonant}}]]]]]
 
         [:li "Nouns that end in 'f' or 's'"
          [:ul
@@ -246,7 +254,8 @@
               :sem {:quant :the
                     :ref {:number :sing}}
               :phrasal true
-              :head {:inflection :s2z}}]]]
+              :head {:phrasal false
+                     :inflection :s2z}}]]]
           
           [:li "plural"
            [show-examples
@@ -261,7 +270,8 @@
               :sem {:quant :the
                     :ref {:number :plur}}
               :phrasal true
-              :head {:inflection :s2z}}]]]]]
+              :head {:phrasal false
+                     :inflection :s2z}}]]]]]
 
         [:li "Nouns that end in 'heid'"
          [:ul
@@ -272,7 +282,8 @@
               :sem {:quant :the
                     :ref {:number :sing}}
               :phrasal true
-              :head {:inflection :heid}}]]]
+              :head {:phrasal false
+                     :inflection :heid}}]]]
           
           [:li "plural"
            [show-examples
@@ -281,7 +292,8 @@
               :sem {:quant :the
                     :ref {:number :plur}}
               :phrasal true
-              :head {:inflection :heid}}]]]]]
+              :head {:phrasal false
+                     :inflection :heid}}]]]]]
         
         [:li "'s"
          [:ul
@@ -292,7 +304,8 @@
               :sem {:quant :the
                     :ref {:number :sing}}
               :phrasal true
-              :head {:inflection :apostrophe-s}}]]]
+              :head {:phrasal false
+                     :inflection :apostrophe-s}}]]]
           
           [:li "plural"
            [show-examples
@@ -301,7 +314,8 @@
               :sem {:quant :the
                     :ref {:number :plur}}
               :phrasal true
-              :head {:inflection :apostrophe-s}}]]]]]
+              :head {:phrasal false
+                     :inflection :apostrophe-s}}]]]]]
 
 
         ]])
