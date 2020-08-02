@@ -18,8 +18,10 @@
   [spec alternates]
   (let []
     [{:source "the dog"
+      :source-sem {:foo 41}
       :target "de hond"}
      {:source "the dogs"
+      :source-sem {:foo 42}
       :target "de honden"}]))
 
 (defn generate
@@ -63,6 +65,17 @@
     (let [spec (-> spec read-string dag_unify.serialization/deserialize)]
       (log/debug (str "spec decoded: " spec))
       (generate spec))))
+
+(defn generate-by-spec-with-alts
+  "decode a spec from the input request and generate with it."
+  [_request]
+  (let [spec (get (-> _request :query-params) "s" "[]")
+        alts (get (-> _request :query-params) "a" "[]")]
+    (log/debug (str "spec pre-decode: " spec))
+    (let [spec (-> spec read-string dag_unify.serialization/deserialize)
+          alts (-> alts read-string dag_unify.serialization/deserialize)]
+      (log/debug (str "spec decoded: " spec))
+      (generate-with-alternations spec alts))))
 
 (defn parse-nl [_request]
   (let [string-to-parse
