@@ -401,5 +401,9 @@ div.guide li {
 	box-shadow: -0px 0px 0px 0px rgba(209,209,209,1);
     }
 
+    #answer {
+	font-size:150%;
+    }
+    
     
 }
