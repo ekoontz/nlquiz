@@ -1,5 +1,5 @@
 (defproject nlquiz "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+  :description "web app for studying Dutch"
   :url "https://hiro-tan.org/nlquiz"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
