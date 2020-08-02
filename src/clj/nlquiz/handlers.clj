@@ -13,6 +13,15 @@
 (defn dag-to-string [dag]
   (-> dag dag_unify.serialization/serialize str))
 
+(defn generate-with-alternations
+  "generate with _spec_ unified with each of the alternates, one expression per combination."
+  [spec alternates]
+  (let []
+    [{:source "the dog"
+      :target "de hond"}
+     {:source "the dogs"
+      :target "de honden"}]))
+
 (defn generate
   "generate a Dutch expression from _spec_ and translate to English, and return this pair
    along with the semantics of the English specification also."
