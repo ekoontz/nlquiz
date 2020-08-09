@@ -20,7 +20,7 @@
                  [venantius/accountant "0.2.5"
                   :exclusions [org.clojure/tools.reader]]
                  [cljslog "0.1.0"]
-                 [clj-http "3.4.1"]
+                 [clj-http "3.10.2"]
                  [cljs-http "0.1.46"]
                  [org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.logging "0.5.0"]
