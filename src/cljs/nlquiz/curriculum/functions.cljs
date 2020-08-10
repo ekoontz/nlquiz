@@ -21,7 +21,28 @@
                    :target (-> response :body :target)})))
     input))
 
+(defn new-pair-alternate-set [spec alternates]
+  (let [input (r/atom nil)
+        serialized-spec (-> spec dag_unify.serialization/serialize str)
+        get-pair-fn (fn [] (http/get (str root-path "generate")
+                                     {:query-params {"q" serialized-spec
+                                                     ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
+                                                     "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))
+                                                     }}))]
+    (go (let [response (<! (get-pair-fn))]
+          (reset! input
+                  {:source (-> response :body :source)
+                   :target (-> response :body :target)})))
+    input))
+
 (defn add-one [expressions spec]
+  (swap! expressions
+         (fn [expressions]
+           (concat expressions
+                   [(new-pair spec)]))))
+
+(defn add-one-alternates [expressions spec alternates]
+  (log/info (str "ADD-ONE-ALTERNATES"))
   (swap! expressions
          (fn [expressions]
            (concat expressions
@@ -47,8 +68,9 @@
 (defn show-alternate-examples [spec alternates]
   (let [expressions (r/atom [])
         specs [spec]]
-    (log/info (str "HERE IS THE SPEC: " spec))
-    (doall (take 3 (repeatedly #(add-one expressions (first (shuffle specs))))))
+    (log/info (str "show-alternate-examples: spec: " spec))
+    (doall (take 3 (repeatedly #(add-one-alternates
+                                 expressions (first (shuffle specs)) alternates))))
     (fn []
       [:div.exampletable
        [:table
