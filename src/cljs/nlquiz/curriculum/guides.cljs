@@ -3,7 +3,9 @@
 ;; something similar.
 (ns nlquiz.curriculum.guides
   (:require
-   [nlquiz.curriculum.functions :refer [show-examples]]
+   [nlquiz.curriculum.functions
+    :refer [show-alternate-examples
+            show-examples]]
    [reagent.core :as r]))
 
 (def guides
@@ -153,6 +155,22 @@
        [:p "A noun's pluralization depends on its singular form, as shown in "
         "the following examples:"]
        [:ul
+
+        [:li "NYAANS where the plural is formed by adding 's':"
+         [:ul
+          [:li "singular/plural"
+           [show-alternate-examples
+            {:cat :noun
+             :mod nil
+             :sem {:quant :the
+                   :ref {:number :sing}}
+             :phrasal true
+             :head {:phrasal false
+                    :inflection :s}}
+            [{:sem {:ref {:number :sing}}}
+             {:sem {:ref {:number :plur}}}]]]]]
+
+
         [:li "Nouns where the plural is formed by adding 's':"
          [:ul
           [:li "singular"

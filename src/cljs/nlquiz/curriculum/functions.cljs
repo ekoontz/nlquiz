@@ -43,3 +43,23 @@
                     [:td.target (:target expression)]
                     [:td.source (:source expression)]]))
                (range 0 (count @expressions))))]]])))
+
+(defn show-alternate-examples [spec alternates]
+  (let [expressions (r/atom [])
+        specs [spec]]
+    (log/info (str "HERE IS THE SPEC: " spec))
+    (doall (take 3 (repeatedly #(add-one expressions (first (shuffle specs))))))
+    (fn []
+      [:div.exampletable
+       [:table
+        [:tbody
+         (doall
+          (map (fn [i]
+                 (let [expression @(nth @expressions i)]
+                   [:tr {:key (str "row-" i) :class (if (= 0 (mod i 2)) "even" "odd")}
+                    [:th.index (+ i 1)]
+                    [:th.speak [:button {:on-click #(speak/nederlands (:target expression))} "🔊"]]
+                    [:td.target (:target expression)]
+                    [:td.source (:source expression)]]))
+               (range 0 (count @expressions))))]]])))
+
