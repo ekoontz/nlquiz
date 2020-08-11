@@ -153,191 +153,85 @@
     (fn []
       [:div
        [:p "A noun's pluralization depends on its singular form, as shown in "
-        "the following examples:"]
+        "the following examples."]
        [:ul
 
-        [:li "NYAANS where the plural is formed by adding 's':"
-         [:ul
-          [:li "singular/plural"
-           [show-alternate-examples
-            {:cat :noun
-             :mod nil
-             :sem {:quant :the
-                   :ref {:number :sing}}
+        [:li "Nouns where the plural is formed by adding " [:i "s"]
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
              :phrasal true
-             :head {:phrasal false
-                    :inflection :s}}
-            [{:sem {:ref {:number :sing}}}
-             {:sem {:ref {:number :plur}}}]]]]]
+           :head {:phrasal false
+                  :inflection :s}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
 
+        [:li "Nouns where the plural is formed by adding " [:i "en"]
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
+           :phrasal true
+           :head {:phrasal false
+                  :inflection :en}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
 
-        [:li "Nouns where the plural is formed by adding 's':"
-         [:ul
-          [:li "singular"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :s}}]]]
-          
-          [:li "plural"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :s}}]]]]]
-
-
-        [:li "Nouns where the plural is formed by adding 'en':"
-         [:ul
-          [:li "singular"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :en}}]]]
-          
-          [:li "plural"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :en}}]]]]]
-        
         [:li "Nouns with a repeated vowel"
-         [:ul
-          [:li "singular"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :repeated-vowel}}]]]
-          
-          [:li "plural"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :repeated-vowel}}]]]]]
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
+           :phrasal true
+           :head {:phrasal false
+                  :inflection :repeated-vowel}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
 
-        [:li "Nouns that end in a repeated consonant"
-         [:ul
-          [:li "singular"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :repeated-consonant}}]]]
-          
-          [:li "plural"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :repeated-consonant}}]]]]]
+        [:li "Nouns that end in " [:i "p"] " or " [:i "t"]
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
+           :phrasal true
+           :head {:phrasal false
+                  :inflection :repeated-consonant}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
 
-        [:li "Nouns that end in 'f' or 's'"
-         [:ul
-          [:li "singular"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:inflection :f2v}}
-             {:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :s2z}}]]]
-          
-          [:li "plural"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:inflection :f2v}}
-             {:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :s2z}}]]]]]
+        [:li "Nouns that end in " [:i "f"] " or " [:i "s"]
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
+           :phrasal true
+           :head {:phrasal false
+                  :inflection :f2v}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
 
-        [:li "Nouns that end in 'heid'"
-         [:ul
-          [:li "singular"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :heid}}]]]
-          
-          [:li "plural"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :heid}}]]]]]
-        
-        [:li "'s"
-         [:ul
-          [:li "singular"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :sing}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :apostrophe-s}}]]]
-          
-          [:li "plural"
-           [show-examples
-            [{:cat :noun
-              :mod nil
-              :sem {:quant :the
-                    :ref {:number :plur}}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :apostrophe-s}}]]]]]
+        [:li "Nouns that end in " [:i "heid"]
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
+           :phrasal true
+           :head {:phrasal false
+                  :inflection :heid}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
 
+        [:li "Nouns that end in " [:i "y"]
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
+           :phrasal true
+           :head {:phrasal false
+                  :inflection :apostrophe-s}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
 
         ]])
 
