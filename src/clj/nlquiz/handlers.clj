@@ -45,16 +45,10 @@
 (defn generate-with-alternations
   "generate with _spec_ unified with each of the alternates, one expression per combination."
   [spec alternates]
-  (let [spec {:cat :noun
-              :mod nil
-              :sem {:quant :the}
-              :phrasal true
-              :head {:phrasal false
-                     :inflection :s}}
-        alternates [{:sem {:ref {:number :sing}}}
+  (let [alternates-good [{:sem {:ref {:number :sing}}}
                     {:sem {:ref {:number :plur}}}]
-        debug (log/info (str "generating with spec: " spec " and alternates: " alternates))
-        debug (log/info (str "generating with spec: " spec " and alternates: " alternates))]
+        debug (log/info (str "generating with spec: " spec " and alternates: "
+                             (clojure.string/join "," alternates)))]
     (let [derivative-specs
           (->>
            alternates
@@ -93,7 +87,7 @@
   (let [spec (get (-> _request :query-params) "q")]
     (log/debug (str "spec pre-decode: " spec))
     (let [spec (-> spec read-string dag_unify.serialization/deserialize)]
-      (log/info (str "generate-by-spec with spec: " spec))
+      (log/debug (str "generate-by-spec with spec: " spec))
       (-> spec
           generate
           (dissoc :source-tree)
@@ -102,12 +96,12 @@
 (defn generate-by-spec-with-alts
   "decode a spec from the input request and generate with it."
   [_request]
-  (let [spec (get (-> _request :query-params) "s" "[]")
-        alts (get (-> _request :query-params) "a" "[]")]
-    (log/debug (str "spec pre-decode: " spec))
+  (let [spec (get (-> _request :query-params) "spec" "[]")
+        alts (get (-> _request :query-params) "alts" "[]")]
     (let [spec (-> spec read-string dag_unify.serialization/deserialize)
-          alts (-> alts read-string dag_unify.serialization/deserialize)]
-      (log/info (str "generate-by-spec-with-alts: spec decoded: " spec))
+          alts (->> alts read-string (map dag_unify.serialization/deserialize))]
+      (log/debug (str "generate-by-spec-with-alts: spec decoded: " spec))
+      (log/debug (str "generate-by-spec-with-alts: alts decoded: " alts))
       (generate-with-alternations spec alts))))
 
 (defn parse-nl [_request]
