@@ -189,7 +189,7 @@
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
 
-        [:li "Nouns that end in " [:i "p"] " or " [:i "t"]
+        [:li "Nouns that end in " [:i "k"] ", " [:i "n"] ", " [:i "p"] " or " [:i "t"]
          [show-alternate-examples
           {:cat :noun
            :mod nil
