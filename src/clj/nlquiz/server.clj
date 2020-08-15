@@ -28,7 +28,7 @@
 ;; or in other words, only run this task if we're running the the -main of the jar.
 (if (System/getenv "MODEL_URL")
   (run-task! initialize-language-models
-             :period (* 1 60 1000)) ;; reload every 5 minutes.
+             :period (* 5 60 1000)) ;; reload every 5 minutes.
   (log/warn (str "MODEL_URL was not defined in the environment: will not be able to "
                  "refresh language models. In the future, please set "
                  "your environment's MODEL_URL to 'file:///Users/ekoontz/menard/src/', "
