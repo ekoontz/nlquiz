@@ -13,18 +13,15 @@
    (log/info (str "loading nl model.."))
    (let [new-model (nl/create-model)]
      (log/info (str "model loaded; replacing."))    
-     (let [created-model (nl/create-model)]
-       (dosync
-        (ref-set nl/model created-model))))
+     (dosync
+      (ref-set nl/model new-model)))
    (log/info (str "loaded."))
    (log/info (str "loading en model.."))
    (let [new-model (en/create-model)]
      (log/info (str "model loaded; replacing."))
-     (let [created-model (en/create-model)]
-       (dosync
-        (ref-set en/model created-model))))
-   (log/info (str "loaded."))
-   (log/info (str "That's all for the reloading-of-the-models 'til next time!")))
+     (dosync
+      (ref-set en/model new-model)))
+   (log/info (str "Done with all the reloading-of-the-models 'til next time!")))
 
 (use 'ruiyun.tools.timer)
 ;; TODO: check if we got here are running as 'lein uberjar' here somehow (?)
