@@ -222,7 +222,7 @@
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
 
-        [:li "Nouns that end in " [:i "y"]
+        [:li "Nouns that end in " [:i "y"] " or a vowel other than " [:i "e"]
          [show-alternate-examples
           {:cat :noun
            :mod nil
