@@ -41,6 +41,7 @@
    [:meta {:charset "utf-8"}]
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1"}]
+   [:title "nlquiz"] ;; TODO: title should be more context-specific about each page.
    (include-css (str root-path (if (env :dev) "css/site.css" "css/site.min.css")))
    (include-css (str root-path (if (env :dev) "css/debug.css" "css/debug.min.css")))
    (include-css (str root-path (if (env :dev) "css/expression.css" "css/expression.min.css")))])
