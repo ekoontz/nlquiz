@@ -189,7 +189,7 @@
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
 
-        [:li "Nouns that end in " [:i "k"] ", " [:i "n"] ", " [:i "p"] " or " [:i "t"]
+        [:li "Nouns that end in " [:i "n"] ", " [:i "p"] " or " [:i "t"]
          [show-alternate-examples
           {:cat :noun
            :mod nil
@@ -200,6 +200,17 @@
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
 
+        [:li "Nouns that end in " [:i "k"] " (sometimes, like in these examples)"
+         [show-alternate-examples
+          {:cat :noun
+           :mod nil
+           :sem {:quant :the}
+           :phrasal true
+           :head {:phrasal false
+                  :inflection :repeated-k}}
+          [{:sem {:ref {:number :sing}}}
+           {:sem {:ref {:number :plur}}}]]]
+        
         [:li "Nouns that end in " [:i "f"] " or " [:i "s"]
          [show-alternate-examples
           {:cat :noun
