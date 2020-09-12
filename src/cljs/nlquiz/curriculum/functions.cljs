@@ -7,7 +7,7 @@
             [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
-(def this-many-examples 2)
+(def this-many-examples 3)
 
 (defn new-pair [spec]
   (let [input (r/atom nil)
