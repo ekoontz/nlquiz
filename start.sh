@@ -2,4 +2,4 @@
 lein clean
 rm target/cljsbuild/public/js/app.js target/cljsbuild/public/js/app-optimized.js
 lein cljsbuild once min
-lein figwheel
+ROOT_PATH=/nlquiz lein figwheel
