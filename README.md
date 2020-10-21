@@ -7,7 +7,7 @@ Learn Dutch by translating simple expressions.
 (Re)start the Figwheel compiler by navigating to the project folder and run the following command in the terminal:
 
 ```
-lein figwheel
+lein clean && ROOT_PATH=/nlquiz lein figwheel
 ```
 
 Figwheel will automatically push cljs changes to the browser. The server will be available at [http://localhost:3449](http://localhost:3449) once Figwheel starts up. 
