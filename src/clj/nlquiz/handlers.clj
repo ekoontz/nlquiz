@@ -116,6 +116,8 @@
                       (filter #(= nil (u/get-in % [:mod] nil))))
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
+       :english (-> (->> parses (filter #(empty? (u/get-in % [:mod]))))
+                    first tr/nl-to-en-spec en/generate en/morph)
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
                  (map dag-to-string))})))

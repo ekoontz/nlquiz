@@ -27,6 +27,7 @@
 (def show-praise-text (r/atom nil))
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
+(def translation-of-guess (r/atom nil))
 
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
@@ -132,6 +133,9 @@
                                                (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
                                              (reset! input-state "disabled")
                                              (reset! show-answer correct-answer))))}]]]
+
+     [:div.english @translation-of-guess]
+
      [:div.dontknow
       [:input {:class "weetniet" :type "submit" :value "Ik weet het niet"
                :disabled @ik-weet-niet-button-state}] ;; </div.question-and-guess>
@@ -193,7 +197,17 @@
                   (->> (-> response :body :sem)
                        (map cljs.reader/read-string)
                        (map dag_unify.serialization/deserialize)))
-          (when (evaluate-guess @semantics-of-guess
-                                @possible-correct-semantics)
+          (reset! translation-of-guess nil)
+          (if (evaluate-guess @semantics-of-guess
+                              @possible-correct-semantics)
             ;; got it right!
-            (if-correct-fn guess-string))))))
+            (do (reset! translation-of-guess "")
+                (if-correct-fn guess-string))
+
+            ;; got it wrong: show english translation of whatever
+            ;; the person said, if it could be parsed as Dutch and
+            ;; translated to English:
+            (if (not (= "_" (-> response :body :english)))
+              (reset! translation-of-guess
+                      (-> response :body :english))))))))
+

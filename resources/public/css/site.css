@@ -351,6 +351,14 @@ div.guide li {
     margin-top: 1em;
 }
 
+div.english {
+    font-size:smaller;
+    float:left;
+    width:100%;
+    font-style:italic;
+    color:#bbb;
+}
+
 
 /* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
 /* ----------- iPhone 6, 6S, 7 and 8 ----------- */
