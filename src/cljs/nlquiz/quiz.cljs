@@ -1,11 +1,9 @@
 (ns nlquiz.quiz
   (:require
-   [accountant.core :as accountant]
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [dag_unify.core :as u]
-   [dag_unify.serialization :as s]
    [nlquiz.constants :refer [root-path]]
    [nlquiz.dropdown :as dropdown]
    [nlquiz.speak :as speak]
