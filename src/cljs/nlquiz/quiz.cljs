@@ -29,9 +29,10 @@
 
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
-              "mooi..🌷"
+              "goed gedaan! 🚲"
+              "mooi!🌷"
               "oké! 🌷"
-              "prachtig.."
+              "prachtig.🧇"
               "precies!😁"
               "prima!!😎 "])
 
