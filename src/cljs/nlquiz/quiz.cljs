@@ -64,15 +64,6 @@
   (reset! show-praise-text (-> praises shuffle first))
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
-(defn choose-question-from-dropdown [get-question-fn]
-  (if (nil? @expression-index)
-    (reset! expression-index 0))
-  [:div {:style {:float "right"}}
-   [dropdown/expressions expression-index
-    
-    ;; what to call if dropdown's choice is changed (generate a new question):
-    (fn [] (new-question get-question-fn))]])
-
 (def got-it-right? (atom false))
 (def get-question-fn-atom (atom (fn [] (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
 
