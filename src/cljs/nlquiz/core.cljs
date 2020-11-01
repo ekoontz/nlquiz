@@ -7,9 +7,7 @@
    [cljs-http.client :as http]
    [nlquiz.about :as about]   
    [nlquiz.curriculum :as curriculum]
-   [nlquiz.generate :as generate]
    [nlquiz.quiz :as quiz]
-   [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
    [reitit.frontend :as reitit])
@@ -81,7 +79,6 @@
     nil #'curriculum/quiz
     :index #'curriculum/quiz
     :about #'about/component
-    :test #'test/test-component
     :curriculum #'curriculum/quiz
     :curriculum-major #'curriculum/quiz-component
     :curriculum-minor #'curriculum/quiz-component))

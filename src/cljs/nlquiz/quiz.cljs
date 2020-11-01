@@ -5,7 +5,6 @@
    [cljs.core.async :refer [<!]]
    [dag_unify.core :as u]
    [nlquiz.constants :refer [root-path]]
-   [nlquiz.dropdown :as dropdown]
    [nlquiz.speak :as speak]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))

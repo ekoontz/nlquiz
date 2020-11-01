@@ -1,15 +1,6 @@
 (ns nlquiz.speak
   (:require
-   [accountant.core :as accountant]
-   [nlquiz.constants :refer [root-path]]
-   [nlquiz.dropdown :as dropdown]
-   [dag_unify.core :as u]
-   [dag_unify.serialization :as s]
-   [cljs-http.client :as http]
-   [cljslog.core :as log]
-   [reagent.core :as r]
-   [cljs.core.async :refer [<!]])
-  (:require-macros [cljs.core.async.macros :refer [go]]))
+   [cljslog.core :as log]))
 
 (defn nederlands [input]
   (let [synth (. js/window -speechSynthesis)
