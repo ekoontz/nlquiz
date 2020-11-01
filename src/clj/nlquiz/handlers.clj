@@ -17,7 +17,7 @@
   "generate a Dutch expression from _spec_ and translate to English, and return this pair
    along with the semantics of the English specification also."
   [spec]
-  (let [debug (log/info (str "generating a question with spec: " spec))
+  (let [debug (log/debug (str "generating a question with spec: " spec))
         debug (log/debug (str "input spec type: " (type spec)))
         target-expression (-> spec nl/generate)
         ;; try twice to generate a source expression: fails occasionally for unknown reasons:
@@ -26,7 +26,7 @@
                                (filter #(not (empty? %)))
                                first)
         source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
-    (log/info (str "generated: '" (-> source-expression en/morph) "'"
+    (log/info (str "given input input spec: " spec ", generated: '" (-> source-expression en/morph) "'"
                    " -> '"  (-> target-expression nl/morph) "'"))
     (let [result
           {:source (-> source-expression en/morph)
@@ -42,35 +42,38 @@
                         (dag_unify.serialization/serialize (-> target-expression tr/nl-to-en-spec)))))
       result)))
 
+(def ^:const clean-up-trees true)
+
 (defn generate-with-alternations
   "generate with _spec_ unified with each of the alternates, so generate one expression per <spec,alternate> combination."
   [spec alternates]
-  (log/info (str "generating with spec: " spec " and alternates: "
-                 (clojure.string/join "," alternates)))
+  (log/debug (str "generating with spec: " spec " and alternates: "
+                  (clojure.string/join "," alternates)))
   (let [derivative-specs
         (->>
          alternates
          (map (fn [alternate]
                 (u/unify alternate spec))))
         ;; the first one is special: we will get the [:head :root] from it and use it with the rest of the specs.
-        first-expression (generate (first derivative-specs))]
-    (->>
-     (cons first-expression
-           (->> (rest derivative-specs)
-                (map (fn [derivative-spec]
-                       (generate (u/unify derivative-spec
-                                          {:head {:root
-                                                  (u/get-in first-expression [:target-tree :head :root] :top)}}))))))
-     ;; cleanup the huge syntax trees:
-     (map #(-> %
-               (dissoc % :source-tree (dag-to-string (:source-tree %)))
-               (dissoc % :target-tree (dag-to-string (:target-tree %))))))))
-
-;; don't cleanup the syntax trees, but serialize them so they can be printed to json:
-;;         (map #(-> %
-;;                   (assoc :source-tree (dag-to-string (:source-tree %)))
-;;                   (assoc :target-tree (dag-to-string (:target-tree %))))))))))
-         
+        first-expression (generate (first derivative-specs))
+        expressions
+        (cons first-expression
+              (->> (rest derivative-specs)
+                   (map (fn [derivative-spec]
+                          (generate (u/unify derivative-spec
+                                             {:head {:root
+                                                     (u/get-in first-expression [:target-tree :head :root] :top)}}))))))]
+    (if clean-up-trees
+      (->> expressions
+           ;; cleanup the huge syntax trees:
+           (map #(-> %
+                     (dissoc % :source-tree (dag-to-string (:source-tree %)))
+                     (dissoc % :target-tree (dag-to-string (:target-tree %))))))
+          
+      ;; don't cleanup the syntax trees, but serialize them so they can be printed to json:
+      (map #(-> %
+                (assoc :source-tree (dag-to-string (:source-tree %)))
+                (assoc :target-tree (dag-to-string (:target-tree %))))))))
 
 (defn generate-by-expression-index
   "look up a specification in the 'nl-expressions' array and generate with it."
