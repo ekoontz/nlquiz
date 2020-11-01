@@ -43,30 +43,28 @@
       result)))
 
 (defn generate-with-alternations
-  "generate with _spec_ unified with each of the alternates, one expression per combination."
+  "generate with _spec_ unified with each of the alternates, so generate one expression per <spec,alternate> combination."
   [spec alternates]
-  (let [alternates-good [{:sem {:ref {:number :sing}}}
-                    {:sem {:ref {:number :plur}}}]
-        debug (log/info (str "generating with spec: " spec " and alternates: "
-                             (clojure.string/join "," alternates)))]
-    (let [derivative-specs
-          (->>
-           alternates
-           (map (fn [alternate]
-                  (u/unify alternate spec))))
-          ;; the first one is special; we will get the [:head :root] from it and use it with the rest of the specs.
-          first-expression (generate (first derivative-specs))]
-      (->>
-       (cons first-expression
-             (->> (rest derivative-specs)
-                  (map (fn [derivative-spec]
-                         (generate (u/unify derivative-spec
-                                            {:head {:root
-                                                    (u/get-in first-expression [:target-tree :head :root] :top)}}))))))
-       ;; cleanup the huge syntax trees:
-       (map #(-> %
-                 (dissoc % :source-tree (dag-to-string (:source-tree %)))
-                 (dissoc % :target-tree (dag-to-string (:target-tree %)))))))))
+  (log/info (str "generating with spec: " spec " and alternates: "
+                 (clojure.string/join "," alternates)))
+  (let [derivative-specs
+        (->>
+         alternates
+         (map (fn [alternate]
+                (u/unify alternate spec))))
+        ;; the first one is special: we will get the [:head :root] from it and use it with the rest of the specs.
+        first-expression (generate (first derivative-specs))]
+    (->>
+     (cons first-expression
+           (->> (rest derivative-specs)
+                (map (fn [derivative-spec]
+                       (generate (u/unify derivative-spec
+                                          {:head {:root
+                                                  (u/get-in first-expression [:target-tree :head :root] :top)}}))))))
+     ;; cleanup the huge syntax trees:
+     (map #(-> %
+               (dissoc % :source-tree (dag-to-string (:source-tree %)))
+               (dissoc % :target-tree (dag-to-string (:target-tree %))))))))
 
 ;; don't cleanup the syntax trees, but serialize them so they can be printed to json:
 ;;         (map #(-> %
