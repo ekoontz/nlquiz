@@ -1,7 +1,4 @@
-;; TODO: move this up a level and rename it to curriculum.cljs,
-;; and rename the old curriculum.cljs to curriculumfns.cljs or
-;; something similar.
-(ns nlquiz.curriculum.guides
+(ns nlquiz.curriculumcontent
   (:require
    [nlquiz.curriculum.functions
     :refer [show-alternate-examples

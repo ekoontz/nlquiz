@@ -1,10 +1,10 @@
-(ns nlquiz.curriculum
+(ns nlquiz.curriculumfn
   (:require
    [cljslog.core :as log]
    [cljs-http.client :as http]
    [dag_unify.core :as u]
    [nlquiz.constants :refer [root-path]]
-   [nlquiz.curriculum.guides :refer [guides]]
+   [nlquiz.curriculumcontent :refer [guides]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r]
    [reagent.session :as session])

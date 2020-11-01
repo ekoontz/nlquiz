@@ -6,7 +6,7 @@
    [cljslog.core :as log]
    [cljs-http.client :as http]
    [nlquiz.about :as about]   
-   [nlquiz.curriculum :as curriculum]
+   [nlquiz.curriculumfn :as curriculum]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r]
    [reagent.session :as session]
