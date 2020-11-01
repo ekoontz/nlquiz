@@ -17,7 +17,10 @@
         nl-voice
         (first
          (->> (.getVoices synth)
-              (filter #(= "nl-NL" (-> % .-lang)))))]
+              (filter #(or (= "nl" (-> % .-lang))
+                           (= "nl-BE" (-> % .-lang))
+                           (= "nl-NL" (-> % .-lang))))
+              shuffle))]
     (if nl-voice
       (do (aset utterThis "voice" nl-voice)
           (.speak synth utterThis))
