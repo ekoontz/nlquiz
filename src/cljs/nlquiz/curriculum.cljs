@@ -4,6 +4,7 @@
    [cljs-http.client :as http]
    [dag_unify.core :as u]
    [nlquiz.constants :refer [root-path]]
+   [nlquiz.curriculum.functions :refer [show-examples]]
    [nlquiz.curriculum.guides :refer [guides]]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r]
@@ -36,6 +37,20 @@
        flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
                             (and (nil? minor) (= (:href %) major))))
        (map :name) first))
+
+(defn get-guide-for [major & [minor]]
+  (->> @curriculum-atom
+       (map get-name-or-children)
+       flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
+                            (and (nil? minor) (= (:href %) major))))
+       (map :guide) first))
+
+(defn get-examples-for [major & [minor]]
+  (->> @curriculum-atom
+       (map get-name-or-children)
+       flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
+                            (and (nil? minor) (= (:href %) major))))
+       (map :examples) first))
 
 (defn get-specs []
   (let [root-path (root-path-from-env)]
@@ -116,13 +131,16 @@
              [:div.guide
               [:div.h4
                [:h4 (get-title-for major minor)]]
-              [:div.content [(-> guides (get major) (get minor))]]]
+              [:div.content [:h3 "case 1"] [(-> guides (get major) (get minor))]]]
 
-             (and major guides (fn? (get guides major)))
+             (and major guides (get-guide-for major) (get-examples-for major))
              [:div.guide
               [:div.h4
                [:h4 (get-title-for major)]]
-              [:div.content [(-> guides (get major))]]]
+              [:div.content
+               (get-guide-for major)
+               [show-examples
+                (get-examples-for major)]]]
 
              (and major guides (fn? (-> guides (get major) :general)))
              [:div.guide

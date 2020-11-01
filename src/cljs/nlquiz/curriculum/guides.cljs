@@ -9,18 +9,7 @@
    [reagent.core :as r]))
 
 (def guides
-  {"adjectives"
-   (fn []
-     [:div
-      [:p "Adjectives modify nouns. Adverbs, in turn, modify adjectives. Here are some examples of an adjective modified by an adverb:"]
-      [show-examples
-       [{:cat :adjective
-         :mod nil
-         :subcat []
-         :phrasal true
-         :head {:phrasal false}
-         :comp {:phrasal false}}]]])
-   "nouns"
+  {"nouns"
    {:general
     (fn []
       [:div
@@ -59,7 +48,7 @@
                   :number :sing}
             :phrasal true
             :head {:phrasal false}}]]]]])
-    "poss" 
+    "poss"
     (fn []
       [:div
        [:p "A noun's article can be a " [:b "possessive article"] ", for example:"]
@@ -77,7 +66,7 @@
           :head {:phrasal false
                  :subcat {:1 {:cat :det}}}
           :comp {:phrasal false
-                 :sem {:pred :she}}}          
+                 :sem {:pred :she}}}
          {:cat :noun
           :subcat []
           :phrasal true
@@ -127,7 +116,6 @@
           :comp {:phrasal false}}
 
          ]]
-         
 
        [:p "However, if:"]
        [:ul
@@ -210,7 +198,7 @@
                   :inflection :repeated-k}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
-        
+
         [:li "Nouns that end in " [:i "f"] " or " [:i "s"]
          [show-alternate-examples
           {:cat :noun
@@ -245,7 +233,7 @@
            {:sem {:ref {:number :plur}}}]]]
 
         ]])
-       
+
     "numbers"
     (fn []
       [:div
@@ -263,7 +251,7 @@
                                    :head {:comp {:phrasal false}
                                           :head {:phrasal false}}}
                             :comp {:cat :det}}}
-         
+
          {:major-tags ["nouns"]
           :minor-tags ["numbers"]
           :example "de vier en twintig kleine vogels"
