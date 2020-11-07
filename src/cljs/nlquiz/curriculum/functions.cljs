@@ -9,7 +9,7 @@
 
 ;; functions used by curriculum.cljs
 
-(def this-many-examples 3)
+(def this-many-examples 5)
 
 (defn new-pair [spec]
   (let [input (r/atom nil)
