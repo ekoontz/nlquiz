@@ -59,7 +59,7 @@
   (reset! show-answer-display "block")
   (reset! guess-text "")
   (.focus (.getElementById js/document "input-guess"))  
-  (js/setTimeout #(reset! show-answer-display "none") 1000)
+  (js/setTimeout #(reset! show-answer-display "none") 3000)
   false)
 
 (defn show-praise []
