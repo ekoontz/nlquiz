@@ -94,14 +94,6 @@
   :cat :noun
   :head {:phrasal false}
   :comp {:phrasal false}}
- 
- {:major-tags ["nouns"]
-  :minor-tags ["numbers"]
-  :example "de vier kliene vogels"
-  :cat :noun
-  :mod nil
-  :sem {:quant :the}
-  :phrasal true}
   
  {:major-tags ["nouns"]
   :minor-tags ["numbers"]
