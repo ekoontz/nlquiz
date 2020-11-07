@@ -1,10 +1,10 @@
-(ns nlquiz.curriculumcontent
+(ns nlquiz.curriculum.content
   (:require
    [nlquiz.curriculum.functions
     :refer [show-alternate-examples
             show-examples]]))
 
-(def guides
+(def curriculum
   {"adjectives"
    (fn []
      [:div

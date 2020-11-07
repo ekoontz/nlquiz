@@ -6,7 +6,7 @@
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [nlquiz.constants :refer [root-path]]
-   [nlquiz.curriculumcontent :refer [guides]]
+   [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])
@@ -304,20 +304,20 @@
     (fn []
       [:div.curr-major
        (quiz-layout (get-expression major minor))
-       (cond (and major minor guides (get guides major)
-                  (-> guides (get major) (get minor)))
+       (cond (and major minor curriculum (get curriculum major)
+                  (-> curriculum (get major) (get minor)))
              [:div.guide
               [:div.h4
                [:h4 (get-title-for major minor)]]
-              [:div.content [(-> guides (get major) (get minor))]]]
+              [:div.content [(-> curriculum (get major) (get minor))]]]
 
-             (and major guides (fn? (get guides major)))
+             (and major curriculum (fn? (get curriculum major)))
              [:div.guide
               [:div.h4
                [:h4 (get-title-for major)]]
-              [:div.content [(-> guides (get major))]]]
+              [:div.content [(-> curriculum (get major))]]]
 
-             (and major guides (fn? (-> guides (get major) :general)))
+             (and major curriculum (fn? (-> curriculum (get major) :general)))
              [:div.guide
-              [(-> guides (get major) :general)]]
+              [(-> curriculum (get major) :general)]]
              true "")])))

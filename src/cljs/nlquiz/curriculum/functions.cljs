@@ -7,6 +7,8 @@
             [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
 
+;; functions used by curriculum.cljs
+
 (def this-many-examples 3)
 
 (defn new-pair [spec]
