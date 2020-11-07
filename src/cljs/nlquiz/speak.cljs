@@ -21,4 +21,4 @@
     (if nl-voice
       (do (aset utterThis "voice" nl-voice)
           (.speak synth utterThis))
-      (log/warn (str "could not find a nl-NL voice to speak Dutch on this device; will not attempt speech.")))))
+      (log/warn (str "could not find a nl voice to speak Dutch on this device; will not attempt speech.")))))
