@@ -4,7 +4,7 @@
  {:name "Nouns"
   :child [{:name "Gender"
            :href "nouns/definite-articles"}
-          {:name "Number"
+          {:name "Singular and Plural"
            :href "nouns/number"}
           {:name "Possessive articles"
            :href "nouns/poss"}
