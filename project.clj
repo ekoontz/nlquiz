@@ -50,7 +50,7 @@
    [:cljsbuild :builds :app :compiler :output-dir]
    [:cljsbuild :builds :app :compiler :output-to]]
 
-  :source-paths ["src/clj" "src/cljc" "src/cljs"]
+  :source-paths ["src/clj" "src/cljs"]
   :resource-paths ["resources" "target/cljsbuild"]
 
   ;; if you want to add new css files, you also need to add them to: src/clj/nlquiz/handler:head.
@@ -67,7 +67,7 @@
   ;; (cd ../menard ; make clean; make compile; lein install); rm target/cljsbuild/public/js/app-optimized.js;  lein cljsbuild once min ;  lein figwheel
   {:builds {;; "lein cljsbuild auto min"
             :min
-            {:source-paths ["src/cljs" "src/cljc" "env/prod/cljs"]
+            {:source-paths ["src/cljs" "env/prod/cljs"]
              :compiler
 
              ;; this value must be the same as what is used in the (if optimized? ..)
@@ -80,7 +80,7 @@
               :infer-externs true
               :pretty-print  false}}
             :app
-            {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
+            {:source-paths ["src/cljs" "env/dev/cljs"]
              :figwheel {:on-jsload "nlquiz.core/mount-root"}
              :compiler
              {:main "nlquiz.dev"
