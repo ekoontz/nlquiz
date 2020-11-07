@@ -2,8 +2,7 @@
   (:require
    [nlquiz.curriculum.functions
     :refer [show-alternate-examples
-            show-examples]]
-   [reagent.core :as r]))
+            show-examples]]))
 
 (def guides
   {"adjectives"

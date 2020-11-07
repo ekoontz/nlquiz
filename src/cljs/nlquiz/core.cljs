@@ -6,7 +6,6 @@
    [cljslog.core :as log]
    [cljs-http.client :as http]
    [nlquiz.about :as about]   
-   [nlquiz.curriculumfn :as curriculum]
    [nlquiz.quiz :as quiz]
    [reagent.core :as r]
    [reagent.session :as session]
@@ -76,12 +75,12 @@
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
-    nil #'curriculum/quiz
-    :index #'curriculum/quiz
+    nil #'quiz/quiz
+    :index #'quiz/quiz
     :about #'about/component
-    :curriculum #'curriculum/quiz
-    :curriculum-major #'curriculum/quiz-component
-    :curriculum-minor #'curriculum/quiz-component))
+    :curriculum #'quiz/quiz
+    :curriculum-major #'quiz/quiz-component
+    :curriculum-minor #'quiz/quiz-component))
 
 ;; used by e.g. quiz.cljs to know how to prefix links
 ;; when generating html:
