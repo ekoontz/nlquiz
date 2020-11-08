@@ -117,8 +117,13 @@
                       (filter #(= nil (u/get-in % [:mod] nil))))
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
-       :english (-> (->> parses (filter #(empty? (u/get-in % [:mod]))))
-                    first tr/nl-to-en-spec en/generate en/morph)
+       :english (-> (->> parses
+                         (filter #(empty? (u/get-in % [:mod])))
+                         (map tr/nl-to-en-spec)
+                         (map en/generate)
+                         (map en/morph)
+                         (sort (fn [a b] (> (count a) (count b)))))
+                    first)
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
                  (map dag-to-string))})))
