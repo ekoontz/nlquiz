@@ -184,26 +184,28 @@
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get (str root-path "parse/nl")
                                      {:query-params {"q" guess-string}}))]
-          (log/debug (str "parse response: " response))
+          (log/info (str "parse response: " response))
           (log/debug (str "semantics of guess: " semantics-of-guess))
           (reset! semantics-of-guess
                   (->> (-> response :body :sem)
                        (map cljs.reader/read-string)
                        (map dag_unify.serialization/deserialize)))
           (reset! translation-of-guess nil)
-          (if (evaluate-guess @semantics-of-guess
-                              @possible-correct-semantics)
+          (cond 
+            (evaluate-guess @semantics-of-guess
+                            @possible-correct-semantics)
             ;; got it right!
             (do (reset! translation-of-guess "")
                 (if-correct-fn guess-string))
 
-            ;; got it wrong: show english translation of whatever
-            ;; the person said, if it could be parsed as Dutch and
-            ;; translated to English:
-            (if (not (= "_" (-> response :body :english)))
-              (reset! translation-of-guess
-                      (-> response :body :english))))))))
+            ;; got it wrong, but the guess could be parsed as Dutch and translated to English:
+            (-> response :body :english)
+            (reset! translation-of-guess
+                    (-> response :body :english))
 
+            true
+            (reset! translation-of-guess "??"))))))
+            
 (def topic-name (r/atom ""))
 (def curriculum-atom (r/atom nil))
 (def specs-atom (r/atom

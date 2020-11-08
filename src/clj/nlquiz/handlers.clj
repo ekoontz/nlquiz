@@ -2,6 +2,7 @@
   (:require
    [clojure.tools.logging :as log]
    [menard.english :as en]
+   [menard.generate :as g]
    [menard.nederlands :as nl]
    [menard.translate :as tr]
    [dag_unify.core :as u]))
@@ -117,8 +118,16 @@
                       (filter #(= nil (u/get-in % [:mod] nil))))
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
-       :english (-> (->> parses (filter #(empty? (u/get-in % [:mod]))))
-                    first tr/nl-to-en-spec en/generate en/morph)
+       :english (-> (->> parses
+                         (filter #(empty? (u/get-in % [:mod])))
+                         (sort (fn [a b] (> (count (en/morph a)) (count (en/morph b))))))
+                    first tr/nl-to-en-spec
+
+                    ((fn [spec]
+                       (binding [g/include-blank? true]
+                         (en/generate spec))))
+
+                    en/morph)
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
                  (map dag-to-string))})))

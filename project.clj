@@ -24,7 +24,7 @@
                  [cljs-http "0.1.46"]
                  [org.clojure/tools.logging "1.1.0"]
                  [dag_unify "1.9.8"]
-                 [menard "1.3.4"]
+                 [menard "1.3.5-SNAPSHOT"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-devel "1.7.1"]
