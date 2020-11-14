@@ -28,7 +28,8 @@
 (def show-praise-text (r/atom nil))
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
-(def translation-of-guess (r/atom nil))
+(def translation-of-guess (r/atom ""))
+(def not-answered-yet? (atom true))
 
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
@@ -53,6 +54,7 @@
                 (->> (-> response :body :source-sem)
                      (map cljs.reader/read-string)
                      (map dag_unify.serialization/deserialize)))
+        (reset! not-answered-yet? true)
         (.focus (.getElementById js/document "input-guess")))))
 
 (defn show-possible-answer []
@@ -89,8 +91,13 @@
   (.focus (.getElementById js/document "input-guess"))
   (.click (.getElementById js/document "input-guess")))
 
+
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
+
+(def placeholder "wat is dit in Nederlands?")
+(def initial-guess-input-size (+ 1 (count placeholder)))
+(def guess-input-size (r/atom initial-guess-input-size))
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -103,29 +110,38 @@
        @question-html]
       [:div
        [:input {:type "text"
-                :placeholder "wat is dit in Nederlands?"
+                :placeholder placeholder
                 :id "input-guess"
                 :autoComplete "off"
-                :size 50
+                :size @guess-input-size
                 :value @guess-text
                 :disabled @input-state
                 :on-change (fn [input-element]
-                             (submit-guess guess-text
-                                           (-> input-element .-target .-value)
-                                           parse-html
-                                           semantics-of-guess
-                                           possible-correct-semantics
-                                           
-                                           ;; function called if the user guessed correctly:
-                                           (fn [correct-answer]
-                                             (reset! got-it-right? true)
-                                             (reset! get-question-fn-atom get-question-fn)
-                                             (reset! show-answer correct-answer)
-                                             (if (.-requestSubmit (.getElementById js/document "quiz"))
-                                               (.requestSubmit (.getElementById js/document "quiz"))
-                                               (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
-                                             (reset! input-state "disabled")
-                                             (reset! show-answer correct-answer))))}]]]
+                             (when @not-answered-yet?
+                               (reset! input-state "disabled")
+                               (reset! not-answered-yet? false)                               
+                               (log/debug (str "current guess size: " (-> input-element .-target .-value count)))
+                               (reset! guess-input-size (max initial-guess-input-size (+ 1 (-> input-element .-target .-value count))))
+                               (submit-guess guess-text
+                                             (-> input-element .-target .-value)
+                                             parse-html
+                                             semantics-of-guess
+                                             possible-correct-semantics
+                                             
+                                             ;; function called if the user guessed correctly:
+                                             (fn [correct-answer]
+                                               (reset! guess-text "")
+                                               (reset! not-answered-yet? false)
+                                               (reset! got-it-right? true)
+                                               (reset! get-question-fn-atom get-question-fn)
+                                               (reset! show-answer correct-answer)
+                                               (reset! translation-of-guess nil)
+                                               (if (.-requestSubmit (.getElementById js/document "quiz"))
+                                                 (.requestSubmit (.getElementById js/document "quiz"))
+                                                 (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
+                                               (reset! show-answer correct-answer)))
+                               (reset! not-answered-yet? true)
+                               (reset! input-state "")))}]]] ;; div.guess
 
      [:div.english @translation-of-guess]
 
@@ -176,33 +192,34 @@
     (not (empty? result))))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
-  (log/debug (str "submitting guess: " guess-text))
-  (reset! input-state "disabled")
   (reset! guess-text the-input-element)
-  (reset! input-state "")
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (go (let [response (<! (http/get (str root-path "parse/nl")
                                      {:query-params {"q" guess-string}}))]
-          (log/debug (str "parse response: " response))
-          (log/debug (str "semantics of guess: " semantics-of-guess))
-          (reset! semantics-of-guess
-                  (->> (-> response :body :sem)
-                       (map cljs.reader/read-string)
-                       (map dag_unify.serialization/deserialize)))
-          (reset! translation-of-guess nil)
-          (if (evaluate-guess @semantics-of-guess
-                              @possible-correct-semantics)
-            ;; got it right!
-            (do (reset! translation-of-guess "")
-                (if-correct-fn guess-string))
+          ;; Show english translation of whatever
+          ;; the person said, if it could be parsed as Dutch and
+          ;; translated to English:
+          (log/debug (str "response body: " (-> response :body)))
+          (if (not (= "_" (-> response :body :english)))
+            (reset! translation-of-guess
+                    (-> response :body :english)))
 
-            ;; got it wrong: show english translation of whatever
-            ;; the person said, if it could be parsed as Dutch and
-            ;; translated to English:
-            (if (not (= "_" (-> response :body :english)))
-              (reset! translation-of-guess
-                      (-> response :body :english))))))))
+          ;; @not-answered-yet? *was* true when we fired off the request, but might not be true anymore,
+          ;; if the user correctly answered this question, and another guess is being submitted
+          ;; because they're still typing after that, so prevent re-evaluation in that case.
+          (when @not-answered-yet?
+            (log/debug (str "parse response: " response))
+            (log/debug (str "semantics of guess: " semantics-of-guess))
+            (reset! semantics-of-guess
+                    (->> (-> response :body :sem)
+                         (map cljs.reader/read-string)
+                         (map dag_unify.serialization/deserialize)))
+            (if (evaluate-guess @semantics-of-guess
+                                @possible-correct-semantics)
+              ;; got it right!
+              (if-correct-fn guess-string)
+              (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))
 
 (def topic-name (r/atom ""))
 (def curriculum-atom (r/atom nil))
