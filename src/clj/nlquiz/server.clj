@@ -31,7 +31,7 @@
              :period (* 5 60 1000)) ;; reload every 5 minutes.
   (log/warn (str "MODEL_URL was not defined in the environment: will not be able to "
                  "refresh language models. In the future, please set "
-                 "your environment's MODEL_URL to 'file:///Users/ekoontz/menard/src/', "
+                 "your environment's MODEL_URL to 'file:///Users/ekoontz/menard/resources/', "
                  "unless you are seeing this warning when you running 'lein uberjar', in which "
                  "case, you can safely ignore this warning since it's not relevant.")))
                  
