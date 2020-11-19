@@ -77,14 +77,15 @@
   (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
     (do
+      (new-question @get-question-fn-atom)
       (show-praise)
       (swap! answer-count inc)
       (reset! got-it-right? false)
       (reset! question-table
               (concat
                [{:source @question-html :target @show-answer}]
-               (take 4 @question-table)))
-      (new-question @get-question-fn-atom))
+               (take 4 @question-table))))
+
     ;; else
     (show-possible-answer))
     
