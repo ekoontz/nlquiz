@@ -139,7 +139,8 @@
                                                (reset! translation-of-guess nil)
                                                (if (.-requestSubmit (.getElementById js/document "quiz"))
                                                  (.requestSubmit (.getElementById js/document "quiz"))
-                                                 (.dispatchEvent (.getElementById js/document "quiz") (new js/Event "submit" {:cancelable true})))
+                                                 (.dispatchEvent (.getElementById js/document "quiz")
+                                                                 (new js/Event "submit" {:cancelable true})))
                                                (reset! show-answer correct-answer)))
                                (reset! not-answered-yet? true)
                                (reset! input-state "")))}]]] ;; div.guess
