@@ -1,3 +1,4 @@
+unset MODEL_URL && \
 lein uberjar && \
     scp target/nlquiz.jar hiro-tan.org:nlquiz/target/nlquiz-blue-tmp.jar && \
     ssh hiro-tan.org "sudo systemctl stop nlquiz-blue" && \
