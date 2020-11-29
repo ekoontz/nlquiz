@@ -114,7 +114,9 @@
                       (filter #(or (= [] (u/get-in % [:subcat]))
                                    (= :top (u/get-in % [:subcat]))
                                    (= ::none (u/get-in % [:subcat] ::none))))
-                      (filter #(= nil (u/get-in % [:mod] nil))))
+                      (filter #(= nil (u/get-in % [:mod] nil)))
+                      (sort (fn [a b] (> (count (str a)) (count (str b)))))
+                      (take 1))
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
        :english (-> (->> parses
