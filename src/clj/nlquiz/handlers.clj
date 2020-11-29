@@ -110,7 +110,9 @@
         (get
          (-> _request :query-params) "q")]
     (log/debug (str "parsing input: " string-to-parse))
-    (let [parses (->> string-to-parse clojure.string/lower-case nl/parse
+    (let [parses (->> string-to-parse
+                      clojure.string/lower-case
+                      nl/parse
                       (filter #(or (= [] (u/get-in % [:subcat]))
                                    (= :top (u/get-in % [:subcat]))
                                    (= ::none (u/get-in % [:subcat] ::none))))
