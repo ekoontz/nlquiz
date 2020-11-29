@@ -118,7 +118,6 @@
           syntax-trees (->> parses (map nl/syntax-tree))]
       {:trees syntax-trees
        :english (-> (->> parses
-                         (filter #(empty? (u/get-in % [:mod])))
                          (map tr/nl-to-en-spec)
                          (map en/generate)
                          (map en/morph)
