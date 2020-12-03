@@ -220,6 +220,8 @@
                                 @possible-correct-semantics)
               ;; got it right!
               (if-correct-fn guess-string)
+
+              ;; got it wrong:
               (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))
 
 (def topic-name (r/atom ""))
