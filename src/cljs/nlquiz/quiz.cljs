@@ -209,13 +209,23 @@
           ;; @not-answered-yet? *was* true when we fired off the request, but might not be true anymore,
           ;; if the user correctly answered this question, and another guess is being submitted
           ;; because they're still typing after that, so prevent re-evaluation in that case.
-          (when @not-answered-yet?
+          (when (not (= guess-string @guess-text))
+            (log/info (str "guess-string *was*        : " guess-string))
+            (log/info (str " but guess-string *is now*: " @guess-text)))
+          (when (and @not-answered-yet?
+                     (= guess-string @guess-text))
             (log/debug (str "parse response: " response))
             (log/debug (str "semantics of guess: " semantics-of-guess))
             (reset! semantics-of-guess
                     (->> (-> response :body :sem)
                          (map cljs.reader/read-string)
                          (map dag_unify.serialization/deserialize)))
+            (if (-> response :body :english)
+              (reset! translation-of-guess
+                      (-> response :body :english))
+              (reset! translation-of-guess
+                      ""))
+            
             (if (evaluate-guess @semantics-of-guess
                                 @possible-correct-semantics)
               ;; got it right!
