@@ -95,7 +95,8 @@
 
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
-;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess, and only called if guess is correct)
+;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess,
+;;                and only called if guess is correct)
 
 (def placeholder "wat is dit in Nederlands?")
 (def initial-guess-input-size (+ 1 (count placeholder)))
