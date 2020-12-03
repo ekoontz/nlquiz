@@ -70,7 +70,8 @@
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
 (def got-it-right? (atom false))
-(def get-question-fn-atom (atom (fn [] (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
+(def get-question-fn-atom (atom (fn []
+                                  (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
 
 (defn on-submit [e]
   (.preventDefault e)
