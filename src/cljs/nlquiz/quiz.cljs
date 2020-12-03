@@ -205,9 +205,6 @@
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
           (log/debug (str "response body: " (-> response :body)))
-          (if (not (= "_" (-> response :body :english)))
-            (reset! translation-of-guess
-                    (-> response :body :english)))
 
           ;; @not-answered-yet? *was* true when we fired off the request, but might not be true anymore,
           ;; if the user correctly answered this question, and another guess is being submitted
