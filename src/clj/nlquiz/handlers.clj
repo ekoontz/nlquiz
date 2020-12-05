@@ -26,7 +26,9 @@
                                (filter #(not (empty? %)))
                                first)
         source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
-    (log/info (str "given input input spec: " spec ", generated: '" (-> source-expression en/morph) "'"
+    (log/info (str "given input input spec: "
+                   (-> spec (dissoc :cat) (dissoc :sem))
+                   ", generated: '" (-> source-expression en/morph) "'"
                    " -> '"  (-> target-expression nl/morph) "'"))
     (let [result
           {:source (-> source-expression en/morph)
@@ -105,6 +107,16 @@
       (log/debug (str "generate-by-spec-with-alts: alts decoded: " alts))
       (generate-with-alternations spec alts))))
 
+(defn generate-english [spec nl]
+  (let [result (->> (repeatedly #(-> spec
+                                     en/generate))
+                    (take 2)
+                    (filter #(not (nil? %)))
+                    first)]
+    (when (nil? result)
+      (log/warn (str "failed to generate on two occasions with nl: '" nl "'")))
+    result))
+
 (defn parse-nl [_request]
   (let [string-to-parse
         (get
@@ -117,16 +129,18 @@
                                    (= :top (u/get-in % [:subcat]))
                                    (= ::none (u/get-in % [:subcat] ::none))))
                       (filter #(= nil (u/get-in % [:mod] nil)))
-                      (sort (fn [a b] (> (count (str a)) (count (str b)))))
-                      (take 1))
-          syntax-trees (->> parses (map nl/syntax-tree))]
-      {:trees syntax-trees
-       :english (-> (->> parses
-                         (map tr/nl-to-en-spec)
-                         (map en/generate)
-                         (map en/morph)
-                         (sort (fn [a b] (> (count a) (count b)))))
-                    first)
+                      (sort (fn [a b] (> (count (str a)) (count (str b))))))
+          syntax-trees (->> parses (map nl/syntax-tree))
+          english (-> (->> parses
+                           (map tr/nl-to-en-spec)
+                           (map #(generate-english %
+                                                   (clojure.string/join "," (map nl/syntax-tree parses))))
+                           (map #(en/morph %))))]
+      (log/info (str "nl: '" string-to-parse "' -> ["
+                     (clojure.string/join "," english) "]"))
+      {:nederlands string-to-parse
+       :trees syntax-trees
+       :english (first english)
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
                  (map dag-to-string))})))
