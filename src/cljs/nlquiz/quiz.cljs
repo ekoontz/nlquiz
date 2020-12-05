@@ -186,7 +186,7 @@
                                    (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
                                                        (u/subsumes? correct-semantics guess))]
                                      (if (not correct?)
-                                       (log/info (str "semantics of guess: '" @guess-text "' are NOT correct: "
+                                       (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
                                                       "fail-path: "
                                                       (d/fail-path correct-semantics guess) "; "
                                                       "subsumes? " (u/subsumes? correct-semantics guess)))
@@ -204,14 +204,14 @@
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
-          (log/debug (str "response body: " (-> response :body)))
-
+ 
           ;; @not-answered-yet? *was* true when we fired off the request, but might not be true anymore,
           ;; if the user correctly answered this question, and another guess is being submitted
           ;; because they're still typing after that, so prevent re-evaluation in that case.
           (when (not (= guess-string @guess-text))
-            (log/info (str "guess-string *was*        : " guess-string))
-            (log/info (str " but guess-string *is now*: " @guess-text)))
+            (log/debug (str "guess-text changed: it's now: '" @guess-text "', so "
+                           "we won't bother updating with responding to older "
+                           "user guess: '" guess-string "'.")))
           (when (and @not-answered-yet?
                      (= guess-string @guess-text))
             (log/debug (str "parse response: " response))
@@ -220,6 +220,8 @@
                     (->> (-> response :body :sem)
                          (map cljs.reader/read-string)
                          (map dag_unify.serialization/deserialize)))
+            (log/info (str "translating: '" guess-string "' as: '"
+                           (-> response :body :english) "'."))
             (if (-> response :body :english)
               (reset! translation-of-guess
                       (-> response :body :english))
