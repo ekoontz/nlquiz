@@ -42,11 +42,11 @@
 
 (def parse-http-lambda "https://lambda.hiro-tan.org/parse")
 (def parse-http-local "/parse/nl")
-(def parse-http parse-http-lambda)
+(def parse-http parse-http-local)
 
 (def generate-http-lambda "https://lambda.hiro-tan.org/generate")
 (def generate-http-local "/generate")
-(def generate-http generate-http-lambda)
+(def generate-http generate-http-local)
 
 (defn new-question [specification-fn]
   (go (let [response (<! (specification-fn))]
