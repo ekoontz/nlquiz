@@ -11,8 +11,13 @@
 
 (def this-many-examples 5)
 
-(def generate-http "https://lambda.hiro-tan.org/generate")
-(def generate-with-alts-http "https://lambda.hiro-tan.org/generate-with-alts")
+(def generate-http-lambda "https://lambda.hiro-tan.org/generate")
+(def generate-http-local "/generate")
+(def generate-http generate-http-lambda)
+
+(def generate-with-alts-http-lambda "https://lambda.hiro-tan.org/generate-with-alts")
+(def generate-with-alts-http-local "https://lambda.hiro-tan.org/generate-with-alts")
+(def generate-with-alts-http generate-with-alts-http-lambda)
 
 (defn new-pair [spec]
   (let [input (r/atom nil)

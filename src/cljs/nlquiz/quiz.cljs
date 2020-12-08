@@ -40,8 +40,13 @@
               "precies!😁"
               "prima!!😎 "])
 
-(def parse-http "https://lambda.hiro-tan.org/parse")
-(def generate-http "https://lambda.hiro-tan.org/generate")
+(def parse-http-lambda "https://lambda.hiro-tan.org/parse")
+(def parse-http-local "/parse")
+(def parse-http parse-http-lambda)
+
+(def generate-http-lambda "https://lambda.hiro-tan.org/generate")
+(def generate-http-local "/generate")
+(def generate-http generate-http-lambda)
 
 (defn new-question [specification-fn]
   (go (let [response (<! (specification-fn))]
