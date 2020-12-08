@@ -11,12 +11,13 @@
 
 (def this-many-examples 5)
 
-(def generate-http "https://lambda.hiro-tan.org/")
+(def generate-http "https://lambda.hiro-tan.org/generate")
+(def generate-with-alts-http "https://lambda.hiro-tan.org/generate-with-alts")
 
 (defn new-pair [spec]
   (let [input (r/atom nil)
         serialized-spec (-> spec dag_unify.serialization/serialize str)
-        get-pair-fn (fn [] (http/get (str generate-http "generate")
+        get-pair-fn (fn [] (http/get generate-http
                                      {:query-params {"q" serialized-spec
                                                      ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
                                                      "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))
@@ -34,7 +35,7 @@
         serialized-alternates (->> alternates
                                    (map dag_unify.serialization/serialize)
                                    str)
-        get-pair-fn (fn [] (http/get (str root-path "generate-with-alts")
+        get-pair-fn (fn [] (http/get generate-with-alts-http
                                      {:query-params {"spec" serialized-spec
                                                      "alts" serialized-alternates
                                                      ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
