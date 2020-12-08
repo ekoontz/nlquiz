@@ -40,6 +40,9 @@
               "precies!😁"
               "prima!!😎 "])
 
+(def parse-http "https://lambda.hiro-tan.org/parse")
+(def generate-http "https://lambda.hiro-tan.org/generate")
+
 (defn new-question [specification-fn]
   (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
@@ -199,7 +202,7 @@
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
-    (go (let [response (<! (http/get (str root-path "parse/nl")
+    (go (let [response (<! (http/get parse-http
                                      {:query-params {"q" guess-string}}))]
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
@@ -324,7 +327,7 @@
           spec (-> specs shuffle first)
           serialized-spec (-> spec dag_unify.serialization/serialize str)]
       (log/debug (str "generating with spec: " spec))
-      (http/get (str root-path "generate") {:query-params {"q" serialized-spec}}))))
+      (http/get generate-http {:query-params {"q" serialized-spec}}))))
 
 (defn quiz-component []
   (get-curriculum)

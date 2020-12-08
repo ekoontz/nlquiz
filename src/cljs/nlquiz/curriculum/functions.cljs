@@ -11,10 +11,12 @@
 
 (def this-many-examples 5)
 
+(def generate-http "https://lambda.hiro-tan.org/")
+
 (defn new-pair [spec]
   (let [input (r/atom nil)
         serialized-spec (-> spec dag_unify.serialization/serialize str)
-        get-pair-fn (fn [] (http/get (str root-path "generate")
+        get-pair-fn (fn [] (http/get (str generate-http "generate")
                                      {:query-params {"q" serialized-spec
                                                      ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
                                                      "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))
