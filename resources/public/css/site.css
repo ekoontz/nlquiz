@@ -146,6 +146,7 @@ div.question-and-guess button {
 }
 
 div.question {
+    min-height:1.2em;
     float:left;
 }
 

@@ -118,7 +118,7 @@
     [:form#quiz {:on-submit on-submit}
      [:div.guess
       [:div.question
-       @question-html]
+       (or @question-html spinner)]
       [:div
        [:input {:type "text"
                 :placeholder placeholder
