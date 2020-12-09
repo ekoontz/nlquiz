@@ -60,7 +60,9 @@
    [:css {:source "resources/public/css/debug.css"
           :target "resources/public/css/debug.min.css"}]
    [:css {:source "resources/public/css/expression.css"
-          :target "resources/public/css/expression.min.css"}]]
+          :target "resources/public/css/expression.min.css"}]
+   [:css {:source "resources/public/css/fa.css"
+          :target "resources/public/css/fa.min.css"}]]
 
   :cljsbuild
   ;; see the Makefile: 'make build'
