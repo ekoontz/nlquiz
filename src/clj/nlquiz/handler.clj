@@ -45,7 +45,7 @@
    (include-css (str root-path (if (env :dev) "css/site.css" "css/site.min.css")))
    (include-css (str root-path (if (env :dev) "css/debug.css" "css/debug.min.css")))
    (include-css (str root-path (if (env :dev) "css/expression.css" "css/expression.min.css")))
-   (include-css (str root-path (if (env :dev) "css/fa.css" "css/fa.min.css")))])
+   (include-css (str root-path (if (env :dev) "css/fa.css" "css/fa.css")))])
 
 (defn loading-page []
   (html5
