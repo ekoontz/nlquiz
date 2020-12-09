@@ -2,7 +2,7 @@
   (:require [cljs-http.client :as http]
             [cljslog.core :as log]
             [cljs.core.async :refer [<!]]
-            [nlquiz.constants :refer [root-path]]
+            [nlquiz.constants :refer [root-path spinner]]
             [nlquiz.speak :as speak]
             [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -81,8 +81,8 @@
                    [:tr {:key (str "row-" i) :class (if (= 0 (mod i 2)) "even" "odd")}
                     [:th.index (+ i 1)]
                     [:th.speak [:button {:on-click #(speak/nederlands (:target expression))} "🔊"]]
-                    [:td.target (:target expression)]
-                    [:td.source (:source expression)]]))
+                    [:td.target (or (:target expression) spinner)]
+                    [:td.source (or (:source expression) spinner)]]))
                (range 0 (count @expressions))))]]])))
 
 (defn show-alternate-examples [spec alternates]

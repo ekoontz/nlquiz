@@ -5,7 +5,7 @@
    [cljs.core.async :refer [<!]]
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
-   [nlquiz.constants :refer [root-path]]
+   [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
@@ -207,6 +207,7 @@
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
+    (reset! translation-of-guess spinner)
     (go (let [response (<! (http/get parse-http
                                      {:query-params {"q" guess-string}}))]
           ;; Show english translation of whatever
