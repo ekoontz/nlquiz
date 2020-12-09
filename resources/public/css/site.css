@@ -356,6 +356,8 @@ div.english {
     width:100%;
     font-style:italic;
     color:#bbb;
+    min-height:1.2em;
+    border:0px dashed black;
 }
 
 
