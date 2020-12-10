@@ -16,7 +16,7 @@
 (def generate-http generate-http-lambda)
 
 (def generate-with-alts-http-lambda "https://lambda.hiro-tan.org/generate-with-alts")
-(def generate-with-alts-http-local "https://lambda.hiro-tan.org/generate-with-alts")
+(def generate-with-alts-http-local "/generate-with-alts")
 (def generate-with-alts-http generate-with-alts-http-lambda)
 
 (defn new-pair [spec]
