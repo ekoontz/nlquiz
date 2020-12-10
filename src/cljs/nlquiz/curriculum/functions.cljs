@@ -102,7 +102,7 @@
                    [:tr {:key (str "row-" i) :class (if (= 0 (mod i 2)) "even" "odd")}
                     [:th.index (+ i 1)]
                     [:th.speak [:button {:on-click #(speak/nederlands (:target expression))} "🔊"]]
-                    [:td.target (:target expression) spinner]
-                    [:td.source (:source expression) spinner]]))
+                    [:td.target (or (:target expression) spinner)]
+                    [:td.source (or (:source expression) spinner)]]))
                (range 0 (count @expressions))))]]])))
 
