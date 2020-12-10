@@ -13,11 +13,11 @@
 
 (def generate-http-lambda "https://lambda.hiro-tan.org/generate")
 (def generate-http-local "/generate")
-(def generate-http generate-http-lambda)
+(def generate-http generate-http-local)
 
 (def generate-with-alts-http-lambda "https://lambda.hiro-tan.org/generate-with-alts")
 (def generate-with-alts-http-local "https://lambda.hiro-tan.org/generate-with-alts")
-(def generate-with-alts-http generate-with-alts-http-lambda)
+(def generate-with-alts-http generate-with-alts-http-local)
 
 (defn new-pair [spec]
   (let [input (r/atom nil)
@@ -102,7 +102,7 @@
                    [:tr {:key (str "row-" i) :class (if (= 0 (mod i 2)) "even" "odd")}
                     [:th.index (+ i 1)]
                     [:th.speak [:button {:on-click #(speak/nederlands (:target expression))} "🔊"]]
-                    [:td.target (:target expression)]
-                    [:td.source (:source expression)]]))
+                    [:td.target (:target expression) spinner]
+                    [:td.source (:source expression) spinner]]))
                (range 0 (count @expressions))))]]])))
 
