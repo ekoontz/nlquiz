@@ -1,21 +1,12 @@
-;; top-level, mostly-generic http handler configuration;
-;; See nlquiz.handlers for more domain-specific http handlers.
+;; http handler configuration.
 (ns nlquiz.handler
   (:require
    [clojure.tools.logging :as log]
    [reitit.ring :as reitit-ring]
-   [nlquiz.handlers :refer [generate-by-expression-index
-                            generate-by-spec
-                            generate-by-spec-with-alts
-                            parse-en parse-nl]]
    [nlquiz.middleware :refer [middleware]]
    [config.core :refer [env]]
    [clojure.data.json :as json :refer [write-str]]
-   [dag_unify.core :as u]
-   [hiccup.page :refer [include-js include-css html5]]
-   [menard.model :as model]
-   [menard.english :as en]
-   [menard.nederlands :as nl]))
+   [hiccup.page :refer [include-js include-css html5]]))
 
 (def optimized? true)
 
@@ -62,15 +53,6 @@
    :headers {"Content-Type" "text/html"}
    :body (loading-page)})
 
-(defn json-response
-  "Call a handler on a request, which returns a clojure data structure.
-   Then call clojure.data.json/write-str to turn that structure into JSON
-   so the client's browser can parse it."
-  [_request handler]
-  {:status 200
-   :headers {"Content-Type" "application/json"}
-   :body (-> _request handler write-str)})
-
 ;; see: src/cljs/nlquiz/core.cljs for the subset of
 ;; these routes below that are handled by html-response:
 ;; i.e. "/","/quiz", and "/about":
@@ -87,11 +69,6 @@
      ["/nlquiz/curriculum/:major"            {:get {:handler html-response}}]
      ["/nlquiz/curriculum/:major/:minor"     {:get {:handler html-response}}]
      ["/nlquiz/test"                         {:get {:handler html-response}}]
-     ;; routes which return a json response:
-     ["/nlquiz/parse/nl"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
-     ["/nlquiz/parse/en"                     {:get {:handler (fn [request] (json-response request parse-en))}}]
-     ["/nlquiz/generate"                     {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
-     ["/nlquiz/generate-with-alts"           {:get {:handler (fn [request] (json-response request generate-by-spec-with-alts))}}]
 
      ;; unfortunately we have to add every one of the routes above AGAIN (so that the app works at a non-empty path within an existing domain):
      ["/about"                               {:get {:handler html-response}}]
@@ -99,11 +76,6 @@
      ["/curriculum/:major"                   {:get {:handler html-response}}]
      ["/curriculum/:major/:minor"            {:get {:handler html-response}}]
      ["/test"                                {:get {:handler html-response}}]
-     ;; routes which return a json response:
-     ["/parse/nl"                            {:get {:handler (fn [request] (json-response request parse-nl))}}]
-     ["/parse/en"                            {:get {:handler (fn [request] (json-response request parse-en))}}]
-     ["/generate"                            {:get {:handler (fn [request] (json-response request generate-by-spec))}}]
-     ["/generate-with-alts"                  {:get {:handler (fn [request] (json-response request generate-by-spec-with-alts))}}]
      ])
 
    (reitit-ring/routes
