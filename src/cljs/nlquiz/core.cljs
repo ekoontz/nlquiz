@@ -21,6 +21,24 @@
   [a b]
   (= (subs b 0 (count a)) a))
 
+;; -------------------------
+;; Routes
+
+(def router
+  (reitit/router
+   [["/nlquiz"                          :index]
+    ["/nlquiz/test"                     :test]
+    ["/nlquiz/about"                    :about]
+    ["/nlquiz/curriculum"
+     ["" {:name :curriculum}]
+     ["/:major" {:name :curriculum-major}]]
+    ["/nlquiz/curriculum/:major/:minor" :curriculum-minor]]))
+
+(defn path-for [route & [params]]
+  (if params
+    (:path (reitit/match-by-name router route params))
+    (:path (reitit/match-by-name router route))))
+
 (defn current-page []
   (fn []
     (let [page (:current-page (session/get :route))
@@ -52,24 +70,6 @@
          [:a {:href "https://clojure.org"}
           "clojure"] "/" [:a {:href "https://clojurescript.org"}
           "script"]]]])))
-
-;; -------------------------
-;; Routes
-
-(def router
-  (reitit/router
-   [["/nlquiz"                          :index]
-    ["/nlquiz/test"                     :test]
-    ["/nlquiz/about"                    :about]
-    ["/nlquiz/curriculum"               
-     ["" {:name :curriculum}]
-     ["/:major" {:name :curriculum-major}]]
-    ["/nlquiz/curriculum/:major/:minor" :curriculum-minor]]))
-
-(defn path-for [route & [params]]
-  (if params
-    (:path (reitit/match-by-name router route params))
-    (:path (reitit/match-by-name router route))))
 
 ;; -------------------------
 ;; Translate routes -> page components

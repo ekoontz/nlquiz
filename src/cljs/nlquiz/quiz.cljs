@@ -13,10 +13,10 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource]]))
 
+;; group 1
 (def answer-count (atom 0))
 (def expression-index (atom 0))
 (def guess-text (r/atom nil))
-(def ik-weet-niet-button-state (r/atom initial-button-state))
 (def initial-state-is-enabled? true)
 (def initial-button-state (if initial-state-is-enabled? "" "disabled"))
 (def input-state (r/atom "disabled"))
@@ -30,6 +30,9 @@
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
 (def not-answered-yet? (atom true))
+
+;; group 2
+(def ik-weet-niet-button-state (r/atom initial-button-state))
 
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
@@ -69,7 +72,7 @@
 (defn show-possible-answer []
   (reset! show-answer-display "block")
   (reset! guess-text "")
-  (.focus (.getElementById js/document "input-guess"))  
+  (.focus (.getElementById js/document "input-guess"))
   (js/setTimeout #(reset! show-answer-display "none") 3000)
   false)
 
@@ -99,10 +102,29 @@
 
     ;; else
     (show-possible-answer))
-    
   (.focus (.getElementById js/document "input-guess"))
   (.click (.getElementById js/document "input-guess")))
 
+(defn evaluate-guess [guesses-semantics-set correct-semantics-set]
+  (let [result
+        (->> guesses-semantics-set
+             (mapcat (fn [guess]
+                       (->> correct-semantics-set
+                            (map (fn [correct-semantics]
+                                   ;; the guess is correct if and only if there is a semantic interpretation _guess_ of the guess where both of these are true:
+                                   ;; - unifying _guess_ with some member _correct-semantics_ of the set of correct semantics is not :fail.
+                                   ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
+                                   (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
+                                                       (u/subsumes? correct-semantics guess))]
+                                     (if (not correct?)
+                                       (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
+                                                      "fail-path: "
+                                                      (d/fail-path correct-semantics guess) "; "
+                                                      "subsumes? " (u/subsumes? correct-semantics guess)))
+                                       (log/info (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
+                                     correct?))))))
+             (remove #(= false %)))]
+    (not (empty? result))))
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess,
@@ -111,6 +133,47 @@
 (def placeholder "wat is dit in Nederlands?")
 (def initial-guess-input-size (+ 1 (count placeholder)))
 (def guess-input-size (r/atom initial-guess-input-size))
+
+(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
+  (reset! guess-text the-input-element)
+  (let [guess-string @guess-text]
+    (log/debug (str "submitting your guess: " guess-string))
+    (reset! translation-of-guess spinner)
+    (go (let [response (<! (http/get parse-http
+                                     {:query-params {"q" guess-string}}))]
+          ;; Show english translation of whatever
+          ;; the person said, if it could be parsed as Dutch and
+          ;; translated to English:
+          ;; @not-answered-yet? *was* true when we fired off the request, but might not be true anymore,
+          ;; if the user correctly answered this question, and another guess is being submitted
+          ;; because they're still typing after that, so prevent re-evaluation in that case.
+          (when (not (= guess-string @guess-text))
+            (log/debug (str "guess-text changed: it's now: '" @guess-text "', so "
+                           "we won't bother updating with responding to older "
+                           "user guess: '" guess-string "'.")))
+          (when (and @not-answered-yet?
+                     (= guess-string @guess-text))
+            (log/debug (str "parse response: " response))
+            (log/debug (str "semantics of guess: " semantics-of-guess))
+            (reset! semantics-of-guess
+                    (->> (-> response :body :sem)
+                         (map cljs.reader/read-string)
+                         (map dag_unify.serialization/deserialize)))
+            (log/info (str "translating: '" guess-string "' as: '"
+                           (-> response :body :english) "'."))
+            (if (-> response :body :english)
+              (reset! translation-of-guess
+                      (-> response :body :english))
+              (reset! translation-of-guess
+                      ""))
+            (if (evaluate-guess @semantics-of-guess
+                                @possible-correct-semantics)
+              ;; got it right!
+              (if-correct-fn guess-string)
+
+              ;; got it wrong:
+              (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))
+
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -140,7 +203,6 @@
                                              parse-html
                                              semantics-of-guess
                                              possible-correct-semantics
-                                             
                                              ;; function called if the user guessed correctly:
                                              (fn [correct-answer]
                                                (reset! guess-text "")
@@ -176,7 +238,7 @@
                     [:th.speak [:button {:on-click #(speak/nederlands (-> @question-table (nth i) :target))} "🔊"]]
                     [:td.target (-> @question-table (nth i) :target)]
                     [:td.source (-> @question-table (nth i) :source)]
-                    ]))))]]]  
+                    ]))))]]]
    ] ;; div.main
   )
 
@@ -184,74 +246,11 @@
   (new-question get-question-fn)
   #(quiz-layout get-question-fn chooser))
 
-(defn evaluate-guess [guesses-semantics-set correct-semantics-set]
-  (let [result
-        (->> guesses-semantics-set
-             (mapcat (fn [guess]
-                       (->> correct-semantics-set
-                            (map (fn [correct-semantics]
-                                   ;; the guess is correct if and only if there is a semantic interpretation _guess_ of the guess where both of these are true:
-                                   ;; - unifying _guess_ with some member _correct-semantics_ of the set of correct semantics is not :fail.
-                                   ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
-                                   (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
-                                                       (u/subsumes? correct-semantics guess))]
-                                     (if (not correct?)
-                                       (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
-                                                      "fail-path: "
-                                                      (d/fail-path correct-semantics guess) "; "
-                                                      "subsumes? " (u/subsumes? correct-semantics guess)))
-                                       (log/info (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
-                                     correct?))))))
-             (remove #(= false %)))]
-    (not (empty? result))))
-
-(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
-  (reset! guess-text the-input-element)
-  (let [guess-string @guess-text]
-    (log/debug (str "submitting your guess: " guess-string))
-    (reset! translation-of-guess spinner)
-    (go (let [response (<! (http/get parse-http
-                                     {:query-params {"q" guess-string}}))]
-          ;; Show english translation of whatever
-          ;; the person said, if it could be parsed as Dutch and
-          ;; translated to English:
- 
-          ;; @not-answered-yet? *was* true when we fired off the request, but might not be true anymore,
-          ;; if the user correctly answered this question, and another guess is being submitted
-          ;; because they're still typing after that, so prevent re-evaluation in that case.
-          (when (not (= guess-string @guess-text))
-            (log/debug (str "guess-text changed: it's now: '" @guess-text "', so "
-                           "we won't bother updating with responding to older "
-                           "user guess: '" guess-string "'.")))
-          (when (and @not-answered-yet?
-                     (= guess-string @guess-text))
-            (log/debug (str "parse response: " response))
-            (log/debug (str "semantics of guess: " semantics-of-guess))
-            (reset! semantics-of-guess
-                    (->> (-> response :body :sem)
-                         (map cljs.reader/read-string)
-                         (map dag_unify.serialization/deserialize)))
-            (log/info (str "translating: '" guess-string "' as: '"
-                           (-> response :body :english) "'."))
-            (if (-> response :body :english)
-              (reset! translation-of-guess
-                      (-> response :body :english))
-              (reset! translation-of-guess
-                      ""))
-            
-            (if (evaluate-guess @semantics-of-guess
-                                @possible-correct-semantics)
-              ;; got it right!
-              (if-correct-fn guess-string)
-
-              ;; got it wrong:
-              (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))
-
 (def topic-name (r/atom ""))
 (def curriculum-atom (r/atom nil))
 (def specs-atom (r/atom
                  (-> "public/edn/specs.edn"
-                     inline-resource 
+                     inline-resource
                      cljs.reader/read-string)))
 
 (defn get-curriculum []
@@ -260,7 +259,7 @@
           (reset! curriculum-atom (-> response :body))))))
 
 (defn get-name-or-children [node]
-  (cond (and (:child node) (:name node)) 
+  (cond (and (:child node) (:name node))
         (cons node (map get-name-or-children (:child node)))
         (:child node)
         (map get-name-or-children (:child node))
