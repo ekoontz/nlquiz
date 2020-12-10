@@ -49,6 +49,7 @@
 (def generate-http generate-http-lambda)
 
 (defn new-question [specification-fn]
+  (reset! question-html spinner)
   (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
         (log/debug (str "one possible correct answer to this question is: '"
