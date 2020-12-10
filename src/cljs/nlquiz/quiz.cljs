@@ -86,14 +86,15 @@
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
-    (do
+    (let [correct-answer @show-answer
+          question @question-html]
       (new-question @get-question-fn-atom)
       (show-praise)
       (swap! answer-count inc)
       (reset! got-it-right? false)
       (reset! question-table
               (concat
-               [{:source @question-html :target @show-answer}]
+               [{:source question :target correct-answer}]
                (take 4 @question-table))))
 
     ;; else
