@@ -8,13 +8,12 @@
 
 #answer {
     position: fixed;
+    font-size:200%;
     left:30%;
     top: 0%;
     font-weight:bold;
-    font-size:large;
     background:aliceblue;
     color:deeppink;
-    font-size:200%;    
     border-radius: 5px;
     border:2px solid lightblue;
     padding:0.5em;
@@ -26,7 +25,6 @@
     left: 30%;
     top: 0%;
     font-weight:bold;
-    font-size:200%;
     background:orange;
     color:white;
     border-radius: 5px;
@@ -40,9 +38,7 @@
   margin: 0 auto;
   padding-top: 0.5em;
   -webkit-font-smoothing: antialiased;
-  font-size: 1.125em;
   color: #333;
-  line-height: 1.5em;
 }
 
 button {
@@ -53,15 +49,12 @@ h1, h2, h3 {
   color: #000;
 }
 h1 {
-  font-size: 2.5em
 }
 
 h2 {
-  font-size: 2em
 }
 
 h3 {
-  font-size: 1.5em
 }
 
 a {
@@ -83,21 +76,10 @@ header {
     line-height:1em;
 }
 
-footer {
-    display:none;
-    scroll:overflow;
-    position:absolute;
-    float:right;
-    left:3em;
-    font-size:small;
-    bottom:0;
-}
-
 input.weetniet {
     padding:0.5em;
     margin:0.5em;
     border-radius: 5px;
-    font-size:80%;
 }
 
 table {
@@ -139,12 +121,6 @@ div.question-and-guess {
     margin-left:2%;
 }
 
-
-
-div.question-and-guess button {
-    float:left;
-}
-
 div.question {
     min-height:1.2em;
     float:left;
@@ -154,6 +130,10 @@ div.guess {
     float:left;
 }
 
+footer {
+    display:none;
+}
+
 footer > p {
     white-space:nowrap;
 }
@@ -161,7 +141,6 @@ footer > p {
 #test {
     float: left;
     border: 0px dashed green;
-    font-size:small;
     width:90%;
 }
 
@@ -229,8 +208,6 @@ div.curriculum > div {
 
 div.curriculum h1 {
     background:#eee;
-    font-size:100%;
-
 }
 
 div.curr-major {
@@ -246,7 +223,6 @@ div.dontknow {
 button.weetniet {
     padding:0.5em;
     margin:0.5em;
-    font-size:80%;
     border-radius: 5px;
     border:1px solid #ccc;
     box-shadow: -1px 1px 1px 0px rgba(209,209,209,1);
@@ -259,7 +235,6 @@ div.h4 {
 }
 
 div.curr-major h4 {
-    font-size:150%;
     writing-mode: vertical-lr;
     text-orientation: inherit;
     width:auto;
@@ -352,15 +327,17 @@ div.guide li {
 }
 
 div.english {
-    font-size:smaller;
     float:left;
     width:100%;
     font-style:italic;
-    color:#bbb;
-    min-height:1.2em;
+    color:#999;
     border:0px dashed black;
+    min-height:1.3em;
 }
 
+body {
+    font-size: 24px;
+}
 
 /* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
 /* ----------- iPhone 6, 6S, 7 and 8 ----------- */
@@ -371,14 +348,12 @@ div.english {
   and (-webkit-min-device-pixel-ratio: 2) { 
     div.curriculum {
 	display:block;
-	font-size:small;
 	width:23%;
 	max-height:28%;
 	left:65%;
     }
 
     div#answer {
-	font-size:200%;
 	left:5%;
 	top:12%;
     }
@@ -405,15 +380,28 @@ div.english {
     button.weetniet {
 	padding:0.25em;
 	margin:0.5em;
-	font-size:80%;
 	border-radius: 10px;
 	border:1px solid black;
 	box-shadow: -0px 0px 0px 0px rgba(209,209,209,1);
     }
-
-    #answer {
+    input[type=submit] {
+	font-size:115%;
+    }
+    button.weetniet {
+	font-size:115%;
+    }
+    input[type=text] {
 	font-size:150%;
     }
-    
-    
+    div.question {
+	font-size:125%;
+	float:left;
+    }
+    div.question {
+	margin-bottom:1em;
+    }
+    div.english {
+	font-size:125%;
+	margin-top:0.5em;
+    }
 }
