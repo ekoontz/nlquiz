@@ -219,6 +219,7 @@ div.curr-major {
 }
 
 div.dontknow {
+    float:left;
     margin:0;
 }
 
