@@ -261,7 +261,6 @@ div.answertable {
     float:right;
     overflow:scroll;
     padding:0;
-    padding-top:1em;
     padding-right:1em;
     position:relative;
 }
