@@ -121,6 +121,7 @@ div.question-and-guess {
     padding:0.25em;
     box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
     margin-left:2%;
+    width:48%;
 }
 
 div.question {
