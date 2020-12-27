@@ -43,11 +43,11 @@
               "precies!😁"
               "prima!!😎 "])
 
-(def parse-http-lambda "https://lambda.hiro-tan.org/parse")
+(def parse-http-lambda "https://lambdan.hiro-tan.org/parse")
 (def parse-http-local "/parse/nl")
 (def parse-http parse-http-lambda)
 
-(def generate-http-lambda "https://lambda.hiro-tan.org/generate")
+(def generate-http-lambda "https://lambdan.hiro-tan.org/generate")
 (def generate-http-local "/generate")
 (def generate-http generate-http-lambda)
 
