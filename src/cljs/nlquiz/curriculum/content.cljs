@@ -8,7 +8,9 @@
   {"adjectives"
    (fn []
      [:div
-      [:p "Adjectives modify nouns. Adverbs, in turn, modify adjectives. Here are some examples of an adjective modified by an adverb:"]
+      [:p "Adjectives modify nouns. Adverbs, in turn, modify
+      adjectives. Here are some examples of an adjective modified by
+      an adverb:"]
       [show-examples
        [{:cat :adjective
          :mod nil
