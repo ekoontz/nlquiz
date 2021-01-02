@@ -341,20 +341,34 @@
     (fn []
       [:div.curr-major
        (quiz-layout (get-expression major minor))
-       (cond (and major minor curriculum (get curriculum major)
-                  (-> curriculum (get major) (get minor)))
-             [:div.guide
-              [:div.h4
-               [:h4 (get-title-for major minor)]]
-              [:div.content [(-> curriculum (get major) (get minor))]]]
+       (cond (and
+              major
+              minor
+              curriculum
+              (get curriculum major)
+              (-> curriculum (get major) (get minor)))
+             (do
+               (log/debug (str "content variant 1"))
+               [:div.guide
+                [:div.h4
+                 [:h4 (get-title-for major minor)]]
+                [:div.content [(-> curriculum (get major) (get minor))]]])
 
              (and major curriculum (fn? (get curriculum major)))
-             [:div.guide
-              [:div.h4
-               [:h4 (get-title-for major)]]
-              [:div.content [(-> curriculum (get major))]]]
+             (do
+               (log/debug (str "content variant 2"))
+               [:div.guide
+                [:div.h4
+                 [:h4 (get-title-for major)]]
+                [:div.content [(-> curriculum (get major))]]])
 
              (and major curriculum (fn? (-> curriculum (get major) :general)))
-             [:div.guide
-              [(-> curriculum (get major) :general)]]
-             true "")])))
+             (do
+               (log/debug (str "content variant 3"))
+               [:div.guide
+                [(-> curriculum (get major) :general)]])
+
+             true
+             (do
+               (log/warn (str "no content found."))
+               ""))])))
