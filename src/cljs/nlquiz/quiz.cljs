@@ -44,11 +44,11 @@
               "prima!!😎 "])
 
 (def parse-http-lambda "https://lambda.hiro-tan.org/parse")
-(def parse-http-local "/parse/nl")
+(def parse-http-local "http://localhost:3000/parse")
 (def parse-http parse-http-lambda)
 
 (def generate-http-lambda "https://lambda.hiro-tan.org/generate")
-(def generate-http-local "/generate")
+(def generate-http-local "http://localhost:3000/generate")
 (def generate-http generate-http-lambda)
 
 (defn new-question [specification-fn]
