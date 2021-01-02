@@ -23,8 +23,8 @@
    {"subject-pronouns-and-present-tense"
     (fn []
       [:div
-       [:p "The simplest verb construction is a subject and a
-      verb. This lesson also is used for learning subject pronouns."]
+       [:p "The simplest verb construction in Dutch is a subject followed by a
+      verb. This lesson also is used for learning subject pronouns (ik, je, etc)."]
       [show-examples
        [{:cat :verb,
          :phrasal true,
