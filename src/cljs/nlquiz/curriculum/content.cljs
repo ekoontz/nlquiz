@@ -18,18 +18,6 @@
          :phrasal true
          :head {:phrasal false}
          :comp {:phrasal false}}]]])
-
-   "verbs"
-   {"subject-pronouns-and-present-tense"
-    (fn []
-      [:div "The simplest verb construction is a subject and a
-      verb. This lesson also is used for learning subject pronouns."]
-      [show-examples
-       [{:cat :verb,
-         :phrasal true,
-         :subcat [],
-         :comp {:pronoun true}}]])}
-
    "nouns"
    {:general
     (fn []
