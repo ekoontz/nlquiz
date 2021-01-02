@@ -5,19 +5,15 @@
             [nlquiz.constants :refer [root-path spinner]]
             [nlquiz.speak :as speak]
             [reagent.core :as r])
-  (:require-macros [cljs.core.async.macros :refer [go]]))
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [nlquiz.handler :refer [language-server-endpoint-url]]))
 
 ;; functions used by curriculum.cljs
 
 (def this-many-examples 5)
 
-(def generate-http-lambda "https://lambda.hiro-tan.org/generate")
-(def generate-http-local "http://localhost:3000/generate")
-(def generate-http generate-http-lambda)
-
-(def generate-with-alts-http-lambda "https://lambda.hiro-tan.org/generate-with-alts")
-(def generate-with-alts-http-local "http://localhost:3000/generate-with-alts")
-(def generate-with-alts-http generate-with-alts-http-lambda)
+(def generate-http (str (language-server-endpoint-url) "/generate"))
+(def generate-with-alts-http (str (language-server-endpoint-url) "/generate-with-alts"))
 
 (defn new-pair [spec]
   (let [input (r/atom nil)

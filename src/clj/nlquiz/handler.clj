@@ -19,7 +19,9 @@
 ;; but it doesn't work right yet: it thinks the environment doesn't have the value
 ;; defined, even though it is.
 (defmacro root-path-from-env []
-  (or (System/getenv "ROOT_PATH") "/nlquiz/"))
+  (or (System/getenv "ROOT_PATH") "/nlquiz"))
+(defmacro language-server-endpoint-url []
+  (or (System/getenv "ENDPOINT_URL") "https://lambda.hiro-tan.org"))
 
 (def mount-target
   [:div#app

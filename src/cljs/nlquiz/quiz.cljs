@@ -11,7 +11,7 @@
    [reagent.core :as r]
    [reagent.session :as session])
   (:require-macros [cljs.core.async.macros :refer [go]]
-                   [nlquiz.handler :refer [root-path-from-env inline-resource]]))
+                   [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
 ;; group 1
 (def answer-count (atom 0))
@@ -43,13 +43,8 @@
               "precies!😁"
               "prima!!😎 "])
 
-(def parse-http-lambda "https://lambda.hiro-tan.org/parse")
-(def parse-http-local "http://localhost:3000/parse")
-(def parse-http parse-http-lambda)
-
-(def generate-http-lambda "https://lambda.hiro-tan.org/generate")
-(def generate-http-local "http://localhost:3000/generate")
-(def generate-http generate-http-lambda)
+(def parse-http (str (language-server-endpoint-url) "/parse"))
+(def generate-http (str (language-server-endpoint-url) "/generate"))
 
 (defn new-question [specification-fn]
   (reset! question-html spinner)

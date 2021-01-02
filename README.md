@@ -4,10 +4,17 @@ Learn Dutch by translating simple expressions.
 
 ## Development mode
 
+In another terminal:
+
+```
+cd nlquiz-local && lein ring server-headless
+```
+
+
 (Re)start the Figwheel compiler by navigating to the project folder and run the following command in the terminal:
 
 ```
-lein clean && ROOT_PATH=/nlquiz lein figwheel
+lein clean && ENDPOINT_URL=http://localhost:3000 lein figwheel
 ```
 
 Figwheel will automatically push cljs changes to the browser. The server will be available at [http://localhost:3449](http://localhost:3449) once Figwheel starts up. 
