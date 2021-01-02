@@ -112,6 +112,12 @@
                                                 :sem {:number? true}}
                                          :comp {:phrasal false}}}
                            :head {:head {:phrasal false}
-                                  :comp {:phrasal false}}}}}]
+                                  :comp {:phrasal false}}}}}
 
-
+ {:major-tags ["verbs"]
+  :minor-tags ["subject-pronouns-and-present-tense" "present"]
+  :example "ik slaap",
+  :cat :verb,
+  :phrasal true,
+  :subcat [],
+  :comp {:pronoun true}}]
