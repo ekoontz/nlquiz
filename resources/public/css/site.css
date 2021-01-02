@@ -242,6 +242,7 @@ div.curr-major h4 {
     writing-mode: vertical-lr;
     text-orientation: inherit;
     width:auto;
+    white-space:nowrap;
 }
 
 div.curr-major h4.normal {
