@@ -2,6 +2,7 @@
   (:require
    [clojure.tools.logging :as log]
    [dag_unify.core :as u]
+   [dag_unify.diagnostics :use [strip-refs]]
    [clojure.data.json :as json :refer [write-str]]
    [nlquiz-local.middleware :refer [middleware]]
    [menard.english :as en]
@@ -150,8 +151,13 @@
                            (map #(generate-english %
                                                    (clojure.string/join "," (map nl/syntax-tree parses))))
                            (map #(en/morph %))))]
-      (log/info (str "nl: '" string-to-parse "' -> ["
+      (log/info (str "parse/nl: '" string-to-parse "' -> ["
                      (clojure.string/join "," english) "]"))
+      (log/info (str "parse/nl: '" string-to-parse "' semantics: ["
+                     (clojure.string/join "," (->> parses
+                                                   (map #(u/get-in % [:sem]))
+                                                   (map strip-refs)))
+                     "]"))
       {:nederlands string-to-parse
        :trees syntax-trees
        :english (first english)

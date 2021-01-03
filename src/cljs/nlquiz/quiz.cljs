@@ -111,6 +111,9 @@
                                    ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
                                    (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
                                                        (u/subsumes? correct-semantics guess))]
+                                     (log/info (str "correct semantics: " correct-semantics))
+                                     (log/info (str "guess semantics:   " guess))
+                                     (log/info (str "correctness:       " correct?))
                                      (if (not correct?)
                                        (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
                                                       "fail-path: "
