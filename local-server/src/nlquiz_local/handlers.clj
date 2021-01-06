@@ -47,20 +47,31 @@
   "generate a Dutch expression from _spec_ and translate to English, and return this pair
    along with the semantics of the English specification also."
   [spec]
-  (let [debug (log/info (str "generating a question with spec: " spec))
-        ;; 1. generate a target expression
-        target-expression (-> spec nl/generate)
-        ;; 2. try twice to generate a source expression: fails occasionally for unknown reasons:
-        source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
-                               (take 2)
-                               (filter #(not (empty? %)))
+  (log/info (str "generating a question with spec: " spec))
+  (let [;; 1. generate a target expression:
+        target-expression (->> (repeatedly #(-> spec nl/generate))
+                               (take 5)
+                               (remove empty?)
+                               (take 1)
                                first)
+        ;; 2: generate a source expression (the translation of the target expression):
+        source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
+                               (take 5)
+                               (remove empty?)
+                               (take 1)
+                               first)
+
         ;; 3. get the semantics of the source expression
         source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
-    (log/info (str "given input input spec: "
-                   (-> spec (dissoc :cat) (dissoc :sem))
-                   ", generated: '" (-> source-expression en/morph) "'"
-                   " -> '"  (-> target-expression nl/morph) "'"))
+    (cond (empty? target-expression)
+          (log/info (str "no target expression for spec: " spec))
+          (empty? source-expression) 
+          (log/info (str "untranslateable: " (-> target-expression nl/morph)))
+          :else
+          (log/info (str "given input input spec: "
+                         (-> spec (dissoc :cat) (dissoc :sem))
+                         ", generated: '" (-> source-expression en/morph) "'"
+                         " -> '"  (-> target-expression nl/morph) "'")))
     (let [result
           {:source (-> source-expression en/morph)
            :source-tree source-expression
@@ -68,11 +79,6 @@
            :target-root (-> target-expression (u/get-in [:head :root] :top))
            :source-sem (map dag-to-string source-semantics)
            :target (-> target-expression nl/morph)}]
-      (when (empty? source-expression)
-        (log/error (str "failed to generate a source expression for spec: " spec "; target expression: "
-                       (nl/syntax-tree target-expression)))
-        (log/error (str " tried to generate from: "
-                        (dag_unify.serialization/serialize (-> target-expression tr/nl-to-en-spec)))))
       result)))
 
 (def ^:const clean-up-trees true)
