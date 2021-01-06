@@ -76,9 +76,9 @@
       [:div
        [:p "There are three demonstrative articles:"]
        [:ul
-        [:li [:i "dat"] "- used for 'that' with " [:b "neuter"] " nouns"]
-        [:li [:i "deze"] "- used for 'this' with " [:b "common"] " nouns, and for 'these' with all nouns"]
-        [:li [:i "die"] "- used for 'that' with " [:b "common"] " nouns, and for 'those' with all nouns"]]
+        [:li [:i "dat"] " - used for 'that' with " [:b "neuter"] " nouns"]
+        [:li [:i "deze"] " - used for 'this' with " [:b "common"] " nouns, and for 'these' with all nouns"]
+        [:li [:i "die"] " - used for 'that' with " [:b "common"] " nouns, and for 'those' with all nouns"]]
        [show-examples
         [{:cat :noun
           :subcat []
