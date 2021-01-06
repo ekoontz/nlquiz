@@ -15,11 +15,15 @@
   [spec]
   (let [debug (log/info (str "generating a question with spec: " spec))
         ;; 1. generate a target expression
-        target-expression (-> spec nl/generate)
+        target-expression (->> (repeatedly #(-> spec nl/generate))
+                               (take 2)
+                               (remove empty?)
+                               first)
+                                           
         ;; 2. try twice to generate a source expression: fails occasionally for unknown reasons:
         source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
                                (take 2)
-                               (filter #(not (empty? %)))
+                               (remove empty?)
                                first)
         ;; 3. get the semantics of the source expression
         source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]

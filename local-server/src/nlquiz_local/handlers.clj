@@ -52,13 +52,11 @@
         target-expression (->> (repeatedly #(-> spec nl/generate))
                                (take 2)
                                (remove empty?)
-                               (take 1)
                                first)
         ;; 2: generate a source expression (the translation of the target expression):
         source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
                                (take 2)
                                (remove empty?)
-                               (take 1)
                                first)
 
         ;; 3. get the semantics of the source expression
