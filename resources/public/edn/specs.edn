@@ -49,8 +49,8 @@
 
  {:note "article+noun"
   :major-tags ["nouns"]
-  :minor-tags ["demonstrative"]
-  :example "die kat"
+  :minor-tags ["demonstratives"]
+  :example "deze kat"
   :cat :noun
   :subcat []
   :phrasal true
