@@ -46,6 +46,32 @@
          :subcat {:1 {:cat :det}}}
   :comp {:phrasal false
          :sem {:pred :some}}}
+
+ {:note "article+noun"
+  :major-tags ["nouns"]
+  :minor-tags ["demonstrative"]
+  :example "die kat"
+  :cat :noun
+  :subcat []
+  :phrasal true
+  :agr {:number :sing}
+  :head {:phrasal false
+         :subcat {:1 {:cat :det}}}
+  :comp {:phrasal false
+         :sem {:pred :this}}}
+
+ {:note "article+noun"
+  :major-tags ["nouns"]
+  :minor-tags ["demonstratives"]
+  :example "die kat"
+  :cat :noun
+  :subcat []
+  :phrasal true
+  :agr {:number :sing}
+  :head {:phrasal false
+         :subcat {:1 {:cat :det}}}
+  :comp {:phrasal false
+         :sem {:pred :that}}}
  
  {:major-tags ["nouns"]
   :minor-tags ["poss"]

@@ -10,6 +10,8 @@
            :href "nouns/poss"}
           {:name "Indefinite articles and adjectives"
            :href "nouns/indef-adj"}
+          {:name "Demonstratives"
+           :href "nouns/demonstratives"}
           {:name "Numbers"
            :href "nouns/numbers"}]}
  {:name "Verbs"
