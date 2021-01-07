@@ -85,7 +85,7 @@
           :subcat []
           :phrasal true
           :comp {:phrasal false
-                 :sem {:pred :that}}}
+                 :sem {:pred :this}}}
          {:cat :noun
           :subcat []
           :phrasal true
