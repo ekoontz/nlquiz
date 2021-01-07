@@ -63,8 +63,9 @@
            (concat expressions
                    (new-pair-alternate-set spec alternates)))))
 
-(defn show-examples [specs]
-  (let [expressions (r/atom [])]
+(defn show-examples [specs & [supply-this-many-examples]]
+  (let [expressions (r/atom [])
+        this-many-examples (or supply-this-many-examples this-many-examples)]
     (doall (take this-many-examples
                  (repeatedly #(add-one expressions (first (shuffle specs))))))
     (fn []
