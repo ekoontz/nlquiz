@@ -85,7 +85,7 @@
   "decode a spec from the input request and generate with it."
   [request]
   (let [spec (-> request :query-params (get "q"))]
-    (log/info (str "spec pre-decode: " spec))
+    (log/debug (str "spec pre-decode: " spec))
     (let [spec (-> spec read-string dag_unify.serialization/deserialize)]
       (log/info (str "generate-by-spec with spec: " spec))
       (-> spec
