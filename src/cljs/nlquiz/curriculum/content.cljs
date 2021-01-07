@@ -90,7 +90,8 @@
           :subcat []
           :phrasal true
           :comp {:phrasal false
-                 :sem {:pred :that}}}]]])
+                 :sem {:pred :that}}}]
+        10]])
     
     "poss" 
     (fn []
