@@ -50,7 +50,7 @@
   (log/info (str "generating a question with spec: " spec))
   (let [;; 1. generate a target expression:
         target-expression (->> (repeatedly #(-> spec nl/generate))
-                               (take 2)
+                               (take 4)
                                (remove empty?)
                                first)
         ;; 2: generate a source expression (the translation of the target expression):

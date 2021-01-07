@@ -16,7 +16,7 @@
   (let [debug (log/info (str "generating a question with spec: " spec))
         ;; 1. generate a target expression
         target-expression (->> (repeatedly #(-> spec nl/generate))
-                               (take 2)
+                               (take 4)
                                (remove empty?)
                                first)
                                            
