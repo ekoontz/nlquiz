@@ -54,7 +54,6 @@
   :cat :noun
   :subcat []
   :phrasal true
-  :agr {:number :sing}
   :head {:phrasal false
          :subcat {:1 {:cat :det}}}
   :comp {:phrasal false
@@ -67,7 +66,6 @@
   :cat :noun
   :subcat []
   :phrasal true
-  :agr {:number :sing}
   :head {:phrasal false
          :subcat {:1 {:cat :det}}}
   :comp {:phrasal false
