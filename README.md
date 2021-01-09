@@ -54,3 +54,22 @@ lein do clean, uberjar
 ```
 
 See [src/sh](src/sh) for build scripts.
+
+## Add new curriculum items
+
+Modify the following:
+
+### `resources/public/edn/specs.edn`
+
+Add some new specs with new major and minor tags.
+
+### `src/cljs/nlquiz/curriculum/content.cljs`
+
+Add a new `"the-new-section" (fn [] [:div "Hello world"])` section under `majorsection`
+
+### `resources/public/edn/curriculum.edn`
+
+Add a new `{:name "A nice human friendly name" :href "majorsection/the-new-section"}`.
+
+
+
