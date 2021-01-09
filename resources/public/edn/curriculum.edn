@@ -16,4 +16,7 @@
            :href "nouns/numbers"}]}
  {:name "Verbs"
   :child [{:name "Pronouns and Present Tense"
-           :href "verbs/subject-pronouns-and-present-tense"}]}]
+           :href "verbs/subject-pronouns-and-present-tense"}
+          {:name "Simple Past"
+           :href "verbs/past-simple"}]}]
+

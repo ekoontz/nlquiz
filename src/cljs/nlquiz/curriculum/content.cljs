@@ -20,7 +20,8 @@
          :comp {:phrasal false}}]]])
 
    "verbs"
-   {"subject-pronouns-and-present-tense"
+   {
+    "subject-pronouns-and-present-tense"
     (fn []
       [:div
        [:p "The simplest verb construction in Dutch is a subject followed by a
@@ -29,8 +30,22 @@
        [{:cat :verb,
          :phrasal true,
          :subcat [],
-         :comp {:pronoun true}}]]])}
+         :comp {:pronoun true}}]]])
 
+    "past-simple"
+    (fn []
+      [:div
+       [:p "Past simple"]
+       [show-examples
+        [{:phrasal true
+          :cat :verb
+          :infl :past-simple
+          :sem {:obj :unspec}}
+         ]]])
+
+    }
+
+    
    "nouns"
    {:general
     (fn []

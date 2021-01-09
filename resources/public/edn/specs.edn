@@ -144,4 +144,14 @@
   :cat :verb,
   :phrasal true,
   :subcat [],
-  :comp {:pronoun true}}]
+  :comp {:pronoun true}}
+
+ {:major-tags ["verbs"]
+  :minor-tags ["past-simple"]
+  :note "past-simple"
+  :phrasal true
+  :cat :verb
+  :infl :past-simple
+  :sem {:obj :unspec}}
+ 
+ ]
