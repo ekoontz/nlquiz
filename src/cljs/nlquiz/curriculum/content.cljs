@@ -40,7 +40,9 @@
         [{:phrasal true
           :cat :verb
           :infl :past-simple
-          :sem {:obj :unspec}}
+          :sem {:obj :unspec}
+          :head {:modal false}
+          :comp {:pronoun true}}
          ]]])
 
     }
