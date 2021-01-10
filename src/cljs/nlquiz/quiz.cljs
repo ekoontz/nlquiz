@@ -113,6 +113,8 @@
                                                        (u/subsumes? correct-semantics guess))]
                                      (log/info (str "correct semantics: " correct-semantics))
                                      (log/info (str "guess semantics:   " guess))
+                                     (log/info (str "unifies?           " (u/unify correct-semantics guess)))
+                                     (log/info (str "subsumes?          " (u/subsumes? correct-semantics guess)))
                                      (log/info (str "correctness:       " correct?))
                                      (if (not correct?)
                                        (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
