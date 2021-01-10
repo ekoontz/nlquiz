@@ -47,7 +47,8 @@
           :cat :verb
           :subcat []
           :infl :past-simple
-          :sem {:obj :unspec}
+          :sem {:obj :unspec
+                :subj {:pred :you}}
           :head {:modal false
                  :irregular-past-simple? false}
           :comp {:pronoun true
