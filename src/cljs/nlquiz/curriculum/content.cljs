@@ -35,7 +35,14 @@
     "past-simple"
     (fn []
       [:div
-       [:p "Past simple"]
+       [:p "The past simple in Dutch is created by taking the verb stem (the verb minus the " [:i "en"] " suffix), and adding:"]
+       [:ul
+        [:li "-te for the singular, or"]
+        [:li "-ten for the plural."]
+        ]
+       [:p "As with English, there are many irregular exceptions in
+       the past simple that must be learned by rote."]
+       
        [show-examples
         [{:phrasal true
           :cat :verb
