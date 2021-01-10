@@ -142,6 +142,7 @@
   :minor-tags ["subject-pronouns-and-present-tense" "present"]
   :example "ik slaap",
   :cat :verb,
+  :infl :present
   :phrasal true,
   :subcat [],
   :comp {:pronoun true}}

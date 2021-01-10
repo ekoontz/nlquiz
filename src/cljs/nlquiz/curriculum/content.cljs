@@ -24,13 +24,15 @@
     "subject-pronouns-and-present-tense"
     (fn []
       [:div
-       [:p "The simplest verb construction in Dutch is a subject followed by a
-      verb. This lesson also is used for learning subject pronouns (ik, je, etc)."]
+       [:p "The first verb construction we will look at is a subject followed by a
+      present tense verb."]
       [show-examples
        [{:cat :verb,
-         :phrasal true,
-         :subcat [],
-         :comp {:pronoun true}}]]])
+         :infl :present
+         :phrasal true
+         :subcat []
+         :comp {:pronoun true
+                :interrogative? false}}]]])
 
     "past-simple"
     (fn []
@@ -46,6 +48,7 @@
        [show-examples
         [{:phrasal true
           :cat :verb
+          :subcat []
           :infl :past-simple
           :sem {:obj :unspec}
           :head {:modal false}
