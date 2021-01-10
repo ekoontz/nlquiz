@@ -59,8 +59,13 @@
                                (remove empty?)
                                first)
 
+        target-semantics (-> target-expression (u/get-in [:sem]))
+        
         ;; 3. get the semantics of the source expression
-        source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
+        source-semantics (binding [menard.morphology/show-notes? false]
+                           (->> source-expression en/morph en/parse
+                                (map #(u/get-in % [:sem]))
+                                (remove #(= :fail (u/unify % target-semantics)))))]
     (cond (empty? target-expression)
           (log/info (str "no target expression for spec: " spec))
           (empty? source-expression) 
