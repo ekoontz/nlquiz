@@ -148,13 +148,24 @@
   :comp {:pronoun true}}
 
  {:major-tags ["verbs"]
-  :minor-tags ["past-simple"]
-  :note "past-simple"
+  :minor-tags ["past-simple-regular"]
   :phrasal true
   :cat :verb
   :infl :past-simple
   :sem {:obj :unspec}
-  :head {:modal false}
+  :head {:modal false
+         :irregular-past-simple? false}
+  :comp {:pronoun true
+         :interrogative? false}}
+
+ {:major-tags ["verbs"]
+  :minor-tags ["past-simple-irregular"]
+  :phrasal true
+  :cat :verb
+  :infl :past-simple
+  :sem {:obj :unspec}
+  :head {:modal false
+         :irregular-past-simple? true}
   :comp {:pronoun true
          :interrogative? false}}
  

@@ -34,28 +34,43 @@
          :comp {:pronoun true
                 :interrogative? false}}]]])
 
-    "past-simple"
+    "past-simple-regular"
     (fn []
       [:div
-       [:p "The past simple in Dutch is created by taking the verb stem (the verb minus the " [:i "en"] " suffix), and adding:"]
+       [:p "The regular past simple in Dutch is created by taking the verb stem (the verb minus the " [:i "en"] " suffix), and adding:"]
        [:ul
         [:li "-te for the singular, or"]
         [:li "-ten for the plural."]
         ]
-       [:p "As with English, there are many irregular exceptions in
-       the past simple that must be learned by rote."]
-       
        [show-examples
         [{:phrasal true
           :cat :verb
           :subcat []
           :infl :past-simple
           :sem {:obj :unspec}
-          :head {:modal false}
+          :head {:modal false
+                 :irregular-past-simple? false}
           :comp {:pronoun true
                  :interrogative? false}}
          ]]])
 
+    "past-simple-irregular"
+    (fn []
+      [:div
+       [:p "As with English, the simple past has many exceptions, which must be "
+        "learned by rote."]
+       [show-examples
+        [{:phrasal true
+          :cat :verb
+          :subcat []
+          :infl :past-simple
+          :sem {:obj :unspec}
+          :head {:modal false
+                 :irregular-past-simple? true}
+          :comp {:pronoun true
+                 :interrogative? false}}
+         ]]])
+    
     }
 
     
