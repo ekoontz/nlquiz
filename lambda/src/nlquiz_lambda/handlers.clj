@@ -19,14 +19,19 @@
                                (take 4)
                                (remove empty?)
                                first)
-                                           
+        target-semantics (-> target-expression (u/get-in [:sem]))
+
+        
         ;; 2. try twice to generate a source expression: fails occasionally for unknown reasons:
         source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
                                (take 2)
                                (remove empty?)
                                first)
         ;; 3. get the semantics of the source expression
-        source-semantics (->> source-expression en/morph en/parse (map #(u/get-in % [:sem])))]
+        source-semantics (binding [menard.morphology/show-notes? false]
+                           (->> source-expression en/morph en/parse
+                                (map #(u/get-in % [:sem]))
+                                (remove #(= :fail (u/unify % target-semantics)))))]
     (log/info (str "given input input spec: "
                    (-> spec (dissoc :cat) (dissoc :sem))
                    ", generated: '" (-> source-expression en/morph) "'"
