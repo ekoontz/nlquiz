@@ -42,7 +42,8 @@
           :infl :past-simple
           :sem {:obj :unspec}
           :head {:modal false}
-          :comp {:pronoun true}}
+          :comp {:pronoun true
+                 :interrogative? false}}
          ]]])
 
     }
