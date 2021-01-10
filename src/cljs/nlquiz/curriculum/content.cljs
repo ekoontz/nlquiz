@@ -24,10 +24,11 @@
     "subject-pronouns-and-present-tense"
     (fn []
       [:div
-       [:p "The first verb construction we will look at is a subject followed by a
+       [:p "The first verb construction we will look at is a pronoun subject with a
       present tense verb."]
       [show-examples
-       [{:cat :verb,
+       [{:head {:curriculum 1}
+         :cat :verb,
          :infl :present
          :phrasal true
          :subcat []
