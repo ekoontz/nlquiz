@@ -21,7 +21,7 @@
                                first)
         target-semantics (-> target-expression (u/get-in [:sem]))
 
-        
+
         ;; 2. try twice to generate a source expression: fails occasionally for unknown reasons:
         source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
                                (take 2)
