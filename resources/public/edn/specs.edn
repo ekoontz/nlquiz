@@ -139,7 +139,7 @@
                                   :comp {:phrasal false}}}}}
 
  {:major-tags ["verbs"]
-  :minor-tags ["subject-pronouns-and-present-tense" "present"]
+  :minor-tags ["subject-pronouns" "present" "subject-pronouns-and-present-tense"]
   :example "ik slaap",
   :head {:curriculum 1}
   :cat :verb,
