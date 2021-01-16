@@ -20,4 +20,7 @@
           {:name "Regular Simple Past"
            :href "verbs/past-simple-regular"}
           {:name "Irregular Simple Past"
-           :href "verbs/past-simple-irregular"}]}]
+           :href "verbs/past-simple-irregular"}
+          {:name "Nodig"
+           :href "verbs/nodig"}]}]
+

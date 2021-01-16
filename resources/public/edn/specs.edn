@@ -169,5 +169,37 @@
          :irregular-past-simple? true}
   :comp {:pronoun true
          :interrogative? false}}
+
+ {:major-tags ["verbs"]
+  :minor-tags ["nodig" "present"]
+  :phrasal true
+  :head {:rule "adverb-nodig"
+         :comp {:rule "vp"
+                :head {:infl :present :phrasal false}}}
+  :subcat []
+  :cat :verb
+  :infl :present
+  :sem {:tense :present
+        :aspect :simple
+        :pred :need
+        :obj {:top :top}}}
+
+ {:major-tags ["verbs"]
+  :minor-tags ["nodig" "present" "subject-pronouns"]
+  :phrasal true
+  :head {:rule "adverb-nodig"
+         :comp {:rule "vp"
+                :head {:infl :present
+                       :phrasal false}}}
+  :comp {:pronoun true}
+  :subcat []
+  :cat :verb
+  :infl :present
+  :sem {:tense :present
+        :aspect :simple
+        :pred :need
+        :obj {:top :top}}}
  
  ]
+
+

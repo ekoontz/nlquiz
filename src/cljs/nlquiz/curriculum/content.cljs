@@ -72,6 +72,40 @@
           :comp {:pronoun true
                  :interrogative? false}}
          ]]])
+
+    "nodig"
+    (fn []
+      [:div "Nodig"
+       [:p "How to say 'I need...'?"]
+
+       [show-examples
+        [
+         {:major-tags ["verbs"]
+          :minor-tags ["nodig" "present"]
+          :phrasal true
+          :head {:rule "adverb-nodig"
+                 :comp {:rule "vp"
+                        :head {:infl :present :phrasal false}}}
+          :subcat []
+          :cat :verb
+          :infl :present
+          :sem {:tense :present
+                :aspect :simple
+                :pred :need
+                :obj {:top :top}}}
+         
+         ]]
+
+
+       
+       
+
+       ]
+
+
+
+      )
+    
     
     }
 
