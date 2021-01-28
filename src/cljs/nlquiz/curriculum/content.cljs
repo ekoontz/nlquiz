@@ -75,40 +75,27 @@
 
     "nodig"
     (fn []
-      [:div "Nodig"
+      [:div 
        [:p "How to say 'I need...'?"]
 
        [show-examples
         [
-         {:major-tags ["verbs"]
-          :minor-tags ["nodig" "present"]
-          :phrasal true
+         {:phrasal true
           :head {:rule "adverb-nodig"
                  :comp {:rule "vp"
-                        :head {:infl :present :phrasal false}}}
+                        :head {:infl :present :phrasal false}
+                        :comp {:pronoun true}}}
+          :comp {:pronoun true}
           :subcat []
           :cat :verb
           :infl :present
           :sem {:tense :present
                 :aspect :simple
-                :pred :need
-                :obj {:top :top}}}
-         
+                :pred :need}}
          ]]
-
-
-       
-       
-
        ]
-
-
-
       )
-    
-    
     }
-
     
    "nouns"
    {:general
