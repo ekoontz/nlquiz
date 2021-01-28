@@ -38,11 +38,11 @@
                    " -> '"  (-> target-expression nl/morph) "'"))
     (let [result
           {:source (-> source-expression en/morph)
+           :target (-> target-expression nl/morph)
            :source-tree source-expression
            :target-tree target-expression
            :target-root (-> target-expression (u/get-in [:head :root] :top))
-           :source-sem (map dag-to-string source-semantics)
-           :target (-> target-expression nl/morph)}]
+           :source-sem (map dag-to-string source-semantics)}]
       (when (empty? source-expression)
         (log/error (str "failed to generate a source expression for spec: " spec "; target expression: "
                        (nl/syntax-tree target-expression)))
