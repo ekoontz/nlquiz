@@ -75,14 +75,12 @@
                          (-> spec (dissoc :cat) (dissoc :sem))
                          ", generated: '" (-> source-expression en/morph) "'"
                          " -> '"  (-> target-expression nl/morph) "'")))
-    (let [result
-          {:source (-> source-expression en/morph)
-           :source-tree source-expression
-           :target-tree target-expression
-           :target-root (-> target-expression (u/get-in [:head :root] :top))
-           :source-sem (map dag-to-string source-semantics)
-           :target (-> target-expression nl/morph)}]
-      result)))
+    {:source (-> source-expression en/morph)
+     :target (-> target-expression nl/morph)
+     :source-tree source-expression
+     :target-tree target-expression
+     :target-root (-> target-expression (u/get-in [:head :root] :top))
+     :source-sem (map dag-to-string source-semantics)}))
 
 (def ^:const clean-up-trees true)
 
