@@ -5,6 +5,7 @@
    [cljs.core.async :refer [<!]]
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
+   [dag_unify.serialization :refer [serialize]]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.speak :as speak]
@@ -101,30 +102,34 @@
   (.click (.getElementById js/document "input-guess")))
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
-  (let [result
-        (->> guesses-semantics-set
-             (mapcat (fn [guess]
-                       (->> correct-semantics-set
-                            (map (fn [correct-semantics]
-                                   ;; the guess is correct if and only if there is a semantic interpretation _guess_ of the guess where both of these are true:
-                                   ;; - unifying _guess_ with some member _correct-semantics_ of the set of correct semantics is not :fail.
-                                   ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
-                                   (let [correct? (and (not (= :fail (u/unify correct-semantics guess)))
-                                                       (u/subsumes? correct-semantics guess))]
-                                     (log/info (str "correct semantics: " correct-semantics))
-                                     (log/info (str "guess semantics:   " guess))
-                                     (log/info (str "unifies?           " (u/unify correct-semantics guess)))
-                                     (log/info (str "subsumes?          " (u/subsumes? correct-semantics guess)))
-                                     (log/info (str "correctness:       " correct?))
-                                     (if (not correct?)
-                                       (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
-                                                      "fail-path: "
-                                                      (d/fail-path correct-semantics guess) "; "
-                                                      "subsumes? " (u/subsumes? correct-semantics guess)))
-                                       (log/info (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
-                                     correct?))))))
-             (remove #(= false %)))]
-    (not (empty? result))))
+  (when (seq guesses-semantics-set)
+    (log/info (str "guess count:  " (count guesses-semantics-set)))
+    (log/info (str "correct count:" (count correct-semantics-set)))
+    (let [result
+          (->> guesses-semantics-set
+               (mapcat (fn [guess]
+                         (log/info (str "evaluating guess: " (serialize guess)))
+                         (->> correct-semantics-set
+                              (map (fn [correct-semantics]
+                                     (log/info (str "correct semantics option: " (serialize correct-semantics)))
+                                     ;; the guess is correct if and only if there is a semantic interpretation _guess_ of the guess where both of these are true:
+                                     ;; - unifying _guess_ with some member _correct-semantics_ of the set of correct semantics is not :fail.
+                                     ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
+                                     (let [fails? (= :fail (u/unify correct-semantics guess))
+                                           subsumes? (u/subsumes? correct-semantics guess)
+                                           correct? (and (not fails?) subsumes?)
+                                           fail-path (if fails? (select-keys (d/fail-path correct-semantics guess) [:path :arg1 :arg2]))]
+                                       (log/info (str "unifies?  " (not fails?)))
+                                       (log/info (str "subsumes? " subsumes?))
+                                       (log/info (str "correct?  " correct?))
+                                       (if (not correct?)
+                                         (log/info (str "semantics of guess: '" @guess-text "' are NOT correct: "
+                                                         (if fail-path (str "fail-path: " fail-path)) "; "
+                                                         "subsumes? " (u/subsumes? correct-semantics guess)))
+                                         (log/info (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
+                                       correct?))))))
+               (remove #(= false %)))]
+      (not (empty? result)))))
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
 ;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess,
@@ -139,8 +144,7 @@
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (reset! translation-of-guess spinner)
-    (go (let [response (<! (http/get parse-http
-                                     {:query-params {"q" guess-string}}))]
+    (go (let [response (<! (http/get parse-http {:query-params {"q" guess-string}}))]
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
@@ -172,7 +176,7 @@
               (if-correct-fn guess-string)
 
               ;; got it wrong:
-              (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))
+              (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
   [:div.main
@@ -328,13 +332,14 @@
   (log/debug (str "get-expression: major: " major))
   (log/debug (str "get-expression: minor: " minor))
   (fn []
-    (let [specs (find-matching-specs major minor)
-          error (if (empty? specs)
-                  (log/error (str "no specs found matching major=" major " and minor=" minor "!!")))
-          spec (-> specs shuffle first)
-          serialized-spec (-> spec dag_unify.serialization/serialize str)]
-      (log/debug (str "generating with spec: " spec))
-      (http/get generate-http {:query-params {"q" serialized-spec}}))))
+    (let [specs (find-matching-specs major minor)]
+      (if (empty? specs)
+        (log/error (str "no specs found matching major=" major " and minor=" minor "!!"))
+        (log/info (str "found: " (count specs) " matching major=" major " and minor=" minor ".")))
+      (let [spec (-> specs shuffle first)
+            serialized-spec (-> spec dag_unify.serialization/serialize str)]
+        (log/info (str "generating with spec: " spec))
+        (http/get generate-http {:query-params {"q" serialized-spec}})))))
 
 (defn quiz-component []
   (get-curriculum)
