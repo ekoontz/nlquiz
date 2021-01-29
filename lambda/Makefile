@@ -4,11 +4,8 @@ STACK_NAME=nlquiz-lambda
 APP_REGION=eu-central-1
 PWD=$$(pwd)
 
-ifeq ($(UNAME_S),Linux)
-	native_image_cmd=native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --enable-url-protocols=http,https --no-server  --initialize-at-build-time
-else
-	native_image_cmd=docker run -v ${PWD}:/project:Z -it fierycod/graalvm-native-image:latest bash -c "cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
-endif
+#native_image_cmd=docker run -v ${PWD}:/project:Z -it fierycod/graalvm-native-image:latest bash -c "cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
+native_image_cmd=docker run -v ${PWD}:/project:Z -it cfd5db885059 bash -c "cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
 
 all: deploy-native
 
