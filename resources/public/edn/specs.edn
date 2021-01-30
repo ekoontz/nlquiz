@@ -109,7 +109,7 @@
 
  {:major-tags ["nouns"]
   :minor-tags ["number"]
-  :example "een oud huis"
+  :example "de oude huizen"
   :sem {:mod []
         :quant :the
         :ref {:number :plur}}
