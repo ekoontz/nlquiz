@@ -125,8 +125,8 @@
     (log/info (str "nl: '" string-to-parse "' -> ["
                    (clojure.string/join "," english) "]"))
     {:nederlands string-to-parse
+     :english (clojure.string/join ", " english)
      :trees syntax-trees
-     :english (first english)
      :sem (->> parses
                (map #(u/get-in % [:sem]))
                (map dag-to-string))}))

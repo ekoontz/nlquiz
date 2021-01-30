@@ -166,8 +166,8 @@
                                                    (map strip-refs)))
                      "]"))
       {:nederlands string-to-parse
+       :english (clojure.string/join ", " english)
        :trees syntax-trees
-       :english (first english)
        :sem (->> parses
                  (map #(u/get-in % [:sem]))
                  (map dag-to-string))})))
