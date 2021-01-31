@@ -121,6 +121,22 @@
   
  {:major-tags ["nouns"]
   :minor-tags ["numbers"]
+  :level :basic
+  :example "de vier vogels"
+  ;; force the np to have a compound number e.g. "vier en twintig":
+  :head {:head {:curriculum :basic}
+         :comp {:rule "conj-outer"}}
+  :cat :noun
+  :subcat []
+  :sem {:quant :the
+        :ref {:number :plur}
+        :mod {:first {:number? true}
+              :rest []}}
+  :phrasal true}
+
+ {:major-tags ["nouns"]
+  :minor-tags ["numbers"]
+  :level :intermediate
   :example "de vier en twintig kleine vogels"
   :cat :noun
   :subcat []
@@ -129,19 +145,12 @@
         :mod {:first {:number? true}
               :rest {:first {:number? false
                              :rest []}}}}
-  :phrasal true
-  :training-wheels {:comp {:cat :det}
-                    :head {:comp {:comp {:phrasal false}
-                                  :head {:head {:phrasal false
-                                                :sem {:number? true}}
-                                         :comp {:phrasal false}}}
-                           :head {:head {:phrasal false}
-                                  :comp {:phrasal false}}}}}
+  :phrasal true}
 
  {:major-tags ["verbs"]
   :minor-tags ["subject-pronouns" "present" "subject-pronouns-and-present-tense"]
   :example "ik slaap",
-  :head {:curriculum 1}
+  :head {:curriculum :basic}
   :cat :verb,
   :infl :present
   :phrasal true,
