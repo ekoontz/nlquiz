@@ -195,6 +195,24 @@
   :sem {:tense :present
         :aspect :simple
         :pred :need}}
+
+
+ {:major-tags ["verbs"]
+  :minor-tags ["reflexive" "present"]
+  :note "Sentence with reflexive object"
+  :example "ik zie me"
+  :generic true
+  :max-depth 3
+  :cat :verb
+  :comp {:pronoun true
+         :phrasal false}
+  :subcat []
+  :phrasal true
+  :reflexive true
+  :sem {:tense :present
+        :aspect :simple
+        :pred :see}}
+
  ]
 
 

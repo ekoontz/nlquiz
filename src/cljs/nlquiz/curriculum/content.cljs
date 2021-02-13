@@ -96,6 +96,36 @@
          ]]
        ]
       )
+
+    "reflexive"
+    (fn []
+
+      [:div
+       [:p "Reflexive verbs"]
+
+       [show-examples
+        [
+
+
+         {:major-tags ["verbs"]
+          :minor-tags ["reflexive" "present"]
+          :note "Sentence with reflexive object"
+          :example "ik zie me"
+          :generic true
+          :max-depth 3
+          :cat :verb
+          :subcat []
+          :phrasal true
+          :reflexive true
+          :comp {:pronoun true
+                 :phrasal false}
+          :sem {:tense :present
+                :aspect :simple
+                :pred :see}}
+         ]]]
+       
+      )
+    
     }
     
    "nouns"
