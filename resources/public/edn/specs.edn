@@ -150,7 +150,8 @@
  {:major-tags ["verbs"]
   :minor-tags ["subject-pronouns" "present" "subject-pronouns-and-present-tense"]
   :example "ik slaap",
-  :head {:curriculum :basic}
+  :head {:curriculum :basic
+         :phrasal false}
   :cat :verb,
   :infl :present
   :phrasal true,
