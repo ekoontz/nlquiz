@@ -76,23 +76,9 @@
   :example "zijn kat"
   :cat :noun
   :subcat []
-  :phrasal true
-  :head {:phrasal false
-         :subcat {:1 {:cat :det}}}
-  :comp {:phrasal false
-         :sem {:pred :he}}}
+  :comp {:cat :det
+         :possessive? true}}
  
- {:major-tags ["nouns"]
-  :minor-tags ["poss"]
-  :example "zijn kat"
-  :cat :noun
-  :subcat []
-  :phrasal true
-  :head {:phrasal false
-         :subcat {:1 {:cat :det}}}
-  :comp {:phrasal false
-         :sem {:pred :she}}}
-
  {:major-tags ["nouns"]
   :minor-tags ["indef-adj"]
   :example "een oud huis"
@@ -105,7 +91,6 @@
   :cat :noun
   :head {:phrasal true}
   :comp {:phrasal false}}
-
 
  {:major-tags ["nouns"]
   :minor-tags ["number"]
