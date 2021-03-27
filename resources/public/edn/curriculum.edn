@@ -1,6 +1,10 @@
 [{:name "Adjectives"
   :child [{:name "Adjectives and Adverbs"
            :href "adjectives"}]}
+ {:name "Pronouns"
+  :child [{:href "pronouns/object"
+           :name "Object pronouns"}]}
+
  {:name "Nouns"
   :child [{:name "Plurals"
            :href "nouns/number"}

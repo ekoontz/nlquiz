@@ -79,6 +79,33 @@
   :comp {:cat :det
          :possessive? true}}
  
+ {:major-tags ["pronouns"]
+  :minor-tags ["object"]
+  :example "Ik zie haar niet"
+  :max-depth 3
+  :reflexive false
+  :cat :verb
+  :subcat []
+  :sem {:pred :see
+        :obj {:obj :none}}
+  :head {:comp {:pronoun true}}
+  :training-wheels {:head {:rule "vp"
+                           :head {:phrasal false}}}}
+ {:major-tags ["pronouns"]
+  :minor-tags ["object"]
+  :example "de katten zie haar niet"
+  :cat :verb,
+  :reflexive false,
+  :subcat [],
+  :agr {:person :3rd},
+  :head {:rule "vp",
+         :comp {:phrasal false, :pronoun true},
+         :head {:phrasal false}},
+  :sem {:pred :see, :obj {:obj :none}},
+  :max-depth 3,
+  :comp {:phrasal true}}
+
+ 
  {:major-tags ["nouns"]
   :minor-tags ["indef-adj"]
   :example "een oud huis"
@@ -90,7 +117,8 @@
   :phrasal true
   :cat :noun
   :head {:phrasal true}
-  :comp {:phrasal false}}
+  :comp {:phrasal false
+         :pronoun true}}
 
  {:major-tags ["nouns"]
   :minor-tags ["number"]

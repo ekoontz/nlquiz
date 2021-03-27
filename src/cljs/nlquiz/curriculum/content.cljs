@@ -104,10 +104,7 @@
        [:p "Reflexive verbs"]
 
        [show-examples
-        [
-
-
-         {:major-tags ["verbs"]
+        [{:major-tags ["verbs"]
           :minor-tags ["reflexive" "present"]
           :note "Sentence with reflexive object"
           :example "ik zie me"
@@ -123,11 +120,48 @@
                 :aspect :simple
                 :pred :see}}
          ]]]
-       
       )
-    
     }
-    
+
+   "pronouns"
+   {"object"
+    (fn []
+      [:div [:p "Object pronouns are kinda tricky!!"]
+       [show-examples
+        [
+
+         {:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
+
+
+         {:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "de katten zie haar niet"
+          :cat :verb,
+          :reflexive false,
+          :subcat [],
+          :agr {:person :3rd},
+          :head {:rule "vp",
+                 :comp {:phrasal false, :pronoun true},
+                 :head {:phrasal false}},
+          :sem {:pred :see, :obj {:obj :none}},
+          :max-depth 3,
+          :comp {:phrasal true}}
+
+         
+         
+         ]]])}
+
    "nouns"
    {:general
     (fn []
