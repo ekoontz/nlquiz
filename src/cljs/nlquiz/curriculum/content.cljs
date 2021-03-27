@@ -215,7 +215,7 @@
                  :sem {:pred :we}
                  :possessive? true}}]]
 
-       [:p "Or otherwise " [:i "onze"]]
+       [:p "Or otherwise " [:i "onze"] ":"]
        [show-examples
         [{:cat :noun
           :subcat []
