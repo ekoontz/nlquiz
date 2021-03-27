@@ -201,23 +201,41 @@
           :head {:phrasal false
                  :subcat {:1 {:cat :det}}}
           :comp {:phrasal false
-                 :sem {:pred :he}}}
-         {:cat :noun
+                 :possessive? true}}]]
+       [:p "The possessive has two forms for 1st person plural: it can either " [:i "ons"] ", if the noun is both singular and of neuter gender (a 'het' word):"]
+       [show-examples
+        [{:cat :noun
           :subcat []
           :phrasal true
           :head {:phrasal false
+                 :agr {:gender :neuter
+                       :number :sing}
                  :subcat {:1 {:cat :det}}}
           :comp {:phrasal false
-                 :sem {:pred :she}}}          
-         {:cat :noun
-          :subcat []
-          :phrasal true
-          :head {:phrasal false
-                 :subcat {:1 {:cat :det}}}
-          :comp {:phrasal false
-                 :sem {:pred :i}}}]]
-       [:p "The article varies by number and gender."]])
+                 :sem {:pred :we}
+                 :possessive? true}}]]
 
+       [:p "Or otherwise " [:i "onze"]]
+       [show-examples
+        [{:cat :noun
+          :subcat []
+          :phrasal true
+          :head {:phrasal false
+                 :agr {:gender :common
+                       :number :sing}
+                 :subcat {:1 {:cat :det}}}
+          :comp {:phrasal false
+                 :sem {:pred :we}                 
+                 :possessive? true}}
+         {:cat :noun
+          :subcat []
+          :phrasal true
+          :head {:phrasal false
+                 :agr {:number :plur}
+                 :subcat {:1 {:cat :det}}}
+          :comp {:phrasal false
+                 :sem {:pred :we}                 
+                 :possessive? true}}]]])
     "indef-adj"
     (fn []
       [:div
