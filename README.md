@@ -4,13 +4,13 @@ Learn Dutch by translating simple expressions.
 
 ## Development mode
 
-In another terminal:
+In one terminal:
 
 ```
-cd nlquiz-local && lein ring server-headless
+cd ~/nlquiz/local-server && (cd ~/menard && lein install) && lein clean && lein ring server-headless
 ```
 
-(Re)start the Figwheel compiler by navigating to the project folder and run the following command in the terminal:
+In another terminal, (re)start the Figwheel compiler by navigating to the project folder and run the following command in the terminal:
 
 ```
 lein clean && LANGUAGE_ENDPOINT_URL=http://localhost:3000 ROOT_PATH=http://localhost:3449/ lein figwheel
@@ -28,7 +28,7 @@ websockets. In this case it's recommended to run a standalone instance of a web 
 lein do clean, run
 ```
 
-The application will now be available at [http://localhost:3000](http://localhost:3000).
+The application will now be available at [http://localhost:3449](http://localhost:3449).
 
 ### Optional development tools
 
