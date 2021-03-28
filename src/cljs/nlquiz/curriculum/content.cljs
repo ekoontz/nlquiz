@@ -126,9 +126,28 @@
    "pronouns"
    {"object"
     (fn []
-      [:div [:p "Object pronouns are kinda tricky!!"]
+      [:div
+       [:h3 "First person"]
+
+       [:p "Singular can be either " [:i "me"] " or " [:i "mij"]
+        ", depending on emphasis:"]
+       
        [show-examples
-        [
+        [{:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :canonical "me"
+                        :agr {:person :1st
+                              :number :sing}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
 
          {:major-tags ["pronouns"]
           :minor-tags ["object"]
@@ -136,31 +155,158 @@
           :max-depth 3
           :reflexive false
           :cat :verb
-          :head {:comp {:pronoun true}}
+          :head {:comp {:pronoun true
+                        :canonical "mij"
+                        :agr {:person :1st
+                              :number :sing}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
+         ]]
+
+
+       [:p "Plural is always " [:i "ons"] ":"]
+       
+       [show-examples
+        [{:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :agr {:person :1st
+                              :number :plur}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}]]
+       
+       [:h3 "Second person"]
+
+       [:p "Singular informal can be either " [:i "je"] " or " [:i "jij"]
+        "; I'm not sure if there is any distinction in meaning:"]
+       
+       [show-examples
+        [{:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :canonical "je"
+                        :agr {:person :2nd
+                              :number :sing}}}
           :subcat []
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
                                    :head {:phrasal false}}}}
 
-
          {:major-tags ["pronouns"]
           :minor-tags ["object"]
-          :example "de katten zie haar niet"
-          :cat :verb,
-          :reflexive false,
-          :subcat [],
-          :agr {:person :3rd},
-          :head {:rule "vp",
-                 :comp {:phrasal false, :pronoun true},
-                 :head {:phrasal false}},
-          :sem {:pred :see, :obj {:obj :none}},
-          :max-depth 3,
-          :comp {:phrasal true}}
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :canonical "jou"
+                        :agr {:person :2nd
+                              :number :sing}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
+         ]]
 
-         
-         
-         ]]])}
+       [:p "Plural informal is always " [:i "jullie"] ":"]
+       
+       [show-examples
+        [{:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :sem {:pred :you
+                              :ref {:context :informal}}
+                        :agr {:person :2nd
+                              :number :plur}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
+
+         ]]
+
+       [:p "Polite is always " [:i "u" ] " regardless of number:"]
+
+
+       [show-examples
+        [{:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :sem {:ref {:context :polite}}
+                        :agr {:person :2nd}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
+         ]]
+       
+       [:h3 "Third person singular"]
+       
+       [show-examples
+        [
+         {:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :agr {:person :3rd
+                              :number :sing}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
+         ]]
+
+       [:h3 "Third person plural"]
+       
+       [show-examples
+        [
+         {:major-tags ["pronouns"]
+          :minor-tags ["object"]
+          :example "Ik zie haar niet"
+          :max-depth 3
+          :reflexive false
+          :cat :verb
+          :head {:comp {:pronoun true
+                        :agr {:person :3rd
+                              :number :plur}}}
+          :subcat []
+          :sem {:pred :see
+                :obj {:obj :none}}
+          :training-wheels {:head {:rule "vp"
+                                   :head {:phrasal false}}}}
+         ]]
+       
+       ]
+      )}
 
    "nouns"
    {:general
