@@ -144,7 +144,7 @@
   :subcat []
   :sem {:pred :see
         :obj {:obj :none}}
-  :head {:comp {:agr {:person :1st}
+  :head {:comp {:agr {:person :3rd}
                 :pronoun true}}
   :training-wheels {:head {:rule "vp"
                            :head {:phrasal false}}}}
