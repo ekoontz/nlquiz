@@ -157,7 +157,7 @@
   :agr {:person :3rd},
   :head {:rule "vp",
          :comp {:phrasal false, :pronoun true
-                :agr {:person :1st}}
+                :agr {:person :3rd}}
          :head {:phrasal false}},
   :sem {:pred :see, :obj {:obj :none}},
   :max-depth 3,
