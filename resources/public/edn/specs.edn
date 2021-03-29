@@ -80,7 +80,63 @@
          :possessive? true}}
  
  {:major-tags ["pronouns"]
-  :minor-tags ["object"]
+  :minor-tags ["object-12"]
+  :example "Hij zie me niet"
+  :max-depth 3
+  :reflexive false
+  :cat :verb
+  :subcat []
+  :sem {:pred :see
+        :obj {:obj :none}}
+  :head {:comp {:agr {:person :1st}
+                :pronoun true}}
+  :training-wheels {:head {:rule "vp"
+                           :head {:phrasal false}}}}
+ {:major-tags ["pronouns"]
+  :minor-tags ["object-12"]
+  :example "de katten zie me niet"
+  :cat :verb,
+  :reflexive false,
+  :subcat [],
+  :agr {:person :3rd},
+  :head {:rule "vp",
+         :comp {:phrasal false, :pronoun true
+                :agr {:person :1st}}
+         :head {:phrasal false}},
+  :sem {:pred :see, :obj {:obj :none}},
+  :max-depth 3,
+  :comp {:phrasal true}}
+
+ {:major-tags ["pronouns"]
+  :minor-tags ["object-12"]
+  :example "Hij zie je niet"
+  :max-depth 3
+  :reflexive false
+  :cat :verb
+  :subcat []
+  :sem {:pred :see
+        :obj {:obj :none}}
+  :head {:comp {:agr {:person :2nd}
+                :pronoun true}}
+  :training-wheels {:head {:rule "vp"
+                           :head {:phrasal false}}}}
+ {:major-tags ["pronouns"]
+  :minor-tags ["object-12"]
+  :example "de katten zie jullie niet"
+  :cat :verb,
+  :reflexive false,
+  :subcat [],
+  :agr {:person :3rd},
+  :head {:rule "vp",
+         :comp {:phrasal false, :pronoun true
+                :agr {:person :2nd}}
+         :head {:phrasal false}},
+  :sem {:pred :see, :obj {:obj :none}},
+  :max-depth 3,
+  :comp {:phrasal true}}
+ 
+  {:major-tags ["pronouns"]
+  :minor-tags ["object-3"]
   :example "Ik zie haar niet"
   :max-depth 3
   :reflexive false
@@ -88,23 +144,24 @@
   :subcat []
   :sem {:pred :see
         :obj {:obj :none}}
-  :head {:comp {:pronoun true}}
+  :head {:comp {:agr {:person :1st}
+                :pronoun true}}
   :training-wheels {:head {:rule "vp"
                            :head {:phrasal false}}}}
  {:major-tags ["pronouns"]
-  :minor-tags ["object"]
+  :minor-tags ["object-3"]
   :example "de katten zie haar niet"
   :cat :verb,
   :reflexive false,
   :subcat [],
   :agr {:person :3rd},
   :head {:rule "vp",
-         :comp {:phrasal false, :pronoun true},
+         :comp {:phrasal false, :pronoun true
+                :agr {:person :1st}}
          :head {:phrasal false}},
   :sem {:pred :see, :obj {:obj :none}},
   :max-depth 3,
   :comp {:phrasal true}}
-
  
  {:major-tags ["nouns"]
   :minor-tags ["indef-adj"]

@@ -124,8 +124,8 @@
     }
 
    "pronouns"
-   {"object"
-    (fn []
+   {"object-12"
+    (fn [] ;;object-12
       [:div
        [:h3 "First person"]
 
@@ -263,50 +263,51 @@
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
                                    :head {:phrasal false}}}}
-         ]]
-       
-       [:h3 "Third person singular"]
-       
-       [show-examples
-        [
-         {:major-tags ["pronouns"]
-          :minor-tags ["object"]
-          :example "Ik zie haar niet"
-          :max-depth 3
-          :reflexive false
-          :cat :verb
-          :head {:comp {:pronoun true
-                        :agr {:person :3rd
-                              :number :sing}}}
-          :subcat []
-          :sem {:pred :see
-                :obj {:obj :none}}
-          :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
-         ]]
+         ]]])
 
-       [:h3 "Third person plural"]
-       
-       [show-examples
-        [
-         {:major-tags ["pronouns"]
-          :minor-tags ["object"]
-          :example "Ik zie haar niet"
-          :max-depth 3
-          :reflexive false
-          :cat :verb
-          :head {:comp {:pronoun true
-                        :agr {:person :3rd
-                              :number :plur}}}
-          :subcat []
-          :sem {:pred :see
-                :obj {:obj :none}}
-          :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
-         ]]
-       
-       ]
-      )}
+   "object-3" ;; object-3
+   (fn []
+     [:div
+      
+      [:h3 "Third person singular"]
+      
+      [show-examples
+       [
+        {:major-tags ["pronouns"]
+         :minor-tags ["object"]
+         :example "Ik zie haar niet"
+         :max-depth 3
+         :reflexive false
+         :cat :verb
+         :head {:comp {:pronoun true
+                       :agr {:person :3rd
+                             :number :sing}}}
+         :subcat []
+         :sem {:pred :see
+               :obj {:obj :none}}
+         :training-wheels {:head {:rule "vp"
+                                  :head {:phrasal false}}}}
+        ]]
+      
+      [:h3 "Third person plural"]
+      
+      [show-examples
+       [
+        {:major-tags ["pronouns"]
+         :minor-tags ["object"]
+         :example "Ik zie haar niet"
+         :max-depth 3
+         :reflexive false
+         :cat :verb
+         :head {:comp {:pronoun true
+                       :agr {:person :3rd
+                             :number :plur}}}
+         :subcat []
+         :sem {:pred :see
+               :obj {:obj :none}}
+         :training-wheels {:head {:rule "vp"
+                                  :head {:phrasal false}}}}]]])}
+
 
    "nouns"
    {:general
