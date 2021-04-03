@@ -4,10 +4,28 @@ STACK_NAME=nlquiz-lambda
 APP_REGION=eu-central-1
 PWD=$$(pwd)
 
-#native_image_cmd=docker run -v ${PWD}:/project:Z -it fierycod/graalvm-native-image:latest bash -c "cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
-native_image_cmd=docker run -v ${PWD}:/project:Z -it cfd5db885059 bash -c "cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
+native_image_cmd=docker run -v ${PWD}:/project -it fierycod/graalvm-native-image:latest bash -c "cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
 
 all: deploy-native
+
+# <deploy-native>
+
+deploy-native: packaged-native.yml
+	sam deploy --template-file packaged-native.yml --stack-name $(STACK_NAME) --capabilities CAPABILITY_IAM --region $(APP_REGION)
+
+packaged-native.yml: latest.zip make-bucket
+	sam package --template-file template-native.yml --output-template-file packaged-native.yml --s3-bucket $(BUCKET_NAME) --s3-prefix "nlquiz-lambda"
+
+latest.zip: output
+	zip -j latest bootstrap output
+
+output: target/output.jar
+	${native_image_cmd}
+
+target/output.jar: src/nlquiz_lambda/core.clj
+	lein uberjar
+
+# </deploy-native>
 
 check-service:
 	@(nc -z localhost 3000) || echo "AWS API service is not running: run 'make dry-api-native &'."
@@ -16,10 +34,7 @@ clean:
 	-rm -rf server target/ packaged.yml packaged-native.yml output latest.zip
 
 deploy: packaged.yml
-	sam deploy --template-file packaged.yml        --stack-name $(STACK_NAME) --capabilities CAPABILITY_IAM --region $(APP_REGION)
-
-deploy-native: packaged-native.yml
-	sam deploy --template-file packaged-native.yml --stack-name $(STACK_NAME) --capabilities CAPABILITY_IAM --region $(APP_REGION)
+	sam deploy --template-file packaged.yml --stack-name $(STACK_NAME) --capabilities CAPABILITY_IAM --region $(APP_REGION)
 
 destroy:
 	aws cloudformation delete-stack --stack-name $(STACK_NAME) --region $(APP_REGION)
@@ -41,17 +56,6 @@ local-test: check-service
 make-bucket:
 	aws s3 ls s3://$(BUCKET_NAME) || aws s3 mb s3://$(BUCKET_NAME)
 
-latest.zip: output
-	zip -j latest bootstrap output
-
-output: target/output.jar
-	${native_image_cmd}
-
 packaged.yml: target/output.jar make-bucket
 	sam package --template-file template.yml        --output-template-file packaged.yml        --s3-bucket $(BUCKET_NAME) --s3-prefix "nlquiz-lambda"
 
-packaged-native.yml: latest.zip make-bucket
-	sam package --template-file template-native.yml --output-template-file packaged-native.yml --s3-bucket $(BUCKET_NAME) --s3-prefix "nlquiz-lambda"
-
-target/output.jar: src/nlquiz_lambda/core.clj
-	lein uberjar
