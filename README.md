@@ -4,13 +4,17 @@ Learn Dutch by translating simple expressions.
 
 ## Development mode
 
-In one terminal:
+In one terminal, start the _language endpoint_. This will generate
+expressions for the user and parse their responses. It listens on port
+3000, where it handles requests to:
+- generate expressions for the user
+- parse the user's guesses of answers to those expressions
 
 ```
 cd ~/nlquiz/local-server && (cd ~/menard && lein install) && lein clean && lein ring server-headless
 ```
 
-In another terminal, (re)start the Figwheel compiler by navigating to the project folder and run the following command in the terminal:
+In another terminal, (re)start the nlquiz UI:
 
 ```
 lein clean && LANGUAGE_ENDPOINT_URL=http://localhost:3000 ROOT_PATH=http://localhost:3449/ lein figwheel
@@ -20,15 +24,6 @@ Figwheel will automatically push cljs changes to the browser. The server will be
 
 Figwheel also starts `nREPL` using the value of the `:nrepl-port` in the `:figwheel`
 config found in `project.clj`. By default the port is set to `7002`.
-
-The figwheel server can have unexpected behaviors in some situations such as when using
-websockets. In this case it's recommended to run a standalone instance of a web server as follows:
-
-```
-lein do clean, run
-```
-
-The application will now be available at [http://localhost:3449](http://localhost:3449).
 
 ### Optional development tools
 
@@ -47,10 +42,10 @@ and stopped by running:
 (stop-server)
 ```
 
-## Building for release
+## Deploying to production
 
 ```
-lein do clean, uberjar
+./src/sh/deploy.sh
 ```
 
 See [src/sh](src/sh) for build scripts.
