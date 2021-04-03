@@ -17,7 +17,7 @@ packaged-native.yml: latest.zip make-bucket
 	sam package --template-file template-native.yml --output-template-file packaged-native.yml --s3-bucket $(BUCKET_NAME) --s3-prefix "nlquiz-lambda"
 
 latest.zip: output
-	zip -j latest bootstrap output
+	zip $@ bootstrap output
 
 output: target/output.jar
 	${native_image_cmd}
