@@ -4,7 +4,7 @@ STACK_NAME=nlquiz-lambda
 APP_REGION=eu-central-1
 PWD=$$(pwd)
 
-native_image_cmd=docker run -v ${PWD}:/project -it fierycod/graalvm-native-image:latest bash -c "cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
+native_image_cmd=docker run -v ${PWD}:/project -it ghcr.io/graalvm/graalvm-ce:latest bash -c "gu install native-image && cd /project && native-image -jar target/output.jar --report-unsupported-elements-at-runtime --no-fallback --verbose --enable-url-protocols=http,https --no-server  --initialize-at-build-time --initialize-at-build-time=org.apache.log4j.CategoryKey --trace-object-instantiation=java.lang.Thread"
 
 all: deploy-native
 
