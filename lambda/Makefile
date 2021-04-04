@@ -27,6 +27,9 @@ target/output.jar: src/nlquiz_lambda/core.clj
 
 # </deploy-native>
 
+build-docker:
+	docker build . -f Dockerfile -t ekoontz/graalvm-plus-lein
+
 check-service:
 	@(nc -z localhost 3000) || echo "AWS API service is not running: run 'make dry-api-native &'."
 
