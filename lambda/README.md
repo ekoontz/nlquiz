@@ -18,7 +18,7 @@ You have the option of running either `make dry-api` or `make native-dry-api`.
 
 ## `make dry-api`
 
-This runs the java artifact `output.jar` using `sam local` with `template.yml` as its
+This runs the java artifact `output.jar` as a lambda service using `sam local` with `template.yml` as its
 AWS SAM template file.
 
 ## `make dry-api-native`
