@@ -31,7 +31,7 @@
 
 (defn head []
   [:head
-   [:link {:rel "icon" :href "/favicon.svg"}]
+   [:link {:rel "icon" :href (str root-path "favicon.svg")}]
    [:meta {:charset "utf-8"}]
    [:meta {:name "viewport"
            :content "width=device-width, initial-scale=1"}]
