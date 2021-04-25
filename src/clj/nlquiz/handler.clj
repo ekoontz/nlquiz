@@ -21,7 +21,7 @@
 (defmacro root-path-from-env []
   (or (System/getenv "ROOT_PATH") "/nlquiz"))
 (defmacro language-server-endpoint-url []
-  (or (System/getenv "LANGUAGE_ENDPOINT_URL") "https://lambda.hiro-tan.org"))
+  (or (System/getenv "LANGUAGE_ENDPOINT_URL") "https://menard.hiro-tan.org"))
 
 (def mount-target
   [:div#app
