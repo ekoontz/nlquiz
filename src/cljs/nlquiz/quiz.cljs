@@ -178,6 +178,44 @@
               ;; got it wrong:
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
+(defn make-input []
+  [:input {:type "text"
+           :placeholder placeholder
+           :id "input-guess"
+           :autoComplete "off"
+           :size @guess-input-size
+           :value @guess-text
+           :disabled @input-state
+           :on-change (fn [input-element]
+                        (when @not-answered-yet?
+                          (reset! input-state "disabled")
+                          (reset! not-answered-yet? false)
+                          (log/debug (str "current guess size: " (-> input-element .-target .-value count)))
+                          (reset! guess-input-size (max initial-guess-input-size (+ 1 (-> input-element .-target .-value count))))
+                          (submit-guess guess-text
+                                        (-> input-element .-target .-value)
+                                        parse-html
+                                        semantics-of-guess
+                                        possible-correct-semantics
+                                        ;; function called if the user guessed correctly:
+                                        (fn [correct-answer]
+                                          (reset! input-form "")
+                                          (reset! guess-text "")
+                                          (reset! not-answered-yet? false)
+                                          (reset! got-it-right? true)
+                                          (reset! get-question-fn-atom get-question-fn)
+                                          (reset! show-answer correct-answer)
+                                          (reset! translation-of-guess nil)
+                                          (if (.-requestSubmit (.getElementById js/document "quiz"))
+                                            (.requestSubmit (.getElementById js/document "quiz"))
+                                            (.dispatchEvent (.getElementById js/document "quiz")
+                                                            (new js/Event "submit" {:cancelable true})))
+                                          (reset! show-answer correct-answer)))
+                          (reset! not-answered-yet? true)
+                          (reset! input-state "")))}])
+
+(def input-form (r/atom (make-input)))
+
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
