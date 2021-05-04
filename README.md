@@ -11,13 +11,13 @@ expressions for the user and parse their responses. It listens on port
 - parse the user's guesses of answers to those expressions
 
 ```
-cd ~/nlquiz/local-server && (cd ~/menard && lein install) && lein clean && ORIGIN=http://192.168.178.31:3449 lein ring server-headless
+IP=$(ifconfig | grep 192 | awk '{print $2}') ORIGIN=http://${IP}:3449 lein ring server-headless
 ```
 
 In another terminal, (re)start the nlquiz UI:
 
 ```
-lein clean && LANGUAGE_ENDPOINT_URL=http://192.168.178.31:3000 ROOT_PATH=http://192.168.178.31:3449/ lein figwheel
+IP=$(ifconfig | grep 192 | awk '{print $2}') && lein clean && LANGUAGE_ENDPOINT_URL=http://${IP}:3000 ROOT_PATH=http://${IP}:3449/ lein figwheel
 ```
 
 Figwheel will automatically push cljs changes to the browser. The server will be available at [http://localhost:3449](http://localhost:3449) once Figwheel starts up. 
