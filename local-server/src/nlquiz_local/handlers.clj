@@ -4,13 +4,16 @@
    [dag_unify.core :as u]
    [dag_unify.diagnostics :use [strip-refs]]
    [clojure.data.json :as json :refer [write-str]]
+   [config.core :refer [env]]
    [nlquiz-local.middleware :refer [middleware]]
    [menard.english :as en]
    [menard.nederlands :as nl]
    [menard.translate :as tr]
    [reitit.ring :as reitit-ring]))
 
-(defonce root-path "/")
+(defonce origin
+  (do (log/info (str "environment ORIGIN: " (env :origin)))
+      (or (env :origin) "/")))
 
 (defn json-response
   "Call a handler on a request, which returns a clojure data structure.
@@ -19,7 +22,7 @@
   [_request handler]
   {:status 200
    :headers {"Content-Type" "application/json"
-             "Access-Control-Allow-Origin" "http://localhost:3449"
+             "Access-Control-Allow-Origin" origin
              "Access-Control-Allow-Credentials" "true"}
    :body (-> _request handler write-str)})
 

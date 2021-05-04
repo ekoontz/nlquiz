@@ -8,6 +8,7 @@
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-devel "1.7.1"]
                  [org.clojure/data.json "0.2.7"]
+                 [yogthos/config "1.1.6"]
                  [org.clojure/core.async "0.4.474"]
                  [ring/ring-jetty-adapter "1.7.1"]]
   :ring {:handler nlquiz-local.handlers/app}
