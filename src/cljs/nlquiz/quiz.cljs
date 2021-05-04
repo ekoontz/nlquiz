@@ -227,9 +227,13 @@
       [:div.question
        (or @question-html spinner)]
       [:div
+       [:input {:type "text" :size "1"
+                :input-mode "none"
+                :id "other-input"}]
        [:input {:type "text"
                 :placeholder placeholder
                 :id "input-guess"
+                :input-mode "text"
                 :autoComplete "off"
                 :size @guess-input-size
                 :value @guess-text
@@ -247,6 +251,7 @@
                                              possible-correct-semantics
                                              ;; function called if the user guessed correctly:
                                              (fn [correct-answer]
+                                               (.focus (.getElementById js/document "other-input"))
                                                (reset! guess-text "")
                                                (reset! not-answered-yet? false)
                                                (reset! got-it-right? true)
@@ -257,6 +262,7 @@
                                                  (.requestSubmit (.getElementById js/document "quiz"))
                                                  (.dispatchEvent (.getElementById js/document "quiz")
                                                                  (new js/Event "submit" {:cancelable true})))
+                                               (.focus (.getElementById js/document "input-guess"))
                                                (reset! show-answer correct-answer)))
                                (reset! not-answered-yet? true)
                                (reset! input-state "")))}]]] ;; div.guess
