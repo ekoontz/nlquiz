@@ -19,7 +19,9 @@
 ;; but it doesn't work right yet: it thinks the environment doesn't have the value
 ;; defined, even though it is.
 (defmacro root-path-from-env []
-  (env :root-path))
+  (log/info (str "root-path-from-env: (root-path)=" (root-path)))
+  (log/info (str "  (returning hard-coded: '/nlquiz' though)"))
+  "/nlquiz")
 
 (defmacro language-server-endpoint-url []
   (or (System/getenv "LANGUAGE_ENDPOINT_URL") "https://menard.hiro-tan.org"))
