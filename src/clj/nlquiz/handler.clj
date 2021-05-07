@@ -16,8 +16,8 @@
 
 ;; this macro is supposed to let clojurescript to know the server's root-path
 ;; so that it can properly create URLs to do HTTP requests to the server,
-;; but it doesn't work right yet: it thinks the environment doesn't have the value
-;; defined, even though it is.
+;; but it has to be set at compile time, e.g.:
+;; ROOT_PATH=/nlquiz lein uberjar
 (defmacro root-path-from-env []
   (log/info (str "root-path-from-env: (root-path)=" root-path))
   root-path)
