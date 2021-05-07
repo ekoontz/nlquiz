@@ -20,8 +20,7 @@
 ;; defined, even though it is.
 (defmacro root-path-from-env []
   (log/info (str "root-path-from-env: (root-path)=" root-path))
-  (log/info (str "  (returning hard-coded: '/nlquiz' though)"))
-  "/nlquiz")
+  root-path)
 
 (defmacro language-server-endpoint-url []
   (or (System/getenv "LANGUAGE_ENDPOINT_URL") "https://menard.hiro-tan.org"))
