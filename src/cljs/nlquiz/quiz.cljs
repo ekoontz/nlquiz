@@ -235,8 +235,12 @@
       [:input {:class "weetniet" :type "submit" :value "Ik weet het niet"
                :disabled @ik-weet-niet-button-state}]
       [:button {:class "weetniet"
-                :on-click #(do (reset! guess-text "") (reset! translation-of-guess "")
-                               (.preventDefault %))} "Reset"]]]]
+                :on-click #(do
+                             (.focus (.getElementById js/document "other-input"))
+                             (reset! guess-text "")
+                             (reset! translation-of-guess "")
+                             (.focus (.getElementById js/document "input-guess"))
+                             (.preventDefault %))} "Reset"]]]]
    [:div.answertable
     [:table
      [:tbody
