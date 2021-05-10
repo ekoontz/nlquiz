@@ -233,7 +233,7 @@
 
      [:div.dontknow
       [:input {:class "weetniet" :type "submit" :value "Ik weet het niet"
-               :disabled @ik-weet-niet-button-state}] ;; </div.question-and-guess>
+               :disabled @ik-weet-niet-button-state}]
       [:button {:class "weetniet"
                 :on-click #(do (reset! guess-text "") (reset! translation-of-guess "")
                                (.preventDefault %))} "Reset"]]]]
