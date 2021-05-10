@@ -4,23 +4,11 @@ Learn Dutch by translating simple expressions.
 
 ## Development mode
 
-In one terminal, start the _language endpoint_. This will generate
-expressions for the user and parse their responses. It listens on port
-3000, where it handles requests to:
-- generate expressions for the user
-- parse the user's guesses of answers to those expressions
-
 ```
-IP=$(ifconfig | grep 192 | awk '{print $2}') ORIGIN=http://${IP}:3449 lein ring server-headless
+src/sh/local.sh
 ```
 
-In another terminal, (re)start the nlquiz UI:
-
-```
-IP=$(ifconfig | grep 192 | awk '{print $2}') && lein clean && LANGUAGE_ENDPOINT_URL=http://${IP}:3000 ROOT_PATH=http://${IP}:3449/ lein figwheel
-```
-
-Figwheel will automatically push cljs changes to the browser. The server will be available at [http://localhost:3449](http://localhost:3449) once Figwheel starts up. 
+Figwheel will automatically push cljs changes to the browser. 
 
 Figwheel also starts `nREPL` using the value of the `:nrepl-port` in the `:figwheel`
 config found in `project.clj`. By default the port is set to `7002`.
