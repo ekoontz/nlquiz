@@ -118,7 +118,8 @@
                  :phrasal false}
           :sem {:tense :present
                 :aspect :simple
-                :pred :see}}
+                :pred :see
+                :obj {:top :top}}}
          ]]]
       )
     }
