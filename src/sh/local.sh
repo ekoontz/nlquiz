@@ -1,3 +1,9 @@
+# cleanup old running instances of front end server:
+kill $(lsof -i TCP:3449 | grep LISTEN | awk '{print $2}')
+
+# cleanup old running instances of language server:
+kill $(lsof -i TCP:3000 | grep LISTEN | awk '{print $2}')
+
 IP=$(ifconfig | grep 192 | awk '{print $2}')
 
 lein clean
