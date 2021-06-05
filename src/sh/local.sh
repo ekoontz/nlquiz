@@ -38,7 +38,7 @@ done
 echo "LANGUAGE_SERVER_PID=${LANGUAGE_SERVER_PID}"
 echo "UI_SERVER_PID=${UI_SERVER_PID}"
 
-echo "**** UI server has started. Go to https://${IP}:3000 in your browser. *****"
+echo "**** UI server has started. Go to http://${IP}:3000 in your browser. *****"
 
 _cleanup() { 
   echo "Caught SIGINT signal - cleaning up."
