@@ -230,14 +230,14 @@
 
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-regular"]
+  :reflexive false
   :phrasal true
+  :subcat []
   :cat :verb
   :infl :past-simple
-  :sem {:obj :unspec}
-  :head {:modal false
-         :irregular-past-simple? false}
-  :comp {:pronoun true
-         :interrogative? false}}
+  :sem {:obj {:top :top}}
+  :head {:modal false :irregular-past-simple? false
+         :head {:subcat {:2 {:cat :noun}}}}}
 
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-irregular"]

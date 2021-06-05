@@ -45,17 +45,17 @@
         [:li "-ten for the plural."]
         ]
        [show-examples
-        [{:phrasal true
-          :cat :verb
+        [{:major-tags ["verbs"]
+          :minor-tags ["past-simple-regular"]
+          :reflexive false
+          :phrasal true
           :subcat []
+          :cat :verb
           :infl :past-simple
-          :sem {:obj :unspec
-                :subj {:pred :you}}
+          :sem {:obj {:top :top}}
           :head {:modal false
-                 :irregular-past-simple? false}
-          :comp {:pronoun true
-                 :interrogative? false}}
-         ]]])
+                 :irregular-past-simple? false
+                 :head {:subcat {:2 {:cat :noun}}}}}]]])
 
     "past-simple-irregular"
     (fn []
