@@ -6,7 +6,7 @@ if [ "${OLD_UI_SERVER}" != "" ]; then
     exit 1
 fi
 if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
-    echo "it seems like a UI server is already running as pid ${OLD_LANGUAGE_SERVER}."
+    echo "it seems like a language server is already running as pid ${OLD_LANGUAGE_SERVER}."
     exit 1
 fi
 
@@ -47,6 +47,13 @@ _cleanup() {
   kill -TERM "$LANGUAGE_SERVER_PID"
   echo kill -TERM "$UI_SERVER_PID"
   kill -TERM "$UI_SERVER_PID"
+
+  OLD_LANGUAGE_SERVER=$(lsof -i TCP:3000 | grep LISTEN | awk '{print $2}')
+  if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
+      echo "it seems like a language server is still running as pid ${OLD_LANGUAGE_SERVER}: killing it."
+      echo kill -TERM "${OLD_LANGUAGE_SERVER}"
+      kill -TERM "${OLD_LANGUAGE_SERVER}"
+  fi
 }
 
 trap _cleanup SIGINT
