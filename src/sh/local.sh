@@ -12,6 +12,8 @@ fi
 
 IP=${IP} || $(ifconfig | grep 192 | awk '{print $2}')
 
+echo "USING IP: ${IP}"
+
 #lein clean
 # Start the language endpoint server in the background. This will generate
 # expressions for the user and parse their responses. It listens on port
@@ -30,16 +32,16 @@ cd ..
 LANGUAGE_ENDPOINT_URL=http://${IP}:3000 ROOT_PATH=http://${IP}:3449/ lein figwheel &
 UI_SERVER_PID=$!
 
-RESPONSE=$(curl -s http://{$IP}:3000)
+RESPONSE=$(curl -s http://${IP}:3000)
 while [ "$?" -ne "0" ]; do
       sleep 1
-      RESPONSE=$(curl -s http://{$IP}:3000)
+      RESPONSE=$(curl -s http://${IP}:3000)
 done
 
 echo "LANGUAGE_SERVER_PID=${LANGUAGE_SERVER_PID}"
 echo "UI_SERVER_PID=${UI_SERVER_PID}"
 
-echo "**** UI server has started. Go to http://${IP}:3000 in your browser. *****"
+echo "**** UI server has started. Go to http://${IP}:3449 in your browser. *****"
 
 _cleanup() { 
   echo "Caught SIGINT signal - cleaning up."
