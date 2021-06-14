@@ -228,9 +228,9 @@
   :subcat [],
   :comp {:pronoun true}}
 
+ ;; transitive past simple regular
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-regular"]
-  :reflexive false
   :phrasal true
   :subcat []
   :cat :verb
@@ -238,21 +238,45 @@
   :sem {:obj {:top :top}}
   :head {:modal false
          :head {:phrasal false
-                :subcat {:2 {:cat :noun}}
-                :exception false}}}
-                
+                :irregular-past-simple? false
+                :subcat {:2 {:cat :noun}}}}}
 
+ ;; intransitive past simple regular
+ {:major-tags ["verbs"]
+  :minor-tags ["past-simple-regular"]
+  :phrasal true
+  :subcat []
+  :cat :verb
+  :infl :past-simple
+  :sem {:obj :none}
+  :head {:modal false
+         :irregular-past-simple? false
+         :phrasal false}}
+
+ ;; transitive past simple irregular
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-irregular"]
   :phrasal true
+  :subcat []
   :cat :verb
   :infl :past-simple
-  :sem {:obj :unspec}
+  :sem {:obj {:top :top}}
   :head {:modal false
          :head {:phrasal false
-                :exception true}}
-  :comp {:pronoun true
-         :interrogative? false}}
+                :irregular-past-simple? true
+                :subcat {:2 {:cat :noun}}}}}
+
+ ;; intransitive past simple irregular
+ {:major-tags ["verbs"]
+  :minor-tags ["past-simple-irregular"]
+  :phrasal true
+  :subcat []
+  :cat :verb
+  :infl :past-simple
+  :sem {:obj :none}
+  :head {:modal false
+         :irregular-past-simple? true
+         :phrasal false}}
 
   ;; e.g. you need me
  {:major-tags ["verbs"]

@@ -47,15 +47,26 @@
        [show-examples
         [{:major-tags ["verbs"]
           :minor-tags ["past-simple-regular"]
-          :reflexive false
           :phrasal true
           :subcat []
           :cat :verb
           :infl :past-simple
           :sem {:obj {:top :top}}
           :head {:modal false
+                 :head {:phrasal false
+                        :irregular-past-simple? false
+                        :subcat {:2 {:cat :noun}}}}}
+
+         {:major-tags ["verbs"]
+          :minor-tags ["past-simple-regular"]
+          :phrasal true
+          :subcat []
+          :cat :verb
+          :infl :past-simple
+          :sem {:obj :none}
+          :head {:modal false
                  :irregular-past-simple? false
-                 :head {:subcat {:2 {:cat :noun}}}}}]]])
+                 :phrasal false}}]]])
 
     "past-simple-irregular"
     (fn []
@@ -63,16 +74,27 @@
        [:p "As with English, the simple past has many exceptions, which must be "
         "learned by rote."]
        [show-examples
-        [{:phrasal true
-          :cat :verb
+        [{:major-tags ["verbs"]
+          :minor-tags ["past-simple-regular"]
+          :phrasal true
           :subcat []
+          :cat :verb
           :infl :past-simple
-          :sem {:obj :unspec}
+          :sem {:obj {:top :top}}
           :head {:modal false
-                 :irregular-past-simple? true}
-          :comp {:pronoun true
-                 :interrogative? false}}
-         ]]])
+                 :head {:phrasal false
+                        :irregular-past-simple? true
+                        :subcat {:2 {:cat :noun}}}}}
+         {:major-tags ["verbs"]
+          :minor-tags ["past-simple-irregular"]
+          :phrasal true
+          :subcat []
+          :cat :verb
+          :infl :past-simple
+          :sem {:obj :none}
+          :head {:modal false
+                 :irregular-past-simple? true
+                 :phrasal false}}]]])
 
     "nodig"
     (fn []
