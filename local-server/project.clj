@@ -1,7 +1,7 @@
 (defproject nlquiz-local "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/tools.logging "1.1.0"]
-                 [menard "1.4.2"]
+                 [menard "1.4.3-SNAPSHOT"]
                  [metosin/reitit "0.5.10"]
                  [ring-server "0.5.0"]
                  [ring "1.8.0"]
