@@ -2,11 +2,13 @@ OLD_UI_SERVER=$(lsof -i TCP:3449 | grep LISTEN | awk '{print $2}')
 OLD_LANGUAGE_SERVER=$(lsof -i TCP:3000 | grep LISTEN | awk '{print $2}')
 
 if [ "${OLD_UI_SERVER}" != "" ]; then
-    echo "it seems like a UI server is already running as pid ${OLD_UI_SERVER}."
+    echo "it seems like a UI server is already running as pid ${OLD_UI_SERVER}. Killing it."
+    kill -TERM ${OLD_UI_SERVER}
     exit 1
 fi
 if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
-    echo "it seems like a language server is already running as pid ${OLD_LANGUAGE_SERVER}."
+    echo "it seems like a language server is already running as pid ${OLD_LANGUAGE_SERVER}. Killing it."
+    kill -TERM ${OLD_LANGUAGE_SERVER}
     exit 1
 fi
 
