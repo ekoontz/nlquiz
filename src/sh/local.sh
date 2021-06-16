@@ -10,7 +10,9 @@ if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
     exit 1
 fi
 
-IP=${IP} || $(ifconfig | grep 192 | awk '{print $2}')
+if [ "${IP}" -eq "" ]; then
+    IP=$(ifconfig | grep 192 | awk '{print $2}')
+fi
 
 echo "USING IP: ${IP}"
 
