@@ -108,7 +108,7 @@
     (let [result
           (->> guesses-semantics-set
                (mapcat (fn [guess]
-                         (log/info (str "evaluating guess: " (serialize guess)))
+                         (log/info (str "evaluating guess:          " (serialize guess)))
                          (->> correct-semantics-set
                               (map (fn [correct-semantics]
                                      (log/info (str "correct semantics option: " (serialize correct-semantics)))
