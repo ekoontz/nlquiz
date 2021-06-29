@@ -9,7 +9,7 @@ fi
 if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
     echo "it seems like a language server is already running as pid ${OLD_LANGUAGE_SERVER}. Killing it."
     kill -TERM ${OLD_LANGUAGE_SERVER}
-    exit 1
+    exit 0
 fi
 
 if [ "${IP}" -eq "" ]; then
