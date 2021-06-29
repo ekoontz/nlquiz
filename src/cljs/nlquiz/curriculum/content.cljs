@@ -41,8 +41,8 @@
       [:div
        [:p "The regular past simple in Dutch is created by taking the verb stem (the verb minus the " [:i "en"] " suffix), and adding:"]
        [:ul
-        [:li "-te for the singular, or"]
-        [:li "-ten for the plural."]
+        [:li "-te or -de for the singular, or"]
+        [:li "-ten or -den for the plural."]
         ]
        [show-examples
         [{:major-tags ["verbs"]
