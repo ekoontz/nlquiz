@@ -12,7 +12,7 @@ if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
     exit 0
 fi
 
-if [ "${IP}" -eq "" ]; then
+if [ "${IP}" == "" ]; then
     IP=$(ifconfig | grep 192 | awk '{print $2}')
 fi
 
