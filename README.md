@@ -5,7 +5,7 @@ Learn Dutch by translating simple expressions.
 ## Development mode
 
 ```
-src/sh/local.sh
+(cd ../menard && lein install) && (cd ../menard/lambda && lein install) && lein clean && ./src/sh/local.sh
 ```
 
 Figwheel will automatically push cljs changes to the browser. 

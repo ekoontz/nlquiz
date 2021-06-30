@@ -1,14 +1,10 @@
 (ns nlquiz-local.handlers
   (:require
    [clojure.tools.logging :as log]
-   [dag_unify.core :as u]
-   [dag_unify.diagnostics :use [strip-refs]]
    [clojure.data.json :as json :refer [write-str]]
    [config.core :refer [env]]
    [nlquiz-local.middleware :refer [middleware]]
-   [menard.english :as en]
-   [menard.nederlands :as nl]
-   [menard.translate :as tr]
+   [menard.lambda.handlers :as handlers]
    [reitit.ring :as reitit-ring]))
 
 (defonce origin
@@ -33,144 +29,24 @@
 (def app
   (reitit-ring/ring-handler
    (reitit-ring/router
-    [
-     ;; routes which return a json response:
-     ["/parse"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
+    [["/parse"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
      ["/generate"                  {:get {:handler (fn [request] (json-response request generate-nl-by-spec))}}]
-     ["/generate-with-alts"        {:get {:handler (fn [request] (json-response request generate-nl-with-alternations))}}]
-     ])
+     ["/generate-with-alts"        {:get {:handler (fn [request] (json-response request generate-nl-with-alternations))}}]])
    (reitit-ring/routes
     (reitit-ring/create-default-handler))
    {:middleware middleware}))
 
-(defn dag-to-string [dag]
-  (-> dag dag_unify.serialization/serialize str))
-
-(defn generate-nl
-  "generate a Dutch expression from _spec_ and translate to English, and return this pair
-   along with the semantics of the English specification also."
-  [spec]
-  (log/info (str "generating a question with spec: " spec))
-  (let [;; 1. generate a target expression:
-        target-expression (->> (repeatedly #(-> spec nl/generate))
-                               (take 4)
-                               (remove empty?)
-                               first)
-        ;; 2: generate a source expression (the translation of the target expression):
-        source-expression (->> (repeatedly #(-> target-expression tr/nl-to-en-spec en/generate))
-                               (take 2)
-                               (remove empty?)
-                               first)
-
-        target-semantics (-> target-expression (u/get-in [:sem]))
-        
-        ;; 3. get the semantics of the source expression
-        source-semantics (binding [menard.morphology/show-notes? false]
-                           (->> source-expression en/morph en/parse
-                                (map #(u/get-in % [:sem]))
-                                (remove #(= :fail (u/unify % target-semantics)))))]
-    (cond (empty? target-expression)
-          (log/info (str "no target expression for spec: " spec))
-          (empty? source-expression) 
-          (log/info (str "untranslateable: " (-> target-expression nl/morph)))
-          :else
-          (log/info (str "given input input spec: "
-                         (-> spec (dissoc :cat) (dissoc :sem))
-                         ", generated: '" (-> source-expression en/morph) "'"
-                         " -> '"  (-> target-expression nl/morph) "'")))
-    {:source (-> source-expression en/morph)
-     :target (-> target-expression nl/morph)
-     :source-tree source-expression
-     :target-tree target-expression
-     :target-root (-> target-expression (u/get-in [:head :root] :top))
-     :source-sem (map dag-to-string source-semantics)}))
-
-(def ^:const clean-up-trees true)
-
 (defn generate-nl-by-spec
-  "decode a spec from the input request and generate with it."
   [request]
   (let [spec (-> request :query-params (get "q"))]
-    (log/debug (str "spec pre-decode: " spec))
-    (let [spec (-> spec read-string dag_unify.serialization/deserialize)]
-      (log/info (str "generate-by-spec with spec: " spec))
-      (-> spec
-          generate-nl
-          (dissoc :source-tree)
-          (dissoc :target-tree)))))
+    (handlers/generate-nl-by-spec spec)))
 
 (defn generate-nl-with-alternations
-  "generate with _spec_ unified with each of the alternates, so generate one expression per <spec,alternate> combination."
   [request]
   (let [spec (-> request :query-params (get "spec"))
-        alternates (-> request :query-params (get "alts"))
-        alternates (map dag_unify.serialization/deserialize (read-string alternates))
-        spec (-> spec read-string dag_unify.serialization/deserialize)]
-    (log/info (str "generate-nl-with-alternations: spec: " spec))
-    (let [derivative-specs
-          (->>
-           alternates
-           (map (fn [alternate]
-                  (u/unify alternate spec))))
-          ;; the first one is special: we will get the [:head :root] from it
-          ;; and use it with the rest of the specs.
-          first-expression (generate-nl (first derivative-specs))
-          expressions
-          (cons first-expression
-                (->> (rest derivative-specs)
-                     (map (fn [derivative-spec]
-                            (generate-nl (u/unify derivative-spec
-                                                  {:head {:root
-                                                          (u/get-in first-expression [:target-tree :head :root] :top)}}))))))]
-      (if clean-up-trees
-        (->> expressions
-             ;; cleanup the huge syntax trees:
-             (map #(-> %
-                       (dissoc % :source-tree (dag-to-string (:source-tree %)))
-                       (dissoc % :target-tree (dag-to-string (:target-tree %))))))
-          
-      ;; don't cleanup the syntax trees, but serialize them so they can be printed to json:
-      (map #(-> %
-                (assoc :source-tree (dag-to-string (:source-tree %)))
-                (assoc :target-tree (dag-to-string (:target-tree %)))))))))
-
-(defn- generate-english [spec nl]
-  (let [result (->> (repeatedly #(-> spec
-                                     en/generate))
-                    (take 2)
-                    (filter #(not (nil? %)))
-                    first)]
-    (when (nil? result)
-      (log/warn (str "failed to generate on two occasions with nl: '" nl "'")))
-    result))
+        alternates (-> request :query-params (get "alts"))]
+    (handlers/generate-nl-with-alternations spec alternates)))
 
 (defn parse-nl [request]
   (let [string-to-parse (-> request :query-params (get "q"))]
-    (log/info (str "parsing input: " string-to-parse))
-    (let [parses (->> string-to-parse
-                      clojure.string/lower-case
-                      nl/parse
-                      (filter #(or (= [] (u/get-in % [:subcat]))
-                                   (= :top (u/get-in % [:subcat]))
-                                   (= ::none (u/get-in % [:subcat] ::none))))
-                      (filter #(= nil (u/get-in % [:mod] nil)))
-                      (sort (fn [a b] (> (count (str a)) (count (str b))))))
-          syntax-trees (->> parses (map nl/syntax-tree))
-          english (-> (->> parses
-                           (map tr/nl-to-en-spec)
-                           (map #(generate-english %
-                                                   (clojure.string/join "," (map nl/syntax-tree parses))))
-                           (map #(en/morph %))))]
-      (log/info (str "parse/nl: '" string-to-parse "' -> ["
-                     (clojure.string/join "," english) "]"))
-      (log/info (str "parse/nl: '" string-to-parse "' semantics: ["
-                     (clojure.string/join "," (->> parses
-                                                   (map #(u/get-in % [:sem]))
-                                                   (map strip-refs)))
-                     "]"))
-      {:nederlands string-to-parse
-       :english (clojure.string/join ", " english)
-       :trees syntax-trees
-       :sem (->> parses
-                 (map #(u/get-in % [:sem]))
-                 (map dag-to-string))})))
+    (handlers/parse-nl string-to-parse)))
