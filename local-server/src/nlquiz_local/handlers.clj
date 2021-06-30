@@ -26,12 +26,14 @@
 (declare generate-nl-by-spec)
 (declare generate-nl-with-alternations)
 
+(def routes
+  [["/parse"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
+   ["/generate"                  {:get {:handler (fn [request] (json-response request generate-nl-by-spec))}}]
+   ["/generate-with-alts"        {:get {:handler (fn [request] (json-response request generate-nl-with-alternations))}}]])
+
 (def app
   (reitit-ring/ring-handler
-   (reitit-ring/router
-    [["/parse"                     {:get {:handler (fn [request] (json-response request parse-nl))}}]
-     ["/generate"                  {:get {:handler (fn [request] (json-response request generate-nl-by-spec))}}]
-     ["/generate-with-alts"        {:get {:handler (fn [request] (json-response request generate-nl-with-alternations))}}]])
+   (reitit-ring/router routes)
    (reitit-ring/routes
     (reitit-ring/create-default-handler))
    {:middleware middleware}))
