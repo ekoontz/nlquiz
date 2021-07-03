@@ -34,9 +34,9 @@
 (defn head []
   [:head
    [:link {:rel "icon" :href (str root-path "favicon.svg")}]
+   [:link {:rel "apple-touch-icon" :href (str root-path "favicon.png")}]
    [:meta {:charset "utf-8"}]
-   [:meta {:name "viewport"
-           :content "width=device-width, initial-scale=1"}]
+   [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
    [:title "nlquiz"] ;; TODO: title should be more context-specific about each page.
    (include-css (str root-path (if (env :dev) "css/site.css" "css/site.min.css")))
    (include-css (str root-path (if (env :dev) "css/debug.css" "css/debug.min.css")))
