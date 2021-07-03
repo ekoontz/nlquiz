@@ -3,8 +3,8 @@
    [clojure.tools.logging :as log]
    [clojure.data.json :as json :refer [write-str]]
    [config.core :refer [env]]
-   [nlquiz-local.middleware :refer [middleware]]
    [menard.lambda.handlers :as handlers]
+   [nlquiz-local.middleware :refer [middleware]]
    [reitit.ring :as reitit-ring]))
 
 (defonce origin
