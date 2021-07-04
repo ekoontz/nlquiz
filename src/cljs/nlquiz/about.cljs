@@ -24,7 +24,12 @@
      [:p "You may need to use headphones to hear the sound on mobile devices; I'm not sure yet why this is sometimes required."]
      [:p "⚠ Caution⚠ There are likely many errors because I am only a beginner myself at learning Dutch. Not to be used as a substitute for a real class or learning materials."]
      [:p "The entire software stack is 100% Free Software/Open Source, though with various licenses according to its various origins. To learn more about "
-      " the software stack, start " [:a {:href "https://github.com/ekoontz/nlquiz"} "here"] "."]
+      " the software stack, see the "
+      [:a {:href "https://github.com/ekoontz/nlquiz"} "nlquiz"]
+      " and "
+      [:a {:href "https://github.com/ekoontz/menard"} "menard"]
+      " git repositories"
+      "."]
 
      [:p "Problems or questions? Please create an issue on " [:a {:href "https://github.com/ekoontz/nlquiz/issues"} "github"]
       " or " [:a {:href "mailto:ekoontz@hiro-tan.org"} "email me."]]]))
