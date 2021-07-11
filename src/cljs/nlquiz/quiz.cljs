@@ -140,6 +140,8 @@
 (def guess-input-size (r/atom initial-guess-input-size))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
+  (if (empty? @possible-correct-semantics)
+    (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
@@ -348,7 +350,7 @@
         (log/info (str "found: " (count specs) " matching major=" major " and minor=" minor ".")))
       (let [spec (-> specs shuffle first)
             serialized-spec (-> spec dag_unify.serialization/serialize str)]
-        (log/info (str "generating with spec: " spec))
+        (log/info (str "requesting generate with spec: " spec))
         (http/get generate-http {:query-params {"q" serialized-spec}})))))
 
 (defn quiz-component []
