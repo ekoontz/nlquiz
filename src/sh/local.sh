@@ -4,12 +4,14 @@ OLD_LANGUAGE_SERVER=$(lsof -i TCP:3000 | grep LISTEN | awk '{print $2}')
 if [ "${OLD_UI_SERVER}" != "" ]; then
     echo "it seems like a UI server is already running as pid ${OLD_UI_SERVER}. Killing it."
     kill -TERM ${OLD_UI_SERVER}
-    exit 1
+    sleep 2
+    echo "continuing after killing UI server."
 fi
 if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
     echo "it seems like a language server is already running as pid ${OLD_LANGUAGE_SERVER}. Killing it."
     kill -TERM ${OLD_LANGUAGE_SERVER}
-    exit 0
+    sleep 2
+    echo "continuing after killing language server."
 fi
 
 if [ "${IP}" == "" ]; then
@@ -18,7 +20,7 @@ fi
 
 echo "USING IP: ${IP}"
 
-#lein clean
+lein clean
 # Start the language endpoint server in the background. This will generate
 # expressions for the user and parse their responses. It listens on port
 # 3000, where it handles requests to:
@@ -33,7 +35,9 @@ LANGUAGE_SERVER_PID=$!
 cd ..
 # Start the UI server. It needs to know the URL for the language endpoint server
 # so it can tell the client to use that URL for generating guesses and parse answers:
+echo LANGUAGE_ENDPOINT_URL=http://${IP}:3000 ROOT_PATH=http://${IP}:3449/ lein figwheel
 LANGUAGE_ENDPOINT_URL=http://${IP}:3000 ROOT_PATH=http://${IP}:3449/ lein figwheel &
+
 UI_SERVER_PID=$!
 
 RESPONSE=$(curl -s http://${IP}:3000)
