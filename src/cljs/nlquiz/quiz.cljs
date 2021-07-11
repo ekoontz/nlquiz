@@ -158,7 +158,7 @@
           (when (and @not-answered-yet?
                      (= guess-string @guess-text))
             (log/info (str "parse response: " response))
-            (log/info (str "semantics of guess: " semantics-of-guess))
+            (log/info (str "semantics of guess: " @semantics-of-guess))
             (reset! semantics-of-guess
                     (->> (-> response :body :sem)
                          (map cljs.reader/read-string)
