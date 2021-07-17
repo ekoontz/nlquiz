@@ -345,6 +345,13 @@ body {
     font-size: 24px;
 }
 
+
+#input-guess {
+    margin-top:0.5em;
+    font-size:larger;
+    margin-bottom:0.5em;
+}
+
 /* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
 /* ----------- iPhone 6, 6S, 7 and 8 ----------- */
 /* Portrait and Landscape */
