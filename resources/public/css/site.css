@@ -417,4 +417,18 @@ body {
 	font-size:125%;
 	margin-top:0.5em;
     }
+
+    #input-guess {
+	font-size:larger;
+    }
+
+    div.question {
+	min-height:1em;
+    }
+
+    div.question-and-guess {
+	float:left;
+	background:transparent;
+	margin:0;
+    }
 }
