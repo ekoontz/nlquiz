@@ -136,7 +136,7 @@
 ;;                and only called if guess is correct)
 
 (def placeholder "wat is dit in Nederlands?")
-(def initial-guess-input-size (+ 1 (count placeholder)))
+(def initial-guess-input-size (count placeholder))
 (def guess-input-size (r/atom initial-guess-input-size))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
@@ -207,7 +207,7 @@
                                (reset! input-state "disabled")
                                (reset! not-answered-yet? false)                               
                                (log/debug (str "current guess size: " (-> input-element .-target .-value count)))
-                               (reset! guess-input-size (max initial-guess-input-size (+ 1 (-> input-element .-target .-value count))))
+                               (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                (submit-guess guess-text
                                              (-> input-element .-target .-value)
                                              parse-html
