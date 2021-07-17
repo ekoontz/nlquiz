@@ -122,6 +122,16 @@
                                        (log/info (str "unifies?  " (not fails?)))
                                        (log/info (str "subsumes? " subsumes?))
                                        (log/info (str "correct?  " correct?))
+                                       (when (not subsumes?)
+                                         (log/info (str "=== guess was not correct because semantics has something that guess semantics lacks. ==="))
+                                         (log/info (str "correct semantics: " (serialize correct-semantics)))
+                                         (log/info (str "guess semantics:   " (serialize guess)))
+                                         (log/info (str "correct subj: " (serialize (u/get-in correct-semantics [:subj]))))
+                                         (log/info (str "guess   subj: " (serialize (u/get-in guess [:subj]))))
+                                         (log/info (str "correct obj: " (serialize (u/get-in correct-semantics [:obj]))))
+                                         (log/info (str "guess   obj: " (serialize (u/get-in guess [:obj]))))
+                                         )
+                                         
                                        (if (not correct?)
                                          (log/info (str "semantics of guess: '" @guess-text "' are NOT correct: "
                                                          (if fail-path (str "fail-path: " fail-path)) "; "
