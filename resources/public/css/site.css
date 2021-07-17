@@ -352,6 +352,17 @@ body {
     margin-bottom:0.5em;
 }
 
+.please-wait {
+    font-size: 200%;
+    border-radius: 10px;
+    border:0.5em solid blue;
+    background:blue;
+    color:white;
+    padding:0;
+    margin:0.25em;
+    float:left;
+}
+
 /* https://css-tricks.com/snippets/css/media-queries-for-standard-devices/ */
 /* ----------- iPhone 6, 6S, 7 and 8 ----------- */
 /* Portrait and Landscape */

@@ -27,9 +27,8 @@
 
 (def mount-target
   [:div#app
-   [:h2 "Welcome to nlquiz"]
-   [:p "please wait while Figwheel is waking up ..."]
-   [:p "(Check the js console for hints if nothing exciting happens.)"]])
+   [:div.please-wait
+    [:div {:class "fas fa-stroopwafel fa-spin"}]]])
 
 (defn head []
   [:head
