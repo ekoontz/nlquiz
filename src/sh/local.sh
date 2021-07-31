@@ -1,3 +1,5 @@
+(cd ../menard && lein install)
+
 OLD_UI_SERVER=$(lsof -i TCP:3449 | grep LISTEN | awk '{print $2}')
 OLD_LANGUAGE_SERVER=$(lsof -i TCP:3000 | grep LISTEN | awk '{print $2}')
 
