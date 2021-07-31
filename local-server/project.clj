@@ -13,6 +13,5 @@
                  [org.clojure/core.async "0.4.474"]
                  [ring/ring-jetty-adapter "1.7.1"]]
   :ring {:handler nlquiz-local.handlers/app}
-  :main nlquiz-local.server
   :ring-handler nlquiz.handlers/app
   :plugins [[lein-ring "0.12.5"]])
