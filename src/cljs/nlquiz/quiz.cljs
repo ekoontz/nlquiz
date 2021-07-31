@@ -259,12 +259,12 @@
       (doall
        (->> (range 0 (count @question-table))
             (map (fn [i]
-                   [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
-                    [:th (- @answer-count i)]
-                    [:th.speak [:button {:on-click #(speak/nederlands (-> @question-table (nth i) :target))} "🔊"]]
-                    [:td.target (-> @question-table (nth i) :target)]
-                    [:td.source (-> @question-table (nth i) :source)]
-                    ]))))]]]
+                   (let [nederlandse-texte (-> @question-table (nth i) :target)]                   
+                     [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
+                      [:th (- @answer-count i)]
+                      [:th.speak [:button {:on-click #(speak/nederlands nederlandse-texte)} "🔊"]]
+                      [:td.target [:a {:href (str "http://google.com/search?q=\"" nederlandse-texte "\"")} nederlandse-texte]]
+                      [:td.source (-> @question-table (nth i) :source)]])))))]]]
    ] ;; div.main
   )
 
