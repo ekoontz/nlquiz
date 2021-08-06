@@ -52,7 +52,13 @@ done
 echo "LANGUAGE_SERVER_PID=${LANGUAGE_SERVER_PID}"
 echo "UI_SERVER_PID=${UI_SERVER_PID}"
 
+echo ""
+echo ""
+echo "***********************************************************************************"
 echo "**** UI server has started. Go to http://${IP}:3449 in your browser. *****"
+echo "***********************************************************************************"
+echo ""
+echo ""
 
 _cleanup() { 
   echo "Caught SIGINT signal - cleaning up."
