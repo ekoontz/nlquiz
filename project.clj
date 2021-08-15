@@ -63,9 +63,11 @@
           :target "resources/public/css/fa.min.css"}]]
 
   :cljsbuild
-  ;; see the Makefile: 'make build'
-  ;; (cd ../menard ; make clean; make compile; lein install); rm target/cljsbuild/public/js/app-optimized.js;  lein cljsbuild once min ;  lein figwheel
+  ;; build with:
+  ;; - rm target/cljsbuild/public/js/app-optimized.js;
+  ;; - lein cljsbuild once min
   {:builds {;; "lein cljsbuild auto min"
+            ;; "lein cljsbuild once min"
             :min
             {:source-paths ["src/cljs" "env/prod/cljs"]
              :compiler
@@ -79,6 +81,8 @@
               :optimizations :advanced
               :infer-externs true
               :pretty-print  false}}
+            ;; "lein cljsbuild once app"
+            ;; "lein cljsbuild auto app"
             :app
             {:source-paths ["src/cljs" "env/dev/cljs"]
              :figwheel {:on-jsload "nlquiz.core/mount-root"}
