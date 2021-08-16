@@ -6,6 +6,7 @@
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [serialize]]
+   [menard.parse :as parse]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.speak :as speak]
@@ -51,6 +52,7 @@
   (reset! question-html spinner)
   (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
+        (log/info (str "PARSE FUNCTION: " (parse/foo)))
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
