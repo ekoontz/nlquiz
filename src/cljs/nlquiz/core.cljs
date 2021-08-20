@@ -7,6 +7,7 @@
    [cljs-http.client :as http]
    [nlquiz.about :as about]   
    [nlquiz.quiz :as quiz]
+   [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
    [reitit.frontend :as reitit])
@@ -77,6 +78,7 @@
   (case route
     nil #'quiz/quiz
     :index #'quiz/quiz
+    :test  #'test/test
     :about #'about/component
     :curriculum #'quiz/quiz
     :curriculum-major #'quiz/quiz-component
