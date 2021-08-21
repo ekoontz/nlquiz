@@ -444,3 +444,11 @@ body {
 	margin:0;
     }
 }
+
+div.debug {
+    border:1px dashed blue;
+    padding:0.25em;
+    margin-bottom:1em;
+    width:90%;
+    margin-left:5%;
+}
