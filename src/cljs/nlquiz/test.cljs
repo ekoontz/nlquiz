@@ -11,7 +11,9 @@
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
-   [reagent.session :as session])
+   [reagent.session :as session]
+   [md5.core :as md5]
+   )
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
@@ -19,25 +21,56 @@
 (def grammar (r/atom spinner))
 (def span-pairs (r/atom spinner))
 
+(defn decode-tokens [response-body]
+  ;; a map between:
+  ;; keys: each key is a span e.g. [0 1]
+  ;; vals: each val is a sequence of serialized lexemes
+  (into {}
+        (->> (keys response-body)
+             (map (fn [k]
+                    [k (map deserialize (get response-body k))])))))
+
+(defn decode-grammar [response-body]
+  (map deserialize response-body))
+
 (defn test []
   (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                               "/parse-start?q=" "de grote pinda")))
             grammar-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/grammar/nl")))
-            ]
-        (log/info (str "one dag: " (-> parse-response :body vals first first deserialize)))
-        (log/info (str "first grammar rule: " (-> grammar-response :body first deserialize)))
-        (reset! tokens (-> parse-response :body vals first first deserialize))
-        (reset! grammar (-> grammar-response :body first deserialize))
-        (log/info (str "COUNT: " (-> parse-response :body keys count)))
-        (reset! span-pairs (parse/span-pairs (-> parse-response :body keys count) 2))
-        ))
+                                                "/grammar/nl")))]
+        (let [grammar-decoded (-> grammar-response :body decode-grammar)
+              tokens-decoded (-> parse-response :body decode-tokens)]
+          (reset! grammar grammar-decoded)
+          (reset! tokens tokens-decoded)
+          (reset! span-pairs (parse/span-pairs (-> tokens-decoded keys count) 2)))))
   (fn []
-    [:div [:h2 "test.."]
-     [:div.debug (if (map? @tokens) (str @tokens) @tokens)]
-     [:div.debug (if (map? @grammar) (-> @grammar dag_unify.core/pprint str) @grammar)]
-     [:div.debug (str @span-pairs)]
+    [:div
+
+     [:div.debug
+      [:h2 "tokens"]
+      (if (map? @tokens)
+        [:table
+         [:thead
+          [:tr [:th "span"] [:th "tokens"]]]
+         [:tbody
+          (->> (keys @tokens)
+               (map (fn [k]
+                      [:tr {:key (str k)}
+                       [:td k]
+                       [:td (get @tokens k)]]))
+               doall)]])]
+     [:div.debug
+      [:h2 "grammar"]
+      (if (seq @grammar)
+                   (->> @grammar
+                        (map dag_unify.core/pprint)
+                        (map (fn [rule]
+                               [:div.debug {:key (md5/string->md5-hex (str rule))} (str rule)]))))]
+     [:div.debug
+      [:h2 "span pairs"]
+      (str @span-pairs)]
      ]))
+
 
 
 
