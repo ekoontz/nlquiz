@@ -18,8 +18,6 @@
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
 (def tokens-a (r/atom spinner))
-(def grammar-a (r/atom spinner))
-(def span-pairs-a (r/atom spinner))
 (def next-stage-a (r/atom spinner))
 
 (defn decode-parse [response-body]
@@ -29,7 +27,6 @@
    (into {}
          (->> (keys response-body)
               (map (fn [k]
-                     (log/info (str "K: " (cljs.reader/read-string (clojure.string/join "" (rest (str k))))))
                      [(cljs.reader/read-string (clojure.string/join "" (rest (str k))))
                       (map (fn [serialized-lexeme]
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
@@ -47,9 +44,6 @@
         (let [grammar (-> grammar-response :body decode-grammar)
               input-map (-> parse-response :body decode-parse)
               input-length (count (keys input-map))]
-          (log/info (str "TEST (get [0 1]: "
-                         (-> input-map (get
-                                        [0 1]))))
           (reset! tokens-a input-map)
           (let [next-stage (binding [parse/syntax-tree (fn [x] "test:syntax-tree:"
                                                          (or (u/get-in x [:rule])
