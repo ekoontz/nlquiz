@@ -6,6 +6,7 @@
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
+   [menard.serialization :as s]
    [menard.parse :as parse]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
@@ -17,8 +18,8 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
-(def tokens-a (r/atom spinner))
-(def next-stage-a (r/atom spinner))
+(def stage-0-atom (r/atom spinner))
+(def stage-1-atom (r/atom spinner))
 
 (defn decode-parse [response-body]
    ;; a map between:
@@ -36,6 +37,24 @@
   (map (fn [rule] (-> rule cljs.reader/read-string deserialize))
        response-body))
 
+(defn print-stage [stage-map]
+  [:table
+   [:thead
+    [:tr
+     [:th [:h2 "span"]]
+     [:th [:h2 "expressions"]]]]
+   [:tbody
+    (->> (sort (keys stage-map))
+         (map (fn [k]
+                (let [v (get stage-map k)]
+                  [:tr {:key (md5/string->md5-hex (str k))}
+                   [:td (str k)]
+                   [:td (->> v
+                             (map (fn [each-expression]
+                                    [:div.debug {:key (md5/string->md5-hex (str each-expression))}
+                                     (str each-expression)
+                                     ])))]]))))]])
+   
 (defn test []
   (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                               "/parse-start?q=" "de grote pinda")))
@@ -44,24 +63,19 @@
         (let [grammar (-> grammar-response :body decode-grammar)
               input-map (-> parse-response :body decode-parse)
               input-length (count (keys input-map))]
-          (reset! tokens-a input-map)
-          (let [next-stage (binding [parse/syntax-tree (fn [x] "test:syntax-tree:"
-                                                         (or (u/get-in x [:rule])
-                                                             (u/get-in x [:canonical])))]
-                             (log/info (str "INPUT-LENGTH: " input-length))
-                             (log/info (str "GRAMMAR: " grammar))                     
+          (reset! stage-0-atom (print-stage input-map))
+          (let [next-stage (binding [parse/syntax-tree (fn [x] "??")]
                              (parse/parse-next-stage input-map input-length 2 grammar))]
-            (reset! next-stage-a (str (u/pprint (first (get next-stage [1 3])))))
-            (log/info (str "next-stage: " (keys next-stage)))))))
+            (reset! stage-1-atom (print-stage next-stage))))))
   (fn []
     [:div
      [:div.debug
       [:h2 "stage-1"]
-      @next-stage-a]
+      @stage-1-atom]
 
      [:div.debug
       [:h2 "stage-0"]
-      @tokens-a]
+      @stage-0-atom]
 
      ]))
 
