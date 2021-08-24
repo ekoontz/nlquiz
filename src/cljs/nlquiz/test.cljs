@@ -20,6 +20,7 @@
 (def tokens-a (r/atom spinner))
 (def grammar-a (r/atom spinner))
 (def span-pairs-a (r/atom spinner))
+(def next-stage-a (r/atom spinner))
 
 (defn decode-parse [response-body]
    ;; a map between:
@@ -49,39 +50,33 @@
           (log/info (str "TEST (get [0 1]: "
                          (-> input-map (get
                                         [0 1]))))
+          (reset! tokens-a input-map)
           (let [next-stage (binding [parse/syntax-tree (fn [x] "test:syntax-tree:"
                                                          (or (u/get-in x [:rule])
                                                              (u/get-in x [:canonical])))]
                              (log/info (str "INPUT-LENGTH: " input-length))
                              (log/info (str "GRAMMAR: " grammar))                     
                              (parse/parse-next-stage input-map input-length 2 grammar))]
-            (log/info (str "next-stage: " (keys next-stage)))
-            (reset! grammar-a grammar)))))
+            (reset! next-stage-a (str (u/pprint (first (get next-stage [1 3])))))
+            (log/info (str "next-stage: " (keys next-stage)))))))
   (fn []
     [:div
-     (comment
      [:div.debug
-      [:h2 "tokens"]
-      (if (map? @tokens-a)
-        [:table
-         [:thead
-          [:tr [:th "span"] [:th "tokens"]]]
-         [:tbody
-          (->> (keys @tokens-a)
-               (map (fn [k]
-                      [:tr {:key (str k)}
-                       [:td k]
-                       [:td (get @tokens-a k)]]))
-               doall)]])])
+      [:h2 "stage-1"]
+      @next-stage-a]
 
      [:div.debug
-      [:h2 "grammar"]
-      (if (seq @grammar-a)
-        (->> @grammar-a
-             (map dag_unify.core/pprint)
-             (map (fn [rule]
-                    [:div.debug {:key (md5/string->md5-hex (str rule))} (str rule)]))))]
-     [:div.debug
-      [:h2 "span pairs.."]
-      (str @span-pairs-a)]
+      [:h2 "stage-0"]
+      @tokens-a]
+
      ]))
+
+
+     
+
+
+
+
+     
+
+     
