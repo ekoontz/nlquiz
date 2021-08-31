@@ -86,6 +86,7 @@
       [:input {:type "text"
                :on-change (fn [input-element]
                             (reset! guess-text (-> input-element .-target .-value))
+                            (reset! long-span-atom spinner)
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
