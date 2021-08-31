@@ -21,6 +21,8 @@
 (def stage-0-atom (r/atom spinner))
 (def stage-1-atom (r/atom spinner))
 (def long-span-atom (r/atom spinner))
+(def guess-text (r/atom ""))
+(def grammar (atom nil))
 
 (def morphology
   [])
@@ -69,22 +71,37 @@
         (parse-in-stages input-length (+ 1 i) grammar))
     input-map))
 
+(defn submit-guess [guess-text the-input-element]
+  (log/info (str "submit-guess: " guess-text)))
+
 (defn test []
-  (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
-                                              "/parse-start?q=" "de grote pinda's slapen")))
-            grammar-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/grammar/nl")))]
-        (let [grammar (-> grammar-response :body decode-grammar)
-              input-map (-> parse-response :body decode-parse)
-              input-length (count (keys input-map))]
-          (let [parses (binding [parse/syntax-tree syntax-tree]
-                         (parse-in-stages input-map input-length 2 grammar))]
-            (log/info (str "next-stage keys: " (keys parses)))
-            (reset! long-span-atom (str (-> parses (get [0 input-length]) first syntax-tree)))))))
+  (go 
+    (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
+                                              "/grammar/nl")))]
+      (reset! grammar (-> grammar-response :body decode-grammar))
+      ))
   (fn []
-    [:div.debug
-     [:h2 "parse"]
-     @long-span-atom]))
+    [:div
+     [:div.debug
+      [:input {:type "text"
+               :on-change (fn [input-element]
+                            (reset! guess-text (-> input-element .-target .-value))
+                            (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
+                                                                        "/parse-start?q=" @guess-text)))
+                                      input-map (-> parse-response :body decode-parse)
+                                      input-length (count (keys input-map))
+                                      parses (binding [parse/syntax-tree syntax-tree]
+                                               (parse-in-stages input-map input-length 2 @grammar))]
+                                  (log/info (str "parse keys: " (keys parses)))
+                                  (reset! long-span-atom (str (-> parses (get [0 input-length]) first syntax-tree))))))
+               :value @guess-text}]]
+     [:div.debug
+      [:h2 "parse"]
+      @long-span-atom]]))
+
+
+
+
 
     
 
