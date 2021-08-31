@@ -20,6 +20,13 @@
 
 (def stage-0-atom (r/atom spinner))
 (def stage-1-atom (r/atom spinner))
+(def long-span-atom (r/atom spinner))
+
+(def morphology
+  [])
+
+(defn syntax-tree [tree]
+  (s/syntax-tree tree morphology))
 
 (defn decode-parse [response-body]
    ;; a map between:
@@ -54,30 +61,33 @@
                                     [:div.debug {:key (md5/string->md5-hex (str each-expression))}
                                      (str each-expression)
                                      ])))]]))))]])
-   
+
+(defn parse-in-stages [input-map input-length i grammar]
+  (if (>= input-length i)
+    (-> input-map
+        (parse/parse-next-stage input-length i grammar)
+        (parse-in-stages input-length (+ 1 i) grammar))
+    input-map))
+
 (defn test []
   (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
-                                              "/parse-start?q=" "de grote pinda")))
+                                              "/parse-start?q=" "de grote pinda's slapen")))
             grammar-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/grammar/nl")))]
         (let [grammar (-> grammar-response :body decode-grammar)
               input-map (-> parse-response :body decode-parse)
               input-length (count (keys input-map))]
-          (reset! stage-0-atom (print-stage input-map))
-          (let [next-stage (binding [parse/syntax-tree (fn [x] "??")]
-                             (parse/parse-next-stage input-map input-length 2 grammar))]
-            (reset! stage-1-atom (print-stage next-stage))))))
+          (let [parses (binding [parse/syntax-tree syntax-tree]
+                         (parse-in-stages input-map input-length 2 grammar))]
+            (log/info (str "next-stage keys: " (keys parses)))
+            (reset! long-span-atom (str (-> parses (get [0 input-length]) first syntax-tree)))))))
   (fn []
-    [:div
-     [:div.debug
-      [:h2 "stage-1"]
-      @stage-1-atom]
+    [:div.debug
+     [:h2 "parse"]
+     @long-span-atom]))
 
-     [:div.debug
-      [:h2 "stage-0"]
-      @stage-0-atom]
+    
 
-     ]))
 
 
      
