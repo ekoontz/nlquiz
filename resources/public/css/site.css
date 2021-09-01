@@ -196,7 +196,6 @@ table.eval th, table.eval td {
 }
 
 a.debug {
-    display:none;
     font-family:monospace;
 }
 

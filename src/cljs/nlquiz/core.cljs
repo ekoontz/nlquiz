@@ -52,11 +52,13 @@
                             (= path "/nlquiz/")
                             (prefix? (path-for :curriculum) path)) "selected" "")
              :href (path-for :curriculum)} "Curriculum"] " "
+
         [:a {:class (if (prefix? (path-for :about) path) "selected" "")
              :href (path-for :about)} "About"] " "
+
         [:a.debug
          {:class (if (prefix? (path-for :test) path) "selected" "")
-          :href (path-for :test)} "Debug"]]
+          :href (path-for :test)} "WIP"]]
        [page]
        [:footer
         [:p
