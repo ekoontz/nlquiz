@@ -20,8 +20,9 @@
 
 (def stage-0-atom (r/atom spinner))
 (def stage-1-atom (r/atom spinner))
-(def long-span-atom (r/atom spinner))
-(def guess-text (r/atom ""))
+(def long-span-atom (r/atom "_"))
+(def parse-nl-atom (r/atom (str {})))
+(def guess-text (r/atom "de hond"))
 (def grammar (atom nil))
 
 (def morphology
@@ -37,7 +38,7 @@
    (into {}
          (->> (keys response-body)
               (map (fn [k]
-                     [(cljs.reader/read-string (clojure.string/join "" (rest (str k))))
+                     [(cljs.reader/read-string (clojure.string/join (rest (str k))))
                       (map (fn [serialized-lexeme]
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
@@ -91,28 +92,35 @@
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
                                       input-length (count (keys input-map))
-                                      parses (binding [parse/syntax-tree syntax-tree]
-                                               (parse-in-stages input-map input-length 2 @grammar))]
-                                  (log/info (str "parse keys: " (keys parses)))
-                                  (reset! long-span-atom (str (-> parses (get [0 input-length]) first syntax-tree))))))
+                                      nl-parses (binding [parse/syntax-tree syntax-tree]
+                                                  (->
+                                                   (parse-in-stages input-map input-length 2 @grammar)
+                                                   (get [0 input-length])))
+                                      nl-sem (->> nl-parses
+                                                  (map #(u/get-in % [:sem]))
+                                                  (map #(-> % dag_unify.serialization/serialize str)))
+                                      nl-tokens (into
+                                                 {}
+                                                 (->>
+                                                  (-> input-map keys)
+                                                  (map (fn [k]
+                                                         [(-> k first str keyword)
+                                                          (-> input-map
+                                                              (get k)
+                                                              first
+                                                              ((fn [x]
+                                                                 (or (u/get-in x [:surface])
+                                                                     (u/get-in x [:canonical])))))]))))]
+                                  (reset! parse-nl-atom (-> (map syntax-tree nl-parses)
+                                                            ((fn [x] {:nl {:sem nl-sem
+                                                                           :tokens nl-tokens
+                                                                           :surface @guess-text
+                                                                           :trees (vec x)}}))
+                                                            str)))))
                :value @guess-text}]]
      [:div.debug
       [:h2 "parse"]
-      @long-span-atom]]))
+      [:div.monospace
+       @parse-nl-atom]]]))
 
 
-
-
-
-    
-
-
-
-     
-
-
-
-
-     
-
-     

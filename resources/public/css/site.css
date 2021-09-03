@@ -195,6 +195,10 @@ table.eval th, table.eval td {
     border:1px solid black;
 }
 
+div.debug {
+    font-family:monospace;
+}
+
 a.debug {
     font-family:monospace;
 }
