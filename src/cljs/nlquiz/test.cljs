@@ -75,6 +75,33 @@
 (defn submit-guess [guess-text the-input-element]
   (log/info (str "submit-guess: " guess-text)))
 
+(defn nl-parse [input-map]
+  (let [input-length (count (keys input-map))
+        nl-parses (binding [parse/syntax-tree syntax-tree]
+                    (->
+                     (parse-in-stages input-map input-length 2 @grammar)
+                     (get [0 input-length])))
+        nl-sem (->> nl-parses
+                    (map #(u/get-in % [:sem]))
+                    (map #(-> % dag_unify.serialization/serialize str)))
+        nl-tokens (into
+                   {}
+                   (->>
+                    (-> input-map keys)
+                    (map (fn [k]
+                           [(-> k first str keyword)
+                            (-> input-map
+                                (get k)
+                                first
+                                ((fn [x]
+                                   (or (u/get-in x [:surface])
+                                       (u/get-in x [:canonical])))))]))))]
+    (-> (map syntax-tree nl-parses)
+        ((fn [x] {:sem nl-sem
+                  :tokens nl-tokens
+                  :surface @guess-text
+                  :trees (vec x)})))))
+
 (defn test []
   (go 
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
@@ -91,31 +118,10 @@
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
-                                      input-length (count (keys input-map))
-                                      nl-parses (binding [parse/syntax-tree syntax-tree]
-                                                  (->
-                                                   (parse-in-stages input-map input-length 2 @grammar)
-                                                   (get [0 input-length])))
-                                      nl-sem (->> nl-parses
-                                                  (map #(u/get-in % [:sem]))
-                                                  (map #(-> % dag_unify.serialization/serialize str)))
-                                      nl-tokens (into
-                                                 {}
-                                                 (->>
-                                                  (-> input-map keys)
-                                                  (map (fn [k]
-                                                         [(-> k first str keyword)
-                                                          (-> input-map
-                                                              (get k)
-                                                              first
-                                                              ((fn [x]
-                                                                 (or (u/get-in x [:surface])
-                                                                     (u/get-in x [:canonical])))))]))))]
-                                  (reset! parse-nl-atom (-> (map syntax-tree nl-parses)
-                                                            ((fn [x] {:nl {:sem nl-sem
-                                                                           :tokens nl-tokens
-                                                                           :surface @guess-text
-                                                                           :trees (vec x)}}))
+                                      nl (nl-parse input-map)
+                                      en 42]
+                                  (reset! parse-nl-atom (-> {:nl nl
+                                                             :en en}
                                                             str)))))
                :value @guess-text}]]
      [:div.debug
