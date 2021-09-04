@@ -114,19 +114,23 @@
       [:input {:type "text"
                :on-change (fn [input-element]
                             (reset! guess-text (-> input-element .-target .-value))
-                            (reset! long-span-atom spinner)
+                            (reset! parse-nl-atom spinner)
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
                                       nl (nl-parse input-map)
-                                      en 42]
+                                      en {:surface "foo"}]
+                                  (log/info (str "(***** GOT THERE ****" nl))
                                   (reset! parse-nl-atom (-> {:nl nl
-                                                             :en en}
+                                                             :en en
+                                                             :sem (-> nl :sem)
+                                                             :english (-> en :surface)}
                                                             str)))))
                :value @guess-text}]]
      [:div.debug
       [:h2 "parse"]
       [:div.monospace
        @parse-nl-atom]]]))
+
 
 
