@@ -75,15 +75,15 @@
 (defn submit-guess [guess-text the-input-element]
   (log/info (str "submit-guess: " guess-text)))
 
-(defn nl-parse [input-map]
+(defn nl-parses [input-map]
   (let [input-length (count (keys input-map))
         nl-parses (binding [parse/syntax-tree syntax-tree]
                     (->
                      (parse-in-stages input-map input-length 2 @grammar)
                      (get [0 input-length])))
-        nl-sem (->> nl-parses
-                    (map #(u/get-in % [:sem]))
-                    (map #(-> % dag_unify.serialization/serialize str)))
+        nl-sems (->> nl-parses
+                     (map #(u/get-in % [:sem]))
+                     (map #(-> % dag_unify.serialization/serialize str)))
         nl-tokens (into
                    {}
                    (->>
@@ -97,7 +97,7 @@
                                    (or (u/get-in x [:surface])
                                        (u/get-in x [:canonical])))))]))))]
     (-> (map syntax-tree nl-parses)
-        ((fn [x] {:sem nl-sem
+        ((fn [x] {:sem nl-sems
                   :tokens nl-tokens
                   :surface @guess-text
                   :trees (vec x)})))))
@@ -118,7 +118,7 @@
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
-                                      nl (nl-parse input-map)
+                                      nl (nl-parses input-map)
                                       en {:surface "foo"}]
                                   (log/info (str "(***** GOT THERE ****" nl))
                                   (reset! parse-nl-atom (-> {:nl nl
