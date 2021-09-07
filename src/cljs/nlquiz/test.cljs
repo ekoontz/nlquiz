@@ -6,8 +6,9 @@
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
-   [menard.serialization :as s]
    [menard.parse :as parse]
+   [menard.serialization :as s]
+   [menard.translate.spec :as tr]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.speak :as speak]
@@ -75,13 +76,18 @@
 (defn submit-guess [guess-text the-input-element]
   (log/info (str "submit-guess: " guess-text)))
 
+(defn dag-to-string [dag]
+  (-> dag dag_unify.serialization/serialize str))
+
 (defn nl-parses [input-map]
-  (let [input-length (count (keys input-map))
-        nl-parses (binding [parse/syntax-tree syntax-tree]
-                    (->
-                     (parse-in-stages input-map input-length 2 @grammar)
-                     (get [0 input-length])))
-        nl-sems (->> nl-parses
+  (let [input-length (count (keys input-map))]
+    (binding [parse/syntax-tree syntax-tree]
+      (->
+       (parse-in-stages input-map input-length 2 @grammar)
+       (get [0 input-length])))))
+
+(defn assemble-nl-data [nl-parses input-map]
+  (let [nl-sems (->> nl-parses
                      (map #(u/get-in % [:sem]))
                      (map #(-> % dag_unify.serialization/serialize str)))
         nl-tokens (into
@@ -118,13 +124,15 @@
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
-                                      nl (nl-parses input-map)
-                                      en {:surface "foo"}]
-                                  (log/info (str "(***** GOT THERE ****" nl))
+                                      nl-parses (nl-parses input-map)
+                                      nl (assemble-nl-data nl-parses input-map)
+                                      en-specs (map (fn [nl-parse]
+                                                      (tr/nl-to-en-spec nl-parse))
+                                                    nl-parses)]
+                                  (log/info (str "nl: " (str nl)))
                                   (reset! parse-nl-atom (-> {:nl nl
-                                                             :en en
-                                                             :sem (-> nl :sem)
-                                                             :english (-> en :surface)}
+                                                             :en {:specs (map dag-to-string en-specs)}
+                                                             :sem (-> nl :sem dag-to-string)}
                                                             str)))))
                :value @guess-text}]]
      [:div.debug
