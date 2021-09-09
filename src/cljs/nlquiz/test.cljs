@@ -164,17 +164,18 @@
                                                              :sem (-> nl :sem dag-to-string)}
                                                             str)))))
                :value @guess-text}]]
-     [:div {:style {:float "left"}}
+     [:div.debug
+      [:h1 "nl"]
       [:div.debug
-       [:h2 "nl-surface"]
+       [:h2 "surface"]
        [:div.monospace
         @nl-surface-atom]]
       [:div.debug
-       [:h2 "nl-tokens"]
+       [:h2 "tokens"]
        [:div.monospace
         @nl-tokens-atom]]
       [:div.debug
-       [:h2 "nl-trees"]
+       [:h2 "trees"]
        [:div.monospace
         @nl-trees-atom]]
       [:div.debug
