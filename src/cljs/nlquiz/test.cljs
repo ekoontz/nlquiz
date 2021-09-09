@@ -134,8 +134,6 @@
 (def nl-trees-atom (r/atom (str "..")))
 (def en-specs-atom (r/atom (str "..")))
 
-(def parse-nl-atom (r/atom (str {})))
-
 (defn test []
   (go 
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
@@ -148,7 +146,6 @@
       [:input {:type "text"
                :on-change (fn [input-element]
                             (reset! guess-text (-> input-element .-target .-value))
-                            (reset! parse-nl-atom spinner)
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
@@ -168,10 +165,6 @@
                                   (reset! nl-surface-atom (nl-surface input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens input-map)))
                                   (reset! nl-trees-atom (str (nl-trees input-map)))
-                                  (reset! parse-nl-atom (-> {:nl nl
-                                                             :en {:specs (map dag-to-string en-specs)}
-                                                             :sem (-> nl :sem dag-to-string)}
-                                                            str))
 
                                   (reset! en-specs-atom
                                           (->> nl-parses
@@ -206,11 +199,7 @@
       [:div.debug
        [:h2 "trees"]
        [:div.monospace
-        @nl-trees-atom]]
-      [:div.debug
-       [:h2 "parse"]
-       [:div.monospace
-        @parse-nl-atom]]]]))
+        @nl-trees-atom]]]]))
 
 
 
