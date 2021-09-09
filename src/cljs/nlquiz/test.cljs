@@ -19,16 +19,6 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
-(def stage-0-atom (r/atom spinner))
-(def stage-1-atom (r/atom spinner))
-(def long-span-atom (r/atom "_"))
-(def parse-nl-atom (r/atom (str {})))
-(def guess-text (r/atom "de hond"))
-(def grammar (atom nil))
-
-(def morphology
-  [])
-
 (defn syntax-tree [tree]
   (s/syntax-tree tree morphology))
 
@@ -79,12 +69,33 @@
 (defn dag-to-string [dag]
   (-> dag dag_unify.serialization/serialize str))
 
+(def grammar (atom nil))
+
+(defn nl-surface []
+  @guess-text)
+
+(defn nl-tokens [input-map]
+  (into
+   {}
+   (->>
+    (-> input-map keys)
+    (map (fn [k]
+           [(-> k first str keyword)
+            (-> input-map
+                (get k)
+                first
+                ((fn [x]
+                   (or (u/get-in x [:surface])
+                       (u/get-in x [:canonical])))))])))))
+
 (defn nl-parses [input-map]
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree]
       (->
        (parse-in-stages input-map input-length 2 @grammar)
        (get [0 input-length])))))
+
+(def guess-text (r/atom "de hond"))
 
 (defn assemble-nl-data [nl-parses input-map]
   (let [nl-sems (->> nl-parses
@@ -108,6 +119,10 @@
                   :surface @guess-text
                   :trees (vec x)})))))
 
+(def nl-surface-atom (r/atom (str "..")))
+(def nl-tokens-atom (r/atom (str "..")))
+(def parse-nl-atom (r/atom (str {})))
+
 (defn test []
   (go 
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
@@ -130,15 +145,33 @@
                                                       (tr/nl-to-en-spec nl-parse))
                                                     nl-parses)]
                                   (log/info (str "nl: " (str nl)))
+                                  (log/info (str "en specs: " (map dag-to-string en-specs)))
+                                  (if false
+                                    ;; doesn't work yet (hence use of 'false' above):
+                                    (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                                          "/generate/en?q=" (str (map dag-to-string en-specs)))))]
+                                      (log/info (str "gen-response: " gen-response))))
+                                  (reset! nl-surface-atom (nl-surface input-map))
+                                  (reset! nl-tokens-atom (str (nl-tokens input-map)))
                                   (reset! parse-nl-atom (-> {:nl nl
                                                              :en {:specs (map dag-to-string en-specs)}
                                                              :sem (-> nl :sem dag-to-string)}
                                                             str)))))
                :value @guess-text}]]
-     [:div.debug
-      [:h2 "parse"]
-      [:div.monospace
-       @parse-nl-atom]]]))
+     [:div {:style {:float "left"}}
+      [:div.debug
+       [:h2 "nl-surface"]
+       [:div.monospace
+        @nl-surface-atom]]
+      [:div.debug
+       [:h2 "nl-tokens"]
+       [:div.monospace
+        @nl-tokens-atom]]
+      [:div.debug
+       [:h2 "parse"]
+       [:div.monospace
+        @parse-nl-atom]]]]))
+
 
 
 
