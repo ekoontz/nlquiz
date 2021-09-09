@@ -88,6 +88,9 @@
                    (or (u/get-in x [:surface])
                        (u/get-in x [:canonical])))))])))))
 
+(defn nl-trees [input-map]
+  (map syntax-tree (nl-parses input-map)))
+
 (defn nl-parses [input-map]
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree]
@@ -121,6 +124,8 @@
 
 (def nl-surface-atom (r/atom (str "..")))
 (def nl-tokens-atom (r/atom (str "..")))
+(def nl-trees-atom (r/atom (str "..")))
+
 (def parse-nl-atom (r/atom (str {})))
 
 (defn test []
@@ -153,6 +158,7 @@
                                       (log/info (str "gen-response: " gen-response))))
                                   (reset! nl-surface-atom (nl-surface input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens input-map)))
+                                  (reset! nl-trees-atom (str (nl-trees input-map)))
                                   (reset! parse-nl-atom (-> {:nl nl
                                                              :en {:specs (map dag-to-string en-specs)}
                                                              :sem (-> nl :sem dag-to-string)}
@@ -167,6 +173,10 @@
        [:h2 "nl-tokens"]
        [:div.monospace
         @nl-tokens-atom]]
+      [:div.debug
+       [:h2 "nl-trees"]
+       [:div.monospace
+        @nl-trees-atom]]
       [:div.debug
        [:h2 "parse"]
        [:div.monospace
