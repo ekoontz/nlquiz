@@ -132,6 +132,7 @@
 (def nl-surface-atom (r/atom (str "..")))
 (def nl-tokens-atom (r/atom (str "..")))
 (def nl-trees-atom (r/atom (str "..")))
+(def en-specs-atom (r/atom (str "..")))
 
 (def parse-nl-atom (r/atom (str {})))
 
@@ -170,8 +171,24 @@
                                   (reset! parse-nl-atom (-> {:nl nl
                                                              :en {:specs (map dag-to-string en-specs)}
                                                              :sem (-> nl :sem dag-to-string)}
-                                                            str)))))
+                                                            str))
+
+                                  (reset! en-specs-atom
+                                          (->> nl-parses
+                                               (map tr/nl-to-en-spec)
+                                               (map dag-to-string)))
+                                  
+                                  )
+                                )
+
+                            )
                :value @guess-text}]]
+     [:div.debug
+      [:h1 "en"]
+      [:div.debug
+       [:h2 "specs"]
+       [:div.monospace
+        @en-specs-atom]]]
      [:div.debug
       [:h1 "nl"]
       [:div.debug
