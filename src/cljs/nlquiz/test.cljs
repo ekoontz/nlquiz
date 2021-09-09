@@ -122,6 +122,13 @@
                   :surface @guess-text
                   :trees (vec x)})))))
 
+(defn nl-sem [input-map]
+  (let [nl-parses (nl-parses input-map)]
+    (->> nl-parses
+         (map #(u/get-in % [:sem]))
+         (map #(-> % dag_unify.serialization/serialize str)))))
+
+(def nl-sem-atom (r/atom (str "..")))
 (def nl-surface-atom (r/atom (str "..")))
 (def nl-tokens-atom (r/atom (str "..")))
 (def nl-trees-atom (r/atom (str "..")))
@@ -156,6 +163,7 @@
                                     (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                           "/generate/en?q=" (str (map dag-to-string en-specs)))))]
                                       (log/info (str "gen-response: " gen-response))))
+                                  (reset! nl-sem-atom (nl-sem input-map))
                                   (reset! nl-surface-atom (nl-surface input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens input-map)))
                                   (reset! nl-trees-atom (str (nl-trees input-map)))
@@ -170,6 +178,10 @@
        [:h2 "surface"]
        [:div.monospace
         @nl-surface-atom]]
+      [:div.debug
+       [:h2 "sem"]
+       [:div.monospace
+        @nl-sem-atom]]
       [:div.debug
        [:h2 "tokens"]
        [:div.monospace
