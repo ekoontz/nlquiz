@@ -149,7 +149,7 @@
                                                                         "/generate/en?spec=" (-> en-specs
                                                                                                  first
                                                                                                  dag-to-string))))]
-                                    (log/info (str "gen-response: " gen-response))
+                                    (log/info (str "gen-response: " (-> gen-response :body)))
                                     gen-response)
                                   
                                 ) ;; (let 
