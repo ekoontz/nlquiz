@@ -131,7 +131,7 @@
     [:div.monospace
      @en-surface-atom]]])
 
-(defn update-english []
+(defn update-english [number-of-atoms-to-create]
   (reset! en-specs-atom (->> (nl-parses @input-map) (map tr/nl-to-en-spec)))
   (reset! en-specs-ratom (array2map
                           (->> @en-specs-atom
@@ -161,16 +161,17 @@
       [:input {:type "text"
                :on-change (fn [input-element]
                             (reset! guess-text (-> input-element .-target .-value))
-                            (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
-                                                                        "/parse-start?q=" @guess-text)))]
-                                  (reset! input-map (-> parse-response :body decode-parse))
+                            (go (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                                            "/parse-start?q=" @guess-text)))
+                                                         :body decode-parse)]
+                                  (reset! input-map parse-response)
                                   ;; nl
                                   (reset! nl-surface-atom (nl-surface @input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                   (reset! nl-sem-atom (array2map (nl-sem @input-map)))
                                   (reset! nl-trees-atom (array2map (nl-trees @input-map)))
                                   ;; en
-                                  (update-english)
+                                  (update-english (count (keys @input-map)))
                                   
                                 ) ;; (let 
 
