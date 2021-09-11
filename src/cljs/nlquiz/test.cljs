@@ -88,8 +88,9 @@
                    (or (u/get-in x [:surface])
                        (u/get-in x [:canonical])))))])))))
 
-(defn nl-trees [input-map]
-  (map syntax-tree (nl-parses input-map)))
+(defn nl-trees [nl-parses]
+  (log/info (str "NEW!! nl-trees"))
+  (map syntax-tree nl-parses))
 
 (defn nl-parses [input-map]
   (let [input-length (count (keys input-map))]
@@ -100,11 +101,11 @@
 
 (def guess-text (r/atom "de hond"))
 
-(defn nl-sem [input-map]
-  (let [nl-parses (nl-parses input-map)]
-    (->> nl-parses
-         (map #(u/get-in % [:sem]))
-         (map #(-> % dag_unify.serialization/serialize str)))))
+(defn nl-sem [input-map nl-parses]
+  (log/info (str "NEW nl-sem"))
+  (->> nl-parses
+       (map #(u/get-in % [:sem]))
+       (map #(-> % dag_unify.serialization/serialize str))))
 
 (def nl-sem-atom (r/atom (str "..")))
 (def nl-surface-atom (r/atom (str "..")))
@@ -131,8 +132,8 @@
     [:div.monospace
      @en-surface-atom]]])
 
-(defn update-english [number-of-atoms-to-create]
-  (reset! en-specs-atom (->> (nl-parses @input-map) (map tr/nl-to-en-spec)))
+(defn update-english [number-of-atoms-to-create nl-parses]
+  (reset! en-specs-atom (->> nl-parses (map tr/nl-to-en-spec)))
   (reset! en-specs-ratom (array2map
                           (->> @en-specs-atom
                                (map dag-to-string))))
@@ -163,15 +164,16 @@
                             (reset! guess-text (-> input-element .-target .-value))
                             (go (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                             "/parse-start?q=" @guess-text)))
-                                                         :body decode-parse)]
+                                                         :body decode-parse)
+                                      nl-parses (nl-parses parse-response)]
                                   (reset! input-map parse-response)
                                   ;; nl
                                   (reset! nl-surface-atom (nl-surface @input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens @input-map)))
-                                  (reset! nl-sem-atom (array2map (nl-sem @input-map)))
-                                  (reset! nl-trees-atom (array2map (nl-trees @input-map)))
+                                  (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
+                                  (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
                                   ;; en
-                                  (update-english (count (keys @input-map)))
+                                  (update-english (count (keys @input-map)) nl-parses)
                                   
                                 ) ;; (let 
 
