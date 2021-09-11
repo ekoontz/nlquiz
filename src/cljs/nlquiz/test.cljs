@@ -99,9 +99,6 @@
        (get [0 input-length])))))
 
 (def guess-text (r/atom "de hond"))
-(def en-surface-atom (r/atom ".."))
-(defn en-surface []
-  @en-surface-atom)
 
 (defn nl-sem [input-map]
   (let [nl-parses (nl-parses input-map)]
@@ -120,6 +117,9 @@
   (str (zipmap (->> (range 0 (count input))
                     (map (fn [x] (-> x str keyword))))
                input)))
+
+(def en-surface-atom (r/atom ".."))
+(def en-surface-strings (atom []))
 
 (defn test []
   (go 
@@ -148,12 +148,16 @@
                                   (reset! en-specs-atom (array2map
                                                          (->> en-specs
                                                               (map dag-to-string))))
+                                  (reset! en-surface-atom "..")
+                                  (reset! en-surface-strings [])
                                   (doall (map (fn [en-spec]
                                                 (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                                           "/generate/en?spec=" (-> en-spec
                                                                                                                    dag-to-string))))]
                                                       (log/info (str "gen-response::: " (-> gen-response :body :surface)))
-                                                      (reset! en-surface-atom (array2map [(-> gen-response :body :surface)])))))
+                                                      (reset! en-surface-strings (cons (-> gen-response :body :surface)
+                                                                                       @en-surface-strings))
+                                                      (reset! en-surface-atom (array2map @en-surface-strings)))))
                                               en-specs))
                                   
                                 ) ;; (let 
@@ -181,10 +185,6 @@
         @nl-trees-atom]]]
      [:div.debug
       [:h1 "en"]
-      [:div.debug
-       [:h2 "specs"]
-       [:div.monospace
-        @en-specs-atom]]
       [:div.debug
        [:h2 "surface"]
        [:div.monospace
