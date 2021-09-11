@@ -123,6 +123,12 @@
 (def en-surface-strings (atom []))
 (def input-map (atom {}))
 
+(defn english-widget []
+  [:div.debug
+   [:h2 "surface"]
+   [:div.monospace
+    @en-surface-atom]])
+
 (defn test []
   (go 
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
@@ -184,11 +190,7 @@
        [:h2 "trees"]
        [:div.monospace
         @nl-trees-atom]]]
-     [:div.debug
-      [:h1 "en"]
-      [:div.debug
-       [:h2 "surface"]
-       [:div.monospace
-        @en-surface-atom]]]]
+    (english-widget)
+    ]
     )
   )
