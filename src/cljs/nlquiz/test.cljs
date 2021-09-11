@@ -99,6 +99,9 @@
        (get [0 input-length])))))
 
 (def guess-text (r/atom "de hond"))
+(def en-surface-atom (r/atom ".."))
+(defn en-surface []
+  @en-surface-atom)
 
 (defn nl-sem [input-map]
   (let [nl-parses (nl-parses input-map)]
@@ -125,7 +128,7 @@
       (reset! grammar (-> grammar-response :body decode-grammar))
       ))
   (fn []
-    [:div
+    [:div ;; top
      [:div.debug
       [:input {:type "text"
                :on-change (fn [input-element]
@@ -149,7 +152,9 @@
                                                                         "/generate/en?spec=" (-> en-specs
                                                                                                  first
                                                                                                  dag-to-string))))]
-                                    (log/info (str "gen-response: " (-> gen-response :body)))
+                                    (log/info (str "gen-response::: " (-> gen-response :body :surface)))
+                                    (reset! en-surface-atom (array2map [(-> gen-response :body :surface)]))
+
                                     gen-response)
                                   
                                 ) ;; (let 
@@ -180,10 +185,10 @@
       [:div.debug
        [:h2 "specs"]
        [:div.monospace
-        @en-specs-atom]]]]))
-
-
-
-
-
-
+        @en-specs-atom]]
+      [:div.debug
+       [:h2 "surface"]
+       [:div.monospace
+        @en-surface-atom]]]]
+    )
+  )
