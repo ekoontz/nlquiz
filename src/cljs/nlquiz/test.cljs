@@ -136,18 +136,16 @@
                             (reset! guess-text (-> input-element .-target .-value))
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                                         "/parse-start?q=" @guess-text)))
-                                      input-map (-> parse-response :body decode-parse)
-                                      nl-parses (nl-parses input-map)
-                                      en-specs (->> nl-parses
-                                                    (map tr/nl-to-en-spec))]
+                                      input-map (-> parse-response :body decode-parse)]
                                   ;; nl
                                   (reset! nl-surface-atom (nl-surface input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens input-map)))
                                   (reset! nl-sem-atom (array2map (nl-sem input-map)))
                                   (reset! nl-trees-atom (array2map (nl-trees input-map)))
                                   ;; en
+                                  (reset! en-specs-atom (->> (nl-parses input-map) (map tr/nl-to-en-spec)))
                                   (reset! en-specs-ratom (array2map
-                                                          (->> en-specs
+                                                          (->> @en-specs-atom
                                                                (map dag-to-string))))
                                   (reset! en-surface-atom "..")
                                   (reset! en-surface-strings [])
@@ -159,7 +157,7 @@
                                                       (reset! en-surface-strings (cons (-> gen-response :body :surface)
                                                                                        @en-surface-strings))
                                                       (reset! en-surface-atom (array2map @en-surface-strings)))))
-                                              en-specs))
+                                              @en-specs-atom))
                                   
                                 ) ;; (let 
 
