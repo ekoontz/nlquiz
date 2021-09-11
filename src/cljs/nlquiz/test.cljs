@@ -100,28 +100,6 @@
 
 (def guess-text (r/atom "de hond"))
 
-(defn assemble-nl-data [nl-parses input-map]
-  (let [nl-sems (->> nl-parses
-                     (map #(u/get-in % [:sem]))
-                     (map #(-> % dag_unify.serialization/serialize str)))
-        nl-tokens (into
-                   {}
-                   (->>
-                    (-> input-map keys)
-                    (map (fn [k]
-                           [(-> k first str keyword)
-                            (-> input-map
-                                (get k)
-                                first
-                                ((fn [x]
-                                   (or (u/get-in x [:surface])
-                                       (u/get-in x [:canonical])))))]))))]
-    (-> (map syntax-tree nl-parses)
-        ((fn [x] {:sem nl-sems
-                  :tokens nl-tokens
-                  :surface @guess-text
-                  :trees (vec x)})))))
-
 (defn nl-sem [input-map]
   (let [nl-parses (nl-parses input-map)]
     (->> nl-parses
@@ -133,6 +111,10 @@
 (def nl-tokens-atom (r/atom (str "..")))
 (def nl-trees-atom (r/atom (str "..")))
 (def en-specs-atom (r/atom (str "..")))
+
+(defn array2map [input]
+  (zipmap (range 0 (count input))
+          input))
 
 (defn test []
   (go 
@@ -150,7 +132,6 @@
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
                                       nl-parses (nl-parses input-map)
-                                      nl (assemble-nl-data nl-parses input-map)
                                       en-specs (map (fn [nl-parse]
                                                       (tr/nl-to-en-spec nl-parse))
                                                     nl-parses)]
@@ -177,29 +158,31 @@
                             )
                :value @guess-text}]]
      [:div.debug
-      [:h1 "en"]
-      [:div.debug
-       [:h2 "specs"]
-       [:div.monospace
-        @en-specs-atom]]]
-     [:div.debug
       [:h1 "nl"]
       [:div.debug
        [:h2 "surface"]
        [:div.monospace
         @nl-surface-atom]]
       [:div.debug
-       [:h2 "sem"]
-       [:div.monospace
-        @nl-sem-atom]]
-      [:div.debug
        [:h2 "tokens"]
        [:div.monospace
         @nl-tokens-atom]]
       [:div.debug
+       [:h2 "sem"]
+       [:div.monospace
+        @nl-sem-atom]]
+      [:div.debug
        [:h2 "trees"]
        [:div.monospace
-        @nl-trees-atom]]]]))
+        @nl-trees-atom]]]
+     [:div.debug
+      [:h1 "en"]
+      [:div.debug
+       [:h2 "specs"]
+       [:div.monospace
+        @en-specs-atom]]]]))
+
+
 
 
 
