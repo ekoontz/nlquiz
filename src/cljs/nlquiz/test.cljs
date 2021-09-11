@@ -112,9 +112,11 @@
 (def nl-trees-atom (r/atom (str "..")))
 (def en-specs-atom (r/atom (str "..")))
 
+;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
 (defn array2map [input]
-  (zipmap (range 0 (count input))
-          input))
+  (str (zipmap (->> (range 0 (count input))
+                    (map (fn [x] (-> x str keyword))))
+               input)))
 
 (defn test []
   (go 
@@ -132,25 +134,22 @@
                                                                         "/parse-start?q=" @guess-text)))
                                       input-map (-> parse-response :body decode-parse)
                                       nl-parses (nl-parses input-map)
-                                      en-specs (map (fn [nl-parse]
-                                                      (tr/nl-to-en-spec nl-parse))
-                                                    nl-parses)]
-                                  (log/info (str "nl: " (str nl)))
-                                  (log/info (str "en specs: " (map dag-to-string en-specs)))
+                                      en-specs (->> nl-parses
+                                                    (map tr/nl-to-en-spec))]
                                   (if false
                                     ;; doesn't work yet (hence use of 'false' above):
                                     (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                           "/generate/en?q=" (str (map dag-to-string en-specs)))))]
                                       (log/info (str "gen-response: " gen-response))))
-                                  (reset! nl-sem-atom (nl-sem input-map))
+                                  ;; nl
                                   (reset! nl-surface-atom (nl-surface input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens input-map)))
-                                  (reset! nl-trees-atom (str (nl-trees input-map)))
-
-                                  (reset! en-specs-atom
-                                          (->> nl-parses
-                                               (map tr/nl-to-en-spec)
-                                               (map dag-to-string)))
+                                  (reset! nl-sem-atom (array2map (nl-sem input-map)))
+                                  (reset! nl-trees-atom (array2map (nl-trees input-map)))
+                                  ;; en
+                                  (reset! en-specs-atom (array2map
+                                                         (->> en-specs
+                                                              (map dag-to-string))))
                                   
                                   )
                                 )
