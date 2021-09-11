@@ -110,7 +110,8 @@
 (def nl-surface-atom (r/atom (str "..")))
 (def nl-tokens-atom (r/atom (str "..")))
 (def nl-trees-atom (r/atom (str "..")))
-(def en-specs-atom (r/atom (str "..")))
+(def en-specs-ratom (r/atom (str "..")))
+(def en-specs-atom (atom []))
 
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
 (defn array2map [input]
@@ -145,9 +146,9 @@
                                   (reset! nl-sem-atom (array2map (nl-sem input-map)))
                                   (reset! nl-trees-atom (array2map (nl-trees input-map)))
                                   ;; en
-                                  (reset! en-specs-atom (array2map
-                                                         (->> en-specs
-                                                              (map dag-to-string))))
+                                  (reset! en-specs-ratom (array2map
+                                                          (->> en-specs
+                                                               (map dag-to-string))))
                                   (reset! en-surface-atom "..")
                                   (reset! en-surface-strings [])
                                   (doall (map (fn [en-spec]
