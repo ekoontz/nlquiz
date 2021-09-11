@@ -136,11 +136,6 @@
                                       nl-parses (nl-parses input-map)
                                       en-specs (->> nl-parses
                                                     (map tr/nl-to-en-spec))]
-                                  (if false
-                                    ;; doesn't work yet (hence use of 'false' above):
-                                    (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                                          "/generate/en?q=" (str (map dag-to-string en-specs)))))]
-                                      (log/info (str "gen-response: " gen-response))))
                                   ;; nl
                                   (reset! nl-surface-atom (nl-surface input-map))
                                   (reset! nl-tokens-atom (str (nl-tokens input-map)))
@@ -150,11 +145,17 @@
                                   (reset! en-specs-atom (array2map
                                                          (->> en-specs
                                                               (map dag-to-string))))
+                                  (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                                        "/generate/en?spec=" (-> en-specs
+                                                                                                 first
+                                                                                                 dag-to-string))))]
+                                    (log/info (str "gen-response: " gen-response))
+                                    gen-response)
                                   
-                                  )
-                                )
+                                ) ;; (let 
 
-                            )
+                                ) ;; (go
+                            ) ;; :on-change (fn 
                :value @guess-text}]]
      [:div.debug
       [:h1 "nl"]
