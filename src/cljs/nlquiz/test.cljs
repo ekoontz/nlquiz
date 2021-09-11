@@ -121,6 +121,7 @@
 
 (def en-surface-atom (r/atom ".."))
 (def en-surface-strings (atom []))
+(def input-map (atom {}))
 
 (defn test []
   (go 
@@ -135,21 +136,22 @@
                :on-change (fn [input-element]
                             (reset! guess-text (-> input-element .-target .-value))
                             (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
-                                                                        "/parse-start?q=" @guess-text)))
-                                      input-map (-> parse-response :body decode-parse)]
+                                                                        "/parse-start?q=" @guess-text)))]
+                                  (reset! input-map (-> parse-response :body decode-parse))
                                   ;; nl
-                                  (reset! nl-surface-atom (nl-surface input-map))
-                                  (reset! nl-tokens-atom (str (nl-tokens input-map)))
-                                  (reset! nl-sem-atom (array2map (nl-sem input-map)))
-                                  (reset! nl-trees-atom (array2map (nl-trees input-map)))
+                                  (reset! nl-surface-atom (nl-surface @input-map))
+                                  (reset! nl-tokens-atom (str (nl-tokens @input-map)))
+                                  (reset! nl-sem-atom (array2map (nl-sem @input-map)))
+                                  (reset! nl-trees-atom (array2map (nl-trees @input-map)))
                                   ;; en
-                                  (reset! en-specs-atom (->> (nl-parses input-map) (map tr/nl-to-en-spec)))
+                                  (reset! en-specs-atom (->> (nl-parses @input-map) (map tr/nl-to-en-spec)))
                                   (reset! en-specs-ratom (array2map
                                                           (->> @en-specs-atom
                                                                (map dag-to-string))))
                                   (reset! en-surface-atom "..")
                                   (reset! en-surface-strings [])
                                   (doall (map (fn [en-spec]
+                                                (log/info (str "HERE WE GO with: " @nl-surface-atom))
                                                 (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                                           "/generate/en?spec=" (-> en-spec
                                                                                                                    dag-to-string))))]
