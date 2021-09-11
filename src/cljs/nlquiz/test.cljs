@@ -148,14 +148,13 @@
                                   (reset! en-specs-atom (array2map
                                                          (->> en-specs
                                                               (map dag-to-string))))
-                                  (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                                        "/generate/en?spec=" (-> en-specs
-                                                                                                 first
-                                                                                                 dag-to-string))))]
-                                    (log/info (str "gen-response::: " (-> gen-response :body :surface)))
-                                    (reset! en-surface-atom (array2map [(-> gen-response :body :surface)]))
-
-                                    gen-response)
+                                  (doall (map (fn [en-spec]
+                                                (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                                                          "/generate/en?spec=" (-> en-spec
+                                                                                                                   dag-to-string))))]
+                                                      (log/info (str "gen-response::: " (-> gen-response :body :surface)))
+                                                      (reset! en-surface-atom (array2map [(-> gen-response :body :surface)])))))
+                                              en-specs))
                                   
                                 ) ;; (let 
 
