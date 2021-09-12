@@ -134,17 +134,20 @@
 
 (def parse-lock (atom true))
 
-(defn update-english [number-of-atoms-to-create nl-parses]
-  (log/info (str "update-english: number of atoms: " number-of-atoms-to-create))
-  (let [specs (->> nl-parses (map tr/nl-to-en-spec))]
+(defn update-english [input-map nl-parses-atom]
+  (log/info (str "update-english: number of parses: " (count @nl-parses-atom)))
+  (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))]
     (reset! en-surfaces-atom nil)
+    (log/info (str "adding this many specs: " (count specs)))
     (doseq [en-spec specs]
       (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/generate/en?spec=" (-> en-spec
                                                                          dag-to-string))))]
-            (log/debug (str "gen-response::: " (-> gen-response :body :surface)))
+            (log/debug (str "update-english: en-surfaces-atom length 1: " (-> en-surfaces-atom deref count)))
+            (log/debug (str "update-english: adding new english surface form: " (-> gen-response :body :surface)))
             (reset! en-surfaces-atom (cons (str (-> gen-response :body :surface) ",")
-                                           @en-surfaces-atom)))))))
+                                           @en-surfaces-atom))
+            (log/debug (str "update-english: en-surfaces-atom length 2: " (-> en-surfaces-atom deref count))))))))
 
 (defn test []
   (go 
@@ -159,7 +162,7 @@
                :on-change (fn [input-element]
                             (log/debug (str "input changed."))
                             (reset! guess-text (-> input-element .-target .-value))
-                            (log/debug (str "now input is: " @guess-text))
+                            (log/info (str "now input is: " @guess-text))
                             (reset! parse-lock true)
                             (go
                               (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
@@ -168,8 +171,7 @@
                                     nl-parses (nl-parses parse-response)]
                                 (reset! nl-parses-atom nl-parses)
                                 (reset! input-map parse-response)
-                                (log/info (str "HERE WE GO WITH THE ENGLISH!!" (str (count (keys @input-map)))))
-                                (update-english (count (keys @input-map)) @nl-parses-atom)
+                                (update-english input-map nl-parses-atom)
                                 
                                 ;; nl
                                 (reset! nl-surface-atom (nl-surface @input-map))
