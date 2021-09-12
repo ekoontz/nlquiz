@@ -89,7 +89,6 @@
                        (u/get-in x [:canonical])))))])))))
 
 (defn nl-trees [nl-parses]
-  (log/info (str "NEW!! nl-trees"))
   (map syntax-tree nl-parses))
 
 (defn nl-parses [input-map]
@@ -101,8 +100,7 @@
 
 (def guess-text (r/atom "de hond"))
 
-(defn nl-sem [input-map nl-parses]
-  (log/info (str "NEW nl-sem"))
+(defn nl-sem [nl-parses]
   (->> nl-parses
        (map #(u/get-in % [:sem]))
        (map #(-> % dag_unify.serialization/serialize str))))
