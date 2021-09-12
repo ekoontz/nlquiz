@@ -125,22 +125,26 @@
 (def input-map (atom {}))
 
 (defn english-widget []
-  [:div.debug
+  [:div.debug {:style {:width "40%"}}
    [:h1 "en"]
    [:div.debug
     [:h2 "surfaces"]
     [:div.monospace
      @en-surfaces-atom]]])
 
+(def parse-lock (atom true))
+
 (defn update-english [number-of-atoms-to-create nl-parses]
-  (reset! en-surfaces-atom nil)
-  (doseq [en-spec (->> @nl-parses (map tr/nl-to-en-spec))]
-    (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                              "/generate/en?spec=" (-> en-spec
-                                                                       dag-to-string))))]
-          (log/info (str "gen-response::: " (-> gen-response :body :surface)))
-          (reset! en-surfaces-atom (cons (str (-> gen-response :body :surface) ",")
-                                         @en-surfaces-atom))))))
+  (if (= @parse-lock false)
+    (let [specs (->> nl-parses (map tr/nl-to-en-spec))]
+      (reset! en-surfaces-atom nil)
+      (doseq [en-spec specs]
+        (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                  "/generate/en?spec=" (-> en-spec
+                                                                           dag-to-string))))]
+              (log/debug (str "gen-response::: " (-> gen-response :body :surface)))
+              (reset! en-surfaces-atom (cons (str (-> gen-response :body :surface) ",")
+                                             @en-surfaces-atom))))))))
 
 (defn test []
   (go 
@@ -153,28 +157,34 @@
      [:div.debug
       [:input {:type "text"
                :on-change (fn [input-element]
+                            (log/debug (str "input changed."))
                             (reset! guess-text (-> input-element .-target .-value))
-                            (go (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                            (log/debug (str "now input is: " @guess-text))
+                            (reset! parse-lock true)
+                            (go
+                              (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                             "/parse-start?q=" @guess-text)))
                                                          :body decode-parse)
                                       nl-parses (nl-parses parse-response)]
-                                  (reset! nl-parses-atom nl-parses)
-                                  (reset! input-map parse-response)
-                                  
-                                  ;; nl
-                                  (reset! nl-surface-atom (nl-surface @input-map))
-                                  (reset! nl-tokens-atom (str (nl-tokens @input-map)))
-                                  (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                  (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                  ;; en
-                                  (update-english (count (keys @input-map)) nl-parses-atom)
-                                  
-                                ) ;; (let 
-
-                                ) ;; (go
-                            ) ;; :on-change (fn 
+                                (reset! nl-parses-atom nl-parses)
+                                (reset! input-map parse-response)
+                                (reset! parse-lock false)
+                                
+                                ;; nl
+                                (reset! nl-surface-atom (nl-surface @input-map))
+                                (reset! nl-tokens-atom (str (nl-tokens @input-map)))
+                                (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
+                                (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
+                              
+                                ;; en
+                                (log/info (str "updating english: nl:" @guess-text))
+                                (update-english (count (keys @input-map)) @nl-parses-atom)
+                                (log/debug (str "update english done; nl: " @guess-text))
+                                (log/debug (str "done with input changed event.")))))
+                              
+               ;; :on-change (fn 
                :value @guess-text}]]
-     [:div.debug
+     [:div.debug {:style {:width "45%"}}
       [:h1 "nl"]
       [:div.debug
        [:h2 "surface"]
