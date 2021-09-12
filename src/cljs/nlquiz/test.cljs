@@ -135,16 +135,16 @@
 (def parse-lock (atom true))
 
 (defn update-english [number-of-atoms-to-create nl-parses]
-  (if (= @parse-lock false)
-    (let [specs (->> nl-parses (map tr/nl-to-en-spec))]
-      (reset! en-surfaces-atom nil)
-      (doseq [en-spec specs]
-        (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                  "/generate/en?spec=" (-> en-spec
-                                                                           dag-to-string))))]
-              (log/debug (str "gen-response::: " (-> gen-response :body :surface)))
-              (reset! en-surfaces-atom (cons (str (-> gen-response :body :surface) ",")
-                                             @en-surfaces-atom))))))))
+  (log/info (str "update-english: number of atoms: " number-of-atoms-to-create))
+  (let [specs (->> nl-parses (map tr/nl-to-en-spec))]
+    (reset! en-surfaces-atom nil)
+    (doseq [en-spec specs]
+      (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                "/generate/en?spec=" (-> en-spec
+                                                                         dag-to-string))))]
+            (log/debug (str "gen-response::: " (-> gen-response :body :surface)))
+            (reset! en-surfaces-atom (cons (str (-> gen-response :body :surface) ",")
+                                           @en-surfaces-atom)))))))
 
 (defn test []
   (go 
@@ -163,24 +163,19 @@
                             (reset! parse-lock true)
                             (go
                               (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                                            "/parse-start?q=" @guess-text)))
-                                                         :body decode-parse)
-                                      nl-parses (nl-parses parse-response)]
+                                                                          "/parse-start?q=" @guess-text)))
+                                                       :body decode-parse)
+                                    nl-parses (nl-parses parse-response)]
                                 (reset! nl-parses-atom nl-parses)
                                 (reset! input-map parse-response)
-                                (reset! parse-lock false)
+                                (log/info (str "HERE WE GO WITH THE ENGLISH!!" (str (count (keys @input-map)))))
+                                (update-english (count (keys @input-map)) @nl-parses-atom)
                                 
                                 ;; nl
                                 (reset! nl-surface-atom (nl-surface @input-map))
                                 (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                 (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                              
-                                ;; en
-                                (log/info (str "updating english: nl:" @guess-text))
-                                (update-english (count (keys @input-map)) @nl-parses-atom)
-                                (log/debug (str "update english done; nl: " @guess-text))
-                                (log/debug (str "done with input changed event.")))))
+                                (reset! nl-trees-atom (array2map (nl-trees nl-parses))))))
                               
                ;; :on-change (fn 
                :value @guess-text}]]
