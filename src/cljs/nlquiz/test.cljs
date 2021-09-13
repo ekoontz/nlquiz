@@ -177,13 +177,18 @@
                                     nl-parses (nl-parses parse-response)]
                                 (reset! nl-parses-atom nl-parses)
                                 (reset! input-map parse-response)
-                                (update-english input-map nl-parses-atom)
                                 
                                 ;; nl
                                 (reset! nl-surface-atom (nl-surface @input-map))
                                 (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                 (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                (reset! nl-trees-atom (array2map (nl-trees nl-parses))))))
+                                (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
+
+                                (update-english input-map nl-parses-atom)))
+                                                            
+
+                            )
+
                               
                ;; :on-change (fn 
                :value @guess-text}]]
