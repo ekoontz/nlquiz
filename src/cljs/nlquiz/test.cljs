@@ -134,25 +134,28 @@
 
 (def parse-lock (atom true))
 
-(defn update-english [input-map nl-parses-atom]
+(defn update-english [input-map nl-parses-atom nl-at-time-of-call]
+  (log/info (str "nl-at-time-of-call: " nl-at-time-of-call))
   (go
     (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
           update-to (atom [])]
       (log/info (str "adding this many specs: " (count specs)))
-      (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
-        (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                              "/generate/en?spec=" (-> en-spec
-                                                                       dag-to-string))))]
-          (log/info (str "update-english: en-surfaces-atom length 1: " (-> en-surfaces-atom deref count)))
-          (log/info (str "update-english: adding new english surface form: " (-> gen-response :body :surface)))
-          (reset! update-to (cons (str (-> gen-response :body :surface) ",")
-                                  @update-to))))
-      (log/info (str "got here.." @update-to))
-      (if (seq @update-to)
-        (reset! en-surfaces-atom @update-to)
-        (reset! en-surfaces-atom ".."))
-      )
-    (log/info (str "done updating english: " @en-surfaces-atom))))
+      (if (= nl-at-time-of-call @nl-surface-atom)
+        (do
+          (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
+            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                  "/generate/en?spec=" (-> en-spec
+                                                                           dag-to-string))))]
+              (if (= nl-at-time-of-call @nl-surface-atom)
+                (reset! update-to (cons (str (-> gen-response :body :surface) ",")
+                                        @update-to))
+                (log/info (str "**** NOT *** updating english (1) since nl: " nl-at-time-of-call " != " @nl-surface-atom)))))
+
+          (if (and (= nl-at-time-of-call @nl-surface-atom)
+                   (seq @update-to))
+            (reset! en-surfaces-atom @update-to)
+            (log/info (str "**** NOT *** updating english (2) since nl: [" nl-at-time-of-call "] != " @nl-surface-atom))))
+        (log/info (str "**** NOT *** updating english (3) since nl: " nl-at-time-of-call " != " @nl-surface-atom))))))
 
 (defn test []
   (go 
@@ -167,7 +170,6 @@
                :on-change (fn [input-element]
                             (log/debug (str "input changed."))
                             (reset! guess-text (-> input-element .-target .-value))
-                            (log/info (str "now input is: " @guess-text))
                             (reset! parse-lock true)
 
                             (go
@@ -184,11 +186,8 @@
                                 (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                 (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
 
-                                (update-english input-map nl-parses-atom)))
-                                                            
-
+                                (update-english input-map nl-parses-atom @nl-surface-atom)))
                             )
-
                               
                ;; :on-change (fn 
                :value @guess-text}]]
