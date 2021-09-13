@@ -135,19 +135,24 @@
 (def parse-lock (atom true))
 
 (defn update-english [input-map nl-parses-atom]
-  (log/info (str "update-english: number of parses: " (count @nl-parses-atom)))
-  (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))]
-    (reset! en-surfaces-atom nil)
-    (log/info (str "adding this many specs: " (count specs)))
-    (doseq [en-spec specs]
-      (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/generate/en?spec=" (-> en-spec
-                                                                         dag-to-string))))]
-            (log/debug (str "update-english: en-surfaces-atom length 1: " (-> en-surfaces-atom deref count)))
-            (log/debug (str "update-english: adding new english surface form: " (-> gen-response :body :surface)))
-            (reset! en-surfaces-atom (cons (str (-> gen-response :body :surface) ",")
-                                           @en-surfaces-atom))
-            (log/debug (str "update-english: en-surfaces-atom length 2: " (-> en-surfaces-atom deref count))))))))
+  (go
+    (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
+          update-to (atom [])]
+      (log/info (str "adding this many specs: " (count specs)))
+      (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
+        (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                              "/generate/en?spec=" (-> en-spec
+                                                                       dag-to-string))))]
+          (log/info (str "update-english: en-surfaces-atom length 1: " (-> en-surfaces-atom deref count)))
+          (log/info (str "update-english: adding new english surface form: " (-> gen-response :body :surface)))
+          (reset! update-to (cons (str (-> gen-response :body :surface) ",")
+                                  @update-to))))
+      (log/info (str "got here.." @update-to))
+      (if (seq @update-to)
+        (reset! en-surfaces-atom @update-to)
+        (reset! en-surfaces-atom ".."))
+      )
+    (log/info (str "done updating english: " @en-surfaces-atom))))
 
 (defn test []
   (go 
@@ -164,6 +169,7 @@
                             (reset! guess-text (-> input-element .-target .-value))
                             (log/info (str "now input is: " @guess-text))
                             (reset! parse-lock true)
+
                             (go
                               (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                           "/parse-start?q=" @guess-text)))
