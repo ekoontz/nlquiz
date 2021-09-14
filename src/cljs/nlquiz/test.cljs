@@ -58,6 +58,7 @@
                                      ])))]]))))]])
 
 (defn parse-in-stages [input-map input-length i grammar]
+  (log/info (str "parse-in-stages: " (- i 1) "/" input-length))
   (if (>= input-length i)
     (-> input-map
         (parse/parse-next-stage input-length i grammar)
@@ -69,11 +70,6 @@
 
 (defn dag-to-string [dag]
   (-> dag dag_unify.serialization/serialize str))
-
-(def grammar (atom nil))
-
-(defn nl-surface []
-  @guess-text)
 
 (defn nl-tokens [input-map]
   (into
@@ -92,11 +88,11 @@
 (defn nl-trees [nl-parses]
   (map syntax-tree nl-parses))
 
-(defn nl-parses [input-map]
+(defn nl-parses [input-map grammar]
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree]
       (->
-       (parse-in-stages input-map input-length 2 @grammar)
+       (parse-in-stages input-map input-length 2 grammar)
        (get [0 input-length])))))
 
 (def guess-text (r/atom "de hond"))
@@ -121,17 +117,15 @@
    [:div.monospace
      @en-surfaces-atom]])
 
-(def parse-lock (atom true))
-
 (defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom]
-  (let [old-english @en-surfaces-atom]
-    (reset! en-surfaces-atom "..")
+  (let [old-nl @nl-surface-atom
+        old-en @en-surfaces-atom]
     (go
       (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
             update-to (atom [])]
         (log/info (str "adding this many specs: " (count specs)))
         (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
-          (if (= nl-at-time-of-call @nl-surface-atom)
+          (if (= old-nl @nl-surface-atom)
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
                                                                            dag-to-string))))]
@@ -139,13 +133,14 @@
                                       @update-to)))
             (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))))
         (let [test @nl-surface-atom]
-          (if (= old-english @nl-surface-atom)
+          (if (= old-nl test)
             (reset! en-surfaces-atom (string/join "," @update-to))
             (do
-              (reset! en-surfaces-atom old-english)
-              (log/info (str "**** NOT *** updating english (2) since nl: [" nl-at-time-of-call "] != [" test "]")))))))))
+              (reset! en-surfaces-atom old-en)
+              (log/info (str "**** NOT *** updating english (2) since nl: [" old-nl "] != [" test "]")))))))))
 
 (defn test []
+  (let [grammar (atom nil)]
   (go 
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))]
@@ -163,15 +158,15 @@
                  :on-change (fn [input-element]
                               (log/debug (str "input changed."))
                               (reset! guess-text (-> input-element .-target .-value))
-                              (reset! parse-lock true)
+                              (reset! en-surfaces-atom "..")
                               (go
                                 (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                             "/parse-start?q=" @guess-text)))
                                                          :body decode-parse)
-                                      nl-parses (nl-parses parse-response)]
+                                      nl-parses (nl-parses parse-response @grammar)]
                                   (reset! nl-parses-atom nl-parses)
                                   (reset! input-map parse-response)
-                                  (reset! nl-surface-atom (nl-surface @input-map))
+                                  (reset! nl-surface-atom @guess-text)
                                   (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                   (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                   (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
@@ -195,5 +190,6 @@
          [:div.monospace
         @nl-trees-atom]]]
        (english-widget)
-       ])))
+       ]))))
+
 
