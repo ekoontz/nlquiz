@@ -95,8 +95,6 @@
        (parse-in-stages input-map input-length 2 grammar)
        (get [0 input-length])))))
 
-(def guess-text (r/atom "de hond"))
-
 (defn nl-sem [nl-parses]
   (->> nl-parses
        (map #(u/get-in % [:sem]))
@@ -150,7 +148,8 @@
         nl-surface-atom (r/atom (str ".."))
         nl-tokens-atom (r/atom (str ".."))
         nl-trees-atom (r/atom (str ".."))
-        nl-parses-atom (atom nil)]
+        nl-parses-atom (atom nil)
+        guess-text (r/atom "de hond")]
     (fn []
       [:div ;; top
        [:div.debug
