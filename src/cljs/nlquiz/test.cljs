@@ -3,6 +3,7 @@
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
+   [clojure.string :as string]
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
@@ -109,8 +110,6 @@
 (def nl-surface-atom (r/atom (str "..")))
 (def nl-tokens-atom (r/atom (str "..")))
 (def nl-trees-atom (r/atom (str "..")))
-(def en-specs-ratom (r/atom (str "..")))
-(def en-specs-atom (atom []))
 (def nl-parses-atom (atom nil))
 
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
@@ -119,37 +118,38 @@
                     (map (fn [x] (-> x str keyword))))
                input)))
 
-(def en-surface-atom (r/atom ".."))
 (def en-surfaces-atom (r/atom))
-(def en-surface-strings (atom []))
 (def input-map (atom {}))
 
 (defn english-widget []
   [:div.debug {:style {:width "40%"}}
    [:h1 "en"]
-   [:div.debug
-    [:h2 "surfaces"]
-    [:div.monospace
-     @en-surfaces-atom]]])
+   [:div.monospace
+     @en-surfaces-atom]])
 
 (def parse-lock (atom true))
 
-(defn update-english [input-map nl-parses-atom nl-at-time-of-call]
-  (go
-    (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
-          update-to (atom [])]
-      (log/info (str "adding this many specs: " (count specs)))
-      (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
-        (if (= nl-at-time-of-call @nl-surface-atom)
-          (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/generate/en?spec=" (-> en-spec
-                                                                         dag-to-string))))]
-            (reset! update-to (cons (str (-> gen-response :body :surface) ",")
-                                    @update-to)))))
-      (if (and (= nl-at-time-of-call @nl-surface-atom)
-               (seq @update-to))
-        (reset! en-surfaces-atom @update-to)
-        (log/info (str "**** NOT *** updating english (2) since nl: [" nl-at-time-of-call "] != " @nl-surface-atom))))))
+(defn update-english [nl-parses-atom nl-at-time-of-call]
+  (let [old-english @en-surfaces-atom]
+    (reset! en-surfaces-atom "..")
+    (go
+      (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
+            update-to (atom [])]
+        (log/info (str "adding this many specs: " (count specs)))
+        (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
+          (if (= nl-at-time-of-call @nl-surface-atom)
+            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                  "/generate/en?spec=" (-> en-spec
+                                                                           dag-to-string))))]
+              (reset! update-to (cons (-> gen-response :body :surface)
+                                      @update-to)))
+            (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))))
+        (let [test @nl-surface-atom]
+          (if (= nl-at-time-of-call @nl-surface-atom)
+            (reset! en-surfaces-atom (string/join "," @update-to))
+            (do
+              (reset! en-surfaces-atom old-english)
+              (log/info (str "**** NOT *** updating english (2) since nl: [" nl-at-time-of-call "] != [" test "]")))))))))
 
 (defn test []
   (go 
@@ -165,7 +165,6 @@
                             (log/debug (str "input changed."))
                             (reset! guess-text (-> input-element .-target .-value))
                             (reset! parse-lock true)
-
                             (go
                               (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                           "/parse-start?q=" @guess-text)))
@@ -173,24 +172,17 @@
                                     nl-parses (nl-parses parse-response)]
                                 (reset! nl-parses-atom nl-parses)
                                 (reset! input-map parse-response)
-                                
-                                ;; nl
                                 (reset! nl-surface-atom (nl-surface @input-map))
                                 (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                 (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                 (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-
-                                (update-english input-map nl-parses-atom @nl-surface-atom)))
+                                (update-english nl-parses-atom @nl-surface-atom)))
                             )
                               
                ;; :on-change (fn 
                :value @guess-text}]]
      [:div.debug {:style {:width "45%"}}
       [:h1 "nl"]
-      [:div.debug
-       [:h2 "surface"]
-       [:div.monospace
-        @nl-surface-atom]]
       [:div.debug
        [:h2 "tokens"]
        [:div.monospace
