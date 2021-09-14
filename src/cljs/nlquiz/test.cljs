@@ -106,12 +106,6 @@
        (map #(u/get-in % [:sem]))
        (map #(-> % dag_unify.serialization/serialize str))))
 
-(def nl-sem-atom (r/atom (str "..")))
-(def nl-surface-atom (r/atom (str "..")))
-(def nl-tokens-atom (r/atom (str "..")))
-(def nl-trees-atom (r/atom (str "..")))
-(def nl-parses-atom (atom nil))
-
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
 (defn array2map [input]
   (str (zipmap (->> (range 0 (count input))
@@ -129,7 +123,7 @@
 
 (def parse-lock (atom true))
 
-(defn update-english [nl-parses-atom nl-at-time-of-call]
+(defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom]
   (let [old-english @en-surfaces-atom]
     (reset! en-surfaces-atom "..")
     (go
@@ -145,7 +139,7 @@
                                       @update-to)))
             (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))))
         (let [test @nl-surface-atom]
-          (if (= nl-at-time-of-call @nl-surface-atom)
+          (if (= old-english @nl-surface-atom)
             (reset! en-surfaces-atom (string/join "," @update-to))
             (do
               (reset! en-surfaces-atom old-english)
@@ -157,45 +151,49 @@
                                               "/grammar/nl")))]
       (reset! grammar (-> grammar-response :body decode-grammar))
       ))
-  (fn []
-    [:div ;; top
-     [:div.debug
-      [:input {:type "text"
-               :on-change (fn [input-element]
-                            (log/debug (str "input changed."))
-                            (reset! guess-text (-> input-element .-target .-value))
-                            (reset! parse-lock true)
-                            (go
-                              (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                                          "/parse-start?q=" @guess-text)))
-                                                       :body decode-parse)
-                                    nl-parses (nl-parses parse-response)]
-                                (reset! nl-parses-atom nl-parses)
-                                (reset! input-map parse-response)
-                                (reset! nl-surface-atom (nl-surface @input-map))
-                                (reset! nl-tokens-atom (str (nl-tokens @input-map)))
-                                (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                (update-english nl-parses-atom @nl-surface-atom)))
-                            )
-                              
-               ;; :on-change (fn 
-               :value @guess-text}]]
-     [:div.debug {:style {:width "45%"}}
+  (let [nl-sem-atom (r/atom (str ".."))
+        nl-surface-atom (r/atom (str ".."))
+        nl-tokens-atom (r/atom (str ".."))
+        nl-trees-atom (r/atom (str ".."))
+        nl-parses-atom (atom nil)]
+    (fn []
+      [:div ;; top
+       [:div.debug
+        [:input {:type "text"
+                 :on-change (fn [input-element]
+                              (log/debug (str "input changed."))
+                              (reset! guess-text (-> input-element .-target .-value))
+                              (reset! parse-lock true)
+                              (go
+                                (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                                            "/parse-start?q=" @guess-text)))
+                                                         :body decode-parse)
+                                      nl-parses (nl-parses parse-response)]
+                                  (reset! nl-parses-atom nl-parses)
+                                  (reset! input-map parse-response)
+                                  (reset! nl-surface-atom (nl-surface @input-map))
+                                  (reset! nl-tokens-atom (str (nl-tokens @input-map)))
+                                  (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
+                                  (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
+                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom)
+                              )))
+                 
+                 ;; :on-change (fn 
+                 :value @guess-text}]]
+       [:div.debug {:style {:width "45%"}}
       [:h1 "nl"]
-      [:div.debug
-       [:h2 "tokens"]
-       [:div.monospace
-        @nl-tokens-atom]]
-      [:div.debug
-       [:h2 "sem"]
-       [:div.monospace
-        @nl-sem-atom]]
-      [:div.debug
-       [:h2 "trees"]
-       [:div.monospace
+        [:div.debug
+         [:h2 "tokens"]
+         [:div.monospace
+          @nl-tokens-atom]]
+        [:div.debug
+         [:h2 "sem"]
+         [:div.monospace
+          @nl-sem-atom]]
+        [:div.debug
+         [:h2 "trees"]
+         [:div.monospace
         @nl-trees-atom]]]
-    (english-widget)
-    ]
-    )
-  )
+       (english-widget)
+       ])))
+
