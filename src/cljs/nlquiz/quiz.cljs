@@ -52,7 +52,6 @@
   (reset! question-html spinner)
   (go (let [response (<! (specification-fn))]
         (log/debug (str "new-expression response: " reponse))
-        (log/info (str "PARSE FUNCTION: " (parse/foo)))
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
