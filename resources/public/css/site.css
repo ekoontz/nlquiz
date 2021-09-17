@@ -16,7 +16,7 @@
 #answer {
     position: fixed;
     font-size:200%;
-    left:30%;
+    right:0;
     top: 0%;
     font-weight:bold;
     background:aliceblue;
@@ -124,15 +124,18 @@ div.question-and-guess {
     margin-top:0.25em;
     float:left;
     border-radius:10px;
-    background:#eee;
     padding:0.25em;
-    box-shadow: -2px 1px 2px 0px rgba(209,209,209,1);
     margin-left:2%;
 }
 
 div.question {
     min-height:1.2em;
     float:left;
+    width:100%;
+}
+
+div.question > div {
+    border:10px dashed green;
 }
 
 div.guess {
@@ -265,11 +268,11 @@ a.selected {
 }
 
 div.answertable {
-    float:right;
     overflow:scroll;
     padding:0;
     padding-right:1em;
     position:relative;
+    width:100%;
 }
 
 div.answertable table {
