@@ -98,7 +98,10 @@
 (defn nl-sem [nl-parses]
   (->> nl-parses
        (map #(u/get-in % [:sem]))
-       (map #(-> % dag_unify.serialization/serialize str))))
+             (map dag_unify.serialization/serialize)
+             set
+             vec
+             (map dag_unify.serialization/serialize)))
 
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
 (defn array2map [input]
@@ -177,7 +180,9 @@
             (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))))
         (let [test @nl-surface-atom]
           (if (= old-nl test)
-            (do (reset! en-surfaces-atom (string/join "," @update-to))
+            (do (reset! en-surfaces-atom (if (seq @update-to)
+                                           (string/join "," @update-to)
+                                           "??"))
                 (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))
             (do
               (reset! en-surfaces-atom old-en)
@@ -192,18 +197,19 @@
       ))
   (let [
         guess-text (r/atom "")
-
+        spinner [:i {:class "fas fa-stroopwafel fa-spin"}]
+        
         ;; nl-related
-        nl-sem-atom (r/atom (str ".."))
-        nl-surface-atom (r/atom (str ".."))
-        nl-tokens-atom (r/atom (str ".."))
-        nl-trees-atom (r/atom (str ".."))
-        nl-parses-atom (atom nil)
+        nl-sem-atom (r/atom spinner)
+        nl-surface-atom (r/atom spinner)
+        nl-tokens-atom (r/atom spinner)
+        nl-trees-atom (r/atom spinner)
+        nl-parses-atom (atom spinner)
 
         ;; en-related
-        en-specs-atom (r/atom nil)
-        en-sems-atom (r/atom nil)
-        en-trees-atom (r/atom nil)
+        en-specs-atom (r/atom spinner)
+        en-sems-atom (r/atom spinner)
+        en-trees-atom (r/atom spinner)
         ]
     (fn []
       [:div ;; top
@@ -212,7 +218,7 @@
                  :on-change (fn [input-element]
                               (log/debug (str "input changed."))
                               (reset! guess-text (-> input-element .-target .-value))
-                              (reset! en-surfaces-atom "..")
+                              (reset! en-surfaces-atom spinner)
                               (go
                                 (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                             "/parse-start?q=" @guess-text)))
@@ -224,7 +230,8 @@
                                   (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                   (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                   (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom en-specs-atom en-sems-atom en-trees-atom)
+                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom
+                                                  en-specs-atom en-sems-atom en-trees-atom)
                               ))) ;; end of :on-change's (fn).
                  :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
