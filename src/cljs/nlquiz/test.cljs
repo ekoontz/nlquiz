@@ -190,15 +190,20 @@
                                               "/grammar/nl")))]
       (reset! grammar (-> grammar-response :body decode-grammar))
       ))
-  (let [nl-sem-atom (r/atom (str ".."))
+  (let [
+        guess-text (r/atom "")
+
+        ;; nl-related
+        nl-sem-atom (r/atom (str ".."))
         nl-surface-atom (r/atom (str ".."))
         nl-tokens-atom (r/atom (str ".."))
         nl-trees-atom (r/atom (str ".."))
         nl-parses-atom (atom nil)
-        guess-text (r/atom "de hond")
-        en-specs (r/atom nil)
-        en-sems (r/atom nil)
-        en-trees (r/atom nil)
+
+        ;; en-related
+        en-specs-atom (r/atom nil)
+        en-sems-atom (r/atom nil)
+        en-trees-atom (r/atom nil)
         ]
     (fn []
       [:div ;; top
@@ -219,12 +224,10 @@
                                   (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                   (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                   (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom en-specs en-sems en-trees)
-                              )))
-                 
-                 ;; :on-change (fn 
+                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom en-specs-atom en-sems-atom en-trees-atom)
+                              ))) ;; end of :on-change's (fn).
                  :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
-       (en-widget en-surfaces-atom en-specs en-sems en-trees)
+       (en-widget en-surfaces-atom en-specs-atom en-sems-atom en-trees-atom)
        (backwards-compat-widget nl-sem-atom en-surfaces-atom)
        ]))))
