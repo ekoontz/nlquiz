@@ -22,3 +22,7 @@
     max-width:15em;
     border-radius: 5px;
 }
+
+div.debug > h2 {
+    margin:0;
+}
