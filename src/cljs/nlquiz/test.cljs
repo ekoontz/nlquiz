@@ -129,7 +129,7 @@
     [:div.monospace
      @trees]]])
 
-(defn nl-widget [text tokens-atom sem-atom trees-atom]
+(defn nl-widget [text tokens sem trees]
   [:div.debug {:style {:width "40%" :float "left"}}
    [:h1 ":nl"]
    [:div.debug
@@ -139,24 +139,24 @@
    [:div.debug
     [:h2 ":tokens"]
     [:div.monospace
-     @tokens-atom]]
+     @tokens]]
    [:div.debug
     [:h2 ":sem"]
     [:div.monospace
-     @sem-atom]]
+     @sem]]
    [:div.debug
     [:h2 ":trees"]
     [:div.monospace
-     @trees-atom]]])
+     @trees]]])
 
-(defn backwards-compat-widget [nl-sem-atom en-surfaces-atom]
+(defn backwards-compat-widget [nl-sem en-surfaces]
   [:div.debug
    [:h2 ":sem"]
    [:div.monospace
-    @nl-sem-atom]
+    @nl-sem]
    [:h2 ":english"]
    [:div.monospace
-    @en-surfaces-atom]])
+    @en-surfaces]])
 
 (defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom en-specs-atom en-sem-atom en-trees-atom]
   (let [old-nl @nl-surface-atom
