@@ -109,13 +109,17 @@
 (def en-surfaces-atom (r/atom))
 (def input-map (atom {}))
 
-(defn english-widget [text]
+(defn en-widget [text specs]
   [:div.debug {:style {:width "40%" :float "right"}}
    [:h1 "en"]
    [:div.debug
     [:h2 "surface"]
     [:div.monospace
-     @text]]])
+     @text]]
+   [:div.debug
+    [:h2 "specs"]
+     [:div.monospace
+      @specs]]])
 
 (defn nl-widget [text tokens-atom sem-atom trees-atom]
   [:div.debug {:style {:width "40%" :float "left"}}
@@ -137,12 +141,13 @@
     [:div.monospace
      @trees-atom]]])
 
-(defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom]
+(defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom en-specs]
   (let [old-nl @nl-surface-atom
         old-en @en-surfaces-atom]
     (go
       (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
             update-to (atom [])]
+        (reset! en-specs (->> specs (map dag_unify.serialization/serialize) (map str) array2map))
         (log/info (str "adding this many specs: " (count specs)))
         (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
           (if (= old-nl @nl-surface-atom)
@@ -171,7 +176,9 @@
         nl-tokens-atom (r/atom (str ".."))
         nl-trees-atom (r/atom (str ".."))
         nl-parses-atom (atom nil)
-        guess-text (r/atom "de hond")]
+        guess-text (r/atom "de hond")
+        en-specs (r/atom nil)
+        ]
     (fn []
       [:div ;; top
        [:div.debug
@@ -191,11 +198,11 @@
                                   (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                   (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                   (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom)
+                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom en-specs)
                               )))
                  
                  ;; :on-change (fn 
                  :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
-       (english-widget en-surfaces-atom)
+       (en-widget en-surfaces-atom en-specs)
        ]))))
