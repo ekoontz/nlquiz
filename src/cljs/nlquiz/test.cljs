@@ -109,11 +109,33 @@
 (def en-surfaces-atom (r/atom))
 (def input-map (atom {}))
 
-(defn english-widget []
-  [:div.debug {:style {:width "40%"}}
+(defn english-widget [text]
+  [:div.debug {:style {:width "40%" :float "right"}}
    [:h1 "en"]
-   [:div.monospace
-     @en-surfaces-atom]])
+   [:div.debug
+    [:h2 "surface"]
+    [:div.monospace
+     @text]]])
+
+(defn nl-widget [text tokens-atom sem-atom trees-atom]
+  [:div.debug {:style {:width "40%" :float "left"}}
+   [:h1 "nl"]
+   [:div.debug
+    [:h2 "surface"]
+    [:div.monospace
+     @text]]
+   [:div.debug
+    [:h2 "tokens"]
+    [:div.monospace
+     @tokens-atom]]
+   [:div.debug
+    [:h2 "sem"]
+    [:div.monospace
+     @sem-atom]]
+   [:div.debug
+    [:h2 "trees"]
+    [:div.monospace
+     @trees-atom]]])
 
 (defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom]
   (let [old-nl @nl-surface-atom
@@ -174,21 +196,6 @@
                  
                  ;; :on-change (fn 
                  :value @guess-text}]]
-       [:div.debug {:style {:width "45%"}}
-      [:h1 "nl"]
-        [:div.debug
-         [:h2 "tokens"]
-         [:div.monospace
-          @nl-tokens-atom]]
-        [:div.debug
-         [:h2 "sem"]
-         [:div.monospace
-          @nl-sem-atom]]
-        [:div.debug
-         [:h2 "trees"]
-         [:div.monospace
-        @nl-trees-atom]]]
-       (english-widget)
+       (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
+       (english-widget en-surfaces-atom)
        ]))))
-
-
