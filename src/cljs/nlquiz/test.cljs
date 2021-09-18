@@ -109,45 +109,63 @@
 (def en-surfaces-atom (r/atom))
 (def input-map (atom {}))
 
-(defn en-widget [text specs]
+(defn en-widget [text specs sems trees]
   [:div.debug {:style {:width "40%" :float "right"}}
-   [:h1 "en"]
+   [:h1 ":en"]
    [:div.debug
-    [:h2 "surface"]
+    [:h2 ":surface"]
     [:div.monospace
      @text]]
    [:div.debug
-    [:h2 "specs"]
+    [:h2 ":specs"]
      [:div.monospace
-      @specs]]])
+      @specs]]
+   [:div.debug
+    [:h2 ":sem"]
+    [:div.monospace
+     @sems]]
+   [:div.debug
+    [:h2 ":trees"]
+    [:div.monospace
+     @trees]]])
 
 (defn nl-widget [text tokens-atom sem-atom trees-atom]
   [:div.debug {:style {:width "40%" :float "left"}}
-   [:h1 "nl"]
+   [:h1 ":nl"]
    [:div.debug
-    [:h2 "surface"]
+    [:h2 ":surface"]
     [:div.monospace
      @text]]
    [:div.debug
-    [:h2 "tokens"]
+    [:h2 ":tokens"]
     [:div.monospace
      @tokens-atom]]
    [:div.debug
-    [:h2 "sem"]
+    [:h2 ":sem"]
     [:div.monospace
      @sem-atom]]
    [:div.debug
-    [:h2 "trees"]
+    [:h2 ":trees"]
     [:div.monospace
      @trees-atom]]])
 
-(defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom en-specs]
+(defn backwards-compat-widget [nl-sem-atom en-surfaces-atom]
+  [:div.debug
+   [:h2 ":sem"]
+   [:div.monospace
+    @nl-sem-atom]
+   [:h2 ":english"]
+   [:div.monospace
+    @en-surfaces-atom]])
+
+(defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom en-specs-atom en-sem-atom en-trees-atom]
   (let [old-nl @nl-surface-atom
         old-en @en-surfaces-atom]
     (go
       (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
             update-to (atom [])]
-        (reset! en-specs (->> specs (map dag_unify.serialization/serialize) (map str) array2map))
+        (reset! en-specs-atom (->> specs (map dag_unify.serialization/serialize) (map str) array2map))
+        (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
         (log/info (str "adding this many specs: " (count specs)))
         (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
           (if (= old-nl @nl-surface-atom)
@@ -159,7 +177,8 @@
             (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))))
         (let [test @nl-surface-atom]
           (if (= old-nl test)
-            (reset! en-surfaces-atom (string/join "," @update-to))
+            (do (reset! en-surfaces-atom (string/join "," @update-to))
+                (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))
             (do
               (reset! en-surfaces-atom old-en)
               (log/info (str "**** NOT *** updating english (2) since nl: [" old-nl "] != [" test "]")))))))))
@@ -178,6 +197,8 @@
         nl-parses-atom (atom nil)
         guess-text (r/atom "de hond")
         en-specs (r/atom nil)
+        en-sems (r/atom nil)
+        en-trees (r/atom nil)
         ]
     (fn []
       [:div ;; top
@@ -198,11 +219,12 @@
                                   (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                   (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                   (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom en-specs)
+                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom en-specs en-sems en-trees)
                               )))
                  
                  ;; :on-change (fn 
                  :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
-       (en-widget en-surfaces-atom en-specs)
+       (en-widget en-surfaces-atom en-specs en-sems en-trees)
+       (backwards-compat-widget nl-sem-atom en-surfaces-atom)
        ]))))
