@@ -88,20 +88,25 @@
 (defn nl-trees [nl-parses]
   (map syntax-tree nl-parses))
 
+(defn remove-duplicates [input]
+  (->> input
+       (map dag_unify.serialization/serialize)
+       set
+       vec
+       (map dag_unify.serialization/deserialize)))
+  
 (defn nl-parses [input-map grammar]
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree]
       (->
        (parse-in-stages input-map input-length 2 grammar)
-       (get [0 input-length])))))
+       (get [0 input-length])
+       remove-duplicates))))
 
 (defn nl-sem [nl-parses]
   (->> nl-parses
        (map #(u/get-in % [:sem]))
-             (map dag_unify.serialization/serialize)
-             set
-             vec
-             (map dag_unify.serialization/serialize)))
+       remove-duplicates))
 
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
 (defn array2map [input]
@@ -165,7 +170,12 @@
   (let [old-nl @nl-surface-atom
         old-en @en-surfaces-atom]
     (go
-      (let [specs (->> @nl-parses-atom (map tr/nl-to-en-spec))
+      (let [specs (->> @nl-parses-atom
+                       (map dag_unify.serialization/serialize)
+                       set
+                       vec
+                       (map dag_unify.serialization/deserialize)
+                       (map tr/nl-to-en-spec))
             update-to (atom [])]
         (reset! en-specs-atom (->> specs (map dag_unify.serialization/serialize) (map str) array2map))
         (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
@@ -175,9 +185,12 @@
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
                                                                            dag-to-string))))]
-              (reset! update-to (cons (-> gen-response :body :surface)
-                                      @update-to)))
-            (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))))
+              (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                          @update-to)
+                                    set
+                                    vec)))
+            (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))
+            ))
         (let [test @nl-surface-atom]
           (if (= old-nl test)
             (do (reset! en-surfaces-atom (if (seq @update-to)
