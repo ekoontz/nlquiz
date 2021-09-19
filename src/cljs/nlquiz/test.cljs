@@ -185,18 +185,19 @@
         (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
         (log/info (str "adding this many specs: " (count specs)))
         (doseq [en-spec specs]
-          (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/generate/en?spec=" (-> en-spec
-                                                                         dag-to-string))))]
-            (log/info (str "generate: received response for spec: '" en-spec "' based on NL: " old-nl))
-            (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                        @update-to)
-                                  set
-                                  vec))))
-        (reset! en-surfaces-atom (if (seq @update-to)
-                                   (string/join "," @update-to)
-                                   "??"))
-        (reset! en-trees-atom (->> [@en-surfaces-atom] array2map))))))
+          (when (= old-nl @nl-surface-atom)
+            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                  "/generate/en?spec=" (-> en-spec
+                                                                           dag-to-string))))]
+              (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                          @update-to)
+                                    set
+                                    vec)))))
+        (when (= old-nl @nl-surface-atom)
+          (reset! en-surfaces-atom (if (seq @update-to)
+                                     (string/join "," @update-to)
+                                     "??"))
+          (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))))))
 
 (defn test []
   (let [grammar (atom nil)]
