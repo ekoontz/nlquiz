@@ -185,25 +185,17 @@
         (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
         (log/info (str "adding this many specs: " (count specs)))
         (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec) remove-duplicates)]
-          (if (= (string/trim old-nl) (string/trim @nl-surface-atom))
-            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                  "/generate/en?spec=" (-> en-spec
-                                                                           dag-to-string))))]
-              (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                          @update-to)
-                                    set
-                                    vec)))
-            (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))
-            ))
-        (let [test @nl-surface-atom]
-          (if (= (string/trim old-nl) (string/trim test))
-            (do (reset! en-surfaces-atom (if (seq @update-to)
-                                           (string/join "," @update-to)
-                                           "??"))
-                (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))
-            (do
-              (reset! en-surfaces-atom old-en)
-              (log/info (str "**** NOT *** updating english (2) since nl has changed from [" (string/trim old-nl) "] to: [" (string/trim test) "]")))))))))
+          (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                "/generate/en?spec=" (-> en-spec
+                                                                         dag-to-string))))]
+            (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                        @update-to)
+                                  set
+                                  vec))))
+        (reset! en-surfaces-atom (if (seq @update-to)
+                                   (string/join "," @update-to)
+                                   "??"))
+        (reset! en-trees-atom (->> [@en-surfaces-atom] array2map))))))
 
 (defn test []
   (let [grammar (atom nil)]
@@ -231,8 +223,8 @@
        [:div.debug
         [:input {:type "text"
                  :on-change (fn [input-element]
-                              (log/debug (str "input changed."))
                               (reset! guess-text (-> input-element .-target .-value))
+                              (log/info (str "input changed to: " @guess-text))
                               (go
                                 (reset! en-surfaces-atom spinner)
                                 (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
