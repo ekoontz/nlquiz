@@ -193,14 +193,14 @@
                                           @update-to)
                                     set
                                     vec)))
-            (log/info (str "AVOIDING 1"))))
+            (log/debug (str "avoiding updating (1) after processing old data."))))
         (if (= old-nl @nl-surface-atom)
           (do
             (reset! en-surfaces-atom (if (seq @update-to)
                                        (string/join "," @update-to)
                                        "??"))
             (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))
-          (log/info (str "AVOIDING 2")))))))
+          (log/debug (str "avoiding updating (2) after processing old data.")))))))
 
 (defn test []
   (let [grammar (atom nil)]
@@ -218,7 +218,8 @@
         nl-tokens-atom (r/atom spinner)
         nl-trees-atom (r/atom spinner)
         nl-parses-atom (atom spinner)
-
+        last-parse-of (atom "")
+        
         ;; en-related
         en-specs-atom (r/atom spinner)
         en-sems-atom (r/atom spinner)
@@ -232,19 +233,25 @@
                               (log/info (str "input changed to: " @guess-text))
                               (go
                                 (reset! en-surfaces-atom spinner)
-                                (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                                            "/parse-start?q=" @guess-text)))
-                                                         :body decode-parse)
-                                      nl-parses (nl-parses parse-response @grammar @guess-text)]
-                                  (reset! nl-parses-atom nl-parses)
-                                  (reset! input-map parse-response)
-                                  (reset! nl-surface-atom @guess-text)
-                                  (reset! nl-tokens-atom (str (nl-tokens @input-map)))
-                                  (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                  (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                  (update-english nl-parses-atom en-surfaces-atom nl-surface-atom
-                                                  en-specs-atom en-sems-atom en-trees-atom)
-                              ))) ;; end of :on-change's (fn).
+                                (if (not (= @guess-text @last-parse-of))
+                                  (do
+                                    (log/info (str "=== STARTED NL PARSE OF: " @guess-text "; last parse was of: " @last-parse-of))
+                                    (reset! last-parse-of @guess-text)
+                                    (let [parse-of @guess-text
+                                          parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                                                "/parse-start?q=" parse-of)))
+                                                             :body decode-parse)
+                                          nl-parses (nl-parses parse-response @grammar @guess-text)]
+                                      (log/info (str "=== FINISHED NL PARSE OF: " parse-of))
+                                      (reset! nl-parses-atom nl-parses)
+                                      (reset! input-map parse-response)
+                                      (reset! nl-surface-atom @guess-text)
+                                      (reset! nl-tokens-atom (str (nl-tokens @input-map)))
+                                      (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
+                                      (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
+                                      (update-english nl-parses-atom en-surfaces-atom nl-surface-atom
+                                                      en-specs-atom en-sems-atom en-trees-atom)))
+                                  (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of)))))
                  :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
        (en-widget en-surfaces-atom en-specs-atom en-sems-atom en-trees-atom)
