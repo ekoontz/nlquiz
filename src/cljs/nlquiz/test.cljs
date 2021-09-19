@@ -184,10 +184,11 @@
                                    array2map))
         (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
         (log/info (str "adding this many specs: " (count specs)))
-        (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec) remove-duplicates)]
+        (doseq [en-spec specs]
           (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/generate/en?spec=" (-> en-spec
                                                                          dag-to-string))))]
+            (log/info (str "generate: received response for spec: '" en-spec "' based on NL: " old-nl))
             (reset! update-to (-> (cons (-> gen-response :body :surface)
                                         @update-to)
                                   set
