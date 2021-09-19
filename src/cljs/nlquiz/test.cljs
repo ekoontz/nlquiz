@@ -57,12 +57,12 @@
                                      (str each-expression)
                                      ])))]]))))]])
 
-(defn parse-in-stages [input-map input-length i grammar]
-  (log/info (str "parse-in-stages: " (- i 1) "/" input-length))
+(defn parse-in-stages [input-map input-length i grammar surface]
+  (log/info (str "parse-in-stages: '" surface "':" (- i 1) "/" input-length))
   (if (>= input-length i)
     (-> input-map
         (parse/parse-next-stage input-length i grammar)
-        (parse-in-stages input-length (+ 1 i) grammar))
+        (parse-in-stages input-length (+ 1 i) grammar surface))
     input-map))
 
 (defn submit-guess [guess-text the-input-element]
@@ -95,11 +95,11 @@
        vec
        (map dag_unify.serialization/deserialize)))
   
-(defn nl-parses [input-map grammar]
+(defn nl-parses [input-map grammar surface]
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree]
       (->
-       (parse-in-stages input-map input-length 2 grammar)
+       (parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
        remove-duplicates))))
 
@@ -175,13 +175,17 @@
                        set
                        vec
                        (map dag_unify.serialization/deserialize)
-                       (map tr/nl-to-en-spec))
+                       (map tr/nl-to-en-spec)
+                       remove-duplicates)
             update-to (atom [])]
-        (reset! en-specs-atom (->> specs (map dag_unify.serialization/serialize) (map str) array2map))
+        (reset! en-specs-atom (->> specs
+                                   (map dag_unify.serialization/serialize)
+                                   (map str)
+                                   array2map))
         (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
         (log/info (str "adding this many specs: " (count specs)))
-        (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec))]
-          (if (= old-nl @nl-surface-atom)
+        (doseq [en-spec (->> @nl-parses-atom (map tr/nl-to-en-spec) remove-duplicates)]
+          (if (= (string/trim old-nl) (string/trim @nl-surface-atom))
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
                                                                            dag-to-string))))]
@@ -192,14 +196,14 @@
             (log/info (str "AVOIDING UNNECESSARY GENERATE CALL!"))
             ))
         (let [test @nl-surface-atom]
-          (if (= old-nl test)
+          (if (= (string/trim old-nl) (string/trim test))
             (do (reset! en-surfaces-atom (if (seq @update-to)
                                            (string/join "," @update-to)
                                            "??"))
                 (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))
             (do
               (reset! en-surfaces-atom old-en)
-              (log/info (str "**** NOT *** updating english (2) since nl: [" old-nl "] != [" test "]")))))))))
+              (log/info (str "**** NOT *** updating english (2) since nl has changed from [" (string/trim old-nl) "] to: [" (string/trim test) "]")))))))))
 
 (defn test []
   (let [grammar (atom nil)]
@@ -208,8 +212,7 @@
                                               "/grammar/nl")))]
       (reset! grammar (-> grammar-response :body decode-grammar))
       ))
-  (let [
-        guess-text (r/atom "")
+  (let [guess-text (r/atom "")
         spinner [:i {:class "fas fa-stroopwafel fa-spin"}]
         
         ;; nl-related
@@ -222,8 +225,7 @@
         ;; en-related
         en-specs-atom (r/atom spinner)
         en-sems-atom (r/atom spinner)
-        en-trees-atom (r/atom spinner)
-        ]
+        en-trees-atom (r/atom spinner)]
     (fn []
       [:div ;; top
        [:div.debug
@@ -231,12 +233,12 @@
                  :on-change (fn [input-element]
                               (log/debug (str "input changed."))
                               (reset! guess-text (-> input-element .-target .-value))
-                              (reset! en-surfaces-atom spinner)
                               (go
+                                (reset! en-surfaces-atom spinner)
                                 (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                             "/parse-start?q=" @guess-text)))
                                                          :body decode-parse)
-                                      nl-parses (nl-parses parse-response @grammar)]
+                                      nl-parses (nl-parses parse-response @grammar @guess-text)]
                                   (reset! nl-parses-atom nl-parses)
                                   (reset! input-map parse-response)
                                   (reset! nl-surface-atom @guess-text)
