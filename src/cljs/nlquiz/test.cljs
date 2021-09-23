@@ -114,8 +114,7 @@
   (go 
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))]
-      (reset! grammar (-> grammar-response :body decode-grammar))
-      ))
+      (reset! grammar (-> grammar-response :body decode-grammar))))
   (let [guess-text (r/atom "")
         spinner [:i {:class "fas fa-stroopwafel fa-spin"}]
         
