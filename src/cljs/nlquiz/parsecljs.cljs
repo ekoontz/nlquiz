@@ -15,8 +15,7 @@
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session]
-   [md5.core :as md5]
-   )
+   [md5.core :as md5])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
