@@ -9,6 +9,7 @@
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
+   [nlquiz.parsecljs :refer [decode-grammar]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])
@@ -191,6 +192,12 @@
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
+  (let [grammar (atom nil)]
+    (go 
+      (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
+                                                "/grammar/nl")))]
+        (reset! grammar (-> grammar-response :body decode-grammar))
+        )))
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
