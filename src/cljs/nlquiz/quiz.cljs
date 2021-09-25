@@ -9,7 +9,7 @@
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.parsecljs :refer [decode-grammar]]
+   [nlquiz.parsecljs :refer [decode-grammar decode-parse]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])
