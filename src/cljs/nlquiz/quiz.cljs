@@ -159,7 +159,11 @@
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (reset! translation-of-guess spinner)
-    (go (let [response (<! (http/get parse-http {:query-params {"q" guess-string}}))]
+    (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
+                                                "/parse-start?q=" guess-string)))
+              response (-> (<! (http/get parse-http {:query-params {"q" guess-string}}))
+                           :body)]
+          (log/info (str "PARSE-RESPONSE: " response))
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
@@ -198,8 +202,7 @@
     (go 
       (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/grammar/nl")))]
-        (reset! grammar (-> grammar-response :body decode-grammar))
-        )))
+        (reset! grammar (-> grammar-response :body decode-grammar)))))
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
