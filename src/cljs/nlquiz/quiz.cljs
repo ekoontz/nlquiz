@@ -155,7 +155,8 @@
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
-  (let [guess-string @guess-text]
+  (let [guess-string @guess-text
+        grammar (atom nil)]
     (log/debug (str "submitting your guess: " guess-string))
     (reset! translation-of-guess spinner)
     (go (let [response (<! (http/get parse-http {:query-params {"q" guess-string}}))]
