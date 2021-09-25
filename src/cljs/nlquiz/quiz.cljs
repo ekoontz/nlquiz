@@ -150,13 +150,13 @@
 (def placeholder "wat is dit in Nederlands?")
 (def initial-guess-input-size (count placeholder))
 (def guess-input-size (r/atom initial-guess-input-size))
+(def grammar (atom nil))
 
 (defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
-  (let [guess-string @guess-text
-        grammar (atom nil)]
+  (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (reset! translation-of-guess spinner)
     (go (let [response (<! (http/get parse-http {:query-params {"q" guess-string}}))]
@@ -379,6 +379,7 @@
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
     (new-question (get-expression major minor))
+    (reset! grammar (-> grammar-response :body decode-grammar))
     (fn []
       [:div.curr-major
        (quiz-layout (get-expression major minor))
