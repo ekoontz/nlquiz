@@ -151,7 +151,7 @@
 (def guess-input-size (r/atom initial-guess-input-size))
 (def grammar (atom nil))
 
-(defn submit-guess [guess-text the-input-element semantics-of-guess possible-correct-semantics if-correct-fn]
+(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn nl-parses-atom]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
@@ -244,7 +244,8 @@
                                                  (.dispatchEvent (.getElementById js/document "quiz")
                                                                  (new js/Event "submit" {:cancelable true})))
                                                (.focus (.getElementById js/document "input-guess"))
-                                               (reset! show-answer correct-answer)))
+                                               (reset! show-answer correct-answer)
+                                               nl-parses-atom))
                                (reset! not-answered-yet? true)
                                (reset! input-state "")))}]]] ;; div.guess
 
