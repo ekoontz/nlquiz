@@ -9,7 +9,7 @@
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.parsecljs :refer [decode-grammar decode-parse dp2]]
+   [nlquiz.parsecljs :refer [decode-grammar decode-parse]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])
@@ -161,8 +161,8 @@
     (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/parse-start?q=" guess-string)))
               response (-> (<! (http/get parse-http {:query-params {"q" guess-string}}))
-                           :body dp2)]
-          (log/info (str "PARSE-RESPONSE (2): " parse-response))
+                           :body decode-parse)]
+          (log/info (str "PARSE-RESPONSE (4): " parse-response))
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:

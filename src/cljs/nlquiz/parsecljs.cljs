@@ -24,15 +24,6 @@
 (defn syntax-tree [tree]
   (s/syntax-tree tree morphology))
 
-(defn dp2 [response-body]
-  (into {}
-        (->> (keys response-body)
-             (map (fn [k]
-                    [(cljs.reader/read-string (clojure.string/join (rest (str k))))
-                     (map (fn [serialized-lexeme]
-                            serialized-lexeme)
-                          (get response-body k))])))))
-
 (defn decode-parse [response-body]
    ;; a map between:
    ;; keys: each key is a span e.g. [0 1]
