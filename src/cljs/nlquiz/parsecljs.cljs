@@ -17,10 +17,21 @@
    [reagent.session :as session]
    [md5.core :as md5])
   (:require-macros [cljs.core.async.macros :refer [go]]
-                   [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
+                   [nlquiz.handler :refer [root-path-from-env
+                                           inline-resource
+                                           language-server-endpoint-url]]))
 
 (defn syntax-tree [tree]
   (s/syntax-tree tree morphology))
+
+(defn dp2 [response-body]
+  (into {}
+        (->> (keys response-body)
+             (map (fn [k]
+                    [(cljs.reader/read-string (clojure.string/join (rest (str k))))
+                     (map (fn [serialized-lexeme]
+                            serialized-lexeme)
+                          (get response-body k))])))))
 
 (defn decode-parse [response-body]
    ;; a map between:
