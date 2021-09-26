@@ -9,7 +9,7 @@
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.parsecljs :refer [decode-grammar decode-parse]]
+   [nlquiz.parsecljs :refer [decode-grammar decode-parse nl-parses nl-trees]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])
@@ -158,11 +158,14 @@
   (let [guess-string @guess-text]
     (log/debug (str "submitting your guess: " guess-string))
     (reset! translation-of-guess spinner)
-    (go (let [parse-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/parse-start?q=" guess-string)))
-              response (-> (<! (http/get parse-http {:query-params {"q" guess-string}}))
-                           :body decode-parse)]
-          (log/info (str "PARSE-RESPONSE (4): " parse-response))
+    (go (let [parse-response
+              (->
+               (<! (http/get (str (language-server-endpoint-url)
+                                  "/parse-start?q=" guess-string)))
+               :body decode-parse)
+              response (<! (http/get parse-http {:query-params {"q" guess-string}}))
+              nl-parses (nl-parses parse-response @grammar @guess-text)]
+          (log/info (str "NL LOCAL PARSES : " (nl-trees nl-parses)))
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
@@ -196,14 +199,13 @@
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
-  (let [grammar (atom nil)]
-    (go 
-      (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/grammar/nl")))]
-        (reset! grammar (-> grammar-response :body decode-grammar)))))
+  (go
+    (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
+                                              "/grammar/nl")))]
+      (reset! grammar (-> grammar-response :body decode-grammar))))
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
-   [:div#praise {:style {:display @show-praise-display}} @show-praise-text]       
+   [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
    (if question-type-chooser-fn (question-type-chooser-fn get-question-fn))
    [:div.question-and-guess
     [:form#quiz {:on-submit on-submit}
