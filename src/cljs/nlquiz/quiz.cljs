@@ -5,11 +5,13 @@
    [cljs.core.async :refer [<!]]
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
-   [dag_unify.serialization :refer [serialize]]
+   [dag_unify.serialization :refer [deserialize serialize]]
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
+   [menard.translate.spec :as tr]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.parsecljs :refer [decode-grammar decode-parse nl-parses nl-trees]]
+   [nlquiz.parsecljs :refer [array2map dag-to-string decode-grammar decode-parse
+                             nl-parses nl-sem nl-trees remove-duplicates]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])
@@ -164,8 +166,21 @@
                                   "/parse-start?q=" guess-string)))
                :body decode-parse)
               response (<! (http/get parse-http {:query-params {"q" guess-string}}))
-              nl-parses (nl-parses parse-response @grammar @guess-text)]
-          (log/info (str "NL LOCAL PARSES : " (nl-trees nl-parses)))
+              nl-parses (nl-parses parse-response @grammar @guess-text)
+              specs (->> nl-parses
+                         (map serialize)
+                         set
+                         vec
+                         (map deserialize)
+                         (map tr/nl-to-en-spec)
+                         remove-duplicates
+                         )]
+          (log/info (str "SPECS: " specs))
+          (doseq [en-spec specs]
+            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                  "/generate/en?spec=" (-> en-spec
+                                                                           dag-to-string))))]
+              (log/info (str "gen-response: " (-> gen-response :body :surface)))))
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
