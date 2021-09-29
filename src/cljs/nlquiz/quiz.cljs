@@ -28,7 +28,6 @@
 (def possible-correct-semantics (r/atom nil))
 (def question-table (r/atom nil))
 (def question-html (r/atom nil))
-(def semantics-of-guess (r/atom nil))
 (def show-answer (r/atom nil))
 (def show-praise-text (r/atom nil))
 (def show-answer-display (r/atom "none"))
