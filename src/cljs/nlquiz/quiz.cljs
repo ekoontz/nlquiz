@@ -176,7 +176,7 @@
               local-sem  (->> nl-parses
                               (map #(u/get-in % [:sem])))
               ]
-          (reset! translation-of-guess "..")
+          (reset! translation-of-guess "")
           (doseq [en-spec specs]
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
@@ -248,7 +248,7 @@
                                                (reset! got-it-right? true)
                                                (reset! get-question-fn-atom get-question-fn)
                                                (reset! show-answer correct-answer)
-                                               (reset! translation-of-guess nil)
+                                               (reset! translation-of-guess "")
                                                (if (.-requestSubmit (.getElementById js/document "quiz"))
                                                  (.requestSubmit (.getElementById js/document "quiz"))
                                                  (.dispatchEvent (.getElementById js/document "quiz")
