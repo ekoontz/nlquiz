@@ -164,7 +164,6 @@
                (<! (http/get (str (language-server-endpoint-url)
                                   "/parse-start?q=" guess-string)))
                :body decode-parse)
-              response (<! (http/get parse-http {:query-params {"q" guess-string}}))
               nl-parses (nl-parses parse-response @grammar @guess-text)
               specs (->> nl-parses
                          (map serialize)
@@ -177,11 +176,13 @@
               local-sem  (->> nl-parses
                               (map #(u/get-in % [:sem])))
               ]
+          (reset! translation-of-guess "..")
           (doseq [en-spec specs]
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
                                                                            dag-to-string))))]
-              (log/info (str "gen-response: " (-> gen-response :body :surface)))))
+              (log/info (str "gen-response: " (-> gen-response :body :surface)))
+              (reset! translation-of-guess (-> gen-response :body :surface)))) ;; TODO: concatentate rather than overwrite.
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
@@ -194,15 +195,7 @@
                            "user guess: '" guess-string "'.")))
           (when (and @not-answered-yet?
                      (= guess-string @guess-text))
-            (log/info (str "*LOCAL* semantics of guess: " local-sem))
-            (log/info (str "translating: '" guess-string "' as: '"
-                           (-> response :body :english) "'."))
-            (if (-> response :body :english)
-              (reset! translation-of-guess
-                      (-> response :body :english))
-              (reset! translation-of-guess
-                      ""))
-            (log/info (str "OK EVALUATING (USING LOCAL).."))
+            (log/debug (str "*LOCAL* semantics of guess: " local-sem))
             (if (evaluate-guess local-sem
                                 @possible-correct-semantics)
               ;; got it right!
