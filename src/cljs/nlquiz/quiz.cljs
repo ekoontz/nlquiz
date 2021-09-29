@@ -153,7 +153,7 @@
 (def guess-input-size (r/atom initial-guess-input-size))
 (def grammar (atom nil))
 
-(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn nl-parses-atom]
+(defn submit-guess [guess-text the-input-element parse-html possible-correct-semantics if-correct-fn nl-parses-atom]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
@@ -173,9 +173,11 @@
                          vec
                          (map deserialize)
                          (map tr/nl-to-en-spec)
-                         remove-duplicates
-                         )]
-          (log/info (str "SPECS: " specs))
+                         remove-duplicates)
+
+              local-sem  (->> nl-parses
+                              (map #(u/get-in % [:sem])))
+              ]
           (doseq [en-spec specs]
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
@@ -193,11 +195,7 @@
                            "user guess: '" guess-string "'.")))
           (when (and @not-answered-yet?
                      (= guess-string @guess-text))
-            (log/info (str "semantics of guess: " @semantics-of-guess))
-            (reset! semantics-of-guess
-                    (->> (-> response :body :sem)
-                         (map cljs.reader/read-string)
-                         (map dag_unify.serialization/deserialize)))
+            (log/info (str "*LOCAL* semantics of guess: " local-sem))
             (log/info (str "translating: '" guess-string "' as: '"
                            (-> response :body :english) "'."))
             (if (-> response :body :english)
@@ -205,7 +203,8 @@
                       (-> response :body :english))
               (reset! translation-of-guess
                       ""))
-            (if (evaluate-guess @semantics-of-guess
+            (log/info (str "OK EVALUATING (USING LOCAL).."))
+            (if (evaluate-guess local-sem
                                 @possible-correct-semantics)
               ;; got it right!
               (if-correct-fn guess-string)
@@ -247,7 +246,7 @@
                                (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                (submit-guess guess-text
                                              (-> input-element .-target .-value)
-                                             semantics-of-guess
+                                             parse-html
                                              possible-correct-semantics
                                              ;; function called if the user guessed correctly:
                                              (fn [correct-answer]
