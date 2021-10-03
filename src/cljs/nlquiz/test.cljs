@@ -131,9 +131,8 @@
                               (let [nl-surface (-> input-element .-target .-value)]
                                 (reset! en-surfaces-atom spinner)
                                 (go
-                                  (let [parse-of nl-surface
-                                        parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                                              "/parse-start?q=" parse-of)))
+                                  (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                                              "/parse-start?q=" nl-surface)))
                                                            :body decode-parse)
                                         nl-parses (nl-parses parse-response @grammar @guess-text)
                                         en-specs (nl-parses-to-en-specs @nl-parses-atom)]
