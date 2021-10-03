@@ -81,20 +81,20 @@
                            (map str)
                            array2map))
   (log/info (str "generating this many english expressions: " (count en-specs)))
-  (doseq [en-spec en-specs]
-    (go
-      (let [update-to (atom [])
-            gen-response (<! (http/get (str (language-server-endpoint-url)
-                                            "/generate/en?spec=" (-> en-spec
-                                                                     dag-to-string))))]
-        (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                    @update-to)
-                              set
-                              vec))
-        (reset! en-surfaces-atom (if (seq @update-to)
-                                   (string/join "," @update-to)
-                                   "??"))
-        (reset! en-trees-atom (->> [@en-surfaces-atom] array2map))))))
+  (let [update-to (atom [])]
+    (doseq [en-spec en-specs]
+      (go
+        (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                              "/generate/en?spec=" (-> en-spec
+                                                                       dag-to-string))))]
+          (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                      @update-to)
+                                set
+                                vec))
+          (reset! en-surfaces-atom (if (seq @update-to)
+                                     (string/join "," @update-to)
+                                     "??"))
+          (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))))))
 
 (defn nl-parses-to-en-specs [nl-parses]
   (->> nl-parses
