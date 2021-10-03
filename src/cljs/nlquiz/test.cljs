@@ -128,37 +128,34 @@
         [:input {:type "text"
                  :placeholder "type something in Dutch"
                  :on-change (fn [input-element]
-                              (reset! guess-text (-> input-element .-target .-value))
-                              (log/info (str "input changed to: " @guess-text))
-                              (reset! en-surfaces-atom spinner)
-                              (log/info (str @guess-text " != " @last-parse-of))
-                              (reset! last-parse-of @guess-text)
-                              (go
-                                (let [parse-of @guess-text
-                                      parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                                            "/parse-start?q=" parse-of)))
-                                                         :body decode-parse)
-                                      nl-parses (nl-parses parse-response @grammar @guess-text)
-                                      en-specs (nl-parses-to-en-specs @nl-parses-atom)]
-                                  (update-english nl-parses
-                                                  en-specs
-                                                  en-surfaces-atom
-                                                  en-trees-atom)
-                                  (reset! nl-parses-atom nl-parses)
-                                  (reset! input-map parse-response)
-                                  (reset! nl-surface-atom @guess-text)
-                                  (reset! nl-tokens-atom (str (nl-tokens @input-map)))
-                                  (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                  (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                  (reset! en-specs-atom (->> en-specs
-                                                             (map serialize)
-                                                             (map str)
-                                                             array2map))
-                                  (reset! en-sems-atom (->> en-specs (map #(u/get-in % [:sem]))
-                                                            (map serialize)
-                                                            (map str)
-                                                            array2map)))))
-         :value @guess-text}]]
+                              (let [nl-surface (-> input-element .-target .-value)]
+                                (reset! en-surfaces-atom spinner)
+                                (go
+                                  (let [parse-of nl-surface
+                                        parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                                              "/parse-start?q=" parse-of)))
+                                                           :body decode-parse)
+                                        nl-parses (nl-parses parse-response @grammar @guess-text)
+                                        en-specs (nl-parses-to-en-specs @nl-parses-atom)]
+                                    (update-english nl-parses
+                                                    en-specs
+                                                    en-surfaces-atom
+                                                    en-trees-atom)
+                                    (reset! nl-parses-atom nl-parses)
+                                    (reset! input-map parse-response)
+                                    (reset! nl-surface-atom nl-surface)
+                                    (reset! nl-tokens-atom (str (nl-tokens @input-map)))
+                                    (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
+                                    (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
+                                    (reset! en-specs-atom (->> en-specs
+                                                               (map serialize)
+                                                               (map str)
+                                                               array2map))
+                                    (reset! en-sems-atom (->> en-specs (map #(u/get-in % [:sem]))
+                                                              (map serialize)
+                                                              (map str)
+                                                              array2map))))))
+                 }]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
        (en-widget en-surfaces-atom en-specs-atom en-sems-atom en-trees-atom)
        (backwards-compat-widget nl-sem-atom en-surfaces-atom)
