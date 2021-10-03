@@ -133,6 +133,7 @@
                               (reset! en-surfaces-atom spinner)
                               (if (not (= @guess-text @last-parse-of))
                                 (do
+                                  (log/info (str @guess-text " != " @last-parse-of))
                                   (reset! last-parse-of @guess-text)
                                   (go
                                     (let [parse-of @guess-text
@@ -141,6 +142,10 @@
                                                              :body decode-parse)
                                           nl-parses (nl-parses parse-response @grammar @guess-text)
                                           en-specs (nl-parses-to-en-specs @nl-parses-atom)]
+                                      (update-english nl-parses
+                                                      en-specs
+                                                      en-surfaces-atom
+                                                      en-trees-atom)
                                       (reset! nl-parses-atom nl-parses)
                                       (reset! input-map parse-response)
                                       (reset! nl-surface-atom @guess-text)
@@ -154,11 +159,7 @@
                                       (reset! en-sems-atom (->> en-specs (map #(u/get-in % [:sem]))
                                                                 (map serialize)
                                                                 (map str)
-                                                                array2map))
-                                      (update-english @nl-parses-atom
-                                                      en-specs
-                                                      en-surfaces-atom
-                                                      en-trees-atom))))
+                                                                array2map)))))
                                 (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of))))
          :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
