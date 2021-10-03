@@ -84,7 +84,7 @@
                            (map serialize)
                            (map str)
                            array2map))
-  (log/info (str "generating this many english expressions: " (count specs2)))
+  (log/info (str "generating this many english expressions: " (count en-specs)))
   (doseq [en-spec en-specs]
     (go
       (let [update-to (atom [])
