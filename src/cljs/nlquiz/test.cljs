@@ -101,15 +101,13 @@
               (reset! update-to (-> (cons (-> gen-response :body :surface)
                                           @update-to)
                                     set
-                                    vec)))
-            (log/debug (str "avoiding updating (1) after processing old data."))))
-        (if (= old-nl @nl-surface-atom)
-          (do
-            (reset! en-surfaces-atom (if (seq @update-to)
+                                    vec))
+
+              (reset! en-surfaces-atom (if (seq @update-to)
                                        (string/join "," @update-to)
                                        "??"))
-            (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))
-          (log/debug (str "avoiding updating (2) after processing old data.")))))))
+              (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))
+            (log/debug (str "avoiding updating (1) after processing old data."))))))))
 
 (defn test []
   (let [grammar (atom nil)]
