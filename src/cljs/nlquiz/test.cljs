@@ -75,11 +75,7 @@
    [:div.monospace
     @en-surfaces]])
 
-(defn update-english [nl-parses en-specs en-surfaces-atom en-specs-atom en-sem-atom en-trees-atom]
-  (reset! en-specs-atom (->> en-specs
-                             (map serialize)
-                             (map str)
-                             array2map))
+(defn update-english [nl-parses en-specs en-surfaces-atom en-sem-atom en-trees-atom]
   (reset! en-sem-atom (->> en-specs (map #(u/get-in % [:sem]))
                            (map serialize)
                            (map str)
@@ -155,10 +151,14 @@
                                       (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                       (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                       (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
+                                      (reset! en-specs-atom (->> en-specs
+                                                                 (map serialize)
+                                                                 (map str)
+                                                                 array2map))
                                       (update-english @nl-parses-atom
                                                       en-specs
                                                       en-surfaces-atom
-                                                      en-specs-atom en-sems-atom en-trees-atom))))
+                                                      en-sems-atom en-trees-atom))))
                                 (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of))))
          :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
