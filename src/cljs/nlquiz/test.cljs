@@ -75,15 +75,11 @@
    [:div.monospace
     @en-surfaces]])
 
-(defn update-english [nl-parses en-specs en-surfaces-atom en-sem-atom en-trees-atom]
-  (reset! en-sem-atom (->> en-specs (map #(u/get-in % [:sem]))
-                           (map serialize)
-                           (map str)
-                           array2map))
+(defn update-english [nl-parses en-specs en-surfaces-atom en-trees-atom]
   (log/info (str "generating this many english expressions: " (count en-specs)))
-  (let [update-to (atom [])]
-    (doseq [en-spec en-specs]
-      (go
+  (go
+    (let [update-to (atom [])]
+      (doseq [en-spec en-specs]
         (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                               "/generate/en?spec=" (-> en-spec
                                                                        dag-to-string))))]
@@ -155,10 +151,14 @@
                                                                  (map serialize)
                                                                  (map str)
                                                                  array2map))
+                                      (reset! en-sems-atom (->> en-specs (map #(u/get-in % [:sem]))
+                                                                (map serialize)
+                                                                (map str)
+                                                                array2map))
                                       (update-english @nl-parses-atom
                                                       en-specs
                                                       en-surfaces-atom
-                                                      en-sems-atom en-trees-atom))))
+                                                      en-trees-atom))))
                                 (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of))))
          :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
