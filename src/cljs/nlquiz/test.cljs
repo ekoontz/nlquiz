@@ -12,9 +12,9 @@
    [menard.translate.spec :as tr]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.parsecljs :refer [array2map dag-to-string decode-grammar decode-parse
-                             nl-parses nl-sem nl-tokens nl-trees
-                             remove-duplicates submit-guess]]
+   [nlquiz.menard :refer [array2map dag-to-string decode-grammar decode-parse
+                          nl-parses nl-sem nl-tokens nl-trees
+                          remove-duplicates submit-guess]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session]
