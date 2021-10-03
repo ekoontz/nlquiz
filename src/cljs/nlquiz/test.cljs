@@ -76,38 +76,33 @@
     @en-surfaces]])
 
 (defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom en-specs-atom en-sem-atom en-trees-atom]
-  (let [old-nl @nl-surface-atom
-        old-en @en-surfaces-atom]
-    (let [specs (->> @nl-parses-atom
-                     (map dag_unify.serialization/serialize)
-                     set
-                     vec
-                     (map dag_unify.serialization/deserialize)
-                     (map tr/nl-to-en-spec)
-                     remove-duplicates)
-          update-to (atom [])]
-      (reset! en-specs-atom (->> specs
-                                 (map dag_unify.serialization/serialize)
-                                 (map str)
-                                 array2map))
-      (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
-      (log/info (str "generating this many english expressions: " (count specs)))
-      (doseq [en-spec specs]
-        (if (= old-nl @nl-surface-atom)
-          (go
-            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                  "/generate/en?spec=" (-> en-spec
-                                                                           dag-to-string))))]
-              (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                          @update-to)
-                                    set
-                                    vec))
-              
-              (reset! en-surfaces-atom (if (seq @update-to)
-                                         (string/join "," @update-to)
-                                         "??"))
-              (reset! en-trees-atom (->> [@en-surfaces-atom] array2map))))
-          (log/info (str "*** avoiding updating after processing old data.")))))))
+  (let [specs (->> @nl-parses-atom
+                   (map dag_unify.serialization/serialize)
+                   set
+                   vec
+                   (map dag_unify.serialization/deserialize)
+                   (map tr/nl-to-en-spec)
+                   remove-duplicates)]
+    (reset! en-specs-atom (->> specs
+                               (map dag_unify.serialization/serialize)
+                               (map str)
+                               array2map))
+    (reset! en-sem-atom (->> specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
+    (log/info (str "generating this many english expressions: " (count specs)))
+    (doseq [en-spec specs]
+      (go
+        (let [update-to (atom [])
+              gen-response (<! (http/get (str (language-server-endpoint-url)
+                                              "/generate/en?spec=" (-> en-spec
+                                                                       dag-to-string))))]
+          (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                      @update-to)
+                                set
+                                vec))
+          (reset! en-surfaces-atom (if (seq @update-to)
+                                     (string/join "," @update-to)
+                                     "??"))
+          (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))))))
 
 (defn test []
   (let [grammar (atom nil)]
