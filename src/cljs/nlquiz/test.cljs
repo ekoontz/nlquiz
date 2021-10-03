@@ -75,8 +75,8 @@
    [:div.monospace
     @en-surfaces]])
 
-(defn update-english [nl-parses-atom en-surfaces-atom nl-surface-atom en-specs-atom en-sem-atom en-trees-atom]
-  (let [specs (->> @nl-parses-atom
+(defn update-english [nl-parses en-surfaces-atom en-specs-atom en-sem-atom en-trees-atom]
+  (let [specs (->> nl-parses
                    (map dag_unify.serialization/serialize)
                    set
                    vec
@@ -149,7 +149,7 @@
                                       (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                       (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                       (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                      (update-english nl-parses-atom en-surfaces-atom nl-surface-atom
+                                      (update-english @nl-parses-atom en-surfaces-atom
                                                       en-specs-atom en-sems-atom en-trees-atom))))
                                 (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of))))
          :value @guess-text}]]
