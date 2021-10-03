@@ -103,6 +103,15 @@
                                      (string/join "," @update-to)
                                      "??"))
           (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))))))
+(defn nl-parses-to-en-specs [nl-parses]
+  (->> nl-parses
+       (map dag_unify.serialization/serialize)
+       set
+       vec
+       (map dag_unify.serialization/deserialize)
+       (map tr/nl-to-en-spec)
+       remove-duplicates))
+
 
 (defn test []
   (let [grammar (atom nil)]
