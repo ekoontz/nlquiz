@@ -77,10 +77,13 @@
 
 (defn update-english [nl-parses en-specs en-surfaces-atom en-specs-atom en-sem-atom en-trees-atom]
   (reset! en-specs-atom (->> en-specs
-                             (map dag_unify.serialization/serialize)
+                             (map serialize)
                              (map str)
                              array2map))
-  (reset! en-sem-atom (->> en-specs (map #(u/get-in % [:sem])) (map dag_unify.serialization/serialize) (map str) array2map))
+  (reset! en-sem-atom (->> en-specs (map #(u/get-in % [:sem]))
+                           (map serialize)
+                           (map str)
+                           array2map))
   (log/info (str "generating this many english expressions: " (count specs2)))
   (doseq [en-spec en-specs]
     (go
