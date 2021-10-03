@@ -141,14 +141,12 @@
                                 (reset! en-surfaces-atom spinner)
                                 (if (not (= @guess-text @last-parse-of))
                                   (do
-                                    (log/info (str "=== STARTED NL PARSE OF: " @guess-text "; last parse was of: " @last-parse-of))
                                     (reset! last-parse-of @guess-text)
                                     (let [parse-of @guess-text
                                           parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                                 "/parse-start?q=" parse-of)))
                                                              :body decode-parse)
                                           nl-parses (nl-parses parse-response @grammar @guess-text)]
-                                      (log/info (str "=== FINISHED NL PARSE OF: " parse-of))
                                       (reset! nl-parses-atom nl-parses)
                                       (reset! input-map parse-response)
                                       (reset! nl-surface-atom @guess-text)
