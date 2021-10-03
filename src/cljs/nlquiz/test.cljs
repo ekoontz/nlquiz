@@ -107,7 +107,7 @@
                                          (string/join "," @update-to)
                                          "??"))
               (reset! en-trees-atom (->> [@en-surfaces-atom] array2map))))
-          (log/debug (str "avoiding updating (1) after processing old data.")))))))
+          (log/info (str "*** avoiding updating after processing old data.")))))))
 
 (defn test []
   (let [grammar (atom nil)]
@@ -138,11 +138,11 @@
                  :on-change (fn [input-element]
                               (reset! guess-text (-> input-element .-target .-value))
                               (log/info (str "input changed to: " @guess-text))
-                              (go
-                                (reset! en-surfaces-atom spinner)
-                                (if (not (= @guess-text @last-parse-of))
-                                  (do
-                                    (reset! last-parse-of @guess-text)
+                              (reset! en-surfaces-atom spinner)
+                              (if (not (= @guess-text @last-parse-of))
+                                (do
+                                  (reset! last-parse-of @guess-text)
+                                  (go
                                     (let [parse-of @guess-text
                                           parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                                 "/parse-start?q=" parse-of)))
@@ -155,9 +155,9 @@
                                       (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                       (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
                                       (update-english nl-parses-atom en-surfaces-atom nl-surface-atom
-                                                      en-specs-atom en-sems-atom en-trees-atom)))
-                                  (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of)))))
-                 :value @guess-text}]]
+                                                      en-specs-atom en-sems-atom en-trees-atom))))
+                                (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of))))
+         :value @guess-text}]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
        (en-widget en-surfaces-atom en-specs-atom en-sems-atom en-trees-atom)
        (backwards-compat-widget nl-sem-atom en-surfaces-atom)
