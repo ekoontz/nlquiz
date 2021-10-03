@@ -12,7 +12,9 @@
    [menard.translate.spec :as tr]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.parsecljs :refer [decode-grammar submit-guess nl-trees nl-parses nl-sem array2map remove-duplicates dag-to-string decode-parse nl-tokens]]
+   [nlquiz.parsecljs :refer [array2map dag-to-string decode-grammar decode-parse
+                             nl-parses nl-sem nl-tokens nl-trees
+                             remove-duplicates submit-guess]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session]
@@ -134,6 +136,7 @@
       [:div ;; top
        [:div.debug
         [:input {:type "text"
+                 :placeholder "type something in Dutch"
                  :on-change (fn [input-element]
                               (reset! guess-text (-> input-element .-target .-value))
                               (log/info (str "input changed to: " @guess-text))
