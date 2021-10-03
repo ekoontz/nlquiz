@@ -10,8 +10,8 @@
    [nlquiz.constants :refer [spinner]]
    [menard.translate.spec :as tr]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.parsecljs :refer [array2map dag-to-string decode-grammar decode-parse
-                             nl-parses nl-sem nl-trees remove-duplicates]]
+   [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
+                          nl-parses remove-duplicates]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])

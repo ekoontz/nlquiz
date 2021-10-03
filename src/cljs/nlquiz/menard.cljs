@@ -1,4 +1,5 @@
-(ns nlquiz.parsecljs
+;; interface with menard api
+(ns nlquiz.menard
   (:require
    [cljslog.core :as log]
    [clojure.string :as string]
