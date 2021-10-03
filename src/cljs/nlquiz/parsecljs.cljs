@@ -1,25 +1,12 @@
 (ns nlquiz.parsecljs
   (:require
-   [cljs-http.client :as http]
    [cljslog.core :as log]
-   [cljs.core.async :refer [<!]]
    [clojure.string :as string]
    [dag_unify.core :as u]
-   [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
    [menard.parse :as parse]
    [menard.serialization :as s]
-   [menard.translate.spec :as tr]
-   [nlquiz.constants :refer [root-path spinner]]
-   [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.speak :as speak]
-   [reagent.core :as r]
-   [reagent.session :as session]
-   [md5.core :as md5])
-  (:require-macros [cljs.core.async.macros :refer [go]]
-                   [nlquiz.handler :refer [root-path-from-env
-                                           inline-resource
-                                           language-server-endpoint-url]]))
+   [md5.core :as md5]))
 
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
 (defn array2map [input]
@@ -41,7 +28,7 @@
    (into {}
          (->> (keys response-body)
               (map (fn [k]
-                     [(cljs.reader/read-string (clojure.string/join (rest (str k))))
+                     [(cljs.reader/read-string (string/join (rest (str k))))
                       (map (fn [serialized-lexeme]
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
