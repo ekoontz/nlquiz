@@ -147,7 +147,8 @@
                                           parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                                 "/parse-start?q=" parse-of)))
                                                              :body decode-parse)
-                                          nl-parses (nl-parses parse-response @grammar @guess-text)]
+                                          nl-parses (nl-parses parse-response @grammar @guess-text)
+                                          en-specs (nl-parses-to-en-specs @nl-parses-atom)]
                                       (reset! nl-parses-atom nl-parses)
                                       (reset! input-map parse-response)
                                       (reset! nl-surface-atom @guess-text)
@@ -155,7 +156,7 @@
                                       (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                       (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
                                       (update-english @nl-parses-atom
-                                                      (nl-parses-to-en-specs @nl-parses-atom)
+                                                      en-specs
                                                       en-surfaces-atom
                                                       en-specs-atom en-sems-atom en-trees-atom))))
                                 (log/info (str "NOT DOING REDUNDANT PARSE OF: " @last-parse-of))))
