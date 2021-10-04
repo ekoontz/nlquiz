@@ -23,7 +23,6 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
-(def en-surfaces-atom (r/atom))
 (def input-map (atom {}))
 
 (defn en-widget [text specs sems trees]
@@ -75,11 +74,12 @@
    [:div.monospace
     @en-surfaces]])
 
-(defn update-english [nl-parses en-specs en-surfaces-atom en-trees-atom]
+(defn update-english [en-specs en-surfaces-atom en-trees-atom]
   (log/info (str "generating this many english expressions: " (count en-specs)))
   (go
     (let [update-to (atom [])]
-      (doseq [en-spec en-specs]
+      (doseq [en-spec aen-specs]
+        (log/info (str "HERE IS THE FUCKING SPEC: " en-spec))
         (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                               "/generate/en?spec=" (-> en-spec
                                                                        dag-to-string))))]
@@ -87,9 +87,11 @@
                                       @update-to)
                                 set
                                 vec))
+          (log/info (str "HELLO FUCK HELLO???" @update-to " -> " @en-surfaces-atom))
           (reset! en-surfaces-atom (if (seq @update-to)
                                      (string/join "," @update-to)
                                      "??"))
+          (log/info (str "NOW IT'S FUCKING: " @en-surfaces-atom))
           (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))))))
 
 (defn nl-parses-to-en-specs [nl-parses]
@@ -121,7 +123,8 @@
         ;; en-related
         en-specs-atom (r/atom spinner)
         en-sems-atom (r/atom spinner)
-        en-trees-atom (r/atom spinner)]
+        en-trees-atom (r/atom spinner)
+        en-surfaces-atom (r/atom)]
     (fn []
       [:div ;; top
        [:div.debug
@@ -129,31 +132,35 @@
                  :placeholder "type something in Dutch"
                  :on-change (fn [input-element]
                               (let [nl-surface (-> input-element .-target .-value)]
-                                (reset! en-surfaces-atom spinner)
                                 (go
-                                  (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                                              "/parse-start?q=" nl-surface)))
-                                                           :body decode-parse)
-                                        nl-parses (nl-parses parse-response @grammar @guess-text)
-                                        en-specs (nl-parses-to-en-specs @nl-parses-atom)]
-                                    (update-english nl-parses
-                                                    en-specs
-                                                    en-surfaces-atom
-                                                    en-trees-atom)
-                                    (reset! nl-parses-atom nl-parses)
-                                    (reset! input-map parse-response)
-                                    (reset! nl-surface-atom nl-surface)
-                                    (reset! nl-tokens-atom (str (nl-tokens @input-map)))
-                                    (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                    (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
-                                    (reset! en-specs-atom (->> en-specs
-                                                               (map serialize)
-                                                               (map str)
-                                                               array2map))
-                                    (reset! en-sems-atom (->> en-specs (map #(u/get-in % [:sem]))
-                                                              (map serialize)
-                                                              (map str)
-                                                              array2map))))))
+                                  (log/info (str "is it a spinnah?? " (= @en-surfaces-atom spinner)))
+                                  (if (or true (not (= @en-surfaces-atom spinner)))
+                                    (do
+                                      (reset! en-surfaces-atom spinner)
+                                      (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                                                  "/parse-start?q=" nl-surface)))
+                                                               :body decode-parse)
+                                            nl-parses (nl-parses parse-response @grammar @guess-text)
+                                            en-specs (nl-parses-to-en-specs @nl-parses-atom)]
+                                        (log/info (str "CALLING UPDATE ENGLISH WITH FUCKING: " nl-surface))
+                                        (update-english en-specs
+                                                        en-surfaces-atom
+                                                        en-trees-atom)
+                                        (reset! nl-parses-atom nl-parses)
+                                        (reset! input-map parse-response)
+                                        (reset! nl-surface-atom nl-surface)
+                                        (reset! nl-tokens-atom (str (nl-tokens @input-map)))
+                                        (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
+                                        (reset! nl-trees-atom (array2map (nl-trees nl-parses)))
+                                        (reset! en-specs-atom (->> en-specs
+                                                                   (map serialize)
+                                                                   (map str)
+                                                                   array2map))
+                                        (reset! en-sems-atom (->> en-specs (map #(u/get-in % [:sem]))
+                                                                  (map serialize)
+                                                                  (map str)
+                                                                  array2map))))
+                                    (log/info (str "ITS A DANG SPINNAH AT: " nl-surface))))))
                  }]]
        (nl-widget guess-text nl-tokens-atom nl-sem-atom nl-trees-atom)
        (en-widget en-surfaces-atom en-specs-atom en-sems-atom en-trees-atom)
