@@ -136,17 +136,16 @@
                  :placeholder "type something in Dutch"
                  :on-change (fn [input-element]
                               (let [nl-surface (-> input-element .-target .-value)]
-                                (reset! nl-surface-atom nl-surface)
                                 (go
+                                  (reset! nl-surface-atom nl-surface)                                  
                                   (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                               "/parse-start?q=" nl-surface)))
                                                            :body decode-parse)]
                                     (if (= @nl-surface-atom nl-surface)
-                                      (let [nl-parses (nl-parses parse-response @grammar nl-surface-atom)
+                                      (let [nl-parses (nl-parses parse-response @grammar nl-surface)
                                             en-specs (nl-parses-to-en-specs @nl-parses-atom)]
                                         (reset! nl-surface-atom nl-surface)
                                         (reset! nl-tokens-atom spinner)
-                                        (log/info (str "OK PARSING nl-surface: " nl-surface))
                                         (comment (update-english en-specs en-surfaces-atom en-trees-atom
                                                                  nl-surface nl-surface-atom))
                                         (reset! nl-parses-atom nl-parses)
