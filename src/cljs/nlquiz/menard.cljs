@@ -65,7 +65,7 @@
   (map syntax-tree nl-parses))
 
 (defn parse-in-stages [input-map input-length i grammar surface]
-  (log/info (str "parse-in-stages: '" surface "':" (- i 1) "/" input-length))
+  (log/info (str "parse-in-stages: '" @surface "':" (- i 1) "/" input-length))
   (if (>= input-length i)
     (-> input-map
         (parse/parse-next-stage input-length i grammar)
