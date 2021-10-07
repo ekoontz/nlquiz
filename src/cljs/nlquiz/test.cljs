@@ -25,7 +25,7 @@
 
 (def input-map (atom {}))
 
-(defn en-widget [text specs sems trees]
+(defn en-widget [text specs trees]
   [:div.debug {:style {:width "40%" :float "right"}}
    [:h1 ":en"]
    [:div.debug
@@ -36,10 +36,6 @@
     [:h2 ":specs"]
      [:div.monospace
       @specs]]
-   [:div.debug
-    [:h2 ":sem"]
-    [:div.monospace
-     @sems]]
    [:div.debug
     [:h2 ":trees"]
     [:div.monospace
@@ -124,9 +120,8 @@
         
         ;; en-related
         en-specs-atom (r/atom spinner)
-        en-sems-atom (r/atom spinner)
         en-trees-atom (r/atom spinner)
-        en-surfaces-atom (r/atom spinnera)]
+        en-surfaces-atom (r/atom spinner)]
     (fn []
       [:div ;; top
        [:div.debug
@@ -139,6 +134,9 @@
                                   (reset! nl-sem-atom spinner)
                                   (reset! nl-tokens-atom spinner)
                                   (reset! nl-trees-atom spinner)
+                                  (reset! en-specs-atom spinner)
+                                  (reset! en-trees-atom spinner)
+                                  (reset! en-surfaces-atom spinner)
                                   (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                               "/parse-start?q=" nl-surface)))
                                                            :body decode-parse)]
@@ -147,6 +145,7 @@
                                             en-specs (nl-parses-to-en-specs nl-parses)]
                                         (update-english en-specs en-surfaces-atom en-trees-atom
                                                         nl-surface nl-surface-atom)
+                                        (reset! en-specs-atom en-specs)
                                         (reset! nl-parses-atom nl-parses)
                                         (reset! input-map parse-response)
                                         (reset! nl-tokens-atom (str (nl-tokens @input-map)))
@@ -157,7 +156,7 @@
                                           
                  }]]
        (nl-widget nl-surface-atom nl-tokens-atom nl-sem-atom nl-trees-atom)
-       (en-widget en-surfaces-atom en-specs-atom en-sems-atom en-trees-atom)
+       (en-widget en-surfaces-atom en-specs-atom en-trees-atom)
        (backwards-compat-widget nl-sem-atom en-surfaces-atom)
        ]))))
 
