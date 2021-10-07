@@ -136,7 +136,10 @@
                  :on-change (fn [input-element]
                               (let [nl-surface (-> input-element .-target .-value)]
                                 (go
-                                  (reset! nl-surface-atom nl-surface)                                  
+                                  (reset! nl-surface-atom nl-surface)
+                                  (reset! nl-sem-atom spinner)
+                                  (reset! nl-tokens-atom spinner)
+                                  (reset! nl-trees-atom spinner)
                                   (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                               "/parse-start?q=" nl-surface)))
                                                            :body decode-parse)]
@@ -150,7 +153,8 @@
                                         (reset! input-map parse-response)
                                         (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                         (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                        (reset! nl-trees-atom (array2map (nl-trees nl-parses)))))))))
+                                        (reset! nl-trees-atom (array2map (nl-trees nl-parses))))
+                                      (log/info (str "not parsing: nl-surface changed from: " nl-surface " to: " @nl-surface-atom)))))))
                                           
                  }]]
        (nl-widget nl-surface-atom nl-tokens-atom nl-sem-atom nl-trees-atom)
