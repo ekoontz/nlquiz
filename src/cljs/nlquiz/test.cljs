@@ -122,7 +122,6 @@
         nl-trees-atom (r/atom spinner)
         nl-parses-atom (atom spinner)
         last-parse-of (atom "")
-        nl-surface-atom-post (atom "NONE")
         
         ;; en-related
         en-specs-atom (r/atom spinner)
@@ -144,7 +143,6 @@
                                     (if (= @nl-surface-atom nl-surface)
                                       (let [nl-parses (nl-parses parse-response @grammar nl-surface)
                                             en-specs (nl-parses-to-en-specs @nl-parses-atom)]
-                                        (reset! nl-surface-atom nl-surface)
                                         (reset! nl-tokens-atom spinner)
                                         (comment (update-english en-specs en-surfaces-atom en-trees-atom
                                                                  nl-surface nl-surface-atom))
@@ -152,8 +150,6 @@
                                         (reset! input-map parse-response)
                                         (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                         (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                        (log/info (str "resetting the post-atom to: " nl-surface))
-                                        (reset! nl-surface-atom-post nl-surface)
                                         (reset! nl-trees-atom (array2map (nl-trees nl-parses)))))))))
                                           
                  }]]
