@@ -81,7 +81,7 @@
                                               "/generate/en?spec=" (-> en-spec
                                                                        dag-to-string))))]
           (if (not (= nl-surface-when-called @nl-surface-atom))
-            (log/info (str " UPDATE-ENGLISH: NOT EQUAL:" nl-surface-when-called " != " @nl-surface-atom))
+            (log/info (str " CHANGE DETECTED: (update-english): " nl-surface-when-called " != " @nl-surface-atom))
             (do
               (log/info (str "ok to update with: " (-> gen-response :body :surface)))
               (reset! update-to (-> (cons (-> gen-response :body :surface)
@@ -151,8 +151,8 @@
                                         (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                         (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                         (reset! nl-trees-atom (array2map (nl-trees nl-parses))))
-                                      (log/info (str "not parsing: nl-surface changed from: "
-                                                     nl-surface " to: " @nl-surface-atom)))))))
+                                      (log/info (str "CHANGE DETECTED (test):"
+                                                     nl-surface " != " @nl-surface-atom)))))))
                                           
                  }]]
        (nl-widget nl-surface-atom nl-tokens-atom nl-sem-atom nl-trees-atom)
