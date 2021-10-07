@@ -77,7 +77,7 @@
 (defn update-english [en-specs en-surfaces-atom en-trees-atom nl-surface-when-called nl-surface-atom]
   (log/info (str "generating this many english expressions: " (count en-specs) " with nl-surface being:"
                  nl-surface-when-called))
-  (reset! en-surfaces-atom "WTF")
+  (reset! en-surfaces-atom spinner)
   (go
     (let [update-to (atom [])]
       (doseq [en-spec en-specs]
@@ -121,13 +121,12 @@
         nl-tokens-atom (r/atom spinner)
         nl-trees-atom (r/atom spinner)
         nl-parses-atom (atom spinner)
-        last-parse-of (atom "")
         
         ;; en-related
         en-specs-atom (r/atom spinner)
         en-sems-atom (r/atom spinner)
         en-trees-atom (r/atom spinner)
-        en-surfaces-atom (r/atom)]
+        en-surfaces-atom (r/atom spinnera)]
     (fn []
       [:div ;; top
        [:div.debug
@@ -145,16 +144,16 @@
                                                            :body decode-parse)]
                                     (if (= @nl-surface-atom nl-surface)
                                       (let [nl-parses (nl-parses parse-response @grammar nl-surface)
-                                            en-specs (nl-parses-to-en-specs @nl-parses-atom)]
-                                        (reset! nl-tokens-atom spinner)
-                                        (comment (update-english en-specs en-surfaces-atom en-trees-atom
-                                                                 nl-surface nl-surface-atom))
+                                            en-specs (nl-parses-to-en-specs nl-parses)]
+                                        (update-english en-specs en-surfaces-atom en-trees-atom
+                                                        nl-surface nl-surface-atom)
                                         (reset! nl-parses-atom nl-parses)
                                         (reset! input-map parse-response)
                                         (reset! nl-tokens-atom (str (nl-tokens @input-map)))
                                         (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
                                         (reset! nl-trees-atom (array2map (nl-trees nl-parses))))
-                                      (log/info (str "not parsing: nl-surface changed from: " nl-surface " to: " @nl-surface-atom)))))))
+                                      (log/info (str "not parsing: nl-surface changed from: "
+                                                     nl-surface " to: " @nl-surface-atom)))))))
                                           
                  }]]
        (nl-widget nl-surface-atom nl-tokens-atom nl-sem-atom nl-trees-atom)
