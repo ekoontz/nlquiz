@@ -25,7 +25,7 @@
 
 (def input-map (atom {}))
 
-(defn en-widget [text specs trees]
+(defn en-widget [text]
   [:div.debug {:style {:width "40%" :float "right"}}
    [:h1 ":en"]
    [:div.debug
@@ -33,7 +33,7 @@
     [:div.monospace
      @text]]])
 
-(defn nl-widget [text tokens sem trees]
+(defn nl-widget [text]
   [:div.debug {:style {:width "40%" :float "left"}}
    [:h1 ":nl"]
    [:div.debug
@@ -41,7 +41,7 @@
     [:div.monospace
      @text]]])
 
-(defn update-english [en-specs en-surfaces-atom en-trees-atom nl-surface-when-called nl-surface-atom]
+(defn update-english [en-specs en-surfaces-atom nl-surface-when-called nl-surface-atom]
   (log/info (str "generating this many english expressions: " (count en-specs) " with nl-surface being:"
                  nl-surface-when-called))
   (reset! en-surfaces-atom spinner)
@@ -61,8 +61,7 @@
                                     vec))
               (reset! en-surfaces-atom (if (seq @update-to)
                                          (string/join "," @update-to)
-                                         "??"))
-              (reset! en-trees-atom (->> [@en-surfaces-atom] array2map)))))))))
+                                         "??")))))))))
 
 (defn nl-parses-to-en-specs [nl-parses]
   (->> nl-parses
@@ -83,15 +82,9 @@
         spinner [:i {:class "fas fa-stroopwafel fa-spin"}]
         
         ;; nl-related
-        nl-sem-atom (r/atom spinner)
         nl-surface-atom (r/atom spinner)
-        nl-tokens-atom (r/atom spinner)
-        nl-trees-atom (r/atom spinner)
-        nl-parses-atom (atom spinner)
         
         ;; en-related
-        en-specs-atom (r/atom spinner)
-        en-trees-atom (r/atom spinner)
         en-surfaces-atom (r/atom spinner)]
     (fn []
       [:div ;; top
@@ -102,11 +95,6 @@
                               (let [nl-surface (-> input-element .-target .-value)]
                                 (go
                                   (reset! nl-surface-atom nl-surface)
-                                  (reset! nl-sem-atom spinner)
-                                  (reset! nl-tokens-atom spinner)
-                                  (reset! nl-trees-atom spinner)
-                                  (reset! en-specs-atom spinner)
-                                  (reset! en-trees-atom spinner)
                                   (reset! en-surfaces-atom spinner)
                                   (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                               "/parse-start?q=" nl-surface)))
@@ -114,19 +102,13 @@
                                     (if (= @nl-surface-atom nl-surface)
                                       (let [nl-parses (nl-parses parse-response @grammar nl-surface)
                                             en-specs (nl-parses-to-en-specs nl-parses)]
-                                        (update-english en-specs en-surfaces-atom en-trees-atom
-                                                        nl-surface nl-surface-atom)
-                                        (reset! en-specs-atom en-specs)
-                                        (reset! nl-parses-atom nl-parses)
-                                        (reset! input-map parse-response)
-                                        (reset! nl-tokens-atom (str (nl-tokens @input-map)))
-                                        (reset! nl-sem-atom (array2map (nl-sem nl-parses)))
-                                        (reset! nl-trees-atom (array2map (nl-trees nl-parses))))
+                                        (update-english en-specs en-surfaces-atom nl-surface nl-surface-atom)
+                                        (reset! input-map parse-response))
                                       (log/info (str "CHANGE DETECTED (test):"
                                                      nl-surface " != " @nl-surface-atom)))))))
                                           
                  }]]
-       (nl-widget nl-surface-atom nl-tokens-atom nl-sem-atom nl-trees-atom)
-       (en-widget en-surfaces-atom en-specs-atom en-trees-atom)
+       (nl-widget nl-surface-atom)
+       (en-widget en-surfaces-atom)
        ]))))
 
