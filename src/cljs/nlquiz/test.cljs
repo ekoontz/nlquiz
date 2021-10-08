@@ -41,9 +41,7 @@
     [:div.monospace
      @text]]])
 
-(defn update-english [en-specs en-surfaces-atom nl-surface-when-called nl-surface-atom]
-  (log/info (str "generating this many english expressions: " (count en-specs) " with nl-surface being:"
-                 nl-surface-when-called))
+(defn update-english [en-specs en-surfaces-atom nl-surface-when-called nl-surface-atom fresh?]
   (reset! en-surfaces-atom spinner)
   (go
     (let [update-to (atom [])]
@@ -51,7 +49,7 @@
         (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                               "/generate/en?spec=" (-> en-spec
                                                                        dag-to-string))))]
-          (if (not (= nl-surface-when-called @nl-surface-atom))
+          (if (not (fresh?))
             (log/info (str " CHANGE DETECTED: (update-english): " nl-surface-when-called " != " @nl-surface-atom))
             (do
               (log/info (str "ok to update with: " (-> gen-response :body :surface)))
@@ -92,17 +90,18 @@
         [:input {:type "text"
                  :placeholder "type something in Dutch"
                  :on-change (fn [input-element]
-                              (let [nl-surface (-> input-element .-target .-value)]
+                              (let [nl-surface (-> input-element .-target .-value)
+                                    fresh? (fn [] (= @nl-surface-atom nl-surface))]
                                 (go
                                   (reset! nl-surface-atom nl-surface)
                                   (reset! en-surfaces-atom spinner)
                                   (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                                               "/parse-start?q=" nl-surface)))
                                                            :body decode-parse)]
-                                    (if (= @nl-surface-atom nl-surface)
+                                    (if (fresh?)
                                       (let [nl-parses (nl-parses parse-response @grammar nl-surface)
                                             en-specs (nl-parses-to-en-specs nl-parses)]
-                                        (update-english en-specs en-surfaces-atom nl-surface nl-surface-atom)
+                                        (update-english en-specs en-surfaces-atom nl-surface nl-surface-atom fresh?)
                                         (reset! input-map parse-response))
                                       (log/info (str "CHANGE DETECTED (test):"
                                                      nl-surface " != " @nl-surface-atom)))))))
