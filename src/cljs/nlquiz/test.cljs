@@ -41,6 +41,15 @@
     [:div.monospace
      @text]]])
 
+(defn nl-parses-to-en-specs [nl-parses]
+  (->> nl-parses
+       (map dag_unify.serialization/serialize)
+       set
+       vec
+       (map dag_unify.serialization/deserialize)
+       (map tr/nl-to-en-spec)
+       remove-duplicates))
+
 (defn update-english [en-specs en-surfaces-atom fresh?]
   (reset! en-surfaces-atom spinner)
   (go
@@ -59,15 +68,6 @@
               (reset! en-surfaces-atom (if (seq @update-to)
                                          (string/join "," @update-to)
                                          "??")))))))))
-
-(defn nl-parses-to-en-specs [nl-parses]
-  (->> nl-parses
-       (map dag_unify.serialization/serialize)
-       set
-       vec
-       (map dag_unify.serialization/deserialize)
-       (map tr/nl-to-en-spec)
-       remove-duplicates))
 
 (defn test []
   (let [grammar (atom nil)]
