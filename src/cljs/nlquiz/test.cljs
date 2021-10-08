@@ -31,15 +31,7 @@
    [:div.debug
     [:h2 ":surface"]
     [:div.monospace
-     @text]]
-   [:div.debug
-    [:h2 ":specs"]
-     [:div.monospace
-      @specs]]
-   [:div.debug
-    [:h2 ":trees"]
-    [:div.monospace
-     @trees]]])
+     @text]]])
 
 (defn nl-widget [text tokens sem trees]
   [:div.debug {:style {:width "40%" :float "left"}}
@@ -47,28 +39,7 @@
    [:div.debug
     [:h2 ":surface"]
     [:div.monospace
-     @text]]
-   [:div.debug
-    [:h2 ":tokens"]
-    [:div.monospace
-     @tokens]]
-   [:div.debug
-    [:h2 ":sem"]
-    [:div.monospace
-     @sem]]
-   [:div.debug
-    [:h2 ":trees"]
-    [:div.monospace
-     @trees]]])
-
-(defn backwards-compat-widget [nl-sem en-surfaces]
-  [:div.debug
-   [:h2 ":sem"]
-   [:div.monospace
-    @nl-sem]
-   [:h2 ":english"]
-   [:div.monospace
-    @en-surfaces]])
+     @text]]])
 
 (defn update-english [en-specs en-surfaces-atom en-trees-atom nl-surface-when-called nl-surface-atom]
   (log/info (str "generating this many english expressions: " (count en-specs) " with nl-surface being:"
@@ -157,6 +128,5 @@
                  }]]
        (nl-widget nl-surface-atom nl-tokens-atom nl-sem-atom nl-trees-atom)
        (en-widget en-surfaces-atom en-specs-atom en-trees-atom)
-       (backwards-compat-widget nl-sem-atom en-surfaces-atom)
        ]))))
 
