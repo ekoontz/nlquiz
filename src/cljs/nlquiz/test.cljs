@@ -41,7 +41,7 @@
     [:div.monospace
      @text]]])
 
-(defn update-english [en-specs en-surfaces-atom nl-surface-when-called nl-surface-atom fresh?]
+(defn update-english [en-specs en-surfaces-atom fresh?]
   (reset! en-surfaces-atom spinner)
   (go
     (let [update-to (atom [])]
@@ -49,8 +49,7 @@
         (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                               "/generate/en?spec=" (-> en-spec
                                                                        dag-to-string))))]
-          (if (not (fresh?))
-            (log/info (str " CHANGE DETECTED: (update-english): " nl-surface-when-called " != " @nl-surface-atom))
+          (if (fresh?)
             (do
               (log/info (str "ok to update with: " (-> gen-response :body :surface)))
               (reset! update-to (-> (cons (-> gen-response :body :surface)
@@ -101,10 +100,8 @@
                                     (if (fresh?)
                                       (let [nl-parses (nl-parses parse-response @grammar nl-surface)
                                             en-specs (nl-parses-to-en-specs nl-parses)]
-                                        (update-english en-specs en-surfaces-atom nl-surface nl-surface-atom fresh?)
-                                        (reset! input-map parse-response))
-                                      (log/info (str "CHANGE DETECTED (test):"
-                                                     nl-surface " != " @nl-surface-atom)))))))
+                                        (update-english en-specs en-surfaces-atom fresh?)
+                                        (reset! input-map parse-response)))))))
                                           
                  }]]
        (nl-widget nl-surface-atom)
