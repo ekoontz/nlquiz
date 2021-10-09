@@ -23,8 +23,6 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
-(def input-map (atom {}))
-
 (defn en-widget [text]
   [:div.debug {:style {:width "40%" :float "right"}}
    [:h1 ":en"]
@@ -51,7 +49,6 @@
        remove-duplicates))
 
 (defn update-english [en-specs en-surfaces-atom fresh?]
-  (reset! en-surfaces-atom spinner)
   (go
     (let [update-to (atom [])]
       (doseq [en-spec en-specs]
@@ -60,7 +57,6 @@
                                                                        dag-to-string))))]
           (if (fresh?)
             (do
-              (log/info (str "ok to update with: " (-> gen-response :body :surface)))
               (reset! update-to (-> (cons (-> gen-response :body :surface)
                                           @update-to)
                                     set
@@ -100,8 +96,7 @@
                                     (if (fresh?)
                                       (let [nl-parses (nl-parses parse-response @grammar nl-surface)
                                             en-specs (nl-parses-to-en-specs nl-parses)]
-                                        (update-english en-specs en-surfaces-atom fresh?)
-                                        (reset! input-map parse-response)))))))
+                                        (update-english en-specs en-surfaces-atom fresh?)))))))
                                           
                  }]]
        (nl-widget nl-surface-atom)
