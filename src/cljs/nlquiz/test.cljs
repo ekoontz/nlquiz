@@ -7,17 +7,17 @@
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
-   [menard.parse :as parse]
-   [menard.serialization :as s]
+   [md5.core :as md5]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.menard :refer [array2map dag-to-string decode-grammar decode-parse
                           nl-parses nl-parses-to-en-specs nl-sem nl-tokens nl-trees
                           remove-duplicates submit-guess]]
+   [menard.parse :as parse]
+   [menard.serialization :as s]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session]
-   [md5.core :as md5]
    )
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
