@@ -388,7 +388,6 @@
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
     (new-question (get-expression major minor))
-    (reset! grammar (-> grammar-response :body decode-grammar))
     (fn []
       [:div.curr-major
        (quiz-layout (get-expression major minor))
