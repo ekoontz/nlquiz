@@ -9,11 +9,10 @@
    [dag_unify.serialization :refer [deserialize serialize]]
    [menard.parse :as parse]
    [menard.serialization :as s]
-   [menard.translate.spec :as tr]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.menard :refer [array2map dag-to-string decode-grammar decode-parse
-                          nl-parses nl-sem nl-tokens nl-trees
+                          nl-parses nl-parses-to-en-specs nl-sem nl-tokens nl-trees
                           remove-duplicates submit-guess]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
@@ -38,15 +37,6 @@
     [:h2 ":surface"]
     [:div.monospace
      @text]]])
-
-(defn nl-parses-to-en-specs [nl-parses]
-  (->> nl-parses
-       (map dag_unify.serialization/serialize)
-       set
-       vec
-       (map dag_unify.serialization/deserialize)
-       (map tr/nl-to-en-spec)
-       remove-duplicates))
 
 (defn update-english [en-specs en-surfaces-atom fresh?]
   (go

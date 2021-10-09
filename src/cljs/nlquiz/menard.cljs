@@ -7,6 +7,7 @@
    [dag_unify.serialization :refer [deserialize serialize]]
    [menard.parse :as parse]
    [menard.serialization :as s]
+   [menard.translate.spec :as tr]
    [md5.core :as md5]))
 
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
@@ -102,3 +103,11 @@
 (defn syntax-tree [tree]
   (s/syntax-tree tree morphology))
 
+(defn nl-parses-to-en-specs [nl-parses]
+  (->> nl-parses
+       (map dag_unify.serialization/serialize)
+       set
+       vec
+       (map dag_unify.serialization/deserialize)
+       (map tr/nl-to-en-spec)
+       remove-duplicates))
