@@ -3,7 +3,7 @@
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
-   [clojure.string :as string]
+   [clojure.string :as string :refer [trim]]
    [nlquiz.constants :refer [root-path spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
@@ -15,9 +15,13 @@
 (defn on-change [nl-surface-atom en-surfaces-atom grammar]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value)
-          fresh? (fn [] (= @nl-surface-atom nl-surface))]
+          fresh? (fn [] (= @nl-surface-atom (string/trim nl-surface)))]
+      (if (= nl-surface (string/trim nl-surface))
+        (log/info (str "nothing new: ignoring -_-.."))
+        (log/info (str "ITS NEW!! ^_^ nl-surface-atom: [" (str @nl-surface-atom) "]; nl-surface: [" nl-surface "];"
+                       " trimmed: [" (string/trim (str @nl-surface-atom)) "]")))
       (go
-        (reset! nl-surface-atom nl-surface)
+        (reset! nl-surface-atom (string/trim nl-surface))
         (reset! en-surfaces-atom spinner)
         (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                     "/parse-start?q=" nl-surface)))
@@ -41,7 +45,7 @@
                 (reset! en-surfaces-atom (if (seq @update-to)
                                            (string/join "," @update-to)
                                            "??"))
-                  (log/info (str "not fresh(2)"))))
+                (log/info (str "not fresh(2)"))))
             (log/info (str "not fresh(3)"))))))))
 
 ;; routed to by: core.cljs/(defn page-for)
