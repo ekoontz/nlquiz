@@ -14,11 +14,13 @@
 
 (defn on-change [nl-surface-atom en-surfaces-atom grammar]
   (fn [input-element]
-    (let [nl-surface (-> input-element .-target .-value)
-          fresh? (fn [] (= @nl-surface-atom (string/trim nl-surface)))]
+    (let [nl-surface (-> input-element .-target .-value string/trim)
+          fresh? (fn [] (= @nl-surface-atom nl-surface))]
       (when (not (fresh?))
+        ;; only start the (go) if there is a difference between the input we are given (nl-surface)
+        ;; and the last input that was processed (@nl-surface-atom):
         (go
-          (reset! nl-surface-atom (string/trim nl-surface))
+          (reset! nl-surface-atom nl-surface)
           (reset! en-surfaces-atom spinner)
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start?q=" nl-surface)))
