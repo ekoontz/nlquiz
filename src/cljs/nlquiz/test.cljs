@@ -15,7 +15,8 @@
 (defn on-change [nl-surface-atom en-surfaces-atom grammar]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value)
-          fresh? (fn [] (= @nl-surface-atom (string/trim nl-surface)))]
+          fresh? (fn [] (= @nl-surface-atom (string/trim nl-surface)))
+          fresh2? (fn [] (= nl-surface (string/trim nl-surface)))]
       (if (= nl-surface (string/trim nl-surface))
         (log/info (str "nothing new: ignoring -_-.."))
         (log/info (str "ITS NEW!! ^_^ nl-surface-atom: [" (str @nl-surface-atom) "]; nl-surface: [" nl-surface "];"
@@ -27,26 +28,33 @@
                                                     "/parse-start?q=" nl-surface)))
                                  :body decode-parse)]
           (if (fresh?)
-            (let [nl-parses (nl-parses parse-response @grammar nl-surface)
-                  en-specs (nl-parses-to-en-specs nl-parses)
-                  update-to (atom [])]
-              (doseq [en-spec en-specs]
+            (do
+              (log/info (str "FRESH(1)"))
+              (let [nl-parses (nl-parses parse-response @grammar nl-surface)
+                    en-specs (nl-parses-to-en-specs nl-parses)
+                    update-to (atom [])]
+                (doseq [en-spec en-specs]
+                  (if (fresh?)
+                    (do
+                      (log/info (str "FRESH(2)"))
+                      (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                            "/generate/en?spec=" (-> en-spec
+                                                                                     dag-to-string))))]
+                        (if (fresh?)
+                          (do
+                            (log/info (str "FRESH(2)"))
+                            (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                                        @update-to)
+                                                  set
+                                                  vec)))
+                          (log/info (str "not fresh(2)")))))
+                    (log/info (str "not fresh(2)"))))
                 (if (fresh?)
-                  (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                        "/generate/en?spec=" (-> en-spec
-                                                                                 dag-to-string))))]
-                    (if (fresh?)
-                      (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                                  @update-to)
-                                            set
-                                            vec))
-                      (log/info (str "not fresh(1)"))))))
-              (if (fresh?)
-                (reset! en-surfaces-atom (if (seq @update-to)
-                                           (string/join "," @update-to)
-                                           "??"))
-                (log/info (str "not fresh(2)"))))
-            (log/info (str "not fresh(3)"))))))))
+                  (reset! en-surfaces-atom (if (seq @update-to)
+                                             (string/join "," @update-to)
+                                             "??"))
+                  (log/info (str "not fresh(3)")))))
+            (log/info (str "not fresh(4)"))))))))
 
 ;; routed to by: core.cljs/(defn page-for)
 (defn test []
