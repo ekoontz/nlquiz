@@ -26,7 +26,8 @@
             (let [nl-parses (nl-parses parse-response @grammar nl-surface)
                   en-specs (nl-parses-to-en-specs nl-parses)
                   update-to (atom [])]
-                (doseq [en-spec en-specs]
+              (doseq [en-spec en-specs]
+                (if (fresh?)
                   (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                         "/generate/en?spec=" (-> en-spec
                                                                                  dag-to-string))))]
@@ -34,13 +35,15 @@
                       (do
                         (reset! update-to (-> (cons (-> gen-response :body :surface)
                                                     @update-to)
-                                                                        set
-                                                                        vec))
-                        (reset! en-surfaces-atom (if (seq @update-to)
-                                                   (string/join "," @update-to)
-                                                   "??")))
-                      (log/info (str "not fresh(2)"))))))
-            (log/info (str "not fresh(1)"))))))))
+                                              set
+                                              vec)))
+                      (log/info (str "not fresh(1)"))))
+                  (log/info (str "not fresh(2)"))))
+              (if (fresh?)
+                (reset! en-surfaces-atom (if (seq @update-to)
+                                           (string/join "," @update-to)
+                                           "??"))))
+            (log/info (str "not fresh(3)"))))))))
 
 ;; routed to by: core.cljs/(defn page-for)
 (defn test []
