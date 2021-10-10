@@ -32,17 +32,16 @@
                                                         "/generate/en?spec=" (-> en-spec
                                                                                  dag-to-string))))]
                     (if (fresh?)
-                      (do
-                        (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                                    @update-to)
-                                              set
-                                              vec)))
-                      (log/info (str "not fresh(1)"))))
-                  (log/info (str "not fresh(2)"))))
+                      (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                                  @update-to)
+                                            set
+                                            vec))
+                      (log/info (str "not fresh(1)"))))))
               (if (fresh?)
                 (reset! en-surfaces-atom (if (seq @update-to)
                                            (string/join "," @update-to)
-                                           "??"))))
+                                           "??"))
+                  (log/info (str "not fresh(2)"))))
             (log/info (str "not fresh(3)"))))))))
 
 ;; routed to by: core.cljs/(defn page-for)
