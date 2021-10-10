@@ -18,31 +18,44 @@
           fresh? (fn [] (= @nl-surface-atom nl-surface))]
       (when (not (fresh?))
         ;; only start the (go) if there is a difference between the input we are given (nl-surface)
-        ;; and the last input that was processed (@nl-surface-atom):
+        ;; and the last input that was processed (@nl-surface-atom).
+
+        ;; change english output to spinner since it will be updated, if not by this (go), then by a subsequent (go):
         (reset! en-surfaces-atom spinner)
+
         (go
           (reset! nl-surface-atom nl-surface)
+
+          ;; get the information necessary from the server about the NL expression to start parsing on the client side:
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start?q=" nl-surface)))
                                    :body decode-parse)]
             (when (fresh?)
+
+              ;; With this information ready, now do the parsing, and for that set of parses,
+              ;; get the equivalent set of specifications for the english:
               (let [nl-parses (nl-parses parse-response @grammar nl-surface)
-                    en-specs (nl-parses-to-en-specs nl-parses)
-                    update-to (atom [])]
-                (doseq [en-spec en-specs]
+                    en-specs (nl-parses-to-en-specs nl-parses)]
+
+                ;; generate an english expression for each spec in en-specs.
+                ;; for each generated expression, add it to the 'update-to' atom.
+                (let [update-to (atom [])]
+                  (doseq [en-spec en-specs]
+                    (when (fresh?)
+                      (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                            "/generate/en?spec=" (-> en-spec
+                                                                                     dag-to-string))))]
+                        (when (fresh?)
+                          (reset! update-to (-> (cons (-> gen-response :body :surface)
+                                                      @update-to)
+                                                set
+                                                vec))))))
+                  ;; update the english UI element with a common-delimited string of all of
+                  ;; the members of the 'update-to' atom:
                   (when (fresh?)
-                    (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                          "/generate/en?spec=" (-> en-spec
-                                                                                   dag-to-string))))]
-                      (when (fresh?)
-                        (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                                    @update-to)
-                                              set
-                                              vec))))))
-                (when (fresh?)
-                  (reset! en-surfaces-atom (if (seq @update-to)
-                                             (string/join "," @update-to)
-                                             "??")))))))))))
+                    (reset! en-surfaces-atom (if (seq @update-to)
+                                               (string/join "," @update-to)
+                                               "??"))))))))))))
 
 ;; routed to by: core.cljs/(defn page-for)
 (defn test []
