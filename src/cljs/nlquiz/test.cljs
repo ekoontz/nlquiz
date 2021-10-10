@@ -24,9 +24,8 @@
                                  :body decode-parse)]
           (if (fresh?)
             (let [nl-parses (nl-parses parse-response @grammar nl-surface)
-                  en-specs (nl-parses-to-en-specs nl-parses)]
-              ;;                                        (update-english en-specs en-surfaces-atom fresh?)))))))
-              (let [update-to (atom [])]
+                  en-specs (nl-parses-to-en-specs nl-parses)
+                  update-to (atom [])]
                 (doseq [en-spec en-specs]
                   (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                         "/generate/en?spec=" (-> en-spec
@@ -39,23 +38,34 @@
                                                                         vec))
                         (reset! en-surfaces-atom (if (seq @update-to)
                                                    (string/join "," @update-to)
-                                                   "??"))))))))))))))
+                                                   "??")))
+                      (log/info (str "not fresh(2)"))))))
+            (log/info (str "not fresh(1)"))))))))
 
+;; routed to by: core.cljs/(defn page-for)
 (defn test []
+  ;; 1. initialize some data structures that don't change (often).
+  ;; for now, only NL grammar:
   (let [grammar (atom nil)]
     (go 
       (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/grammar/nl")))]
         (reset! grammar (-> grammar-response :body decode-grammar))))
+
+    ;; UI and associated functionality
+    ;; 2. atoms that link the UI and the functionality:
     (let [nl-surface-atom (r/atom spinner)
           en-surfaces-atom (r/atom spinner)]
+
       (fn []
         [:div ;; top
          [:div.debug
           [:input {:type "text"
                    :placeholder "type something in Dutch"
+                   ;; 3. the functionality that take all the components (UI and linguistic resources) and does things with them:
                    :on-change (on-change nl-surface-atom en-surfaces-atom grammar)
                    }]]
+         ;; 4. the UI:
          (nl-widget nl-surface-atom)
          (en-widget en-surfaces-atom)]))))
 
