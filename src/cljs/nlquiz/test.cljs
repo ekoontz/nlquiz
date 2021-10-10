@@ -15,9 +15,8 @@
 (defn on-change [nl-surface-atom en-surfaces-atom grammar]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value)
-          fresh? (fn [] (= @nl-surface-atom (string/trim nl-surface)))
-          fresh2? (fn [] (= nl-surface (string/trim nl-surface)))]
-      (if (= nl-surface (string/trim nl-surface))
+          fresh? (fn [] (= @nl-surface-atom (string/trim nl-surface)))]
+      (if (fresh?)
         (log/info (str "nothing new: ignoring -_-.."))
         (log/info (str "ITS NEW!! ^_^ nl-surface-atom: [" (str @nl-surface-atom) "]; nl-surface: [" nl-surface "];"
                        " trimmed: [" (string/trim (str @nl-surface-atom)) "]")))
