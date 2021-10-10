@@ -65,7 +65,8 @@
     (go 
       (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/grammar/nl")))]
-        (reset! grammar (-> grammar-response :body decode-grammar))))
+        (reset! grammar (-> grammar-response :body decode-grammar))
+        (log/info (str "finished loading the nl grammar."))))
 
     ;; UI and associated functionality
     ;; 2. atoms that link the UI and the functionality:
