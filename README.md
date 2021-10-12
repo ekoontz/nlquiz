@@ -5,7 +5,13 @@ Learn Dutch by translating simple expressions.
 ## Development mode
 
 ```
-(cd ../menard && lein install) && (cd ../menard/lambda && lein install) && lein clean && ./src/sh/local.sh
+IP=localhost && (cd ~/menard && lein install)  && LANGUAGE_ENDPOINT_URL=http://${IP}:3000 ROOT_PATH=http://${IP}:3449/ lein figwheel
+```
+
+or:
+
+```
+lein install) && lein clean && ./src/sh/local.sh
 ```
 
 Figwheel will automatically push cljs changes to the browser. 
