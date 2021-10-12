@@ -286,10 +286,6 @@
    ] ;; div.main
   )
 
-(defn expression-list-quiz-component [get-question-fn chooser]
-  (new-question get-question-fn)
-  #(quiz-layout get-question-fn chooser))
-
 (def topic-name (r/atom ""))
 (def curriculum-atom (r/atom nil))
 (def specs-atom (r/atom
