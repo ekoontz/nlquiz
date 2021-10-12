@@ -80,7 +80,7 @@
   (case route
     nil #'quiz/quiz
     :index #'quiz/quiz
-    :test  #'test/test
+    :test  #'test/component
     :about #'about/component
     :curriculum #'quiz/quiz
     :curriculum-major #'quiz/quiz-component

@@ -59,9 +59,11 @@
                                                "??"))))))))))))
 
 ;; routed to by: core.cljs/(defn page-for)
-(defn test []
+(defn component []
   ;; 1. initialize some data structures that don't change (often).
   ;; for now, only NL grammar:
+
+  ;; TODO: have to synchronize on this to prevent generation before linguistic resources are done loading:
   (let [grammar (atom nil)]
     (go 
       (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
@@ -69,8 +71,13 @@
         (reset! grammar (-> grammar-response :body decode-grammar))
         (log/info (str "finished loading the nl grammar."))))
 
+    ;; 2. generate a NL expression:
+    (log/info (str "generating an NL expression.."))
+    ;; TODO
+    (log/info (str "done: generated an NL expression."))
+    
     ;; UI and associated functionality
-    ;; 2. atoms that link the UI and the functionality:
+    ;; 3. atoms that link the UI and the functionality:
     (let [nl-surface-atom (r/atom spinner)
           en-surfaces-atom (r/atom spinner)]
 
