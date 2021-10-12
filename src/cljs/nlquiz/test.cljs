@@ -58,6 +58,19 @@
                                                (string/join "," @update-to)
                                                "??"))))))))))))
 
+(defn new-question [en-question-atom]
+  (go
+    (let [generation-response
+          (<! (http/get
+               (str (language-server-endpoint-url)
+                    "/generate/en?spec=" (-> {:phrasal true
+                                              :sem {:pred :dog}
+                                              :cat :noun
+                                              :subcat []}
+                                             dag-to-string))))]
+      (reset! en-question-atom (-> generation-response
+                                   :body :surface)))))
+
 ;; routed to by: core.cljs/(defn page-for)
 (defn component []
   ;; 1. initialize some data structures that don't change (often).
@@ -81,10 +94,17 @@
     ;; UI and associated functionality
     ;; 3. atoms that link the UI and the functionality:
     (let [nl-surface-atom (r/atom spinner)
-          en-surfaces-atom (r/atom spinner)]
+          en-surfaces-atom (r/atom spinner)
+          en-question-atom (r/atom spinner)]
+
+      ;; initialize stuff to start with: e.g. a new question:
+      (new-question en-question-atom)
 
       (fn []
         [:div ;; top
+
+         (english-question-widget en-question-atom)
+
          [:div.debug
           [:input {:type "text"
                    :placeholder "type something in Dutch"
@@ -94,6 +114,11 @@
          ;; 4. the UI:
          (nl-widget nl-surface-atom)
          (en-widget en-surfaces-atom)]))))
+
+(defn english-question-widget [text]
+  [:div.debug {:style {:width "40%" :float "right"}}
+   [:h1 ":question"]
+   @text])
 
 (defn en-widget [text]
   [:div.debug {:style {:width "40%" :float "right"}}
