@@ -64,11 +64,13 @@
   ;; for now, only NL grammar:
 
   ;; TODO: have to synchronize on this to prevent generation before linguistic resources are done loading:
-  (let [grammar (atom nil)]
+  (let [grammar (atom nil)
+        language-models-loaded? (atom false)]
     (go 
       (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/grammar/nl")))]
         (reset! grammar (-> grammar-response :body decode-grammar))
+        (reset! language-models-loaded? true)
         (log/info (str "finished loading the nl grammar."))))
 
     ;; 2. generate a NL expression:
@@ -87,7 +89,7 @@
           [:input {:type "text"
                    :placeholder "type something in Dutch"
                    ;; 3. the functionality that take all the components (UI and linguistic resources) and does things with them:
-                   :on-change (on-change nl-surface-atom en-surfaces-atom grammar)
+                   :on-change (when language-models-loaded? (on-change nl-surface-atom en-surfaces-atom grammar))
                    }]]
          ;; 4. the UI:
          (nl-widget nl-surface-atom)
