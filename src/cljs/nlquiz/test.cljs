@@ -12,6 +12,71 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
 
+;; routed to by: core.cljs/(defn page-for)
+;; 1. Component
+(defn component []
+  ;; 1. initialize some data structures that don't change (often).
+  ;; for now, only NL grammar:
+
+  ;; TODO: have to synchronize on this to prevent generation before linguistic resources are done loading:
+  (let [grammar (atom nil)
+        language-models-loaded? (atom false)]
+    ;; 1. initialize linguistic resources from server:
+    (go
+      (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
+                                                "/grammar/nl")))]
+        (reset! grammar (-> grammar-response :body decode-grammar))
+        (reset! language-models-loaded? true)
+        (log/info (str "finished loading the nl grammar."))))
+
+    ;; UI and associated functionality
+    ;; 2. atoms that link the UI and the functionality:
+    (let [nl-surface-atom (r/atom spinner)
+          en-surfaces-atom (r/atom spinner)
+          en-question-atom (r/atom spinner)]
+
+      ;; 3. initialize the UI: e.g. a new question:
+      (new-question en-question-atom)
+
+      ;; 4. render the UI:
+      (fn []
+        [:div ;; top
+
+         (en-question-widget en-question-atom)
+
+         [:div.debug
+          [:input {:type "text"
+                   :placeholder "type something in Dutch"
+                   ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
+                   :on-change (when language-models-loaded? (on-change nl-surface-atom en-surfaces-atom grammar))
+                   }]]
+         (nl-widget nl-surface-atom)
+         (en-widget en-surfaces-atom)]))))
+
+;; 2. Widgets
+
+(defn en-question-widget [text]
+  [:div.debug {:style {:width "40%" :float "right"}}
+   [:h1 ":question"]
+   @text])
+
+(defn en-widget [text]
+  [:div.debug {:style {:width "40%" :float "right"}}
+   [:h1 ":en"]
+   [:div.debug
+    [:h2 ":surface"]
+    [:div.monospace
+     @text]]])
+
+(defn nl-widget [text]
+  [:div.debug {:style {:width "40%" :float "left"}}
+   [:h1 ":nl"]
+   [:div.debug
+    [:h2 ":surface"]
+    [:div.monospace
+     @text]]])
+
+;; 3. Functionality
 (defn on-change [nl-surface-atom en-surfaces-atom grammar]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value string/trim)
@@ -70,69 +135,4 @@
                                              dag-to-string))))]
       (reset! en-question-atom (-> generation-response
                                    :body :surface)))))
-
-;; routed to by: core.cljs/(defn page-for)
-(defn component []
-  ;; 1. initialize some data structures that don't change (often).
-  ;; for now, only NL grammar:
-
-  ;; TODO: have to synchronize on this to prevent generation before linguistic resources are done loading:
-  (let [grammar (atom nil)
-        language-models-loaded? (atom false)]
-    (go 
-      (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/grammar/nl")))]
-        (reset! grammar (-> grammar-response :body decode-grammar))
-        (reset! language-models-loaded? true)
-        (log/info (str "finished loading the nl grammar."))))
-
-    ;; 2. generate a NL expression:
-    (log/info (str "generating an NL expression.."))
-    ;; TODO
-    (log/info (str "done: generated an NL expression."))
-    
-    ;; UI and associated functionality
-    ;; 3. atoms that link the UI and the functionality:
-    (let [nl-surface-atom (r/atom spinner)
-          en-surfaces-atom (r/atom spinner)
-          en-question-atom (r/atom spinner)]
-
-      ;; initialize stuff to start with: e.g. a new question:
-      (new-question en-question-atom)
-
-      (fn []
-        [:div ;; top
-
-         (english-question-widget en-question-atom)
-
-         [:div.debug
-          [:input {:type "text"
-                   :placeholder "type something in Dutch"
-                   ;; 3. the functionality that take all the components (UI and linguistic resources) and does things with them:
-                   :on-change (when language-models-loaded? (on-change nl-surface-atom en-surfaces-atom grammar))
-                   }]]
-         ;; 4. the UI:
-         (nl-widget nl-surface-atom)
-         (en-widget en-surfaces-atom)]))))
-
-(defn english-question-widget [text]
-  [:div.debug {:style {:width "40%" :float "right"}}
-   [:h1 ":question"]
-   @text])
-
-(defn en-widget [text]
-  [:div.debug {:style {:width "40%" :float "right"}}
-   [:h1 ":en"]
-   [:div.debug
-    [:h2 ":surface"]
-    [:div.monospace
-     @text]]])
-
-(defn nl-widget [text]
-  [:div.debug {:style {:width "40%" :float "left"}}
-   [:h1 ":nl"]
-   [:div.debug
-    [:h2 ":surface"]
-    [:div.monospace
-     @text]]])
 
