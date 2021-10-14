@@ -7,6 +7,7 @@
    [cljs-http.client :as http]
    [nlquiz.about :as about]   
    [nlquiz.quiz :as quiz]
+   [nlquiz.newquiz :as newquiz]
    [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
@@ -30,6 +31,7 @@
    [["/nlquiz"                          :index]
     ["/nlquiz/test"                     :test]
     ["/nlquiz/about"                    :about]
+    ["/nlquiz/newquiz"                  :newquiz]
     ["/nlquiz/curriculum"
      ["" {:name :curriculum}]
      ["/:major" {:name :curriculum-major}]]
@@ -53,12 +55,18 @@
                             (prefix? (path-for :curriculum) path)) "selected" "")
              :href (path-for :curriculum)} "Curriculum"] " "
 
+
+        [:a {:class (if (prefix? (path-for :newquiz) path) "selected" "")
+          :href (path-for :newquiz)} "new"]
+
         [:a {:class (if (prefix? (path-for :about) path) "selected" "")
              :href (path-for :about)} "About"] " "
 
         [:a.debug
          {:class (if (prefix? (path-for :test) path) "selected" "")
-          :href (path-for :test)} "WIP"]]
+          :href (path-for :test)} "WIP"]
+
+        ]
        [page]
        [:footer
         [:p
@@ -81,6 +89,7 @@
     nil #'quiz/quiz
     :index #'quiz/quiz
     :test  #'test/component
+    :newquiz  #'newquiz/component
     :about #'about/component
     :curriculum #'quiz/quiz
     :curriculum-major #'quiz/quiz-component
