@@ -87,13 +87,13 @@
 (defn page-for [route]
   (case route
     nil #'quiz/quiz
-    :index #'quiz/quiz
-    :test  #'test/component
-    :newquiz  #'newquiz/component
     :about #'about/component
+    :index #'quiz/quiz
     :curriculum #'quiz/quiz
     :curriculum-major #'quiz/quiz-component
-    :curriculum-minor #'quiz/quiz-component))
+    :curriculum-minor #'quiz/quiz-component
+    :newquiz  #'newquiz/component
+    :test  #'test/component))
 
 ;; -------------------------
 ;; Initialize app
