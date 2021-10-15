@@ -13,12 +13,22 @@
     [:div.monospace
      @text]]])
 
-(defn nl-widget [text]
+(defn nl-widget [text tree]
   [:div.debug {:style {:width "40%" :float "left"}}
    [:h1 ":nl"]
    [:div.debug
     [:h2 ":surface"]
     [:div.monospace
-     @text]]])
+     @text]
+    
+    [:h2 ":tree"]
+    [:div.monospace
+     @tree]]])
+
+
+
+
+
+
 
 
