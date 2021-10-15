@@ -18,8 +18,6 @@
 (defn component []
   ;; 1. initialize some data structures that don't change (often).
   ;; for now, only NL grammar:
-
-  ;; TODO: have to synchronize on this to prevent generation before linguistic resources are done loading:
   (let [grammar (atom nil)
         language-models-loaded? (atom false)]
     ;; 1. initialize linguistic resources from server:
@@ -49,8 +47,11 @@
           [:input {:type "text"
                    :placeholder "type something in Dutch"
                    ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
-                   :on-change (when language-models-loaded? (on-change nl-surface-atom en-surfaces-atom grammar))
-                   }]]
+
+                   ;; unless language-models-loaded? is true,
+                   ;; can't parse user's guess:
+                   :on-change (when language-models-loaded?
+                                (on-change nl-surface-atom en-surfaces-atom grammar))}]]
          (nl-widget nl-surface-atom)
          (en-widget en-surfaces-atom)]))))
 
