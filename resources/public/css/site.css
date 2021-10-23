@@ -459,3 +459,8 @@ div.debug {
     margin-left:5%;
     float:left;
 }
+
+line.thick {
+    color: blue;
+    stroke:blue;
+}
