@@ -1,6 +1,7 @@
 (ns nlquiz.newquiz.functions
   (:require
    [cljs-http.client :as http]
+   [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
@@ -8,7 +9,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
 
-(defn on-change [nl-surface-atom en-surfaces-atom grammar]
+(defn on-change [nl-surface-atom nl-tree-atom en-surfaces-atom grammar]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value string/trim)
           fresh? (fn [] (= @nl-surface-atom nl-surface))]
@@ -34,6 +35,12 @@
                     ;; set of specifications for the english:
                     en-specs (nl-parses-to-en-specs nl-parses)]
 
+                (if (first nl-parses)
+                  (do
+                    (log/info (str "OK THERE IS A PARSE!!!!"))
+                    (reset! nl-tree-atom (first nl-parses)))
+                  (log/info (str "NO THERE IS NO FUCKING PARSE.")))
+                
                 ;; 3. For each such spec, generate an english expression, and
                 ;;    for each generated expression, add it to the 'update-to' atom.
                 (let [update-to (atom [])]
