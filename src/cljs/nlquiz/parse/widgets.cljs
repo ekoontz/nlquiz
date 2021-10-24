@@ -17,14 +17,17 @@
     [:div.monospace
      @text]]])
 
+(def ^:const vline 20)
+(def ^:const vspace 30 )
+
 (defn draw-node [tree top]
   [:g
    [:text {:x (str 75) :y (str top)} (u/get-in tree [:rule])]
-   [:line.thick {:x1 "95" :y1 (str top) :x2 "60" :y2 (str (+ top 30))}]
-   [:line.thick {:x1 "95" :y1 (str top) :x2 "160" :y2 (str (+ top 30))}]
+   [:line.thick {:x1 "95" :y1 (str top) :x2 "60" :y2 (str (+ top vline vspace))}]
+   [:line.thick {:x1 "95" :y1 (str top) :x2 "160" :y2 (str (+ top vline vspace))}]
 
-   [:text {:x "50" :y (+ top 50)} (u/get-in tree [:comp :canonical])]
-   [:text {:x "150" :y (+ top 50)} (u/get-in tree [:head :surface])]])
+   [:text {:x "50" :y (+ top vline)} (u/get-in tree [:comp :canonical])]
+   [:text {:x "150" :y (+ top vline)} (u/get-in tree [:head :surface])]])
 
 
 (defn draw-tree [tree]
