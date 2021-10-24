@@ -19,19 +19,20 @@
 
 (defn draw-node [tree top]
   [:g
-   [:text {:x (str 75) :y (str (+ top 50))} (u/get-in tree [:rule])]
-   [:text {:x "50" :y (+ top 100)} (u/get-in tree [:comp :canonical])]
-   [:text {:x "150" :y (+ top 100)} (u/get-in tree [:head :surface])]
-   
-   [:line.thick {:x1 "95" :y1 "55" :x2 "60" :y2 "80"}]
-   [:line.thick {:x1 "95" :y1 "55" :x2 "160" :y2 "80"}]])
-  
+   [:text {:x (str 75) :y (str top)} (u/get-in tree [:rule])]
+   [:line.thick {:x1 "95" :y1 (str top) :x2 "60" :y2 (str (+ top 30))}]
+   [:line.thick {:x1 "95" :y1 (str top) :x2 "160" :y2 (str (+ top 30))}]
+
+   [:text {:x "50" :y (+ top 50)} (u/get-in tree [:comp :canonical])]
+   [:text {:x "150" :y (+ top 50)} (u/get-in tree [:head :surface])]])
+
+
 (defn draw-tree [tree]
   (if tree
     (log/info (str "drawing tree.."))
     (log/info (str "er is nog geen tree..?")))
   [:svg
-   (draw-node tree 0)])
+   (draw-node tree 35)])
 
 (defn nl-widget [text tree]
   [:div.debug {:style {:width "100%" :float "left"}}
