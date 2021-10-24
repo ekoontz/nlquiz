@@ -22,13 +22,16 @@
 
 (defn draw-node [tree top]
   [:g
-   [:text {:x (str 75) :y (str top)} (u/get-in tree [:rule])]
-   [:line.thick {:x1 "95" :y1 (str top) :x2 "60" :y2 (str (+ top vline vspace))}]
-   [:line.thick {:x1 "95" :y1 (str top) :x2 "160" :y2 (str (+ top vline vspace))}]
+   [:text {:x (str 75)              :y (str top)}
+    (u/get-in tree [:rule])]
 
-   [:text {:x "50" :y (+ top vline)} (u/get-in tree [:comp :canonical])]
-   [:text {:x "150" :y (+ top vline)} (u/get-in tree [:head :surface])]])
+   [:line.thick {:x1 "95" :x2 "60"  :y1 (str top) :y2 (str (+ top vline vspace))}]
+   [:line.thick {:x1 "95" :x2 "160" :y1 (str top) :y2 (str (+ top vline vspace))}]
 
+   [:text {:x "50"                  :y (+ top vline)}
+    (u/get-in tree [:comp :canonical])]
+   [:text {:x "150"                 :y (+ top vline)}
+    (u/get-in tree [:head :surface])]])
 
 (defn draw-tree [tree]
   (if tree
