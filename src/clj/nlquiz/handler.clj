@@ -74,6 +74,7 @@
      ["/nlquiz/curriculum/:major/:minor"     {:get {:handler html-response}}]
      ["/nlquiz/test"                         {:get {:handler html-response}}]
      ["/nlquiz/newquiz"                      {:get {:handler html-response}}]
+     ["/nlquiz/parse"                        {:get {:handler html-response}}]
 
      ;; unfortunately we have to add every one of the routes above AGAIN (so that the app works at a non-empty path within an existing domain):
      ["/about"                               {:get {:handler html-response}}]
@@ -81,7 +82,8 @@
      ["/curriculum/:major"                   {:get {:handler html-response}}]
      ["/curriculum/:major/:minor"            {:get {:handler html-response}}]
      ["/test"                                {:get {:handler html-response}}]
-     ["/newquiz"                             {:get {:handler html-response}}]     
+     ["/newquiz"                             {:get {:handler html-response}}]
+     ["/parse"                               {:get {:handler html-response}}]     
      ])
 
    (reitit-ring/routes

@@ -8,6 +8,7 @@
    [nlquiz.about :as about]   
    [nlquiz.quiz :as quiz]
    [nlquiz.newquiz :as newquiz]
+   [nlquiz.parse :as parse]
    [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
@@ -32,6 +33,7 @@
     ["/nlquiz/test"                     :test]
     ["/nlquiz/about"                    :about]
     ["/nlquiz/newquiz"                  :newquiz]
+    ["/nlquiz/parse"                    :parse]
     ["/nlquiz/curriculum"
      ["" {:name :curriculum}]
      ["/:major" {:name :curriculum-major}]]
@@ -59,6 +61,9 @@
         [:a {:class (if (prefix? (path-for :newquiz) path) "selected" "")
           :href (path-for :newquiz)} "new"]
 
+        [:a {:class (if (prefix? (path-for :parse) path) "selected" "")
+          :href (path-for :parse)} "parse"]
+        
         [:a {:class (if (prefix? (path-for :about) path) "selected" "")
              :href (path-for :about)} "About"] " "
 
@@ -93,6 +98,7 @@
     :curriculum-major #'quiz/quiz-component
     :curriculum-minor #'quiz/quiz-component
     :newquiz  #'newquiz/component
+    :parse  #'parse/component
     :test  #'test/component))
 
 ;; -------------------------
