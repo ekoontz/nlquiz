@@ -20,17 +20,17 @@
 (def ^:const vline 20)
 (def ^:const vspace 30 )
 
-(defn draw-node [tree top]
+(defn draw-node [tree top hcenter]
   [:g
-   [:text {:x (str 75)              :y (str top)}
+   [:text {:x (str hcenter)         :y (str top)}
     (u/get-in tree [:rule])]
 
    [:line.thick {:x1 "95" :x2 "60"  :y1 (str top) :y2 (str (+ top vline vspace))}]
    [:line.thick {:x1 "95" :x2 "160" :y1 (str top) :y2 (str (+ top vline vspace))}]
 
-   [:text {:x "50"                  :y (+ top vline)}
+   [:text       {:x "50"            :y (+ top vline)}
     (u/get-in tree [:comp :canonical])]
-   [:text {:x "150"                 :y (+ top vline)}
+   [:text       {:x "150"           :y (+ top vline)}
     (u/get-in tree [:head :surface])]])
 
 (defn draw-tree [tree]
@@ -38,7 +38,7 @@
     (log/info (str "drawing tree.."))
     (log/info (str "er is nog geen tree..?")))
   [:svg
-   (draw-node tree 35)])
+   (draw-node tree 35 75)])
 
 (defn nl-widget [text tree]
   [:div.debug {:style {:width "100%" :float "left"}}
