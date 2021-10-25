@@ -18,20 +18,28 @@
      @text]]])
 
 (def ^:const vline 20)
-(def ^:const vspace 30 )
+(def ^:const vspace 30)
 
 (defn draw-node [tree top hcenter]
-  [:g
-   [:text {:x (str hcenter)         :y (str top)}
-    (u/get-in tree [:rule])]
-
-   [:line.thick {:x1 "95" :x2 "60"  :y1 (str top) :y2 (str (+ top vline vspace))}]
-   [:line.thick {:x1 "95" :x2 "160" :y1 (str top) :y2 (str (+ top vline vspace))}]
-
-   [:text       {:x "50"            :y (+ top vline)}
-    (u/get-in tree [:comp :canonical])]
-   [:text       {:x "150"           :y (+ top vline)}
-    (u/get-in tree [:head :surface])]])
+  (if (and (u/get-in tree [:comp :canonical])
+           (u/get-in tree [:head :surface]))
+    (let [parent        {:x hcenter :y top}
+          left-child  {:x (- hcenter 50) :y (+ top vline 40)}
+          right-child {:x (+ hcenter 50) :y (+ top vline 40)}]
+      [:g
+       [:text {:x (:x parent)
+               :y (:y parent)}
+        (u/get-in tree [:rule])]
+       
+       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child) :y2 (:y left-child)}]
+       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
+       
+       [:text       {:x (:x left-child)
+                     :y (:y left-child)}
+        (u/get-in tree [:comp :canonical])]
+       [:text       {:x (:x right-child)
+                     :y (:y right-child)}
+        (u/get-in tree [:head :surface])]])))
 
 (defn draw-tree [tree]
   (if tree
