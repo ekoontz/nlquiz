@@ -465,7 +465,21 @@ line.thick {
     stroke:blue;
 }
 
-text {
-    font: italic 24px serif; fill: black;
+text.leaf {
+    font: italic 12px serif; fill: black;
 }
 
+text.rule {
+    font: normal 12px sans; fill: black;
+    font-weight:bold;
+}
+
+svg {
+    min-height: 20em;
+}
+
+span.example {
+    font-style:italic;
+    font-family:serif;
+}
+    

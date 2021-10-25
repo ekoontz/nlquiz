@@ -21,41 +21,60 @@
 (def ^:const vspace 30)
 
 (defn draw-node [tree top hcenter]
-  (if (and (u/get-in tree [:comp :canonical])
-           (u/get-in tree [:head :surface]))
-    (let [parent        {:x hcenter :y top}
-          left-child  {:x (- hcenter 50) :y (+ top vline 40)}
-          right-child {:x (+ hcenter 50) :y (+ top vline 40)}]
-      [:g
-       [:text {:x (:x parent)
-               :y (:y parent)}
-        (u/get-in tree [:rule])]
-       
-       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child) :y2 (:y left-child)}]
-       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
-       
-       [:text       {:x (:x left-child)
-                     :y (:y left-child)}
-        (u/get-in tree [:comp :canonical])]
-       [:text       {:x (:x right-child)
-                     :y (:y right-child)}
-        (u/get-in tree [:head :surface])]])))
+  (let [rule (u/get-in tree [:rule] nil)
+        surface (u/get-in tree [:surface] nil)
+        canonical (u/get-in tree [:canonical] nil)
+        show (or rule surface canonical)
+
+        left-rule (u/get-in tree [:1 :rule])
+        left-surface (u/get-in tree [:1 :surface])
+        left-canonical (u/get-in tree [:1 :canonical])
+        left-show (or left-rule left-surface left-canonical "NO LEFT")
+        
+        right-rule (u/get-in tree [:2 :rule])
+        right-surface (u/get-in tree [:2 :surface])
+        right-canonical (u/get-in tree [:2 :canonical])
+        right-show (or right-rule right-surface right-canonical "NO RIGHT")]
+    (if rule
+      (let [parent        {:x hcenter        :y top}
+            left-child    {:x (- hcenter 50) :y (+ top vline 40)}
+            right-child   {:x (+ hcenter 50) :y (+ top vline 40)}
+            parent-class "rule"
+            left-class   (if left-rule "rule" "leaf")
+            right-class  (if right-rule "rule" "leaf")]
+        [:g
+         [:text {:class parent-class
+                 :x (:x parent)
+                 :y (:y parent)}
+          show]
+         
+         [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child)  :y2 (:y left-child)}]
+         [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
+         
+         (if left-rule
+           (draw-node (u/get-in tree [:1]) (+ top 60) (- hcenter 50))
+           [:text       {:class left-class
+                         :x (:x left-child)
+                         :y (:y left-child)} left-show])
+
+         (if right-rule
+           (draw-node (u/get-in tree [:2]) (+ top 60) (+ hcenter 50))
+           [:text       {:class right-class
+                         :x (:x right-child)
+                         :y (:y right-child)} right-show])]))))
 
 (defn draw-tree [tree]
   (if tree
     (log/info (str "drawing tree.."))
     (log/info (str "er is nog geen tree..?")))
   [:svg
-   (draw-node tree 35 75)])
+   (draw-node tree 35 175)])
 
 (defn nl-widget [text tree]
   [:div.debug {:style {:width "100%" :float "left"}}
-   [:h1 ":nl"]
-   [:div.debug
-     @text
-    [:h2 ":tree"]
-    [:div.monospace
-     (draw-tree @tree)]]])
+   [:div.monospace {:style {:min-height "20em"}}
+    (draw-tree @tree)]])
+
 
 
 
