@@ -35,11 +35,8 @@
                     ;; set of specifications for the english:
                     en-specs (nl-parses-to-en-specs nl-parses)]
 
-                (if (first nl-parses)
-                  (do
-                    (log/info (str "OK THERE IS A PARSE!!!!"))
-                    (reset! nl-tree-atom (first nl-parses)))
-                  (log/info (str "NO THERE IS NO FUCKING PARSE.")))
+                (when (first nl-parses)
+                  (reset! nl-tree-atom (first nl-parses)))
                 
                 ;; 3. For each such spec, generate an english expression, and
                 ;;    for each generated expression, add it to the 'update-to' atom.
