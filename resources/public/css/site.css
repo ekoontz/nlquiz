@@ -476,6 +476,7 @@ text.rule {
 
 svg {
     min-height: 20em;
+    width:100%;
 }
 
 span.example {
