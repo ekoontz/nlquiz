@@ -21,6 +21,8 @@
 (def ^:const vspace 30)
 
 (defn draw-node [tree top hcenter]
+(defn draw-node [tree top hcenter x y]
+  (log/info (str "draw-node: x=" x "; y=" y))
   (let [rule (u/get-in tree [:rule] nil)
         surface (u/get-in tree [:surface] nil)
         canonical (u/get-in tree [:canonical] nil)
@@ -52,13 +54,13 @@
          [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
          
          (if left-rule
-           (draw-node (u/get-in tree [:1]) (+ top 60) (- hcenter 50))
+           (draw-node (u/get-in tree [:1]) (+ top 60) (- hcenter 50) x (+ 1 y))
            [:text       {:class left-class
                          :x (:x left-child)
                          :y (:y left-child)} left-show])
 
          (if right-rule
-           (draw-node (u/get-in tree [:2]) (+ top 60) (+ hcenter 50))
+           (draw-node (u/get-in tree [:2]) (+ top 60) (+ hcenter 50) (+ 1 x) y)
            [:text       {:class right-class
                          :x (:x right-child)
                          :y (:y right-child)} right-show])]))))
@@ -68,7 +70,7 @@
     (log/info (str "drawing tree.."))
     (log/info (str "er is nog geen tree..?")))
   [:svg
-   (draw-node tree 35 175)])
+   (draw-node tree 35 175 0 0)])
 
 (defn nl-widget [text tree]
   [:div.debug {:style {:width "100%" :float "left"}}
