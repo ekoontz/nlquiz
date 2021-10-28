@@ -18,7 +18,7 @@
      @text]]])
 
 
-(def ^:const vline 75)
+(def ^:const v-unit 75)
 (def ^:const vspace 10)
 (def ^:const h-unit 50)
 
@@ -39,9 +39,9 @@
         right-canonical (u/get-in tree [:2 :canonical])
         right-show (or right-rule right-surface right-canonical)]
     (if rule
-      (let [parent        {:x (* x       h-unit) :y (+ vspace (* y       vline))}
-            left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) vline))}
-            right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) vline))}
+      (let [parent        {:x (* x       h-unit) :y (+ vspace (* y       v-unit))}
+            left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
+            right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
             parent-class "rule"
             left-class   (if left-rule "rule" "leaf")
             right-class  (if right-rule "rule" "leaf")]
@@ -58,13 +58,13 @@
            (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
            [:text       {:class left-class
                          :x (:x left-child)
-                         :y (:y left-child)} left-show])
+                         :y (+ vspace (:y left-child))} left-show])
 
          (if right-rule
            (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1))
            [:text       {:class right-class
                          :x (:x right-child)
-                         :y (:y right-child)} right-show])]))))
+                         :y (+ vspace (:y right-child))} right-show])]))))
 
 (defn draw-tree [tree]
   (if tree
