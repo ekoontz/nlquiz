@@ -21,9 +21,8 @@
 (def ^:const vline 75)
 (def ^:const vspace 10)
 (def ^:const h-unit 50)
-(def ^:const v-unit 40)
 
-(defn draw-node [tree hcenter x y]
+(defn draw-node [tree x y]
   (log/info (str "draw-node: x=" x "; y=" y "; rule: " (u/get-in tree [:rule])))
   (let [rule (u/get-in tree [:rule] nil)
         surface (u/get-in tree [:surface] nil)
@@ -40,9 +39,9 @@
         right-canonical (u/get-in tree [:2 :canonical])
         right-show (or right-rule right-surface right-canonical)]
     (if rule
-      (let [parent        {:x hcenter            :y (+ vspace (* y vline))}
-            left-child    {:x (- hcenter h-unit) :y (+ vspace (* (+ 1 y) vline))}
-            right-child   {:x (+ hcenter h-unit) :y (+ vspace (* (+ 1 y) vline))}
+      (let [parent        {:x (* x       h-unit) :y (+ vspace (* y       vline))}
+            left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) vline))}
+            right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) vline))}
             parent-class "rule"
             left-class   (if left-rule "rule" "leaf")
             right-class  (if right-rule "rule" "leaf")]
@@ -56,13 +55,13 @@
          [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
          
          (if left-rule
-           (draw-node (u/get-in tree [:1]) (- hcenter 50) x (+ 1 y))
+           (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
            [:text       {:class left-class
                          :x (:x left-child)
                          :y (:y left-child)} left-show])
 
          (if right-rule
-           (draw-node (u/get-in tree [:2]) (+ hcenter 50) (+ 1 x) (+ 1 y))
+           (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1))
            [:text       {:class right-class
                          :x (:x right-child)
                          :y (:y right-child)} right-show])]))))
@@ -72,7 +71,7 @@
     (log/info (str "drawing tree.."))
     (log/info (str "er is nog geen tree..?")))
   [:svg
-   (draw-node tree 100 0 0)])
+   (draw-node tree 2 0)])
 
 (defn nl-widget [text tree]
   [:div.debug {:style {:width "100%" :float "left"}}
