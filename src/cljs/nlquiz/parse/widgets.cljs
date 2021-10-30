@@ -40,14 +40,25 @@
         right-show (or right-rule right-surface right-canonical)
 ;;        x (if (= "vp" (u/get-in tree [:rule])) 5 x)
 ;;        y (if (= "vp" (u/get-in tree [:rule])) 3 y)
-
-        
         parent        {:x (* x       h-unit) :y (+ vspace (* y       v-unit))}
         left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
         right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
         parent-class "rule"
         left-class   (if left-rule "rule" "leaf")
-        right-class  (if right-rule "rule" "leaf")]
+        right-class  (if right-rule "rule" "leaf")
+        
+        left-contents
+        (if left-rule
+          (:g (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1)))
+          [:text       {:class left-class
+                        :x (:x left-child)
+                        :y (+ vspace (:y left-child))} left-show])
+        right-contents
+        (if right-rule
+          (:g (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1)))
+          [:text       {:class right-class
+                        :x (:x right-child)
+                        :y (+ vspace (:y right-child))} right-show])]
       {:x 42
        :y 99
        :g
@@ -59,18 +70,8 @@
         [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child)  :y2 (:y left-child)}]
         [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
         
-        
-        (if left-rule
-          (:g (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1)))
-          [:text       {:class left-class
-                        :x (:x left-child)
-                        :y (+ vspace (:y left-child))} left-show])
-        
-        (if right-rule
-          (:g (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1)))
-          [:text       {:class right-class
-                        :x (:x right-child)
-                        :y (+ vspace (:y right-child))} right-show])]}))
+        left-contents
+        right-contents]}))
 
 (defn draw-tree [tree]
   (if tree
