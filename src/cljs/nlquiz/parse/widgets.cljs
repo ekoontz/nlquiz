@@ -37,7 +37,11 @@
         right-rule (u/get-in tree [:2 :rule])
         right-surface (u/get-in tree [:2 :surface])
         right-canonical (u/get-in tree [:2 :canonical])
-        right-show (or right-rule right-surface right-canonical)]
+        right-show (or right-rule right-surface right-canonical)
+;;        x (if (= "vp" (u/get-in tree [:rule])) 5 x)
+;;        y (if (= "vp" (u/get-in tree [:rule])) 3 y)
+
+        ]
     (if rule
       (let [parent        {:x (* x       h-unit) :y (+ vspace (* y       v-unit))}
             left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
@@ -45,33 +49,33 @@
             parent-class "rule"
             left-class   (if left-rule "rule" "leaf")
             right-class  (if right-rule "rule" "leaf")]
-        [:g
-         [:text {:class parent-class
-                 :x (:x parent)
-                 :y (:y parent)}
-          show]
-         
-         [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child)  :y2 (:y left-child)}]
-         [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
-         
-         (if left-rule
-           (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
-           [:text       {:class left-class
-                         :x (:x left-child)
-                         :y (+ vspace (:y left-child))} left-show])
-
-         (if right-rule
-           (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1))
-           [:text       {:class right-class
-                         :x (:x right-child)
-                         :y (+ vspace (:y right-child))} right-show])]))))
+        {:x 42
+         :y 99
+         :g
+         [:g
+          [:text {:class parent-class
+                  :x (:x parent)
+                  :y (:y parent)}
+           show]
+          [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child)  :y2 (:y left-child)}]
+          [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
+          (if left-rule
+            (:g (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1)))
+            [:text       {:class left-class
+                          :x (:x left-child)
+                          :y (+ vspace (:y left-child))} left-show])
+          (if right-rule
+            (:g (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1)))
+            [:text       {:class right-class
+                          :x (:x right-child)
+                          :y (+ vspace (:y right-child))} right-show])]}))))
 
 (defn draw-tree [tree]
   (if tree
     (log/info (str "drawing tree.."))
     (log/info (str "er is nog geen tree..?")))
   [:svg
-   (draw-node tree 2 0)])
+   (:g (draw-node tree 2 0))])
 
 (defn nl-widget [text tree]
   [:div.debug {:style {:width "100%" :float "left"}}
