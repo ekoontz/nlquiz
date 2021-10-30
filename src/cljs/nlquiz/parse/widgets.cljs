@@ -42,13 +42,12 @@
 ;;        y (if (= "vp" (u/get-in tree [:rule])) 3 y)
 
         
-        ]
-    (let [parent        {:x (* x       h-unit) :y (+ vspace (* y       v-unit))}
-          left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
-          right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
-          parent-class "rule"
-          left-class   (if left-rule "rule" "leaf")
-          right-class  (if right-rule "rule" "leaf")]
+        parent        {:x (* x       h-unit) :y (+ vspace (* y       v-unit))}
+        left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
+        right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
+        parent-class "rule"
+        left-class   (if left-rule "rule" "leaf")
+        right-class  (if right-rule "rule" "leaf")]
       {:x 42
        :y 99
        :g
@@ -71,7 +70,7 @@
           (:g (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1)))
           [:text       {:class right-class
                         :x (:x right-child)
-                        :y (+ vspace (:y right-child))} right-show])]})))
+                        :y (+ vspace (:y right-child))} right-show])]}))
 
 (defn draw-tree [tree]
   (if tree
