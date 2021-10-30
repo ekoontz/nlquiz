@@ -38,29 +38,37 @@
         right-surface (u/get-in tree [:2 :surface])
         right-canonical (u/get-in tree [:2 :canonical])
         right-show (or right-rule right-surface right-canonical)
-;;        x (if (= "vp" (u/get-in tree [:rule])) 5 x)
-;;        y (if (= "vp" (u/get-in tree [:rule])) 3 y)
         parent        {:x (* x       h-unit) :y (+ vspace (* y       v-unit))}
         left-child    {:x (* (- x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
-        right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
         parent-class "rule"
         left-class   (if left-rule "rule" "leaf")
         right-class  (if right-rule "rule" "leaf")
         
-        left-contents
+        left-node
         (if left-rule
-          (:g (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1)))
-          [:text       {:class left-class
-                        :x (:x left-child)
-                        :y (+ vspace (:y left-child))} left-show])
+          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
+          {:g [:text       {:class left-class
+                            :x (:x left-child)
+                            :y (+ vspace (:y left-child))} left-show]})
+        left-contents (:g left-node)
+        left-x (:x left-node)
+        left-y (:y left-node)
+        left-rule (:rule left-node)
+        
+        debug (if (:rule left-node)
+                (log/info (str "LEFT X: " left-x "; LEFT Y: " left-y "; RULE: " left-rule)))
+
+        right-child   {:x (* (+ x 1) h-unit) :y (+ vspace (* (+ y 1) v-unit))}
+        
         right-contents
         (if right-rule
           (:g (draw-node (u/get-in tree [:2]) (+ x 1) (+ y 1)))
           [:text       {:class right-class
                         :x (:x right-child)
                         :y (+ vspace (:y right-child))} right-show])]
-      {:x 42
-       :y 99
+      {:x (or (:x left-node) x)
+       :y (or (:y left-node) y)
+       :rule (u/get-in tree [:rule])
        :g
        [:g
         [:text {:class parent-class
