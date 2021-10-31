@@ -483,7 +483,6 @@ text.rule {
 svg {
     min-height: 20em;
     width:100%;
-    border:1px dashed green;
 }
 
 span.example {
