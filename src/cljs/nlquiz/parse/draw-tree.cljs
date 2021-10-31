@@ -2,14 +2,31 @@
   (:require
    [dag_unify.core :as u]
    [dag_unify.serialization :refer [deserialize serialize]]
-   [cljslog.core :as log]))
+   [cljslog.core :as log]
+   [md5.core :as md5]))
 
 (def ^:const v-unit 30)
 (def ^:const vspace 10)
 (def ^:const h-unit 50)
 
-(defn draw-node-html [node-html]
-  (str node-html))
+(defn draw-node-html [parse-node]
+  [:table.treenode
+   [:tbody
+    (map (fn [k]
+           [:tr
+            {:key k}
+            [:th k]
+            [:td
+             (draw-node-value
+              k
+              (u/get-in parse-node [k]))]])
+         (sort (keys parse-node)))]])
+
+(defn draw-node-value [k v]
+  (cond
+    (map? v) (draw-node-html v)
+    (string? v) [:i v]
+    true (str v)))
 
 (defn draw-node [tree node-atom x y]
   (log/info (str "draw-node: x=" x "; y=" y "; rule: " (u/get-in tree [:rule])))
