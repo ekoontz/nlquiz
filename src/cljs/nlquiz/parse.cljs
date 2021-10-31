@@ -32,7 +32,7 @@
     ;; 2. atoms that link the UI and the functionality:
     (let [nl-surface-atom (r/atom spinner)
           nl-tree-atom (r/atom spinner)
-          nl-node-html-atom (r/atom spinner)
+          nl-node-html-atom (r/atom "")
           en-surfaces-atom (r/atom spinner)
           en-question-atom (r/atom spinner)]
 

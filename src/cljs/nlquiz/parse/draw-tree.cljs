@@ -9,9 +9,9 @@
 (def ^:const h-unit 50)
 
 (defn draw-node-html [node-html]
-  (log/info (str "draw-node-html!!")))
+  (str node-html))
 
-(defn draw-node [tree x y]
+(defn draw-node [tree node-atom x y]
   (log/info (str "draw-node: x=" x "; y=" y "; rule: " (u/get-in tree [:rule])))
   (let [rule (u/get-in tree [:rule] nil)
         surface (u/get-in tree [:surface] nil)
@@ -31,13 +31,14 @@
                               :y (+ vspace (* (:y left-child-xy-units) v-unit))}
         left-node
         (if left-rule
-          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
+          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1) node-atom)
           ;; left child is a leaf:
           {:x (:x left-child-xy-units)
            :y (:y left-child-xy-units)
            :g [:text {:class left-class
-                      :onClick (fn [event]
-                                 (log/info (str (u/get-in tree [:1]))))
+                      :on-click (fn [event]
+                                  (reset! node-atom
+                                          (u/get-in tree [:1])))
                       :x (:x left-child-xy-pixels)
                       :y (+ vspace (:y left-child-xy-pixels))}
                left-show]})
@@ -59,13 +60,16 @@
         right-node
         (if right-rule
           (draw-node (u/get-in tree [:2])
+                     node-atom
                      (:x right-child-xy-units)
                      (:y right-child-xy-units))
           ;; right child is a leaf:
           {:x (:x right-child-xy-units)
            :y (:y right-child-xy-units)
            :g [:text {:class right-class
-                      :on-click (fn [event] (log/info (str (u/get-in tree [:2]))))
+                      :on-click (fn [event]
+                                  (reset! node-atom
+                                          (u/get-in tree [:2])))
                       :x (:x right-child-xy-pixels)
                       :y (+ vspace (:y right-child-xy-pixels))}
                right-show]})]
@@ -76,7 +80,14 @@
      [:g
       [:text {:class parent-class
               :on-click (fn [event]
-                         (log/info (str tree)))
+                          (reset! node-atom
+                                  (-> 
+                                   tree
+                                   (dissoc :1)
+                                   (dissoc :2)
+                                   (dissoc :head)
+                                   (dissoc :comp))))
+                                   
               :x (:x parent)
               :y (:y parent)}
        show]
@@ -87,7 +98,7 @@
       (:g left-node)
       (:g right-node)]}))
 
-(defn draw-tree [tree]
+(defn draw-tree [tree node-atom]
   (if (u/get-in tree [:rule])
     [:svg
-     (:g (draw-node tree 2 0))]))
+     (:g (draw-node tree node-atom 2 0))]))
