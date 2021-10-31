@@ -48,7 +48,7 @@
                               :y (+ vspace (* (:y left-child-xy-units) v-unit))}
         left-node
         (if left-rule
-          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1) node-atom)
+          (draw-node (u/get-in tree [:1]) node-atom (- x 1) (+ y 1))
           ;; left child is a leaf:
           {:x (:x left-child-xy-units)
            :y (:y left-child-xy-units)
