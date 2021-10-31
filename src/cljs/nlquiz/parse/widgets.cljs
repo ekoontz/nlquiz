@@ -39,7 +39,7 @@
         left-show (or left-rule left-surface left-canonical)
         left-child-xy-units {:x (- x 1) :y (+ y 1)}
         left-child-xy-pixels {:x (* (:x left-child-xy-units) h-unit)
-                    :y (+ vspace (* (:y left-child-xy-units) v-unit))}
+                              :y (+ vspace (* (:y left-child-xy-units) v-unit))}
         left-node
         (if left-rule
           (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
@@ -48,7 +48,7 @@
            :y (:y left-child-xy-units)
            :g [:text {:class left-class
                       :x (:x left-child-xy-pixels)
-                      :y (:y left-child-xy-pixels)}
+                      :y (+ vspace (:y left-child-xy-pixels))}
                left-show]})
 
         ;; right:
