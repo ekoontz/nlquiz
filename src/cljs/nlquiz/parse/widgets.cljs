@@ -59,43 +59,25 @@
         left-x (:x left-node)
         left-y (:y left-node)
         left-rule (:rule left-node)
-        
-        debug (if (:rule left-node)
-                (log/info (str "LEFT X: " left-x "; LEFT Y: " left-y "; RULE: " left-rule)))
-
-        right-x-increment 2
-        right-child-coordinates {:x (+ (:x left-node) right-x-increment)
+        right-child-coordinates {:x (+ (:x left-node) 2)
                                  :y (:y left-node)}
         right-child {:x (* (:x right-child-coordinates) h-unit)
                      :y (+ vspace (* (:y right-child-coordinates) v-unit))}
         
-        right-complete-contents
+        right-node
         (if right-rule
-          (do
-            (log/info (str "ok, let's draw the right rule: " right-rule
-                           " with right-coords: " right-child-coordinates))
-            
-            (draw-node (u/get-in tree [:2])
-                       (:x right-child-coordinates)
-                       (:y right-child-coordinates)))
-          (do
-            (log/info (str "ok let's draw the right child leaf: " right-show
-                           " with right-coords: " right-child-coordinates))
-            {:x (:x right-child-coordinates)
-             :y (:y right-child-coordinates)
-             :g [:text       {:class right-class
-                              :x (:x right-child)
-                              :y (+ vspace (:y right-child))}
-                 right-show]}))
-        right-contents (:g right-complete-contents)
-        right-child-coordinates-deep {:x (:x right-complete-contents)
-                                      :y (:y right-complete-contents)}
-        ]
-    (log/info (str "returning from rule: " (u/get-in tree [:rule])
-                   " with right-child-coordinates: " right-child-coordinates
-                   " and right-child-coordinates-deep: " right-child-coordinates-deep))
-    {:x (:x right-child-coordinates-deep)
-     :y (:y right-child-coordinates-deep)
+          (draw-node (u/get-in tree [:2])
+                     (:x right-child-coordinates)
+                     (:y right-child-coordinates))
+          {:x (:x right-child-coordinates)
+           :y (:y right-child-coordinates)
+           :g [:text       {:class right-class
+                            :x (:x right-child)
+                            :y (+ vspace (:y right-child))}
+               right-show]})
+        right-contents (:g right-node)]
+    {:x (:x right-node)
+     :y (:y right-node)
      :rule (u/get-in tree [:rule])
      :g
      [:g
