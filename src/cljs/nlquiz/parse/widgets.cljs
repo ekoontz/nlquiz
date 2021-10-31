@@ -40,20 +40,9 @@
         right-show (or right-rule right-surface right-canonical)
         parent {:x (* x h-unit) :y (+ vspace (* y v-unit))}
         left-child-coordinates {:x (- x 1) :y (+ y 1)}
-        left-child {:x (* (:x left-child-coordinates) h-unit)
-                    :y (+ vspace (* (:y left-child-coordinates) v-unit))}
         parent-class "rule"
         left-class (if left-rule "rule" "leaf")
         right-class (if right-rule "rule" "leaf")
-        left-node
-        (if left-rule
-          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
-          ;; left child is a leaf:
-          {:x (:x left-child-coordinates)
-           :y (:y left-child-coordinates)
-           :g [:text {:class left-class
-                      :x (:x left-child)
-                      :y (+ vspace (:y left-child))} left-show]})
         right-child-coordinates (if right-rule
                                   {:x (+ (:x left-child-coordinates) 2)
                                    :y (:y left-child-coordinates)}
@@ -64,11 +53,23 @@
         right-child {:x (* (:x right-child-coordinates) h-unit)
                      :y (+ vspace (* (:y right-child-coordinates) v-unit))}
         
+        left-node
+        (if left-rule
+          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
+          ;; left child is a leaf:
+          {:x (:x left-child-coordinates)
+           :y (:y left-child-coordinates)
+           :g [:text {:class left-class
+                      :x (* (:x left-child-coordinates) h-unit)
+                      :y (+ vspace
+                            (+ vspace (* (:y left-child-coordinates) v-unit)))}
+               left-show]})
         right-node
         (if right-rule
           (draw-node (u/get-in tree [:2])
                      (:x right-child-coordinates)
                      (:y right-child-coordinates))
+          ;; right-child is a leaf:
           {:x (:x right-child-coordinates)
            :y (:y right-child-coordinates)
            :g [:text {:class right-class
