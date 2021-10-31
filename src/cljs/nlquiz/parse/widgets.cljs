@@ -38,24 +38,29 @@
         right-surface (u/get-in tree [:2 :surface])
         right-canonical (u/get-in tree [:2 :canonical])
         right-show (or right-rule right-surface right-canonical)
-        parent        {:x (* x       h-unit) :y (+ vspace (* y       v-unit))}
-        left-child-coordinates {:x (- x 1)
-                                :y (+ y 1)}
-        left-child    {:x (* (:x left-child-coordinates) h-unit)
-                       :y (+ vspace (* (:y left-child-coordinates) v-unit))}
+        parent {:x (* x h-unit) :y (+ vspace (* y v-unit))}
+        left-child-coordinates {:x (- x 1) :y (+ y 1)}
+        left-child {:x (* (:x left-child-coordinates) h-unit)
+                    :y (+ vspace (* (:y left-child-coordinates) v-unit))}
         parent-class "rule"
-        left-class   (if left-rule "rule" "leaf")
-        right-class  (if right-rule "rule" "leaf")
+        left-class (if left-rule "rule" "leaf")
+        right-class (if right-rule "rule" "leaf")
         left-node
         (if left-rule
           (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
+          ;; left child is a leaf:
           {:x (:x left-child-coordinates)
            :y (:y left-child-coordinates)
            :g [:text {:class left-class
                       :x (:x left-child)
                       :y (+ vspace (:y left-child))} left-show]})
-        right-child-coordinates {:x (+ (:x left-node) 2)
-                                 :y (:y left-node)}
+        right-child-coordinates (if right-rule
+                                  {:x (+ (:x left-child-coordinates) 2)
+                                   :y (:y left-child-coordinates)}
+                                  ;; right child is a leaf:
+                                  {:x (+ x 1)
+                                   :y (+ y 1)})
+                                    
         right-child {:x (* (:x right-child-coordinates) h-unit)
                      :y (+ vspace (* (:y right-child-coordinates) v-unit))}
         
@@ -81,7 +86,6 @@
        show]
       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child)  :y2 (:y left-child)}]
       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
-      
       (:g left-node)
       (:g right-node)]}))
 
