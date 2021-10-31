@@ -21,7 +21,7 @@
 (defn nl-widget [text tree node-html]
   [:div {:width "100%"}
    [:div.tree
-    (draw-tree @tree)]
+    (draw-tree @tree node-html)]
    [:div.treenode
     (draw-node-html @node-html)]])
 
