@@ -10,6 +10,12 @@
 
 #app {
     float:left;
+    width:100%;
+}
+
+div#page {
+    float:left;
+    width:100%;
 }
 
 #answer {
