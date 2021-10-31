@@ -477,6 +477,7 @@ text.rule {
 svg {
     min-height: 20em;
     width:100%;
+    border:1px dashed green;
 }
 
 span.example {
@@ -484,3 +485,14 @@ span.example {
     font-family:serif;
 }
     
+div.tree {
+    float:left;
+    width:48%;
+    border:5px dashed lightblue;
+}
+
+div.treenode {
+    float:right;
+    border:5px dashed lightblue;
+    width:48%;
+}

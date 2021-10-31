@@ -32,6 +32,7 @@
     ;; 2. atoms that link the UI and the functionality:
     (let [nl-surface-atom (r/atom spinner)
           nl-tree-atom (r/atom spinner)
+          nl-node-html-atom (r/atom spinner)
           en-surfaces-atom (r/atom spinner)
           en-question-atom (r/atom spinner)]
 
@@ -50,7 +51,7 @@
                    ;; can't parse user's guess:
                    :on-change (when language-models-loaded?
                                 (on-change nl-surface-atom nl-tree-atom en-surfaces-atom grammar))}]]
-         (nl-widget nl-surface-atom nl-tree-atom)]))))
+         (nl-widget nl-surface-atom nl-tree-atom nl-node-html-atom)]))))
 
 
 
