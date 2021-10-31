@@ -62,7 +62,7 @@
           :href (path-for :newquiz)} "new"]
 
         [:a {:class (if (prefix? (path-for :parse) path) "selected" "")
-          :href (path-for :parse)} "parse"]
+          :href (path-for :parse)} "Parse"]
         
         [:a {:class (if (prefix? (path-for :about) path) "selected" "")
              :href (path-for :about)} "About"] " "
