@@ -42,6 +42,7 @@
       (fn []
         [:div.parse
          [:div [:input {:type "text"
+                        :size 100
                         :placeholder "type something in Dutch"
                         ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
                         
