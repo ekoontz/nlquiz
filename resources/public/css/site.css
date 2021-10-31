@@ -490,7 +490,20 @@ span.example {
     font-style:italic;
     font-family:serif;
 }
-    
+
+div.parse {
+    float:left;
+    width:100%;
+}
+
+div.parse > div {
+    float:left;
+    width:100%;
+}
+div.parse input {
+    float:left;
+}
+
 div.tree {
     float:left;
     width:48%;
