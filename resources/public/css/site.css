@@ -494,12 +494,12 @@ span.example {
 div.tree {
     float:left;
     width:48%;
-    border:5px dashed lightblue;
+    border:2px solid lightblue;
 }
 
 div.treenode {
     float:right;
-    border:5px dashed lightblue;
+    border:2px solid lightblue;
     width:48%;
 }
 
