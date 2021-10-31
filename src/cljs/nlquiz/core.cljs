@@ -49,7 +49,7 @@
     (let [page (:current-page (session/get :route))
           path (session/get :path)]
       (log/debug (str "current path: " path))
-      [:div
+      [:div#page
        [:header
         [:a {:class (if (or (= path "/")
                             (= path "/nlquiz")
