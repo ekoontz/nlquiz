@@ -46,19 +46,14 @@
         parent-class "rule"
         left-class   (if left-rule "rule" "leaf")
         right-class  (if right-rule "rule" "leaf")
-        
         left-node
         (if left-rule
           (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
           {:x (:x left-child-coordinates)
            :y (:y left-child-coordinates)
-           :g [:text       {:class left-class
-                            :x (:x left-child)
-                            :y (+ vspace (:y left-child))} left-show]})
-        left-contents (:g left-node)
-        left-x (:x left-node)
-        left-y (:y left-node)
-        left-rule (:rule left-node)
+           :g [:text {:class left-class
+                      :x (:x left-child)
+                      :y (+ vspace (:y left-child))} left-show]})
         right-child-coordinates {:x (+ (:x left-node) 2)
                                  :y (:y left-node)}
         right-child {:x (* (:x right-child-coordinates) h-unit)
@@ -71,11 +66,10 @@
                      (:y right-child-coordinates))
           {:x (:x right-child-coordinates)
            :y (:y right-child-coordinates)
-           :g [:text       {:class right-class
-                            :x (:x right-child)
-                            :y (+ vspace (:y right-child))}
-               right-show]})
-        right-contents (:g right-node)]
+           :g [:text {:class right-class
+                      :x (:x right-child)
+                      :y (+ vspace (:y right-child))}
+               right-show]})]
     {:x (:x right-node)
      :y (:y right-node)
      :rule (u/get-in tree [:rule])
@@ -88,8 +82,8 @@
       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x left-child)  :y2 (:y left-child)}]
       [:line.thick {:x1 (:x parent) :y1 (:y parent) :x2 (:x right-child) :y2 (:y right-child)}]
       
-      left-contents
-      right-contents]}))
+      (:g left-node)
+      (:g right-node)]}))
 
 (defn draw-tree [tree]
   (if (u/get-in tree [:rule])
