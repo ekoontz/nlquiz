@@ -516,7 +516,7 @@ div.treenode {
 }
 
 table.treenode {
-    font:small;
+    font-size:small;
 }
 
 table.treenode th {
