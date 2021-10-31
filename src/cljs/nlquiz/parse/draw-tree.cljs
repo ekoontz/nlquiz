@@ -25,6 +25,7 @@
 (defn draw-node-value [k v]
   (cond
     (map? v) (draw-node-html v)
+    (= v :menard.nederlands/none) "none"
     (string? v) [:i v]
     true (str v)))
 
