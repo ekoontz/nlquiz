@@ -506,24 +506,39 @@ div.parse input {
 div.tree {
     float:left;
     width:48%;
-    border:2px solid lightblue;
+    border:0px solid lightblue;
+    padding:1%;
 }
 
 div.treenode {
     float:right;
-    border:2px solid lightblue;
+    border:0px solid lightblue;
     width:48%;
+    font-size:small;
+    font-family:serif;
 }
 
 table.treenode {
-    font-size:small;
+    border-collapse:collapse;
 }
 
 table.treenode th {
     text-align:right;
-    padding:0.25em;
     background:lightblue;
+    border-right: 2px solid lightblue;
 }
+
 table.treenode td {
-    text-align:left;
+    float:right;
+    text-align:right;
+    padding-right:0.25em;
+    border-right: 2px solid lightblue;
+}
+
+div.input {
+    margin:1%;
+}
+
+div.input input {
+    padding:1%;
 }

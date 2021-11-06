@@ -41,15 +41,15 @@
       ;; 4. render the UI:
       (fn []
         [:div.parse
-         [:div [:input {:type "text"
-                        :size 100
-                        :placeholder "type something in Dutch"
-                        ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
-                        
-                        ;; unless language-models-loaded? is true,
-                        ;; can't parse user's guess:
-                        :on-change (when language-models-loaded?
-                                     (on-change nl-surface-atom nl-tree-atom en-surfaces-atom grammar))}]]
+         [:div.input [:input {:type "text"
+                              :size 50
+                              :placeholder "type something in Dutch"
+                              ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
+                              
+                              ;; unless language-models-loaded? is true,
+                              ;; can't parse user's guess:
+                              :on-change (when language-models-loaded?
+                                           (on-change nl-surface-atom nl-tree-atom en-surfaces-atom grammar))}]]
          (nl-widget nl-surface-atom nl-tree-atom nl-node-html-atom)]))))
 
 
