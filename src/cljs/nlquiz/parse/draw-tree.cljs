@@ -10,23 +10,27 @@
 (def ^:const h-unit 50)
 
 (defn draw-node-html [parse-node]
-  [:table.treenode
-   [:tbody
-    (map (fn [k]
-           [:tr
-            {:key k}
-            [:th k]
-            [:td
-             (draw-node-value
-              k
-              (u/get-in parse-node [k]))]])
-         (sort (keys parse-node)))]])
+  (if (seq parse-node)
+    [:table.treenode
+     [:tbody
+      (map (fn [k]
+             [:tr
+              {:key k}
+              [:th k]
+              [:td
+               (draw-node-value
+                k
+                (u/get-in parse-node [k]))]])
+           (sort (keys parse-node)))]]))
 
 (defn draw-node-value [k v]
   (cond
     (map? v) (draw-node-html v)
     (= v :menard.nederlands/none) "none"
     (string? v) [:i v]
+    (keyword? v) v
+    (boolean? v) [:tt (if (true? v) "true" "false")]
+    (nil? v) [:tt "NULL"]
     true (str v)))
 
 (defn draw-node [tree node-atom x y]
