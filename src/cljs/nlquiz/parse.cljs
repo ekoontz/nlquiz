@@ -4,7 +4,7 @@
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
-   [nlquiz.constants :refer [root-path spinner]]
+   [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
                           nl-parses nl-parses-to-en-specs]]
@@ -50,6 +50,10 @@
                               ;; can't parse user's guess:
                               :on-change (when language-models-loaded?
                                            (on-change nl-surface-atom nl-tree-atom en-surfaces-atom grammar))}]]
+                                           (on-change nl-surface-atom
+                                                      nl-tree-atom
+                                                      en-surfaces-atom
+                                                      grammar))}]]
          (nl-widget nl-surface-atom nl-tree-atom nl-node-html-atom)]))))
 
 
