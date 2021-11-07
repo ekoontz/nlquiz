@@ -49,12 +49,12 @@
                               ;; unless language-models-loaded? is true,
                               ;; can't parse user's guess:
                               :on-change (when language-models-loaded?
-                                           (on-change nl-surface-atom nl-tree-atom en-surfaces-atom grammar))}]]
                                            (on-change nl-surface-atom
                                                       nl-tree-atom
                                                       en-surfaces-atom
                                                       grammar))}]]
          (nl-widget nl-surface-atom nl-tree-atom nl-node-html-atom)]))))
+
 
 
 
