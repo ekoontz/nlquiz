@@ -3,7 +3,7 @@
    [dag_unify.core :as u]
    [dag_unify.serialization :refer [deserialize serialize]]
    [cljslog.core :as log]
-   [md5.core :as md5]))
+   [reagent.core :as r]))
 
 (def ^:const v-unit 30)
 (def ^:const vspace 10)
@@ -40,11 +40,11 @@
         canonical (u/get-in tree [:canonical] nil)
         show (or rule surface canonical)
         parent {:x (* x h-unit) :y (+ vspace (* y v-unit))}
-        parent-class "rule"
+        parent-class (r/atom "rule")
 
         ;; left
         left-rule (u/get-in tree [:1 :rule])
-        left-class (if left-rule "rule" "leaf")
+        left-class (r/atom (if left-rule "rule" "leaf"))
         left-surface (u/get-in tree [:1 :surface])
         left-canonical (u/get-in tree [:1 :canonical])
         left-show (or left-rule left-surface left-canonical)
@@ -57,8 +57,9 @@
           ;; left child is a leaf:
           {:x (:x left-child-xy-units)
            :y (:y left-child-xy-units)
-           :g [:text {:class left-class
+           :g [:text {:class @left-class
                       :on-click (fn [event]
+                                  (reset! left-class "selected")
                                   (reset! node-atom
                                           (u/get-in tree [:1])))
                       :x (:x left-child-xy-pixels)
@@ -67,7 +68,7 @@
 
         ;; right:
         right-rule (u/get-in tree [:2 :rule])
-        right-class (if right-rule "rule" "leaf")
+        right-class (r/atom (if right-rule "rule" "leaf"))
         right-surface (u/get-in tree [:2 :surface])
         right-canonical (u/get-in tree [:2 :canonical])
         right-show (or right-rule right-surface right-canonical)
@@ -85,11 +86,14 @@
                      node-atom
                      (:x right-child-xy-units)
                      (:y right-child-xy-units))
-          ;; right child is a leaf:
+
+          ;; else, right child is a leaf:
           {:x (:x right-child-xy-units)
            :y (:y right-child-xy-units)
-           :g [:text {:class right-class
+           :g [:text {:class @right-class
                       :on-click (fn [event]
+                                  (log/info (str "OK RESETTING CLASS!!"))
+                                  (reset! right-class "selected")
                                   (reset! node-atom
                                           (u/get-in tree [:2])))
                       :x (:x right-child-xy-pixels)
@@ -100,8 +104,9 @@
      :rule (u/get-in tree [:rule])
      :g
      [:g
-      [:text {:class parent-class
+      [:text {:class @parent-class
               :on-click (fn [event]
+                          (reset! @parent-class (str "selected"))
                           (reset! node-atom
                                   (-> 
                                    tree
