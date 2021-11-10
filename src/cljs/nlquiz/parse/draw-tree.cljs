@@ -58,7 +58,7 @@
           {:x (:x left-child-xy-units)
            :y (:y left-child-xy-units)
            :g [:text {:class @left-class
-                      :on-click (fn [event]
+                      :on-mouse-over (fn [event]
                                   (reset! left-class "selected")
                                   (reset! node-atom
                                           (u/get-in tree [:1])))
@@ -91,9 +91,7 @@
           {:x (:x right-child-xy-units)
            :y (:y right-child-xy-units)
            :g [:text {:class @right-class
-                      :on-click (fn [event]
-                                  (log/info (str "OK RESETTING CLASS!!"))
-                                  (reset! right-class "selected")
+                      :on-mouse-over (fn [event]
                                   (reset! node-atom
                                           (u/get-in tree [:2])))
                       :x (:x right-child-xy-pixels)
@@ -105,8 +103,7 @@
      :g
      [:g
       [:text {:class @parent-class
-              :on-click (fn [event]
-                          (reset! @parent-class (str "selected"))
+              :on-mouse-over (fn [event]
                           (reset! node-atom
                                   (-> 
                                    tree
@@ -114,7 +111,6 @@
                                    (dissoc :2)
                                    (dissoc :head)
                                    (dissoc :comp))))
-                                   
               :x (:x parent)
               :y (:y parent)}
        show]
@@ -128,4 +124,4 @@
 (defn draw-tree [tree node-atom]
   (if (u/get-in tree [:rule])
     [:svg
-     (:g (draw-node tree node-atom 2 0))]))
+     (:g (draw-node tree node-atom 2 1))]))

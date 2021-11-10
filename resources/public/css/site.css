@@ -475,8 +475,17 @@ text.leaf {
     font: italic 12px serif; fill: black;
 }
 
+text.leaf:hover {
+    font: italic 18px serif; fill: blue;
+    font-weight:bold;
+}
+
 text.rule {
     font: normal 12px sans; fill: black;
+}
+
+text.rule:hover {
+    font: normal 18px sans; fill: blue;
     font-weight:bold;
 }
 
