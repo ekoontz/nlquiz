@@ -506,13 +506,11 @@ div.parse input {
 div.tree {
     float:left;
     width:48%;
-    border:0px solid lightblue;
     padding:1%;
 }
 
 div.treenode {
     float:right;
-    border:0px solid lightblue;
     width:48%;
     font-size:small;
     font-family:serif;
@@ -520,6 +518,8 @@ div.treenode {
 
 table.treenode {
     border-collapse:collapse;
+    border-top:2px solid lightblue;
+    border-bottom:2px solid lightblue;
 }
 
 table.treenode th {
@@ -531,7 +531,7 @@ table.treenode th {
 table.treenode td {
     float:right;
     text-align:right;
-    padding-right:0.25em;
+    padding:0.25em;
     border-right: 2px solid lightblue;
 }
 
