@@ -10,7 +10,7 @@
 (def ^:const h-unit 50)
 
 (defn draw-node-html [parse-node]
-  (if (seq parse-node)
+  (if (map? parse-node)
     [:table.treenode
      [:tbody
       (map (fn [k]
@@ -63,10 +63,6 @@
           {:x (:x left-child-xy-units)
            :y (:y left-child-xy-units)
            :g [:text {:class @left-class
-                      :on-mouse-over (fn [event]
-                                  (reset! left-class "selected")
-                                  (reset! node-atom
-                                          (u/get-in tree [:1])))
                       :x (:x left-child-xy-pixels)
                       :y (+ vspace (:y left-child-xy-pixels))}
                left-show]})
@@ -84,7 +80,8 @@
                                   {:x (+ x 1)
                                    :y (+ y 1)})
         right-child-xy-pixels {:x (* (:x right-child-xy-units) h-unit)
-                     :y (+ vspace (* (:y right-child-xy-units) v-unit))}
+                               :y (+ vspace (* (:y right-child-xy-units)
+                                               v-unit))}
         right-node
         (if right-rule
           (draw-node (u/get-in tree [:2])
@@ -96,9 +93,6 @@
           {:x (:x right-child-xy-units)
            :y (:y right-child-xy-units)
            :g [:text {:class @right-class
-                      :on-mouse-over (fn [event]
-                                  (reset! node-atom
-                                          (u/get-in tree [:2])))
                       :x (:x right-child-xy-pixels)
                       :y (+ vspace (:y right-child-xy-pixels))}
                right-show]})]
@@ -108,14 +102,6 @@
      :g
      [:g
       [:text {:class @parent-class
-              :on-mouse-over (fn [event]
-                          (reset! node-atom
-                                  (-> 
-                                   tree
-                                   (dissoc :1)
-                                   (dissoc :2)
-                                   (dissoc :head)
-                                   (dissoc :comp))))
               :x (:x parent)
               :y (:y parent)}
        show]
