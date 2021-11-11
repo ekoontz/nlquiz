@@ -48,7 +48,7 @@
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree
               parse/morph morph
-              parse/truncate? true]
+              parse/truncate? false]
       (->
        (parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
