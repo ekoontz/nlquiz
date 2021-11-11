@@ -14,13 +14,18 @@
     [:table.treenode
      [:tbody
       (map (fn [k]
-             [:tr
-              {:key k}
-              [:th k]
-              [:td
-               (draw-node-value
-                k
-                (u/get-in parse-node [k]))]])
+             (let [val
+                   (u/get-in parse-node [k])]
+               (if (not (= val :top))
+                 ;; hide {k v=:top} pairs since
+                 ;; they aren't very interesting.
+                 [:tr
+                  {:key k}
+                  [:th k]
+                  [:td
+                   (draw-node-value
+                    k
+                    val)]])))
            (sort (keys parse-node)))]]))
 
 (defn draw-node-value [k v]

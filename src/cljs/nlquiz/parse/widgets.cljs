@@ -2,6 +2,7 @@
   (:require
    [dag_unify.core :as u]
    [cljslog.core :as log]
+   [md5.core :as md5]
    [nlquiz.parse.draw-tree :refer [draw-node-html
                                    draw-tree]]))
 
@@ -18,10 +19,13 @@
     [:div.monospace
      @text]]])
 
-(defn nl-widget [text tree node-html]
+(defn nl-widget [text trees node-html]
   [:div {:width "100%"}
-   [:div.tree
-    (draw-tree @tree node-html)]
+   (doall (map (fn [tree]
+                 [:div.tree
+                  {:key (md5/string->md5-hex (str tree))}
+                  (draw-tree tree node-html)])
+               @trees))
    [:div.treenode
     (draw-node-html @node-html)]])
 
