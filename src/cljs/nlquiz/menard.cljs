@@ -5,10 +5,10 @@
    [clojure.string :as string]
    [dag_unify.core :as u]
    [dag_unify.serialization :refer [deserialize serialize]]
+   [md5.core :as md5]
    [menard.parse :as parse]
    [menard.serialization :as s]
-   [menard.translate.spec :as tr]
-   [md5.core :as md5]))
+   [menard.translate.spec :as tr]))
 
 ;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
 (defn array2map [input]
