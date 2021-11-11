@@ -35,8 +35,8 @@
                     ;; set of specifications for the english:
                     en-specs (nl-parses-to-en-specs nl-parses)]
 
-                (when (first nl-parses)
-                  (reset! nl-tree-atom (first nl-parses)))
+                (when nl-parses
+                  (reset! nl-tree-atom nl-parses))
                 
                 ;; 3. For each such spec, generate an english expression, and
                 ;;    for each generated expression, add it to the 'update-to' atom.
