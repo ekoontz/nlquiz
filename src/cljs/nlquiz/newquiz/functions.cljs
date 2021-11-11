@@ -11,14 +11,12 @@
 
 (defn on-change [{{nl-surface-atom :surface
                    nl-tree-atom :tree
-                   nl-grammar :grammar
-                   nl-node-html-atom :node-html} :nl
+                   nl-grammar :grammar} :nl
                   {en-surfaces-atom :surfaces} :en}]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value string/trim)
           fresh? (fn [] (= @nl-surface-atom nl-surface))]
       (when (not (fresh?))
-        (log/info (str "GOT HERE 2 (not fresh)."))
         ;; Only start the (go) if there is a difference between the input we are given (nl-surface)
         ;; and the last input that was processed (@nl-surface-atom).
 
@@ -43,9 +41,6 @@
                 (when nl-parses
                   (reset! nl-tree-atom nl-parses))
 
-                (if (not generate-english?)
-                  (log/info (str "SKIPPING ENGLISH GENERATION..")))
-                  
                 (when en-surfaces-atom
                   ;; 3. For each such spec, generate an english expression, and
                   ;;    for each generated expression, add it to the 'update-to' atom.

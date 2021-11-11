@@ -443,7 +443,7 @@ div.orange {
     }
 
     #input-guess {
-	font-size:larger;
+4	font-size:larger;
     }
 
     div.question {
@@ -515,15 +515,15 @@ div.parse input {
 
 div.tree {
     float:left;
-    width:48%;
     padding:1%;
 }
 
 div.treenode {
-    float:right;
-    width:48%;
-    font-size:small;
+    float:left;
+    font-size:50%;
     font-family:serif;
+    margin-bottom:1em;
+    margin-right:1em;
 }
 
 table.treenode {
