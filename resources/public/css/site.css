@@ -476,22 +476,12 @@ text.leaf {
     font: italic 12px serif; fill: black;
 }
 
-text.leaf:hover {
-    font: italic 18px serif; fill: lightblue;
-    font-weight:bold;
-}
-
 text.rule {
     font: normal 12px sans; fill: black;
 }
 
-text.rule:hover {
-    font: normal 18px sans; fill: lightblue;
-    font-weight:bold;
-}
-
 svg {
-    width:100%;
+    overflow:visible;
 }
 
 span.example {
@@ -512,14 +502,29 @@ div.parse input {
     float:left;
 }
 
+div.nl_widget {
+    padding:1%;
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    grid-template-rows: 1fr 1fr 1fr; 
+    gap: 0px 0px; 
+    grid-template-areas: 
+	". ."
+	". ."
+	". ."; 
+}
+
+div.nl_widget > div {
+    border-left:1px solid lightblue;
+    border-top:1px solid lightblue;
+}
+
 div.tree {
     float:left;
-    padding:1%;
 }
 
 div.treenode {
     float:left;
-    font-size:50%;
     font-family:serif;
     margin-bottom:1em;
     margin-right:1em;

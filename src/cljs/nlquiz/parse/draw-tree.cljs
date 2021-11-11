@@ -38,7 +38,7 @@
     (nil? v) [:tt "NULL"]
     true (str v)))
 
-(defn draw-node [tree node-atom x y]
+(defn draw-node [tree x y]
   (log/info (str "draw-node: x=" x "; y=" y "; rule: " (u/get-in tree [:rule])))
   (let [rule (u/get-in tree [:rule] nil)
         surface (u/get-in tree [:surface] nil)
@@ -58,7 +58,7 @@
                               :y (+ vspace (* (:y left-child-xy-units) v-unit))}
         left-node
         (if left-rule
-          (draw-node (u/get-in tree [:1]) node-atom (- x 1) (+ y 1))
+          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
           ;; left child is a leaf:
           {:x (:x left-child-xy-units)
            :y (:y left-child-xy-units)
@@ -85,7 +85,6 @@
         right-node
         (if right-rule
           (draw-node (u/get-in tree [:2])
-                     node-atom
                      (:x right-child-xy-units)
                      (:y right-child-xy-units))
 
@@ -120,7 +119,7 @@
       (:g left-node)
       (:g right-node)]}))
 
-(defn draw-tree [tree node-atom]
+(defn draw-tree [tree]
   (if (u/get-in tree [:rule])
     [:svg
-     (:g (draw-node tree node-atom 2 1))]))
+     (:g (draw-node tree 2 1))]))

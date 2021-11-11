@@ -19,30 +19,36 @@
     [:div.monospace
      @text]]])
 
-(defn nl-widget [text trees]
-  [:div {:width "100%"}
-   [:div {:width "48%" :float "left"}
-    (doall (map (fn [tree]
-                  [:div.tree
-                   {:key (md5/string->md5-hex (str tree))}
-                   (draw-tree tree node-html)])
-                @trees))]
-   [:div {:width "48%" :float "right"}
-    (doall (map (fn [tree]
-                  (let [html-node
-                        (if (map? tree)
-                          (draw-node-html
-                           (->
-                            tree
-                            (dissoc :1)
-                            (dissoc :2)
-                            (dissoc :head)
-                            (dissoc :comp)))
-                          (str "node-" tree))]
-                   [:div.treenode
-                    {:key (md5/string->md5-hex (str html-node))}
-                    html-node]))
-                @trees))]])
+(defn nl-widget [trees]
+  [:div.nl_widget
+   (nl-widget-trees @trees)])
+
+(defn nl-widget-trees [trees]
+  (if (seq trees)
+    (let [tree (first trees)]
+      (if (map? tree)
+        (cons
+         [:div.tree
+          {:key (md5/string->md5-hex (str tree))}
+          (draw-tree tree)]
+         (cons
+          (let [html (draw-node-html
+                      (-> tree
+                          (dissoc :1)
+                          (dissoc :2)
+                          (dissoc :head)
+                          (dissoc :comp)))]
+            [:div.treenode
+             {:key (md5/string->md5-hex (str html))}
+             html])
+          (nl-widget-trees (rest trees))))
+        (nl-widget-trees (rest trees))))))
+
+
+
+
+
+
 
 
 

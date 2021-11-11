@@ -54,5 +54,5 @@
                                                             :tree nl-tree-atom
                                                             :node-html nl-node-html-atom
                                                             :grammar nl-grammar}}))}]]
-         (nl-widget nl-surface-atom nl-tree-atom)]))))
+         (nl-widget nl-tree-atom)]))))
 
