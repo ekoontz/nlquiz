@@ -18,13 +18,13 @@
 (defn component []
   ;; 1. initialize some data structures that don't change (often).
   ;; for now, only NL grammar:
-  (let [grammar (atom nil)
+  (let [nl-grammar (atom nil)
         language-models-loaded? (atom false)]
     ;; 1. initialize linguistic resources from server:
     (go
       (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                                 "/grammar/nl")))]
-        (reset! grammar (-> grammar-response :body decode-grammar))
+        (reset! nl-grammar (-> grammar-response :body decode-grammar))
         (reset! language-models-loaded? true)
         (log/info (str "finished loading the nl grammar."))))
 
@@ -46,17 +46,13 @@
                               :placeholder "type something in Dutch"
                               ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
                               
-                              ;; unless language-models-loaded? is true,
-                              ;; can't parse user's guess:
                               :on-change (when language-models-loaded?
-                                           (on-change nl-surface-atom
-                                                      nl-tree-atom
-                                                      en-surfaces-atom
-                                                      grammar))}]]
+                                           ;;^ we do the above (when) check because,
+                                           ;; unless language-models-loaded? is true,
+                                           ;; we can't parse user's guess.
+                                           (on-change {:nl {:surface nl-surface-atom
+                                                            :tree nl-tree-atom
+                                                            :node-html nl-node-html-atom
+                                                            :grammar nl-grammar}}))}]]
          (nl-widget nl-surface-atom nl-tree-atom nl-node-html-atom)]))))
-
-
-
-
-
 
