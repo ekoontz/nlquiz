@@ -114,10 +114,18 @@
               :x (:x parent)
               :y (:y parent)}
        show]
-      [:line.thick {:x1 (:x parent) :y1 (+ 2 (:y parent))
-                    :x2 (:x left-child-xy-pixels)  :y2 (:y left-child-xy-pixels)}]
-      [:line.thick {:x1 (:x parent) :y1 (+ 2 (:y parent))
-                    :x2 (:x right-child-xy-pixels) :y2 (:y right-child-xy-pixels)}]
+
+      ;; left line:
+      [:line.thick {:x1 (:x parent)
+                    :y1 (+ 2 (:y parent))
+                    :x2 (:x left-child-xy-pixels)
+                    :y2 (:y left-child-xy-pixels)}]
+
+      ;; right line:
+      [:line.thick {:x1 (:x parent)
+                    :y1 (+ 2 (:y parent))
+                    :x2 (:x right-child-xy-pixels)
+                    :y2 (:y right-child-xy-pixels)}]
       (:g left-node)
       (:g right-node)]}))
 
