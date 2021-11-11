@@ -40,7 +40,7 @@ div#page {
     background:orange;
     color:white;
     border-radius: 5px;
-    border:2px solid blue;
+    border:2px solid lightblue;
     padding:0.5em;
     z-index:5;
 }
@@ -161,7 +161,7 @@ footer > p {
 }
 
 #test > div {
-    border:0px dashed blue;
+    border:0px dashed lightblue;
     margin:0.25em;
     padding:0;
     float:left;
@@ -232,7 +232,7 @@ div.curriculum h1 {
 div.curr-major {
     width:100%;
     float:left;
-    border:0px dashed blue;
+    border:0px dashed lightblue;
 }
 
 div.dontknow {
@@ -250,7 +250,7 @@ button.weetniet {
 
 div.h4 {
     width:1em;
-    border:0px dashed blue;
+    border:0px dashed lightblue;
     float:left;
 }
 
@@ -324,7 +324,7 @@ h1 a {
 
 div.guide {
     float:left;
-    border:0px dashed blue;
+    border:0px dashed lightblue;
     width:90%;
     margin-top:1em;
     margin-left:2%;
@@ -467,8 +467,9 @@ div.debug {
 }
 
 line.thick {
-    color: blue;
-    stroke:blue;
+    color: lightblue;
+    stroke:lightblue;
+    stroke-width:2;
 }
 
 text.leaf {
@@ -476,7 +477,7 @@ text.leaf {
 }
 
 text.leaf:hover {
-    font: italic 18px serif; fill: blue;
+    font: italic 18px serif; fill: lightblue;
     font-weight:bold;
 }
 
@@ -485,7 +486,7 @@ text.rule {
 }
 
 text.rule:hover {
-    font: normal 18px sans; fill: blue;
+    font: normal 18px sans; fill: lightblue;
     font-weight:bold;
 }
 
