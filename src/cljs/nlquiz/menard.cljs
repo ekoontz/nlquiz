@@ -35,10 +35,20 @@
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
 
+(defn morph [input-map]
+  (or (u/get-in input-map [:surface])
+      (u/get-in input-map [:canonical])
+      (and (u/get-in input-map [:1])
+           (str (morph (u/get-in input-map [:1]))
+                " "
+                (morph (u/get-in input-map [:2]))))
+      "??"))
+
 (defn nl-parses [input-map grammar surface]
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree
-              parse/truncate? false]
+              parse/morph morph
+              parse/truncate? true]
       (->
        (parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
@@ -100,6 +110,8 @@
 
 (defn submit-guess [guess-text the-input-element]
   (log/info (str "submit-guess: " guess-text)))
+
+(def morphology {})
 
 (defn syntax-tree [tree]
   (s/syntax-tree tree morphology))
