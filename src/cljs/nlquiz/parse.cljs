@@ -6,7 +6,7 @@
    [clojure.string :as string :refer [trim]]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
+   [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           nl-parses nl-parses-to-en-specs]]
    [nlquiz.parse.widgets :refer [en-question-widget en-widget nl-widget]]
    [nlquiz.newquiz.functions :refer [on-change new-question]]
@@ -19,14 +19,22 @@
   ;; 1. initialize some data structures that don't change (often).
   ;; for now, only NL grammar:
   (let [nl-grammar (atom nil)
+        nl-morphology (atom nil)
         language-models-loaded? (atom false)]
     ;; 1. initialize linguistic resources from server:
     (go
       (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
-                                                "/grammar/nl")))]
+                                                "/grammar/nl")))
+            morphology-response (<! (http/get (str (language-server-endpoint-url)
+                                                   "/morphology/nl")))]
         (reset! nl-grammar (-> grammar-response :body decode-grammar))
+        (reset! nl-morphology (-> morphology-response :body decode-morphology))
+        
         (reset! language-models-loaded? true)
-        (log/info (str "finished loading the nl grammar."))))
+        (log/info (str "finished loading the nl grammar: " (count @nl-grammar) " rule"
+                       (if (not (= (count @nl-grammar) 1)) "s") "."))
+        (log/info (str "finished loading the nl morphology: " (count @nl-morphology) " rule"
+                       (if (not (= (count @nl-morphology) 1)) "s") "."))))
 
     ;; UI and associated functionality
     ;; 2. atoms that link the UI and the functionality:
@@ -53,6 +61,9 @@
                                            (on-change {:nl {:surface nl-surface-atom
                                                             :tree nl-tree-atom
                                                             :node-html nl-node-html-atom
-                                                            :grammar nl-grammar}}))}]]
+                                                            :grammar nl-grammar
+                                                            :morphology nl-morphology}}))}]]
          (nl-widget nl-tree-atom)]))))
+
+
 

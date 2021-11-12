@@ -20,9 +20,24 @@
   (-> dag dag_unify.serialization/serialize str))
 
 (defn decode-grammar [response-body]
-  (map (fn [rule] (-> rule cljs.reader/read-string deserialize))
+  (map (fn [rule]
+         (-> rule
+             cljs.reader/read-string
+             deserialize))
        response-body))
 
+(defn decode-morphology [response-body]
+  ;; see menard/server.clj: "/morphology/:lang":
+  ;; we have to convert the regex to a str so that it can be serialized,
+  ;; and here we do the inverse: str->regex using re-pattern:
+  (map (fn [{[generate-from generate-to] :g
+             [parse-from parse-to] :p
+             u :u}]
+         {:g [(re-pattern generate-from) generate-to]
+          :p [(re-pattern parse-from)    parse-to]
+          :u u})
+       response-body))
+  
 (defn decode-parse [response-body]
    ;; a map between:
    ;; keys: each key is a span e.g. [0 1]
@@ -35,19 +50,10 @@
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
 
-(defn morph [input-map]
-  (or (u/get-in input-map [:surface])
-      (u/get-in input-map [:canonical])
-      (and (u/get-in input-map [:1])
-           (str (morph (u/get-in input-map [:1]))
-                " "
-                (morph (u/get-in input-map [:2]))))
-      "??"))
-
-(defn nl-parses [input-map grammar surface]
+(defn nl-parses [input-map grammar morphology surface]
   (let [input-length (count (keys input-map))]
     (binding [parse/syntax-tree syntax-tree
-              parse/morph morph
+              parse/morph (fn [tree] (s/morph tree morphology))
               parse/truncate? false]
       (->
        (parse-in-stages input-map input-length 2 grammar surface)
