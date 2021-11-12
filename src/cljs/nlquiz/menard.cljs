@@ -52,9 +52,9 @@
 
 (defn nl-parses [input-map grammar morphology surface]
   (let [input-length (count (keys input-map))]
-    (binding [parse/syntax-tree syntax-tree
+    (binding [parse/syntax-tree (fn [tree] (s/syntax-tree tree morphology))
               parse/morph (fn [tree] (s/morph tree morphology))
-              parse/truncate? false]
+              parse/truncate? true]
       (->
        (parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
@@ -116,11 +116,6 @@
 
 (defn submit-guess [guess-text the-input-element]
   (log/info (str "submit-guess: " guess-text)))
-
-(def morphology {})
-
-(defn syntax-tree [tree]
-  (s/syntax-tree tree morphology))
 
 (defn nl-parses-to-en-specs [nl-parses]
   (->> nl-parses
