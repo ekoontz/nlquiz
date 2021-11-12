@@ -11,7 +11,8 @@
 
 (defn on-change [{{nl-surface-atom :surface
                    nl-tree-atom :tree
-                   nl-grammar :grammar} :nl
+                   nl-grammar :grammar
+                   nl-morphology :morphology} :nl
                   {en-surfaces-atom :surfaces} :en}]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value string/trim)
@@ -33,7 +34,8 @@
             (when (fresh?)
 
               ;; 2. With this information ready, now do the NL parsing:
-              (let [nl-parses (nl-parses parse-response @nl-grammar nl-surface)
+              (let [nl-parses (nl-parses parse-response @nl-grammar @nl-morphology
+                                         nl-surface)
                     ;; And for that set of NL parses, get the equivalent
                     ;; set of specifications for the english:
                     en-specs (nl-parses-to-en-specs nl-parses)]
