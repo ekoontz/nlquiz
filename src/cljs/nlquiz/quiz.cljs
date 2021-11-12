@@ -10,7 +10,7 @@
    [nlquiz.constants :refer [spinner]]
    [menard.translate.spec :as tr]
    [nlquiz.curriculum.content :refer [curriculum]]
-   [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
+   [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           nl-parses remove-duplicates]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
@@ -151,6 +151,7 @@
 (def initial-guess-input-size (count placeholder))
 (def guess-input-size (r/atom initial-guess-input-size))
 (def grammar (atom nil))
+(def morphology (atom nil))
 
 (defn submit-guess [guess-text the-input-element parse-html possible-correct-semantics if-correct-fn nl-parses-atom]
   (if (empty? @possible-correct-semantics)
@@ -164,7 +165,7 @@
                (<! (http/get (str (language-server-endpoint-url)
                                   "/parse-start?q=" guess-string)))
                :body decode-parse)
-              nl-parses (nl-parses parse-response @grammar @guess-text)
+              nl-parses (nl-parses parse-response @grammar @morphology @guess-text)
               specs (->> nl-parses
                          (map serialize)
                          set
@@ -207,8 +208,11 @@
 (defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
-                                              "/grammar/nl")))]
-      (reset! grammar (-> grammar-response :body decode-grammar))))
+                                              "/grammar/nl")))
+          morphology-response (<! (http/get (str (language-server-endpoint-url)
+                                                 "/morphology/nl")))]
+      (reset! grammar (-> grammar-response :body decode-grammar))
+      (reset! morphology (-> morphology-response :body decode-morphology))))
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
