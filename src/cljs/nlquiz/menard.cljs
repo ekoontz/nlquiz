@@ -4,6 +4,7 @@
    [cljslog.core :as log]
    [clojure.string :as string]
    [dag_unify.core :as u]
+   [dag_unify.dissoc :refer [dissoc-in]]
    [dag_unify.serialization :refer [deserialize serialize]]
    [md5.core :as md5]
    [menard.parse :as parse]
@@ -50,6 +51,21 @@
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
 
+
+(defn parse-in-stages-monitor [input-map input-length grammar surface]
+  (parse-in-stages input-map input-length 2 grammar surface))
+
+(defn strip-map [m]
+  (let [output
+        (-> m
+            (dissoc :head)
+            (dissoc :comp)
+            (dissoc :agr)
+            (dissoc :cat)
+            (dissoc :sem))]
+    (log/info (str "strip-map: " (count (str m)) " -> " (count (str output))))
+    output))
+
 (defn nl-parses [input-map grammar morphology surface]
   (let [input-length (count (keys input-map))
         syntax-tree (fn [tree] (s/syntax-tree tree morphology))
@@ -58,18 +74,16 @@
               parse/morph morph
               parse/truncate? true
               parse/truncate-fn (fn [tree]
-                                  (log/info (str "**** NON-DEFAULT TRUNCATION FUNCTION!!!"))
                                   (-> tree
                                       (assoc :syntax-tree (syntax-tree tree))
                                       (assoc :surface (morph tree))
                                       (dissoc :head)
                                       (dissoc :comp)
-                                      (assoc :1 {:surface (str "T:" (morph (u/get-in tree [:1])))})
-                                      (assoc :2 {:surface (str "T:" (morph (u/get-in tree [:2])))})
-                                      ))
+                                      (assoc :1 (strip-map (u/get-in tree [:1])))
+                                      (assoc :2 (strip-map (u/get-in tree [:2])))))
               ]
       (->
-       (parse-in-stages input-map input-length 2 grammar surface)
+       (parse-in-stages-monitor input-map input-length grammar surface)
        (get [0 input-length])
        remove-duplicates))))
 
