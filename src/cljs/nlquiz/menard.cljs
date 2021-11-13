@@ -52,8 +52,10 @@
 
 (defn nl-parses [input-map grammar morphology surface]
   (let [input-length (count (keys input-map))]
-    (binding [parse/syntax-tree (fn [tree] (s/syntax-tree tree morphology))
-              parse/morph (fn [tree] (s/morph tree morphology))
+    (binding [parse/syntax-tree (fn [tree]
+                                  (s/syntax-tree tree morphology))
+              parse/morph (fn [tree]
+                            (s/morph tree morphology))
               parse/truncate? true]
       (->
        (parse-in-stages input-map input-length 2 grammar surface)
