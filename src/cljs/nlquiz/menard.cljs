@@ -51,12 +51,23 @@
                            (get response-body k))])))))
 
 (defn nl-parses [input-map grammar morphology surface]
-  (let [input-length (count (keys input-map))]
-    (binding [parse/syntax-tree (fn [tree]
-                                  (s/syntax-tree tree morphology))
-              parse/morph (fn [tree]
-                            (s/morph tree morphology))
-              parse/truncate? true]
+  (let [input-length (count (keys input-map))
+        syntax-tree (fn [tree] (s/syntax-tree tree morphology))
+        morph (fn [tree] (s/morph tree morphology))]
+    (binding [parse/syntax-tree syntax-tree
+              parse/morph morph
+              parse/truncate? true
+              parse/truncate-fn (fn [tree]
+                                  (log/info (str "**** NON-DEFAULT TRUNCATION FUNCTION!!!"))
+                                  (-> tree
+                                      (assoc :syntax-tree (syntax-tree tree))
+                                      (assoc :surface (morph tree))
+                                      (dissoc :head)
+                                      (dissoc :comp)
+                                      (dissoc :1)
+                                      (dissoc :2)
+                                      ))
+              ]
       (->
        (parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
