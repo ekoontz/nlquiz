@@ -39,7 +39,6 @@
     true (str v)))
 
 (defn draw-node [tree x y]
-  (log/info (str "draw-node: x=" x "; y=" y "; rule: " (u/get-in tree [:rule])))
   (let [rule (u/get-in tree [:rule] nil)
         surface (u/get-in tree [:surface] nil)
         canonical (u/get-in tree [:canonical] nil)
