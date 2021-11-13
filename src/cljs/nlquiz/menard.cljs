@@ -55,16 +55,17 @@
 (defn parse-in-stages-monitor [input-map input-length grammar surface]
   (parse-in-stages input-map input-length 2 grammar surface))
 
-(defn strip-map [m]
-  (let [output
-        (-> m
-            (dissoc :head)
-            (dissoc :comp)
-            (dissoc :agr)
-            (dissoc :cat)
-            (dissoc :sem))]
-    (log/info (str "strip-map: " (count (str m)) " -> " (count (str output))))
-    output))
+(defn strip-map [m syntax-tree]
+  (into {}
+        (remove nil?
+                (map (fn [k]
+                       (if (or (= k :1)
+                               (= k :2)
+                                     (= k :canonical)
+                                     (= k :rule)
+                                     (= k :surface))
+                         [k (u/get-in m [k])]))
+                     (keys m)))))
 
 (defn nl-parses [input-map grammar morphology surface]
   (let [input-length (count (keys input-map))
@@ -75,12 +76,10 @@
               parse/truncate? true
               parse/truncate-fn (fn [tree]
                                   (-> tree
-                                      (assoc :syntax-tree (syntax-tree tree))
-                                      (assoc :surface (morph tree))
                                       (dissoc :head)
                                       (dissoc :comp)
-                                      (assoc :1 (strip-map (u/get-in tree [:1])))
-                                      (assoc :2 (strip-map (u/get-in tree [:2])))))
+                                      (assoc :1 (strip-map (u/get-in tree [:1]) syntax-tree))
+                                      (assoc :2 (strip-map (u/get-in tree [:2]) syntax-tree))))
               ]
       (->
        (parse-in-stages-monitor input-map input-length grammar surface)
