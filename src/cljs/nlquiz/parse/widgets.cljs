@@ -28,7 +28,6 @@
    (nl-widget-trees (-> @trees set vec))])
 
 (defn nl-widget-trees [trees]
-  (log/info (str "# INPUT TREES: " (count trees)))
   (if (seq trees)
     (let [tree (first trees)]
       (if (map? tree)
@@ -48,19 +47,3 @@
              html])
           (nl-widget-trees (rest trees))))
         (nl-widget-trees (rest trees))))))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
