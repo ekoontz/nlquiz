@@ -21,9 +21,14 @@
 
 (defn nl-widget [trees]
   [:div.nl_widget
-   (nl-widget-trees @trees)])
+   ;;                   removes duplicates
+   ;;                          |
+   ;;                          v
+   ;;
+   (nl-widget-trees (-> @trees set vec))])
 
 (defn nl-widget-trees [trees]
+  (log/info (str "# INPUT TREES: " (count trees)))
   (if (seq trees)
     (let [tree (first trees)]
       (if (map? tree)
