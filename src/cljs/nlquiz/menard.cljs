@@ -64,8 +64,8 @@
                                       (assoc :surface (morph tree))
                                       (dissoc :head)
                                       (dissoc :comp)
-                                      (dissoc :1)
-                                      (dissoc :2)
+                                      (assoc :1 {:surface (str "T:" (morph (u/get-in tree [:1])))})
+                                      (assoc :2 {:surface (str "T:" (morph (u/get-in tree [:2])))})
                                       ))
               ]
       (->
