@@ -97,6 +97,14 @@
                right-show]})]
     {:x (:x right-node)
      :y (:y right-node)
+     :max-x (max (:x left-node)
+                 (:x right-node)
+                 (:max-x left-node)
+                 (:max-x right-node))
+     :max-y (max (:y left-node)
+                 (:y right-node)
+                 (:max-y left-node)
+                 (:max-y right-node))
      :rule (u/get-in tree [:rule])
      :g
      [:g
@@ -121,5 +129,11 @@
 
 (defn draw-tree [tree]
   (if (u/get-in tree [:rule])
-    [:svg
-     (:g (draw-node tree 2 1))]))
+    (let [tree (draw-node tree 2 1)
+          x-scale 3
+          y-scale 2.5]
+      [:svg {:style {:height (str (* (:max-y tree) y-scale) "em")
+                     :width (str (* (:max-x tree) x-scale) "em")}}
+       (:g tree)])))
+
+
