@@ -32,6 +32,7 @@
   (cond
     (map? v) (draw-node-html v)
     (= v :menard.nederlands/none) "none"
+    (= :rule k) v
     (string? v) [:i v]
     (keyword? v) v
     (boolean? v) [:tt (if (true? v) "true" "false")]
