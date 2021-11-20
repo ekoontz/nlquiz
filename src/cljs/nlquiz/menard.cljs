@@ -51,19 +51,15 @@
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
 
-
-(defn parse-in-stages-monitor [input-map input-length grammar surface]
-  (parse-in-stages input-map input-length 2 grammar surface))
-
 (defn strip-map [m syntax-tree]
   (into {}
         (remove nil?
                 (map (fn [k]
                        (if (or (= k :1)
                                (= k :2)
-                                     (= k :canonical)
-                                     (= k :rule)
-                                     (= k :surface))
+                               (= k :canonical)
+                               (= k :rule)
+                               (= k :surface))
                          [k (u/get-in m [k])]))
                      (keys m)))))
 
@@ -82,7 +78,7 @@
                                       (assoc :2 (strip-map (u/get-in tree [:2]) syntax-tree))))
               ]
       (->
-       (parse-in-stages-monitor input-map input-length grammar surface)
+       (parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
        remove-duplicates))))
 
