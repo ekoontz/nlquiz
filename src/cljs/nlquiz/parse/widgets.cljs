@@ -20,12 +20,13 @@
      @text]]])
 
 (defn nl-widget [trees]
-  [:div.nl_widget
-   ;;                   removes duplicates
-   ;;                          |
-   ;;                          v
-   ;;
-   (nl-widget-trees (-> @trees set vec))])
+  (let [unique-trees (-> @trees set vec)]
+    [:div.nl_widget
+     (if (> (count unique-trees) 0)
+       [:b (str (count unique-trees) " tree"
+                (if (not (= 1 (count unique-trees)))
+                  "s"))])
+     (nl-widget-trees unique-trees)]))
 
 (defn nl-widget-trees [trees]
   (if (seq trees)
