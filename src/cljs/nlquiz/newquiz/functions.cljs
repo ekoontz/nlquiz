@@ -38,8 +38,7 @@
                                          nl-surface)
                     ;; And for that set of NL parses, get the equivalent
                     ;; set of specifications for the english:
-                    en-specs (nl-parses-to-en-specs nl-parses)]
-
+                    en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
                 (when nl-parses
                   (reset! nl-tree-atom nl-parses))
 
