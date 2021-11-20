@@ -503,6 +503,7 @@ div.parse input {
 }
 
 div.nl_widget {
+    border:1px solid aliceblue;
     padding:1%;
     display: grid; 
     grid-template-columns: 1fr; 
