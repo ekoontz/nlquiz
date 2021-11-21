@@ -11,12 +11,6 @@
    [menard.serialization :as s]
    [menard.translate.spec :as tr]))
 
-;; [:a :b :c :d] -> "{:0 :a, :1 :b, :2 :c, :3 :d}"
-(defn array2map [input]
-  (str (zipmap (->> (range 0 (count input))
-                    (map (fn [x] (-> x str keyword))))
-               input)))
-
 (defn dag-to-string [dag]
   (-> dag dag_unify.serialization/serialize str))
 
