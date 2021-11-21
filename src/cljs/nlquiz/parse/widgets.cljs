@@ -22,10 +22,12 @@
 (defn nl-widget [trees]
   (let [unique-trees (-> @trees set vec)]
     [:div.nl_widget
-     (if (> (count unique-trees) 0)
-       [:b (str (count unique-trees) " tree"
-                (if (not (= 1 (count unique-trees)))
-                  "s"))])
+     [:b
+     (cond (= (count unique-trees) 0)
+           (str "no parses.")
+           true
+           (str (count unique-trees) " tree"
+                (when (not (= 1 (count unique-trees))) "s")))]
      (nl-widget-trees unique-trees)]))
 
 (defn nl-widget-trees [trees]
