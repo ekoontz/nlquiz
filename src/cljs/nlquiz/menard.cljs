@@ -57,8 +57,15 @@
                          [k (u/get-in m [k])]))
                      (keys m)))))
 
+;; copied from menard/nederlands.cljc:
+;; TODO: use menard/nederlands.cljc's version
+;; instead of duplicating here.
+(defn tokenize [input-string]
+  (binding [parse/split-on #"[ ]"]
+    (parse/tokenize input-string)))
+
 (defn nl-parses [input-map grammar morphology surface]
-  (let [input-length (count (keys input-map))
+  (let [input-length (count (tokenize surface))
         syntax-tree (fn [tree] (s/syntax-tree tree morphology))
         morph (fn [tree] (s/morph tree morphology))]
     (binding [parse/syntax-tree syntax-tree
@@ -69,10 +76,9 @@
                                       (dissoc :head)
                                       (dissoc :comp)
                                       (assoc :1 (strip-map (u/get-in tree [:1]) syntax-tree))
-                                      (assoc :2 (strip-map (u/get-in tree [:2]) syntax-tree))))
-              ]
+                                      (assoc :2 (strip-map (u/get-in tree [:2]) syntax-tree))))]
       (->
-       (parse-in-stages input-map input-length 2 grammar surface)
+       (parse/parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
        remove-duplicates))))
 
@@ -97,13 +103,6 @@
 
 (defn nl-trees [nl-parses]
   (map syntax-tree nl-parses))
-
-(defn parse-in-stages [input-map input-length i grammar surface]
-  (if (>= input-length i)
-    (-> input-map
-        (parse/parse-next-stage input-length i grammar)
-        (parse-in-stages input-length (+ 1 i) grammar surface))
-    input-map))
 
 (defn print-stage [stage-map]
   [:table
