@@ -33,10 +33,11 @@
                                    :body decode-parse)]
             (when (fresh?)
 
-              ;; 2. With this information ready, now do the NL parsing:
-              (let [nl-parses (nl-parses parse-response @nl-grammar @nl-morphology
+              ;; 2. With this information ready,
+              (let [;; 2.a. do the NL parsing:
+                    nl-parses (nl-parses parse-response @nl-grammar @nl-morphology
                                          nl-surface)
-                    ;; And for that set of NL parses, get the equivalent
+                    ;; 2.b. For that set of NL parses in 2.a., get the equivalent
                     ;; set of specifications for the english:
                     en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
                 (when nl-parses
