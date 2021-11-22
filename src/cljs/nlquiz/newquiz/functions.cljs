@@ -9,6 +9,8 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
 
+(def server-side-parsing? true)
+
 (defn on-change [{{nl-surface-atom :surface
                    nl-tree-atom :tree
                    nl-grammar :grammar
@@ -29,7 +31,7 @@
 
           ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                      "/parse-start?q=" nl-surface "&all")))
+                                                      "/parse-start?q=" nl-surface (when server-side-parsing? "&all"))))
                                    :body decode-parse)]
             (when (fresh?)
 
