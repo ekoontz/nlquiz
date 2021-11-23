@@ -45,17 +45,8 @@
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
 
-(defn strip-map [m syntax-tree]
-  (into {}
-        (remove nil?
-                (map (fn [k]
-                       (if (or (= k :1)
-                               (= k :2)
-                               (= k :canonical)
-                               (= k :rule)
-                               (= k :surface))
-                         [k (u/get-in m [k])]))
-                     (keys m)))))
+(defn strip-map [m]
+  (select-keys m [:1 :2 :canonical :rule :surface]))
 
 ;; copied from menard/nederlands.cljc:
 ;; TODO: use menard/nederlands.cljc's version
@@ -75,8 +66,8 @@
                                   (-> tree
                                       (dissoc :head)
                                       (dissoc :comp)
-                                      (assoc :1 (strip-map (u/get-in tree [:1]) syntax-tree))
-                                      (assoc :2 (strip-map (u/get-in tree [:2]) syntax-tree))))]
+                                      (assoc :1 (strip-map (u/get-in tree [:1])))
+                                      (assoc :2 (strip-map (u/get-in tree [:2])))))]
       (->
        (parse/parse-in-stages input-map input-length 2 grammar surface)
        (get [0 input-length])
