@@ -1,10 +1,9 @@
 (ns nlquiz.parse.widgets
   (:require
    [dag_unify.core :as u]
+   [dag_unify.serialization :as s]
    [cljslog.core :as log]
-   [md5.core :as md5]
-   [nlquiz.parse.draw-tree :refer [draw-node-html
-                                   draw-tree]]))
+   [md5.core :as md5]))
 
 (defn en-question-widget [text]
   [:div.debug {:style {:width "40%" :float "right"}}
@@ -20,33 +19,5 @@
      @text]]])
 
 (defn nl-widget [trees]
-  (let [unique-trees (-> @trees set vec)]
-    [:div.nl_widget
-     [:b
-     (cond (= (count unique-trees) 0)
-           (str "no parses.")
-           true
-           (str (count unique-trees) " tree"
-                (when (not (= 1 (count unique-trees))) "s")))]
-     (nl-widget-trees unique-trees)]))
-
-(defn nl-widget-trees [trees]
-  (if (seq trees)
-    (let [tree (first trees)]
-      (if (map? tree)
-        (cons
-         [:div.tree
-          {:key (md5/string->md5-hex (str tree))}
-          (draw-tree tree)]
-         (cons
-          (let [html (draw-node-html
-                      (-> tree
-                          (dissoc :1)
-                          (dissoc :2)
-                          (dissoc :head)
-                          (dissoc :comp)))]
-            [:div.treenode
-             {:key (md5/string->md5-hex (str html))}
-             html])
-          (nl-widget-trees (rest trees))))
-        (nl-widget-trees (rest trees))))))
+  [:div.nl_widget
+   @trees])
