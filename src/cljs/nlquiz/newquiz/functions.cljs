@@ -5,6 +5,7 @@
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
+   [md5.core :as md5]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
                           nl-parses nl-parses-to-en-specs]]
    [nlquiz.parse.draw-tree :refer [draw-node-html draw-tree]])
@@ -57,6 +58,7 @@
                                               (when (not (= 1 (count nl-parses))) "s")))]
                                   (mapv (fn [parse]
                                           [:div
+                                           [:tt (-> parse (dissoc :1) (dissoc :2) (dissoc :head) s/serialize str md5/string->md5-hex)]
                                            (draw-tree parse)
                                            (draw-node-html
                                             (-> parse
