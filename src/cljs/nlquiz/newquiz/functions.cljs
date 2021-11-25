@@ -5,7 +5,8 @@
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
-                          nl-parses nl-parses-to-en-specs]])
+                          nl-parses nl-parses-to-en-specs]]
+   [nlquiz.parse.draw-tree :refer [draw-node-html draw-tree]])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
 
@@ -42,8 +43,21 @@
                     ;; 2.b. For that set of NL parses in 2.a., get the equivalent
                     ;; set of specifications for the english:
                     en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
-                (when nl-parses
-                  (reset! nl-tree-atom nl-parses))
+                (when (and nl-parses (seq nl-parses))
+                  (reset! nl-tree-atom
+                          (vec
+                           (cons
+                            :div
+                            (mapv (fn [parse]
+                                    [:div
+                                     (draw-tree parse)
+                                     (draw-node-html
+                                      (-> parse
+                                          (dissoc :1)
+                                          (dissoc :2)
+                                          (dissoc :head)
+                                          (dissoc :comp)))])
+                                  nl-parses)))))
 
                 (when en-surfaces-atom
                   ;; 3. For each such spec, generate an english expression, and
