@@ -1,5 +1,6 @@
 (ns nlquiz.newquiz.functions
   (:require
+   [dag_unify.serialization :as s]
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
@@ -38,8 +39,12 @@
 
               ;; 2. With this information ready,
               (let [;; 2.a. do the NL parsing:
-                    nl-parses (nl-parses parse-response @nl-grammar @nl-morphology
-                                         nl-surface)
+                    nl-parses (->> (nl-parses parse-response @nl-grammar @nl-morphology
+                                             nl-surface)
+                                   (map s/serialize)
+                                   set
+                                   (map s/deserialize)
+                                   vec)
                     ;; 2.b. For that set of NL parses in 2.a., get the equivalent
                     ;; set of specifications for the english:
                     en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
@@ -48,16 +53,22 @@
                           (vec
                            (cons
                             :div
-                            (mapv (fn [parse]
-                                    [:div
-                                     (draw-tree parse)
-                                     (draw-node-html
-                                      (-> parse
-                                          (dissoc :1)
-                                          (dissoc :2)
-                                          (dissoc :head)
+                            (cons [:b
+                                   (cond (= (count nl-parses) 0)
+                                         (str "no parses.")
+                                         true
+                                         (str (count nl-parses) " tree"
+                                              (when (not (= 1 (count nl-parses))) "s")))]
+                                  (mapv (fn [parse]
+                                          [:div
+                                           (draw-tree parse)
+                                           (draw-node-html
+                                            (-> parse
+                                                (dissoc :1)
+                                                (dissoc :2)
+                                                (dissoc :head)
                                           (dissoc :comp)))])
-                                  nl-parses)))))
+                                        nl-parses))))))
 
                 (when en-surfaces-atom
                   ;; 3. For each such spec, generate an english expression, and
