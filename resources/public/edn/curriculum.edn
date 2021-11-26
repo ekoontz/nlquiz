@@ -27,7 +27,5 @@
           {:name "Irregular Simple Past"
            :href "verbs/past-simple-irregular"}
           {:name "Nodig"
-           :href "verbs/nodig"}
-          {:name "Reflexives"
-           :href "verbs/reflexive"}]}]
+           :href "verbs/nodig"}]}]
 
