@@ -282,7 +282,7 @@
 
 (defn get-curriculum []
   (let [root-path (root-path-from-env)]
-    (go (let [response (<! (http/get (str root-path "/edn/curriculum.edn")))]
+    (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
           (reset! curriculum-atom (-> response :body))))))
 
 (defn get-name-or-children [node]
@@ -301,7 +301,7 @@
 
 (defn get-specs []
   (let [root-path (root-path-from-env)]
-    (go (let [response (<! (http/get (str root-path "/edn/specs.edn")))]
+    (go (let [response (<! (http/get (str root-path "edn/specs.edn")))]
           (reset! specs-atom (-> response :body))))))
 
 (defn find-matching-specs [major & [minor]]
