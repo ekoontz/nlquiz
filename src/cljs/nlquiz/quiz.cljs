@@ -280,8 +280,6 @@
 
 (defn get-curriculum []
   (let [root-path (root-path-from-env)]
-    (log/info (str "GET-CURRICULUM: root-path: " root-path))
-    (log/info (str "GET-CURRICULUM: full path: " (str root-path "edn/curriculum.edn")))
     (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
           (reset! curriculum-atom (-> response :body))))))
 
