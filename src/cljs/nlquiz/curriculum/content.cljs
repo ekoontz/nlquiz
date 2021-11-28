@@ -15,9 +15,9 @@
        [{:cat :adjective
          :mod nil
          :subcat []
-         :phrasal true
-         :head {:phrasal false}
-         :comp {:phrasal false}}]]])
+         :phrasal? true
+         :head {:phrasal? false}
+         :comp {:phrasal? false}}]]])
 
    "verbs"
    {
@@ -28,12 +28,12 @@
       present tense verb."]
       [show-examples
        [{:head {:curriculum :basic
-                :phrasal false}
+                :phrasal? false}
          :cat :verb,
          :infl :present
-         :phrasal true
+         :phrasal? true
          :subcat []
-         :comp {:pronoun true
+         :comp {:pronoun? true
                 :interrogative? false}}]]])
 
     "past-simple-regular"
@@ -47,26 +47,26 @@
        [show-examples
         [{:major-tags ["verbs"]
           :minor-tags ["past-simple-regular"]
-          :phrasal true
+          :phrasal? true
           :subcat []
           :cat :verb
           :infl :past-simple
           :sem {:obj {:top :top}}
           :head {:modal false
-                 :head {:phrasal false
+                 :head {:phrasal? false
                         :irregular-past-simple? false
                         :subcat {:2 {:cat :noun}}}}}
 
          {:major-tags ["verbs"]
           :minor-tags ["past-simple-regular"]
-          :phrasal true
+          :phrasal? true
           :subcat []
           :cat :verb
           :infl :past-simple
           :sem {:obj :none}
           :head {:modal false
                  :irregular-past-simple? false
-                 :phrasal false}}]]])
+                 :phrasal? false}}]]])
 
     "past-simple-irregular"
     (fn []
@@ -76,25 +76,25 @@
        [show-examples
         [{:major-tags ["verbs"]
           :minor-tags ["past-simple-regular"]
-          :phrasal true
+          :phrasal? true
           :subcat []
           :cat :verb
           :infl :past-simple
           :sem {:obj {:top :top}}
           :head {:modal false
-                 :head {:phrasal false
+                 :head {:phrasal? false
                         :irregular-past-simple? true
                         :subcat {:2 {:cat :noun}}}}}
          {:major-tags ["verbs"]
           :minor-tags ["past-simple-irregular"]
-          :phrasal true
+          :phrasal? true
           :subcat []
           :cat :verb
           :infl :past-simple
           :sem {:obj :none}
           :head {:modal false
                  :irregular-past-simple? true
-                 :phrasal false}}]]])
+                 :phrasal? false}}]]])
 
     "nodig"
     (fn []
@@ -103,12 +103,12 @@
 
        [show-examples
         [
-         {:phrasal true
+         {:phrasal? true
           :head {:rule "adverb-nodig"
                  :comp {:rule "vp"
-                        :head {:infl :present :phrasal false}
-                        :comp {:pronoun true}}}
-          :comp {:pronoun true}
+                        :head {:infl :present :phrasal? false}
+                        :comp {:pronoun? true}}}
+          :comp {:pronoun? true}
           :subcat []
           :cat :verb
           :infl :present
@@ -134,10 +134,10 @@
           :max-depth 3
           :cat :verb
           :subcat []
-          :phrasal true
-          :reflexive true
-          :comp {:pronoun true
-                 :phrasal false}
+          :phrasal? true
+          :reflexive? true
+          :comp {:pronoun? true
+                 :phrasal? false}
           :sem {:tense :present
                 :aspect :simple
                 :pred :see
@@ -160,9 +160,9 @@
           :minor-tags ["object"]
           :example "Ik zie haar niet"
           :max-depth 3
-          :reflexive false
+          :reflexive? false
           :cat :verb
-          :head {:comp {:pronoun true
+          :head {:comp {:pronoun? true
                         :canonical "me"
                         :agr {:person :1st
                               :number :sing}}}
@@ -170,15 +170,15 @@
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
+                                   :head {:phrasal? false}}}}
 
          {:major-tags ["pronouns"]
           :minor-tags ["object"]
           :example "Ik zie haar niet"
           :max-depth 3
-          :reflexive false
+          :reflexive? false
           :cat :verb
-          :head {:comp {:pronoun true
+          :head {:comp {:pronoun? true
                         :canonical "mij"
                         :agr {:person :1st
                               :number :sing}}}
@@ -186,7 +186,7 @@
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
+                                   :head {:phrasal? false}}}}
          ]]
 
 
@@ -196,16 +196,16 @@
         [{:major-tags ["pronouns"]
           :minor-tags ["object"]
           :max-depth 3
-          :reflexive false
+          :reflexive? false
           :cat :verb
-          :head {:comp {:pronoun true
+          :head {:comp {:pronoun? true
                         :agr {:person :1st
                               :number :plur}}}
           :subcat []
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}]]
+                                   :head {:phrasal? false}}}}]]
        
        [:h3 "Second person"]
 
@@ -217,9 +217,9 @@
           :minor-tags ["object"]
           :example "Ik zie haar niet"
           :max-depth 3
-          :reflexive false
+          :reflexive? false
           :cat :verb
-          :head {:comp {:pronoun true
+          :head {:comp {:pronoun? true
                         :canonical "je"
                         :agr {:person :2nd
                               :number :sing}}}
@@ -227,15 +227,15 @@
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
+                                   :head {:phrasal? false}}}}
 
          {:major-tags ["pronouns"]
           :minor-tags ["object"]
           :example "Ik zie haar niet"
           :max-depth 3
-          :reflexive false
+          :reflexive? false
           :cat :verb
-          :head {:comp {:pronoun true
+          :head {:comp {:pronoun? true
                         :canonical "jou"
                         :agr {:person :2nd
                               :number :sing}}}
@@ -243,7 +243,7 @@
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
+                                   :head {:phrasal? false}}}}
          ]]
 
        [:p "Plural informal is always " [:i "jullie"] ":"]
@@ -253,9 +253,9 @@
           :minor-tags ["object"]
           :example "Ik zie haar niet"
           :max-depth 3
-          :reflexive false
+          :reflexive? false
           :cat :verb
-          :head {:comp {:pronoun true
+          :head {:comp {:pronoun? true
                         :sem {:pred :you
                               :ref {:context :informal}}
                         :agr {:person :2nd
@@ -264,7 +264,7 @@
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
+                                   :head {:phrasal? false}}}}
 
          ]]
 
@@ -276,16 +276,16 @@
           :minor-tags ["object"]
           :example "Ik zie haar niet"
           :max-depth 3
-          :reflexive false
+          :reflexive? false
           :cat :verb
-          :head {:comp {:pronoun true
+          :head {:comp {:pronoun? true
                         :sem {:ref {:context :polite}}
                         :agr {:person :2nd}}}
           :subcat []
           :sem {:pred :see
                 :obj {:obj :none}}
           :training-wheels {:head {:rule "vp"
-                                   :head {:phrasal false}}}}
+                                   :head {:phrasal? false}}}}
          ]]])
 
    "object-3" ;; object-3
@@ -300,16 +300,16 @@
          :minor-tags ["object"]
          :example "Ik zie haar niet"
          :max-depth 3
-         :reflexive false
+         :reflexive? false
          :cat :verb
-         :head {:comp {:pronoun true
+         :head {:comp {:pronoun? true
                        :agr {:person :3rd
                              :number :sing}}}
          :subcat []
          :sem {:pred :see
                :obj {:obj :none}}
          :training-wheels {:head {:rule "vp"
-                                  :head {:phrasal false}}}}
+                                  :head {:phrasal? false}}}}
         ]]
       
       [:h3 "Third person plural"]
@@ -320,16 +320,16 @@
          :minor-tags ["object"]
          :example "Ik zie haar niet"
          :max-depth 3
-         :reflexive false
+         :reflexive? false
          :cat :verb
-         :head {:comp {:pronoun true
+         :head {:comp {:pronoun? true
                        :agr {:person :3rd
                              :number :plur}}}
          :subcat []
          :sem {:pred :see
                :obj {:obj :none}}
          :training-wheels {:head {:rule "vp"
-                                  :head {:phrasal false}}}}]]])}
+                                  :head {:phrasal? false}}}}]]])}
 
 
    "nouns"
@@ -347,7 +347,7 @@
         " and " [:i "het"] ". A noun will always use " [:i "de"] " when it's plural, regardless of the noun's gender:"]
        [show-examples
         [{:cat :noun
-          :phrasal true
+          :phrasal? true
           :subcat []
           :sem {:quant :the}
           :agr {:number :plur}}]]
@@ -360,8 +360,8 @@
             :sem {:quant :the}
             :agr {:gender :common
                   :number :sing}
-            :phrasal true
-            :head {:phrasal false}}]]]
+            :phrasal? true
+            :head {:phrasal? false}}]]]
         [:li "If the noun is of " [:b "neuter"] " gender, then the definite article is " [:i "het"] ", for example:"
          [show-examples
           [{:cat :noun
@@ -369,8 +369,8 @@
             :sem {:quant :the}
             :agr {:gender :neuter
                   :number :sing}
-            :phrasal true
-            :head {:phrasal false}}]]]]])
+            :phrasal? true
+            :head {:phrasal? false}}]]]]])
 
     "demonstratives"
     (fn []
@@ -385,13 +385,13 @@
        [show-examples
         [{:cat :noun
           :subcat []
-          :phrasal true
-          :comp {:phrasal false
+          :phrasal? true
+          :comp {:phrasal? false
                  :sem {:pred :this}}}
          {:cat :noun
           :subcat []
-          :phrasal true
-          :comp {:phrasal false
+          :phrasal? true
+          :comp {:phrasal? false
                  :sem {:pred :that}}}]
         10]])
     
@@ -402,21 +402,21 @@
        [show-examples
         [{:cat :noun
           :subcat []
-          :phrasal true
-          :head {:phrasal false
+          :phrasal? true
+          :head {:phrasal? false
                  :subcat {:1 {:cat :det}}}
-          :comp {:phrasal false
+          :comp {:phrasal? false
                  :possessive? true}}]]
        [:p "The possessive has two forms for 1st person plural: it can either " [:i "ons"] ", if the noun is both singular and of neuter gender (a 'het' word):"]
        [show-examples
         [{:cat :noun
           :subcat []
-          :phrasal true
-          :head {:phrasal false
+          :phrasal? true
+          :head {:phrasal? false
                  :agr {:gender :neuter
                        :number :sing}
                  :subcat {:1 {:cat :det}}}
-          :comp {:phrasal false
+          :comp {:phrasal? false
                  :sem {:pred :we}
                  :possessive? true}}]]
 
@@ -424,21 +424,21 @@
        [show-examples
         [{:cat :noun
           :subcat []
-          :phrasal true
-          :head {:phrasal false
+          :phrasal? true
+          :head {:phrasal? false
                  :agr {:gender :common
                        :number :sing}
                  :subcat {:1 {:cat :det}}}
-          :comp {:phrasal false
+          :comp {:phrasal? false
                  :sem {:pred :we}                 
                  :possessive? true}}
          {:cat :noun
           :subcat []
-          :phrasal true
-          :head {:phrasal false
+          :phrasal? true
+          :head {:phrasal? false
                  :agr {:number :plur}
                  :subcat {:1 {:cat :det}}}
-          :comp {:phrasal false
+          :comp {:phrasal? false
                  :sem {:pred :we}                 
                  :possessive? true}}]]])
     "indef-adj"
@@ -454,9 +454,9 @@
                       :rest []}
                 :quant :some}
           :subcat []
-          :phrasal true
-          :head {:phrasal true}
-          :comp {:phrasal false}}
+          :phrasal? true
+          :head {:phrasal? true}
+          :comp {:phrasal? false}}
 
          {:cat :noun
           :agr {:number :sing
@@ -465,9 +465,9 @@
                       :rest []}
                 :quant :some}
           :subcat []
-          :phrasal true
-          :head {:phrasal true}
-          :comp {:phrasal false}}
+          :phrasal? true
+          :head {:phrasal? true}
+          :comp {:phrasal? false}}
 
          {:cat :noun
           :agr {:number :sing
@@ -476,9 +476,9 @@
                       :rest []}
                 :quant :the}
           :subcat []
-          :phrasal true
-          :head {:phrasal true}
-          :comp {:phrasal false}}
+          :phrasal? true
+          :head {:phrasal? true}
+          :comp {:phrasal? false}}
 
          ]]
          
@@ -499,9 +499,9 @@
                       :rest []}
                 :quant :some}
           :subcat []
-          :phrasal true
-          :head {:phrasal true}
-          :comp {:phrasal false}}]]])
+          :phrasal? true
+          :head {:phrasal? true}
+          :comp {:phrasal? false}}]]])
 
     "number"
     (fn []
@@ -515,8 +515,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-             :phrasal true
-           :head {:phrasal false
+             :phrasal? true
+           :head {:phrasal? false
                   :inflection :s}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -526,8 +526,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-           :phrasal true
-           :head {:phrasal false
+           :phrasal? true
+           :head {:phrasal? false
                   :inflection :en}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -537,8 +537,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-           :phrasal true
-           :head {:phrasal false
+           :phrasal? true
+           :head {:phrasal? false
                   :inflection :repeated-vowel}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -548,8 +548,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-           :phrasal true
-           :head {:phrasal false
+           :phrasal? true
+           :head {:phrasal? false
                   :inflection :repeated-consonant}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -559,8 +559,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-           :phrasal true
-           :head {:phrasal false
+           :phrasal? true
+           :head {:phrasal? false
                   :inflection :repeated-k}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -570,8 +570,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-           :phrasal true
-           :head {:phrasal false
+           :phrasal? true
+           :head {:phrasal? false
                   :inflection :f2v}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -581,8 +581,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-           :phrasal true
-           :head {:phrasal false
+           :phrasal? true
+           :head {:phrasal? false
                   :inflection :heid}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -592,8 +592,8 @@
           {:cat :noun
            :mod nil
            :sem {:quant :the}
-           :phrasal true
-           :head {:phrasal false
+           :phrasal? true
+           :head {:phrasal? false
                   :inflection :apostrophe-s}}
           [{:sem {:ref {:number :sing}}}
            {:sem {:ref {:number :plur}}}]]]
@@ -612,10 +612,10 @@
                 :mod {:first {:number? true}
                       :rest {:first {:number? false}
                              :rest []}}}
-          :phrasal true
-          :training-wheels {:head {:comp {:phrasal false}
-                                   :head {:comp {:phrasal false}
-                                          :head {:phrasal false}}}
+          :phrasal? true
+          :training-wheels {:head {:comp {:phrasal? false}
+                                   :head {:comp {:phrasal? false}
+                                          :head {:phrasal? false}}}
                             :comp {:cat :det}}}
          
          {:major-tags ["nouns"]
@@ -628,11 +628,11 @@
                 :mod {:first {:number? true}
                       :rest {:first {:number? false
                                      :rest []}}}}
-          :phrasal true
+          :phrasal? true
           :training-wheels {:comp {:cat :det}
-                            :head {:comp {:comp {:phrasal false}
-                                          :head {:head {:phrasal false
+                            :head {:comp {:comp {:phrasal? false}
+                                          :head {:head {:phrasal? false
                                                         :sem {:number? true}}
-                                                 :comp {:phrasal false}}}
-                                   :head {:head {:phrasal false}
-                                          :comp {:phrasal false}}}}}]]])}})
+                                                 :comp {:phrasal? false}}}
+                                   :head {:head {:phrasal? false}
+                                          :comp {:phrasal? false}}}}}]]])}})

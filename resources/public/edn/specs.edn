@@ -4,9 +4,9 @@
   :cat :adjective
   :mod nil
   :subcat []
-  :phrasal true
-  :head {:phrasal false}
-  :comp {:phrasal false}}
+  :phrasal? true
+  :head {:phrasal? false}
+  :comp {:phrasal? false}}
  
  {:note "article+noun"
   :major-tags ["nouns"]
@@ -14,11 +14,11 @@
   :example "de kat"
   :cat :noun
   :subcat []
-  :phrasal true
+  :phrasal? true
   :agr {:number :sing}
-  :head {:phrasal false
+  :head {:phrasal? false
          :subcat {:1 {:cat :det}}}
-  :comp {:phrasal false
+  :comp {:phrasal? false
          :sem {:pred :the}}}
  
  {:note "article+noun"
@@ -27,11 +27,11 @@
   :example "de kat"
   :cat :noun
   :subcat []
-  :phrasal true
+  :phrasal? true
   :agr {:number :plur}
-  :head {:phrasal false
+  :head {:phrasal? false
          :subcat {:1 {:cat :det}}}
-  :comp {:phrasal false
+  :comp {:phrasal? false
          :sem {:pred :the}}}
  
  {:note "article+noun"
@@ -40,11 +40,11 @@
   :example "de kat"
   :cat :noun
   :subcat []
-  :phrasal true
+  :phrasal? true
   :agr {:number :sing}
-  :head {:phrasal false
+  :head {:phrasal? false
          :subcat {:1 {:cat :det}}}
-  :comp {:phrasal false
+  :comp {:phrasal? false
          :sem {:pred :some}}}
 
  {:note "article+noun"
@@ -53,10 +53,10 @@
   :example "deze kat"
   :cat :noun
   :subcat []
-  :phrasal true
-  :head {:phrasal false
+  :phrasal? true
+  :head {:phrasal? false
          :subcat {:1 {:cat :det}}}
-  :comp {:phrasal false
+  :comp {:phrasal? false
          :sem {:pred :this}}}
 
  {:note "article+noun"
@@ -65,10 +65,10 @@
   :example "die kat"
   :cat :noun
   :subcat []
-  :phrasal true
-  :head {:phrasal false
+  :phrasal? true
+  :head {:phrasal? false
          :subcat {:1 {:cat :det}}}
-  :comp {:phrasal false
+  :comp {:phrasal? false
          :sem {:pred :that}}}
  
  {:major-tags ["nouns"]
@@ -83,85 +83,85 @@
   :minor-tags ["object-12"]
   :example "Hij zie me niet"
   :max-depth 3
-  :reflexive false
+  :reflexive? false
   :cat :verb
   :subcat []
   :sem {:pred :see
         :obj {:obj :none}}
   :head {:comp {:agr {:person :1st}
-                :pronoun true}}
+                :pronoun? true}}
   :training-wheels {:head {:rule "vp"
-                           :head {:phrasal false}}}}
+                           :head {:phrasal? false}}}}
  {:major-tags ["pronouns"]
   :minor-tags ["object-12"]
   :example "de katten zie me niet"
   :cat :verb,
-  :reflexive false,
+  :reflexive? false,
   :subcat [],
   :agr {:person :3rd},
   :head {:rule "vp",
-         :comp {:phrasal false, :pronoun true
+         :comp {:phrasal? false, :pronoun? true
                 :agr {:person :1st}}
-         :head {:phrasal false}},
+         :head {:phrasal? false}},
   :sem {:pred :see, :obj {:obj :none}},
   :max-depth 3,
-  :comp {:phrasal true}}
+  :comp {:phrasal? true}}
 
  {:major-tags ["pronouns"]
   :minor-tags ["object-12"]
   :example "Hij zie je niet"
   :max-depth 3
-  :reflexive false
+  :reflexive? false
   :cat :verb
   :subcat []
   :sem {:pred :see
         :obj {:obj :none}}
   :head {:comp {:agr {:person :2nd}
-                :pronoun true}}
+                :pronoun? true}}
   :training-wheels {:head {:rule "vp"
-                           :head {:phrasal false}}}}
+                           :head {:phrasal? false}}}}
  {:major-tags ["pronouns"]
   :minor-tags ["object-12"]
   :example "de katten zie jullie niet"
   :cat :verb,
-  :reflexive false,
+  :reflexive? false,
   :subcat [],
   :agr {:person :3rd},
   :head {:rule "vp",
-         :comp {:phrasal false, :pronoun true
+         :comp {:phrasal? false, :pronoun? true
                 :agr {:person :2nd}}
-         :head {:phrasal false}},
+         :head {:phrasal? false}},
   :sem {:pred :see, :obj {:obj :none}},
   :max-depth 3,
-  :comp {:phrasal true}}
+  :comp {:phrasal? true}}
  
   {:major-tags ["pronouns"]
   :minor-tags ["object-3"]
   :example "Ik zie haar niet"
   :max-depth 3
-  :reflexive false
+  :reflexive? false
   :cat :verb
   :subcat []
   :sem {:pred :see
         :obj {:obj :none}}
   :head {:comp {:agr {:person :3rd}
-                :pronoun true}}
+                :pronoun? true}}
   :training-wheels {:head {:rule "vp"
-                           :head {:phrasal false}}}}
+                           :head {:phrasal? false}}}}
  {:major-tags ["pronouns"]
   :minor-tags ["object-3"]
   :example "de katten zie haar niet"
   :cat :verb,
-  :reflexive false,
+  :reflexive? false,
   :subcat [],
   :agr {:person :3rd},
   :head {:rule "vp",
-         :comp {:phrasal false, :pronoun true
+         :comp {:phrasal? false, :pronoun? true
                 :agr {:person :3rd}}
-         :head {:phrasal false}},
+         :head {:phrasal? false}},
   :sem {:pred :see, :obj {:obj :none}},
   :max-depth 3,
-  :comp {:phrasal true}}
+  :comp {:phrasal? true}}
  
  {:major-tags ["nouns"]
   :minor-tags ["indef-adj"]
@@ -171,11 +171,11 @@
         :quant :some
         :ref {:number :sing}}
   :subcat []
-  :phrasal true
+  :phrasal? true
   :cat :noun
-  :head {:phrasal true}
-  :comp {:phrasal false
-         :pronoun true}}
+  :head {:phrasal? true}
+  :comp {:phrasal? false
+         :pronoun? true}}
 
  {:major-tags ["nouns"]
   :minor-tags ["number"]
@@ -184,10 +184,10 @@
         :quant :the
         :ref {:number :plur}}
   :subcat []
-  :phrasal true
+  :phrasal? true
   :cat :noun
-  :head {:phrasal false}
-  :comp {:phrasal false}}
+  :head {:phrasal? false}
+  :comp {:phrasal? false}}
   
  {:major-tags ["nouns"]
   :minor-tags ["numbers"]
@@ -202,7 +202,7 @@
         :ref {:number :plur}
         :mod {:first {:number? true}
               :rest []}}
-  :phrasal true}
+  :phrasal? true}
 
  {:major-tags ["nouns"]
   :minor-tags ["numbers"]
@@ -215,78 +215,78 @@
         :mod {:first {:number? true}
               :rest {:first {:number? false
                              :rest []}}}}
-  :phrasal true}
+  :phrasal? true}
 
  {:major-tags ["verbs"]
   :minor-tags ["subject-pronouns" "present" "subject-pronouns-and-present-tense"]
   :example "ik slaap",
   :head {:curriculum :basic
-         :phrasal false}
+         :phrasal? false}
   :cat :verb,
   :infl :present
-  :phrasal true,
+  :phrasal? true,
   :subcat [],
-  :comp {:pronoun true}}
+  :comp {:pronoun? true}}
 
  ;; transitive past simple regular
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-regular"]
-  :phrasal true
+  :phrasal? true
   :subcat []
   :cat :verb
   :infl :past-simple
   :sem {:obj {:top :top}}
-  :head {:modal false
-         :head {:phrasal false
+  :head {:modal? false
+         :head {:phrasal? false
                 :irregular-past-simple? false
                 :subcat {:2 {:cat :noun}}}}}
 
  ;; intransitive past simple regular
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-regular"]
-  :phrasal true
+  :phrasal? true
   :subcat []
   :cat :verb
   :infl :past-simple
   :sem {:obj :none}
-  :head {:modal false
+  :head {:modal? false
          :irregular-past-simple? false
-         :phrasal false}}
+         :phrasal? false}}
 
  ;; transitive past simple irregular
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-irregular"]
-  :phrasal true
+  :phrasal? true
   :subcat []
   :cat :verb
   :infl :past-simple
   :sem {:obj {:top :top}}
-  :head {:modal false
-         :head {:phrasal false
+  :head {:modal? false
+         :head {:phrasal? false
                 :irregular-past-simple? true
                 :subcat {:2 {:cat :noun}}}}}
 
  ;; intransitive past simple irregular
  {:major-tags ["verbs"]
   :minor-tags ["past-simple-irregular"]
-  :phrasal true
+  :phrasal? true
   :subcat []
   :cat :verb
   :infl :past-simple
   :sem {:obj :none}
-  :head {:modal false
+  :head {:modal? false
          :irregular-past-simple? true
-         :phrasal false}}
+         :phrasal? false}}
 
   ;; e.g. you need me
  {:major-tags ["verbs"]
   :minor-tags ["nodig" "present"]
-  :phrasal true
+  :phrasal? true
    :head {:rule "adverb-nodig"
          :comp {:rule "vp"
-                :head {:infl :present :phrasal false}
-                :comp {:pronoun true}}}
-  :comp {:pronoun true}
+                :head {:infl :present :phrasal? false}
+                :comp {:pronoun? true}}}
+  :comp {:pronoun? true}
   :subcat []
   :cat :verb
   :infl :present
@@ -302,11 +302,11 @@
   :generic true
   :max-depth 3
   :cat :verb
-  :comp {:pronoun true
-         :phrasal false}
+  :comp {:pronoun? true
+         :phrasal? false}
   :subcat []
-  :phrasal true
-  :reflexive true
+  :phrasal? true
+  :reflexive? true
   :sem {:tense :present
         :aspect :simple
         :pred :see
