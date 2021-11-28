@@ -51,7 +51,6 @@
 (defn new-question [specification-fn]
   (reset! question-html spinner)
   (go (let [response (<! (specification-fn))]
-        (log/debug (str "new-expression response: " reponse))
         (log/debug (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
@@ -150,7 +149,7 @@
 (def initial-guess-input-size (count placeholder))
 (def guess-input-size (r/atom initial-guess-input-size))
 
-(defn submit-guess [guess-text the-input-element parse-html semantics-of-guess possible-correct-semantics if-correct-fn]
+(defn submit-guess [guess-text the-input-element semantics-of-guess possible-correct-semantics if-correct-fn]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
@@ -221,7 +220,6 @@
                                (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                (submit-guess guess-text
                                              (-> input-element .-target .-value)
-                                             parse-html
                                              semantics-of-guess
                                              possible-correct-semantics
                                              ;; function called if the user guessed correctly:
