@@ -7,7 +7,7 @@
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [serialize]]
    [menard.parse :as parse]
-   [nlquiz.constants :refer [root-path spinner]]
+   [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]

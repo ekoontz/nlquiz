@@ -82,10 +82,6 @@
     :curriculum-major #'quiz/quiz-component
     :curriculum-minor #'quiz/quiz-component))
 
-;; used by e.g. quiz.cljs to know how to prefix links
-;; when generating html:
-(defonce root-path "/nlquiz/")
-
 ;; -------------------------
 ;; Initialize app
 

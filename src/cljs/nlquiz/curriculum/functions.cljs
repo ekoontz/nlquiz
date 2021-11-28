@@ -2,7 +2,7 @@
   (:require [cljs-http.client :as http]
             [cljslog.core :as log]
             [cljs.core.async :refer [<!]]
-            [nlquiz.constants :refer [root-path spinner]]
+            [nlquiz.constants :refer [spinner]]
             [nlquiz.speak :as speak]
             [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]
