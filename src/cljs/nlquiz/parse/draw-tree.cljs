@@ -10,23 +10,29 @@
 (def ^:const h-unit 50)
 
 (defn draw-node-html [parse-node]
-  (if (map? parse-node)
-    [:table.treenode
-     [:tbody
-      (map (fn [k]
-             (let [val
-                   (u/get-in parse-node [k])]
-               (if (not (= val :top))
-                 ;; hide {k v=:top} pairs since
-                 ;; they aren't very interesting.
-                 [:tr
-                  {:key k}
-                  [:th k]
-                  [:td
-                   (draw-node-value
-                    k
-                    val)]])))
-           (sort (keys parse-node)))]]))
+  (let [;; hide {k v=:top} pairs since
+        ;; they aren't very interesting:
+        uninteresting-val? (fn [v] (= v :top))
+        uninteresting-key? (fn [k] (or (= k :phrasal?)
+                                       (= k :np?)
+                                       (= k :menard.nesting/only-one-allowed-of)
+                                       (= k :menard.generate/started?)))]
+    (when (map? parse-node)
+      [:table.treenode
+       [:tbody
+        (map (fn [k]
+               (let [val
+                     (u/get-in parse-node [k])]
+                 (if (not (uninteresting-val? val)) 
+                   [:tr
+                    {:key k}
+                    [:th k]
+                    [:td
+                     (draw-node-value
+                      k
+                      val)]])))
+             ;; remove uninteresting keys:
+             (->> parse-node keys (remove uninteresting-key?) sort))]])))
 
 (defn draw-node-value [k v]
   (cond
