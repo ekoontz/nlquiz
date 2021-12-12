@@ -12,7 +12,9 @@
 (defn draw-node-html [parse-node]
   (let [;; hide {k v=:top} pairs since
         ;; they aren't very interesting:
-        uninteresting-val? (fn [v] (= v :top))
+        uninteresting-val? (fn [v] (or (= v :top)
+                                       (= v :none)
+                                       (= v [])))
         uninteresting-key? (fn [k] (or (= k :phrasal?)
                                        (= k :np?)
                                        (= k :menard.nesting/only-one-allowed-of)
@@ -41,21 +43,25 @@
     (= :rule k) v
     (string? v) [:i v]
     (keyword? v) v
-    (boolean? v) [:tt (if (true? v) "true" "false")]
+    (boolean? v) [:b (if (true? v) "+" "-")]
     (nil? v) [:tt "NULL"]
+    (= v []) [:tt "[ ]"]
     true (str v)))
 
-(defn draw-node [tree x y]
-  (let [rule (u/get-in tree [:rule] nil)
+(defn draw-node [tree x y is-head?]
+  (let [left-is-head? (= (get tree :head) (get tree :1))
+        rule (u/get-in tree [:rule] nil)
         surface (u/get-in tree [:surface] nil)
         canonical (u/get-in tree [:canonical] nil)
         show (or rule surface canonical)
         parent {:x (* x h-unit) :y (+ vspace (* y v-unit))}
-        parent-class (r/atom "rule")
-
+        parent-class (r/atom (str "rule"
+                                  (if is-head? " rule-head")))
         ;; left
         left-rule (u/get-in tree [:1 :rule])
-        left-class (r/atom (if left-rule "rule" "leaf"))
+        left-class (r/atom (str "leaf"
+                                (if left-is-head?
+                                  " leaf-head")))
         left-surface (u/get-in tree [:1 :surface])
         left-canonical (u/get-in tree [:1 :canonical])
         left-show (or left-rule left-surface left-canonical)
@@ -64,7 +70,8 @@
                               :y (+ vspace (* (:y left-child-xy-units) v-unit))}
         left-node
         (if left-rule
-          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1))
+          (draw-node (u/get-in tree [:1]) (- x 1) (+ y 1)
+                     left-is-head?)
           ;; left child is a leaf:
           {:x (:x left-child-xy-units)
            :y (:y left-child-xy-units)
@@ -75,7 +82,9 @@
 
         ;; right:
         right-rule (u/get-in tree [:2 :rule])
-        right-class (r/atom (if right-rule "rule" "leaf"))
+        right-class (r/atom (str "leaf"
+                                 (if (not left-is-head?)
+                                   " leaf-head")))
         right-surface (u/get-in tree [:2 :surface])
         right-canonical (u/get-in tree [:2 :canonical])
         right-show (or right-rule right-surface right-canonical)
@@ -92,7 +101,7 @@
         (if right-rule
           (draw-node (u/get-in tree [:2])
                      (:x right-child-xy-units)
-                     (:y right-child-xy-units))
+                     (:y right-child-xy-units) (not left-is-head?))
 
           ;; else, right child is a leaf:
           {:x (:x right-child-xy-units)
@@ -135,7 +144,7 @@
 
 (defn draw-tree [tree]
   (if (u/get-in tree [:rule])
-    (let [tree (draw-node tree 2 1)
+    (let [tree (draw-node tree 2 1 false)
           x-scale 3
           y-scale 2.5]
       [:svg {:style {:height (str (* (:max-y tree) y-scale) "em")

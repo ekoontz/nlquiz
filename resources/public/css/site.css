@@ -443,7 +443,7 @@ div.orange {
     }
 
     #input-guess {
-4	font-size:larger;
+	font-size:larger;
     }
 
     div.question {
@@ -473,11 +473,19 @@ line.thick {
 }
 
 text.leaf {
-    font: italic 12px serif; fill: black;
+    font: normal italic 12px serif; fill: black;
+}
+
+text.leaf-head {
+    font: bold italic 12px serif; fill: black;
 }
 
 text.rule {
     font: normal 12px sans; fill: black;
+}
+
+text.rule-head {
+    font: bold 12px sans; fill: black;
 }
 
 svg {
