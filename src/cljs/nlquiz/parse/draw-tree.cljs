@@ -30,23 +30,23 @@
                     {:key k}
                     [:th k]
                     [:td
-                     (draw-node-value
-                      k
-                      val)]])))
+                     [:div.index "1"]
+                     (draw-node-value k val)]])))
              ;; remove uninteresting keys:
              (->> parse-node keys (remove uninteresting-key?) sort))]])))
 
 (defn draw-node-value [k v]
-  (cond
-    (map? v) (draw-node-html v)
-    (= v :menard.nederlands/none) "none"
-    (= :rule k) v
-    (string? v) [:i v]
-    (keyword? v) v
-    (boolean? v) [:b (if (true? v) "+" "-")]
-    (nil? v) [:tt "NULL"]
-    (= v []) [:tt "[ ]"]
-    true (str v)))
+  [:div.node
+   (cond
+     (map? v) (draw-node-html v)
+     (= v :menard.nederlands/none) "none"
+     (= :rule k) v
+     (string? v) [:i v]
+     (keyword? v) v
+     (boolean? v) [:b (if (true? v) "+" "-")]
+     (nil? v) [:tt "NULL"]
+     (= v []) [:tt "[ ]"]
+     :else (str v))])
 
 (defn draw-node [tree x y is-head?]
   (let [left-is-head? (= (get tree :head) (get tree :1))
