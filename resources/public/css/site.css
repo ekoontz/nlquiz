@@ -563,3 +563,14 @@ div.input {
 div.input input {
     padding:1%;
 }
+
+div.index {
+    float:left;
+    margin:0.5em;
+    padding:0.125em;
+    border:2px solid lightblue;
+}
+
+div.node {
+    float:right;
+}
