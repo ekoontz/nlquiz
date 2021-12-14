@@ -59,19 +59,22 @@
   (let [input-length (count (tokenize surface))
         syntax-tree (fn [tree] (s/syntax-tree tree morphology))
         morph (fn [tree] (s/morph tree morphology))]
-    (binding [parse/syntax-tree syntax-tree
-              parse/morph morph
-              parse/truncate? true
-              parse/truncate-fn (fn [tree]
-                                  (-> tree
-                                      (dissoc :head)
-                                      (dissoc :comp)
-                                      (assoc :1 (strip-map (u/get-in tree [:1])))
-                                      (assoc :2 (strip-map (u/get-in tree [:2])))))]
-      (->
-       (parse/parse-in-stages input-map input-length 2 grammar surface)
-       (get [0 input-length])
-       remove-duplicates))))
+    (if (seq (get input-map [0 input-length]))
+      (get input-map [0 input-length])
+      ;; else
+      (binding [parse/syntax-tree syntax-tree
+                parse/morph morph
+                parse/truncate? true
+                parse/truncate-fn (fn [tree]
+                                    (-> tree
+                                        (dissoc :head)
+                                        (dissoc :comp)
+                                        (assoc :1 (strip-map (u/get-in tree [:1])))
+                                        (assoc :2 (strip-map (u/get-in tree [:2])))))]
+        (->
+         (parse/parse-in-stages input-map input-length 2 grammar surface)
+         (get [0 input-length])
+         remove-duplicates)))))
 
 (defn nl-sem [nl-parses]
   (->> nl-parses
