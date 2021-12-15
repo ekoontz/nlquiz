@@ -1,15 +1,24 @@
 (ns nlquiz.parse.draw-tree
   (:require
-   [dag_unify.core :as u]
-   [dag_unify.serialization :refer [deserialize serialize]]
+   [dag_unify.core :as u :refer [ref?]]
+   [dag_unify.serialization :refer [deserialize final-reference-of serialize]]
    [cljslog.core :as log]
    [reagent.core :as r]))
 
-(def ^:const v-unit 30)
-(def ^:const vspace 10)
-(def ^:const h-unit 50)
+(def ref-counter (atom 0))
+(def ^:dynamic html-index-map)
+(declare draw-node-html-with-binding)
 
 (defn draw-node-html [parse-node]
+  (binding [html-index-map (atom {})]
+    (swap! ref-counter (fn [_] 0))
+    (draw-node-html-with-binding parse-node)))
+
+(defn draw-node-html-with-binding [parse-node]
+  (if (nil? html-index-map)
+    (log/info (str "  html-index-map is NULL :(; parse-node: "
+                   (u/pprint parse-node)))
+    (log/info (str "  html-index-map is OK!")))
   (let [;; hide {k v=:top} pairs since
         ;; they aren't very interesting:
         uninteresting-val? (fn [v] (or (= v :top)
@@ -18,35 +27,46 @@
         uninteresting-key? (fn [k] (or (= k :phrasal?)
                                        (= k :np?)
                                        (= k :menard.nesting/only-one-allowed-of)
-                                       (= k :menard.generate/started?)))]
-    (when (map? parse-node)
-      [:table.treenode
-       [:tbody
-        (map (fn [k]
-               (let [val
-                     (u/get-in parse-node [k])]
-                 (if (not (uninteresting-val? val)) 
-                   [:tr
-                    {:key k}
-                    [:th k]
-                    [:td
-                     [:div.index "1"]
-                     (draw-node-value k val)]])))
-             ;; remove uninteresting keys:
-             (->> parse-node keys (remove uninteresting-key?) sort))]])))
+                                       (= k :menard.generate/started?)))
+        interesting-keys
+        ;; remove uninteresting keys:
+        (->> parse-node keys (remove uninteresting-key?) sort)]
+    (when (and (map? parse-node)
+               (seq interesting-keys))
+      ;; TODO: currently, it's possible that we'll have an empty table if there
+      ;; are interesting keys, but all values are uninteresting.
+      (let [retval
+            [:table.treenode
+             [:tbody
+              (map (fn [k]
+                     (let [val (u/get-in parse-node [k])
+                           v (get parse-node k)
+                           ref-index "9"]
+                       (if (not (uninteresting-val? val)) 
+                         [:tr
+                          {:key k}
+                          [:th k]
+                          [:td
+                           [:div.index ref-index]
+                           [:div.node
+                            (cond
+                              (map? val)
+                              (draw-node-html-with-binding val)
+                              (= val :menard.nederlands/none) "none"
+                              (= :rule k) val
+                              (string? val) [:i val]
+                              (keyword? val) val
+                              (boolean? val) [:b (if (true? val) "+" "-")]
+                        (nil? val) [:tt "NULL"]
+                        (= val []) [:tt "[ ]"]
+                        :else (str val))]]])))
+                   interesting-keys)]]]
+        (log/info (str "ok, returning retval(have to print this): " retval))
+        retval))))
 
-(defn draw-node-value [k v]
-  [:div.node
-   (cond
-     (map? v) (draw-node-html v)
-     (= v :menard.nederlands/none) "none"
-     (= :rule k) v
-     (string? v) [:i v]
-     (keyword? v) v
-     (boolean? v) [:b (if (true? v) "+" "-")]
-     (nil? v) [:tt "NULL"]
-     (= v []) [:tt "[ ]"]
-     :else (str v))])
+(def ^:const v-unit 30)
+(def ^:const vspace 10)
+(def ^:const h-unit 50)
 
 (defn draw-node [tree x y is-head?]
   (let [left-is-head? (= (get tree :head) (get tree :1))
