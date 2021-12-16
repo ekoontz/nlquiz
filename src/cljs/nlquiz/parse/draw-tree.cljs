@@ -12,14 +12,15 @@
 (defn draw-node-html [parse-node]
   (binding [html-index-map (atom {})]
     (swap! ref-counter (fn [_] 0))
-    (draw-node-html-with-binding parse-node)))
+    (draw-node-html-with-binding (deserialize (serialize parse-node)))))
 
 (defn draw-node-html-with-binding [parse-node]
   (if (nil? html-index-map)
     (log/info (str "  html-index-map is NULL :(; parse-node: "
                    (u/pprint parse-node)))
     (log/info (str "  html-index-map is OK!")))
-  (let [;; hide {k v=:top} pairs since
+  (let [
+        ;; hide {k v=:top} pairs since
         ;; they aren't very interesting:
         uninteresting-val? (fn [v] (or (= v :top)
                                        (= v :none)
@@ -39,27 +40,41 @@
             [:table.treenode
              [:tbody
               (map (fn [k]
-                     (let [val (u/get-in parse-node [k])
-                           v (get parse-node k)
-                           ref-index "9"]
+                     (let [val (u/get-in parse-node [k])]
                        (if (not (uninteresting-val? val)) 
-                         [:tr
-                          {:key k}
-                          [:th k]
-                          [:td
-                           [:div.index ref-index]
-                           [:div.node
-                            (cond
-                              (map? val)
-                              (draw-node-html-with-binding val)
-                              (= val :menard.nederlands/none) "none"
-                              (= :rule k) val
-                              (string? val) [:i val]
-                              (keyword? val) val
-                              (boolean? val) [:b (if (true? val) "+" "-")]
-                        (nil? val) [:tt "NULL"]
-                        (= val []) [:tt "[ ]"]
-                        :else (str val))]]])))
+                         (let [v (if (ref? (get parse-node k))
+                                   (final-reference-of (get parse-node k)))
+                               entry-if-any (get @html-index-map v)
+                               ref-index 
+                               (if v
+                                 (if entry-if-any
+                                   entry-if-any
+                                   (do (swap! ref-counter (fn [x] (+ 1 x)))
+                                       (swap! html-index-map
+                                              (fn [x] (assoc x v @ref-counter)))
+                                       @ref-counter)))]
+                               [:tr
+                            {:key k}
+                            [:th k]
+                            [:td
+                             (if ref-index
+                               [:div.index ref-index])
+                             [:div.node
+                              (cond
+
+                                ;; already seen index:
+                                (and ref-index entry-if-any) ""
+
+                                (map? val)
+                                (draw-node-html-with-binding val)
+                                (= val :menard.nederlands/none) "none"
+                                (= :rule k) val
+                                (string? val) [:i val]
+                                (keyword? val) val
+                                (boolean? val) [:b (if (true? val) "+" "-")]
+                                (nil? val) [:tt "NULL"]
+                                (= val []) [:tt "[ ]"]
+                                :else (str val))]]]))))
                    interesting-keys)]]]
         (log/info (str "ok, returning retval(have to print this): " retval))
         retval))))
