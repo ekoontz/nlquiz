@@ -12,15 +12,16 @@
 (defn draw-node-html [parse-node]
   (binding [html-index-map (atom {})]
     (swap! ref-counter (fn [_] 0))
-    (draw-node-html-with-binding (deserialize (serialize parse-node)))))
+    (-> parse-node
+        serialize ;; serialize and deserialize to remove singleton references.
+        deserialize
+        draw-node-html-with-binding)))
 
 (defn draw-node-html-with-binding [parse-node]
   (if (nil? html-index-map)
-    (log/info (str "  html-index-map is NULL :(; parse-node: "
-                   (u/pprint parse-node)))
-    (log/info (str "  html-index-map is OK!")))
-  (let [
-        ;; hide {k v=:top} pairs since
+    (log/error (str "html-index-map is NULL :(; parse-node: "
+                    (u/pprint parse-node))))
+  (let [;; hide {k v=:top} pairs since
         ;; they aren't very interesting:
         uninteresting-val? (fn [v] (or (= v :top)
                                        (= v :none)
@@ -34,8 +35,8 @@
         (->> parse-node keys (remove uninteresting-key?) sort)]
     (when (and (map? parse-node)
                (seq interesting-keys))
-      ;; TODO: currently, it's possible that we'll have an empty table if there
-      ;; are interesting keys, but all values are uninteresting.
+      ;; TODO: currently, it's possible that we'll have an empty [:table.treenode],
+      ;; if there are interesting keys, but all values are uninteresting.
       (let [retval
             [:table.treenode
              [:tbody
@@ -47,12 +48,16 @@
                                entry-if-any (get @html-index-map v)
                                ref-index 
                                (if v
-                                 (if entry-if-any
-                                   entry-if-any
-                                   (do (swap! ref-counter (fn [x] (+ 1 x)))
-                                       (swap! html-index-map
-                                              (fn [x] (assoc x v @ref-counter)))
-                                       @ref-counter)))]
+                                 (or entry-if-any
+                                     ;; if v is not in html-index-map,
+                                     ;; add it now, with its key being
+                                     ;; the next value of ref-counter
+                                     ;; (which was initialized at 0 at the
+                                     ;;  beginning of draw-node-html).
+                                     (do (swap! ref-counter (fn [x] (+ 1 x)))
+                                         (swap! html-index-map
+                                                (fn [x] (assoc x v @ref-counter)))
+                                         @ref-counter)))]
                                [:tr
                             {:key k}
                             [:th k]
@@ -76,7 +81,11 @@
                                 (= val []) [:tt "[ ]"]
                                 :else (str val))]]]))))
                    interesting-keys)]]]
-        (log/info (str "ok, returning retval(have to print this): " retval))
+
+        ;; this is needed for some reason: otherwise the dynamic variable
+        ;; won't be bound in recursive calls to draw-node-html-with-binding.
+        (log/debug (count (subs (str retval) 0 1)))
+
         retval))))
 
 (def ^:const v-unit 30)
