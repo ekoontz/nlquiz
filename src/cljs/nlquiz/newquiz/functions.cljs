@@ -25,7 +25,7 @@
         ;; Only start the (go) if there is a difference between the input we are given (nl-surface)
         ;; and the last input that was processed (@nl-surface-atom).
 
-        ;; Change english output to spinner since it will be updated, if not by this (go), then by a subsequent (go):
+        ;; Change english output to spinner since it will be updated, if not by this (go)-invocation, then by a subsequent (go)-invocation:
         (if en-surfaces-atom (reset! en-surfaces-atom spinner))
 
         (go
@@ -44,7 +44,7 @@
                     ;; 2.b. For that set of NL parses in 2.a., get the equivalent
                     ;; set of specifications for the english:
                     en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
-                (when (and nl-parses (seq nl-parses))
+                (if (and nl-parses (seq nl-parses))
                   (reset! nl-tree-atom
                           (vec
                            (cons
@@ -64,7 +64,9 @@
                                                 (dissoc :2)
                                                 (dissoc :head)
                                           (dissoc :comp)))])
-                                        nl-parses))))))
+                                        nl-parses)))))
+
+                  (reset! nl-tree-atom [:i "Helemaal niks"]))
 
                 (when en-surfaces-atom
                   ;; 3. For each such spec, generate an english expression, and
