@@ -566,9 +566,10 @@ div.input input {
 
 div.index {
     float:left;
-    margin:0.5em;
+    margin:0.125em;
     padding:0.125em;
     border:2px solid lightblue;
+    margin-top:25%;
 }
 
 div.node {
