@@ -194,5 +194,3 @@
       [:svg {:style {:height (str (* (:max-y tree) y-scale) "em")
                      :width (str (* (:max-x tree) x-scale) "em")}}
        (:g tree)])))
-
-
