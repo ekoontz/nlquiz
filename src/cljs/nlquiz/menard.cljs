@@ -33,10 +33,16 @@
           :u u})
        response-body))
   
+(defn decode-analyze [response-body]
+   ;; a sequence of lexemes.
+  (->> response-body
+       (map (fn [serialized-lexeme]
+              (-> serialized-lexeme cljs.reader/read-string deserialize)))))
+
 (defn decode-parse [response-body]
    ;; a map between:
    ;; keys: each key is a span e.g. [0 1]
-   ;; vals: each val is a sequence of serialized lexemes
+   ;; vals: each val is a sequence of trees, each of which spans the span indicated by the key.
    (into {}
          (->> (keys response-body)
               (map (fn [k]
@@ -44,6 +50,12 @@
                       (map (fn [serialized-lexeme]
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
+
+(defn decode-rule [response-body]
+   ;; a sequence of rules.
+  (->> response-body
+       (map (fn [serialized-rule]
+              (-> serialized-rule cljs.reader/read-string deserialize)))))
 
 (defn strip-map [m]
   (select-keys m [:1 :2 :canonical :rule :surface]))
