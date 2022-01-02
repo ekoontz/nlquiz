@@ -66,7 +66,7 @@
                                           (dissoc :comp)))])
                                         nl-parses)))))
 
-                  (reset! nl-tree-atom [:i "Helemaal niks"]))
+                  (reset! nl-tree-atom [:span [:i @nl-surface-atom] [:span " : "] [:b "Helemaal niks"]]))
 
                 (when en-surfaces-atom
                   ;; 3. For each such spec, generate an english expression, and
