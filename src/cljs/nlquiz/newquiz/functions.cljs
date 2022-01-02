@@ -5,7 +5,7 @@
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
-   [nlquiz.menard :refer [dag-to-string decode-grammar decode-parse
+   [nlquiz.menard :refer [dag-to-string decode-grammar decode-analyze decode-rule decode-parse
                           nl-parses nl-parses-to-en-specs]]
    [nlquiz.parse.draw-tree :refer [draw-node-html draw-tree]])
   (:require-macros [cljs.core.async.macros :refer [go]]
@@ -34,7 +34,13 @@
           ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start?q=" nl-surface (when server-side-parsing? "&all"))))
-                                   :body decode-parse)]
+                                   :body decode-parse)
+                analyze-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                        "/analyze?q=" nl-surface)))
+                                     :body decode-analyze)
+                rule-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                        "/rule?q=" nl-surface (when server-side-parsing? "&all"))))
+                                     :body decode-rule)]
             (when (fresh?)
 
               ;; 2. With this information ready,
