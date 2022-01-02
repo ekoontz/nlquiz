@@ -35,12 +35,13 @@
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start?q=" nl-surface (when server-side-parsing? "&all"))))
                                    :body decode-parse)
-                analyze-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                        "/analyze?q=" nl-surface)))
-                                     :body decode-analyze)
-                rule-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                        "/rule?q=" nl-surface (when server-side-parsing? "&all"))))
-                                     :body decode-rule)]
+;;                analyze-response (-> (<! (http/get (str (language-server-endpoint-url)
+;;                                                        "/analyze?q=" nl-surface)))
+;;                                     :body decode-analyze)
+;;                rule-response (-> (<! (http/get (str (language-server-endpoint-url)
+;;                                                        "/rule?q=" nl-surface)))
+;;                                  :body decode-rules)
+                ]
             (when (fresh?)
 
               ;; 2. With this information ready,
@@ -50,29 +51,33 @@
                     ;; 2.b. For that set of NL parses in 2.a., get the equivalent
                     ;; set of specifications for the english:
                     en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
-                (if (and nl-parses (seq nl-parses))
-                  (reset! nl-tree-atom
-                          (vec
-                           (cons
-                            :div
-                            (cons [:b
-                                   (cond (= (count nl-parses) 0)
-                                         (str "no parses.")
-                                         true
-                                         (str (count nl-parses) " tree"
-                                              (when (not (= 1 (count nl-parses))) "s")))]
-                                  (mapv (fn [parse]
-                                          [:div
-                                           (draw-tree parse)
-                                           (draw-node-html
-                                            (-> parse
-                                                (dissoc :1)
-                                                (dissoc :2)
-                                                (dissoc :head)
-                                          (dissoc :comp)))])
-                                        nl-parses)))))
+                (cond (and nl-parses (seq nl-parses))
+                      (reset! nl-tree-atom
+                              (vec
+                               (cons
+                                :div
+                                (cons [:b
+                                       (cond (= (count nl-parses) 0)
+                                             (str "no parses.")
+                                             true
+                                             (str (count nl-parses) " tree"
+                                                  (when (not (= 1 (count nl-parses))) "s")))]
+                                      (mapv (fn [parse]
+                                              [:div
+                                               (draw-tree parse)
+                                               (draw-node-html
+                                                (-> parse
+                                                    (dissoc :1)
+                                                    (dissoc :2)
+                                                    (dissoc :head)
+                                                    (dissoc :comp)))])
+                                            nl-parses)))))
 
-                  (reset! nl-tree-atom [:span [:i @nl-surface-atom] [:span " : "] [:b "Helemaal niks"]]))
+                      (and false) ;; (seq analyze-response))
+                      (reset! nl-tree-atom [:span [:i @nl-surface-atom] [:span " : "] [:b "TOKENS."]])
+
+                      :else
+                      (reset! nl-tree-atom [:span [:i @nl-surface-atom] [:span " : "] [:b "Helemaal niks"]]))
 
                 (when en-surfaces-atom
                   ;; 3. For each such spec, generate an english expression, and
