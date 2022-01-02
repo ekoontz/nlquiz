@@ -51,7 +51,7 @@
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get response-body k))])))))
 
-(defn decode-rule [response-body]
+(defn decode-rules [response-body]
    ;; a sequence of rules.
   (->> response-body
        (map (fn [serialized-rule]
