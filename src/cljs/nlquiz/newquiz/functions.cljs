@@ -5,7 +5,7 @@
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
-   [nlquiz.menard :refer [dag-to-string decode-grammar decode-analyze decode-rule decode-parse
+   [nlquiz.menard :refer [dag-to-string decode-analyze decode-grammar decode-rules decode-parse
                           nl-parses nl-parses-to-en-specs]]
    [nlquiz.parse.draw-tree :refer [draw-node-html draw-tree]])
   (:require-macros [cljs.core.async.macros :refer [go]]
