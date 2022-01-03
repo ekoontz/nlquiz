@@ -35,9 +35,9 @@
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start?q=" nl-surface (when server-side-parsing? "&all"))))
                                    :body decode-parse)
-;;                analyze-response (-> (<! (http/get (str (language-server-endpoint-url)
-;;                                                        "/analyze?q=" nl-surface)))
-;;                                     :body decode-analyze)
+                analyze-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                        "/analyze?q=" nl-surface)))
+                                     :body decode-analyze)
 ;;                rule-response (-> (<! (http/get (str (language-server-endpoint-url)
 ;;                                                        "/rule?q=" nl-surface)))
 ;;                                  :body decode-rules)
@@ -73,7 +73,7 @@
                                                     (dissoc :comp)))])
                                             nl-parses)))))
 
-                      (and false) ;; (seq analyze-response))
+                      (and (seq analyze-response))
                       (reset! nl-tree-atom [:span [:i @nl-surface-atom] [:span " : "] [:b "TOKENS."]])
 
                       :else

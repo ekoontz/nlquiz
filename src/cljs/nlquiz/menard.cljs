@@ -34,10 +34,12 @@
        response-body))
   
 (defn decode-analyze [response-body]
-   ;; a sequence of lexemes.
+  ;; a sequence of lexemes.
+  (log/info (str "decode-analyze: response-body: " response-body))
   (->> response-body
-       (map (fn [serialized-lexeme]
-              (-> serialized-lexeme cljs.reader/read-string deserialize)))))
+       (map deserialize)
+       (filter (fn [lexeme]
+                 (not (= "_" (u/get-in lexeme [:canonical])))))))
 
 (defn decode-parse [response-body]
    ;; a map between:
@@ -54,8 +56,7 @@
 (defn decode-rules [response-body]
    ;; a sequence of rules.
   (->> response-body
-       (map (fn [serialized-rule]
-              (-> serialized-rule cljs.reader/read-string deserialize)))))
+       (map deserialize)))
 
 (defn strip-map [m]
   (select-keys m [:1 :2 :canonical :rule :surface]))
