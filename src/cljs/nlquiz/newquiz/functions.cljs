@@ -5,7 +5,7 @@
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
-   [nlquiz.menard :refer [dag-to-string decode-analyze decode-grammar decode-rules decode-parse
+   [nlquiz.menard :refer [dag-to-string decode-analyze decode-grammar decode-parse decode-rules
                           nl-parses nl-parses-to-en-specs]]
    [nlquiz.parse.draw-tree :refer [draw-node-html draw-tree]])
   (:require-macros [cljs.core.async.macros :refer [go]]
@@ -35,15 +35,13 @@
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start?q=" nl-surface (when server-side-parsing? "&all"))))
                                    :body decode-parse)
-                analyze-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                        "/analyze?q=" nl-surface)))
-                                     :body decode-analyze)
-;;                rule-response (-> (<! (http/get (str (language-server-endpoint-url)
-;;                                                        "/rule?q=" nl-surface)))
-;;                                  :body decode-rules)
-                ]
+                lexemes (-> (<! (http/get (str (language-server-endpoint-url)
+                                               "/analyze?q=" nl-surface)))
+                            :body decode-analyze)
+                rules (-> (<! (http/get (str (language-server-endpoint-url)
+                                             "/rule?q=" nl-surface)))
+                          :body decode-rules)]
             (when (fresh?)
-
               ;; 2. With this information ready,
               (let [;; 2.a. do the NL parsing:
                     nl-parses (->> (nl-parses parse-response @nl-grammar @nl-morphology
@@ -73,11 +71,38 @@
                                                     (dissoc :comp)))])
                                             nl-parses)))))
 
-                      (and (seq analyze-response))
-                      (reset! nl-tree-atom [:span [:i @nl-surface-atom] [:span " : "] [:b "TOKENS."]])
+                      (seq lexemes)
+                      (reset! nl-tree-atom
+                              (vec
+                               (cons
+                                :div
+                                (cons [:b
+                                       (str (count lexemes) " lexeme"
+                                            (when (not (= 1 (count lexemes))) "s")
+                                            " matching '" nl-surface "'")]
+                                      (mapv (fn [lexeme]
+                                              [:div.lexeme
+                                               (draw-node-html lexeme)])
+                                            lexemes)))))
 
+                      (seq rules)
+                      (reset! nl-tree-atom
+                              (vec
+                               (cons
+                                :div
+                                (cons [:b
+                                       (str (count rules) " rule"
+                                            (when (not (= 1 (count rule))) "s")
+                                            " matching '" nl-surface "'")]
+                                      (mapv (fn [rule]
+                                              [:div.rule
+                                               (draw-node-html rule)])
+                                            rules)))))
+
+                      (seq nl-surface)
+                      (reset! nl-tree-atom [:span "'" [:i @nl-surface-atom] [:span "' : "] [:b "Helemaal niks"]])
                       :else
-                      (reset! nl-tree-atom [:span [:i @nl-surface-atom] [:span " : "] [:b "Helemaal niks"]]))
+                      (reset! nl-tree-atom ""))))
 
                 (when en-surfaces-atom
                   ;; 3. For each such spec, generate an english expression, and
@@ -98,7 +123,7 @@
                     (when (fresh?)
                       (reset! en-surfaces-atom (if (seq @update-to)
                                                  (string/join "," @update-to)
-                                                 "??")))))))))))))
+                                                 "??")))))))))))
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true

@@ -575,3 +575,7 @@ div.index {
 div.node {
     float:right;
 }
+
+div.lexeme,div.rule {
+    margin-top:0.5em;
+}
