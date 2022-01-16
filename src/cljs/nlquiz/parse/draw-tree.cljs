@@ -21,11 +21,18 @@
   (if (nil? html-index-map)
     (log/error (str "html-index-map is NULL :(; parse-node: "
                     (u/pprint parse-node))))
-  (let [;; hide {k v=:top} pairs since
+  (let [
+        interesting-key? (fn [k] (or (= k :ref)
+                                     (= k :obj)))
+
+        ;; hide {k v=:top} pairs since
         ;; they aren't very interesting:
-        uninteresting-val? (fn [v] (or (= v :top)
-                                       (= v :none)
-                                       (= v [])))
+        uninteresting-val? (fn [v k] (or (and (= v :top)
+                                              (not (interesting-key? k)))
+                                         (and (= v :none)
+                                              (not (interesting-key? k)))
+                                         (and (= v [])
+                                              (not (interesting-key? k)))))
         uninteresting-key? (fn [k] (or (= k :phrasal?)
                                        (= k :np?)
                                        (= k :menard.nesting/only-one-allowed-of)
@@ -42,7 +49,7 @@
              [:tbody
               (map (fn [k]
                      (let [val (u/get-in parse-node [k])]
-                       (if (not (uninteresting-val? val)) 
+                       (if (not (uninteresting-val? val k)) 
                          (let [v (if (ref? (get parse-node k))
                                    (final-reference-of (get parse-node k)))
                                entry-if-any (get @html-index-map v)
