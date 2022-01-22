@@ -180,6 +180,7 @@ h4 {
     text-align:left;
     border:0px dashed red;
     margin:0.25em;
+    width:100%;
 }
 
 .code {
@@ -578,4 +579,7 @@ div.node {
 
 div.lexeme,div.rule {
     margin-top:0.5em;
+    margin-right:0.5em;
+    float:left;
 }
+
