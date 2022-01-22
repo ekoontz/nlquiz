@@ -54,7 +54,7 @@
                               (vec
                                (cons
                                 :div
-                                (cons [:b
+                                (cons [:h4
                                        (cond (= (count nl-parses) 0)
                                              (str "no parses.")
                                              true
@@ -76,7 +76,7 @@
                               (vec
                                (cons
                                 :div
-                                (cons [:b
+                                (cons [:h4
                                        (str (count lexemes) " lexeme"
                                             (when (not (= 1 (count lexemes))) "s")
                                             " matching '" nl-surface "'")]
@@ -90,7 +90,7 @@
                               (vec
                                (cons
                                 :div
-                                (cons [:b
+                                (cons [:h4
                                        (str (count rules) " rule"
                                             (when (not (= 1 (count rule))) "s")
                                             " matching '" nl-surface "'")]
