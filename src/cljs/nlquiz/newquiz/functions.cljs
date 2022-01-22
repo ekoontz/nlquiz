@@ -103,8 +103,12 @@
 
                                             ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
                                             (map merge ;; map will use 'merge' as the function to map over.
-                                                 rules ;; (first sequence): each member of *this* sequence ..
-                                                 (->> (range 1 (+ 1 (count rules))) ;; (second sequence) .. is merged with the member in *this* sequence.
+
+                                                 ;; sort the rules. This is the first sequence: each member of *this* sequence .. 
+                                                 (sort (fn [a b]
+                                                         (compare (str a) (str b)))
+                                                       rules)
+                                                 (->> (range 1 (+ 1 (count rules))) ;; .. is merged with the member in this second sequence
                                                       (map (fn [i] {::i i})))))))))
 
                       (seq nl-surface)
