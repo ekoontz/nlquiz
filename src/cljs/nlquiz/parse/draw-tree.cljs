@@ -35,6 +35,7 @@
                                               (not (interesting-key? k)))))
         uninteresting-key? (fn [k] (or (= k :phrasal?)
                                        (= k :np?)
+                                       (= k :nlquiz.newquiz.functions/i)
                                        (= k :menard.nesting/only-one-allowed-of)
                                        (= k :menard.generate/started?)))
         interesting-keys

@@ -1,6 +1,7 @@
 (ns nlquiz.newquiz.functions
   (:require
-   [dag_unify.serialization :as s]
+   [dag_unify.core :as u]
+   [dag_unify.serialization :as s]   
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
@@ -86,6 +87,7 @@
                                             lexemes)))))
 
                       (seq rules)
+
                       (reset! nl-tree-atom
                               (vec
                                (cons
@@ -93,11 +95,17 @@
                                 (cons [:h4
                                        (str (count rules) " rule"
                                             (when (not (= 1 (count rule))) "s")
-                                            " matching '" nl-surface "'")]
+                                            " matching '" nl-surface "'.")]
                                       (mapv (fn [rule]
                                               [:div.rule
+                                               [:div.rulenumber (u/get-in rule [::i])]
                                                (draw-node-html rule)])
-                                            rules)))))
+
+                                            ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
+                                            (map merge ;; map will use 'merge' as the function to map over.
+                                                 rules ;; (first sequence): each member of *this* sequence ..
+                                                 (->> (range 1 (+ 1 (count rules))) ;; (second sequence) .. is merged with the member in *this* sequence.
+                                                      (map (fn [i] {::i i})))))))))
 
                       (seq nl-surface)
                       (reset! nl-tree-atom [:span "'" [:i @nl-surface-atom] [:span "' : "] [:b "Helemaal niks"]])
