@@ -582,7 +582,7 @@ div.lexeme,div.rule {
     float:left;
 }
 
-div.rulenumber {
+div.number {
     font-weight:bold;
     font-size:150%;
 }

@@ -80,14 +80,20 @@
                                 (cons [:h4
                                        (str (count lexemes) " lexeme"
                                             (when (not (= 1 (count lexemes))) "s")
-                                            " matching '" nl-surface "'")]
+                                            " matching '" nl-surface "'.")]
                                       (mapv (fn [lexeme]
                                               [:div.lexeme
+                                               [:div.number (u/get-in lexeme [::i])]
                                                (draw-node-html lexeme)])
-                                            lexemes)))))
+
+                                            (map merge
+                                                 (sort (fn [a b]
+                                                         (compare (str a) (str b)))
+                                                       lexemes)
+                                                 (->> (range 1 (+ 1 (count lexemes)))
+                                                      (map (fn [i] {::i i})))))))))
 
                       (seq rules)
-
                       (reset! nl-tree-atom
                               (vec
                                (cons
@@ -98,7 +104,7 @@
                                             " matching '" nl-surface "'.")]
                                       (mapv (fn [rule]
                                               [:div.rule
-                                               [:div.rulenumber (u/get-in rule [::i])]
+                                               [:div.number (u/get-in rule [::i])]
                                                (draw-node-html rule)])
 
                                             ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
