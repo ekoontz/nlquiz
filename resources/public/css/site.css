@@ -522,11 +522,6 @@ div.nl_widget {
 	".";
 }
 
-div.nl_widget > div {
-    border-left:1px solid lightblue;
-    border-top:1px solid lightblue;
-}
-
 div.tree {
     float:left;
 }
@@ -584,7 +579,7 @@ div.lexeme,div.rule {
 
 div.number {
     font-weight:bold;
-    border-bottom: 2px solid lightblue;
+    border-bottom: 4px solid lightblue;
     margin-top:0.5em;
     text-align:right;
 }
@@ -593,4 +588,8 @@ div.parse-cell {
     float:left;
     width:auto;
     margin-right:0.25em;
+}
+
+div.section {
+    border-left:0;
 }

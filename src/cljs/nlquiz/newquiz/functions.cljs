@@ -54,7 +54,7 @@
                       (reset! nl-tree-atom
                               (vec
                                (cons
-                                :div
+                                :div.section
                                 (cons [:h4
                                        (cond (= (count nl-parses) 0)
                                              (str "no parses.")
