@@ -60,9 +60,11 @@
                                              (str "no parses.")
                                              true
                                              (str (count nl-parses) " tree"
-                                                  (when (not (= 1 (count nl-parses))) "s")))]
+                                                  (when (not (= 1 (count nl-parses))) "s")
+                                                  "."))]
                                       (mapv (fn [parse]
-                                              [:div
+                                              [:div.parse-cell
+                                               [:div.number (u/get-in parse [::i])]
                                                (draw-tree parse)
                                                (draw-node-html
                                                 (-> parse
@@ -70,8 +72,13 @@
                                                     (dissoc :2)
                                                     (dissoc :head)
                                                     (dissoc :comp)))])
-                                            nl-parses)))))
-
+                                            (map merge
+                                                 (sort (fn [a b]
+                                                         (compare (str a) (str b)))
+                                                       nl-parses)
+                                                 (->> (range 1 (+ 1 (count nl-parses)))
+                                                      (map (fn [i] {::i i})))))))))
+                      
                       (seq lexemes)
                       (reset! nl-tree-atom
                               (vec
