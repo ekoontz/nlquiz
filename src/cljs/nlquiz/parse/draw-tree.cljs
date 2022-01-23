@@ -23,7 +23,8 @@
                     (u/pprint parse-node))))
   (let [
         interesting-key? (fn [k] (or (= k :ref)
-                                     (= k :obj)))
+                                     (= k :obj)
+                                     (= k :top)))
 
         ;; hide {k v=:top} pairs since
         ;; they aren't very interesting:

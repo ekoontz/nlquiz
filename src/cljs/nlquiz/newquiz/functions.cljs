@@ -55,13 +55,9 @@
                               (vec
                                (cons
                                 :div.section
-                                (cons [:h4
-                                       (cond (= (count nl-parses) 0)
-                                             (str "no parses.")
-                                             true
-                                             (str (count nl-parses) " parse"
-                                                  (when (not (= 1 (count nl-parses))) "s")
-                                                  "."))]
+                                (cons (when (= (count nl-parses) 0)
+                                        [:h4
+                                         (str "no parses.")])
                                       (mapv (fn [parse]
                                               [:div.parse-cell
                                                [:div.number (str (u/get-in parse [::i]) " of " (count nl-parses) " parse"
@@ -85,13 +81,12 @@
                               (vec
                                (cons
                                 :div.section
-                                (cons [:h4
-                                       (str (count lexemes) " lexeme"
-                                            (when (not (= 1 (count lexemes))) "s")
-                                            " matching '" nl-surface "'.")]
+                                (cons (when (= (count lexemes) 0)
+                                        [:h4 (str "no lexemes.")])
                                       (mapv (fn [lexeme]
                                               [:div.lexeme
-                                               [:div.number (u/get-in lexeme [::i])]
+                                               [:div.number (str (u/get-in lexeme [::i]) " of " (count lexemes) " lexeme"
+                                                                 (when (not (= 1 (count lexemes))) "s") "")]
                                                (draw-node-html lexeme)])
 
                                             (map merge
@@ -106,13 +101,12 @@
                               (vec
                                (cons
                                 :div.section
-                                (cons [:h4
-                                       (str (count rules) " rule"
-                                            (when (not (= 1 (count rule))) "s")
-                                            " matching '" nl-surface "'.")]
+                                (cons (when (= (count rules) 0)
+                                        [:h4 (str "no rules")]) 
                                       (mapv (fn [rule]
-                                              [:div.rule
-                                               [:div.number (u/get-in rule [::i])]
+                                              [:div.rule 
+                                               [:div.number (str (u/get-in rule [::i]) " of " (count rules) " rule"
+                                                                 (when (not (= 1 (count rules))) "s") "")]
                                                (draw-node-html rule)])
 
                                             ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
