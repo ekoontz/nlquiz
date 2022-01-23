@@ -84,7 +84,7 @@
                       (reset! nl-tree-atom
                               (vec
                                (cons
-                                :div
+                                :div.section
                                 (cons [:h4
                                        (str (count lexemes) " lexeme"
                                             (when (not (= 1 (count lexemes))) "s")
@@ -105,7 +105,7 @@
                       (reset! nl-tree-atom
                               (vec
                                (cons
-                                :div
+                                :div.section
                                 (cons [:h4
                                        (str (count rules) " rule"
                                             (when (not (= 1 (count rule))) "s")
