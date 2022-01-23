@@ -586,3 +586,9 @@ div.number {
     font-weight:bold;
     font-size:150%;
 }
+
+div.parse-cell {
+    float:left;
+    width:auto;
+    margin-right:0.25em;
+}
