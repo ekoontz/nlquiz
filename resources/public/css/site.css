@@ -584,7 +584,9 @@ div.lexeme,div.rule {
 
 div.number {
     font-weight:bold;
-    font-size:150%;
+    border-bottom: 2px solid lightblue;
+    margin-top:0.5em;
+    text-align:right;
 }
 
 div.parse-cell {

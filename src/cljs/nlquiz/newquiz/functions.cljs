@@ -59,12 +59,13 @@
                                        (cond (= (count nl-parses) 0)
                                              (str "no parses.")
                                              true
-                                             (str (count nl-parses) " tree"
+                                             (str (count nl-parses) " parse"
                                                   (when (not (= 1 (count nl-parses))) "s")
                                                   "."))]
                                       (mapv (fn [parse]
                                               [:div.parse-cell
-                                               [:div.number (u/get-in parse [::i])]
+                                               [:div.number (str (u/get-in parse [::i]) " of " (count nl-parses) " parse"
+                                                                 (when (not (= 1 (count nl-parses))) "s") "")]
                                                (draw-tree parse)
                                                (draw-node-html
                                                 (-> parse
