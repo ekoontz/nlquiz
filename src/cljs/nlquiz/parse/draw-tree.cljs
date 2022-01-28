@@ -199,8 +199,11 @@
 (defn draw-tree [tree]
   (if (u/get-in tree [:rule])
     (let [tree (draw-node tree 2 1 false)
-          x-scale 3
+          x-scale 2.5
           y-scale 2.5]
-      [:svg {:style {:height (str (* (:max-y tree) y-scale) "em")
-                     :width (str (* (:max-x tree) x-scale) "em")}}
-       (:g tree)])))
+      [:div.outer
+       [:div.inner
+        [:svg {:style {:height (str (* (:max-y tree) y-scale) "em")
+                       :width (str (* (:max-x tree) x-scale) "em")}}
+         (:g tree)]]])))
+
