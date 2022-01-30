@@ -41,8 +41,12 @@
     (let [nl-surface-atom (r/atom "")
           nl-tree-atom (r/atom "")
           nl-node-html-atom (r/atom "")
-          en-surfaces-atom (r/atom spinner)
-          en-question-atom (r/atom spinner)]
+
+          en-question-atom (r/atom spinner)
+
+          en-surface-atom (r/atom "")
+          en-tree-atom (r/atom "")
+          en-node-html-atom (r/atom "")]
 
       ;; 3. initialize the UI: e.g. a new question:
 
@@ -62,8 +66,14 @@
                                                             :tree nl-tree-atom
                                                             :node-html nl-node-html-atom
                                                             :grammar nl-grammar
-                                                            :morphology nl-morphology}}))}]]
+                                                            :morphology nl-morphology}
+                                                       :en {:surface en-surface-atom
+                                                            :tree en-tree-atom
+                                                            :node-html en-node-html-atom
+                                                            :grammar en-grammar
+                                                            :morphology en-morphology}}))}]]
          (nl-widget nl-tree-atom)]))))
+
 
 
 

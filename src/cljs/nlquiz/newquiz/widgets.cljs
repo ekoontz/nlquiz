@@ -18,9 +18,6 @@
      @text]]])
 
 (defn draw-tree [tree]
-  (if tree
-    (log/info (str "DRAW TREE WITH: " (serialize @tree)))
-    (log/info (str "er is nog geen tree..?")))
   [:svg
    
    [:text {:x "75" :y "50"} (u/get-in @tree [:rule])]
