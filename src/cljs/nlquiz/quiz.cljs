@@ -163,7 +163,7 @@
     (go (let [parse-response
               (->
                (<! (http/get (str (language-server-endpoint-url)
-                                  "/parse-start?q=" guess-string)))
+                                  "/parse-start/nl?q=" guess-string)))
                :body decode-parse)
               nl-parses (nl-parses parse-response @grammar @morphology @guess-text)
               specs (->> nl-parses
