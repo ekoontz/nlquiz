@@ -60,7 +60,7 @@
                                          (str "no parses.")])
                                       (mapv (fn [parse]
                                               [:div.parse-cell
-                                               [:div.number (str (u/get-in parse [::i]) " of " (count nl-parses) " parse"
+                                               [:div.number (str (u/get-in parse [::i]) " of " (count nl-parses) " 🇳🇱 parse"
                                                                  (when (not (= 1 (count nl-parses))) "s") "")]
                                                (draw-tree parse)
                                                (draw-node-html
@@ -85,7 +85,7 @@
                                         [:h4 (str "no lexemes.")])
                                       (mapv (fn [lexeme]
                                               [:div.lexeme
-                                               [:div.number (str (u/get-in lexeme [::i]) " of " (count lexemes) " lexeme"
+                                               [:div.number (str (u/get-in lexeme [::i]) " of " (count lexemes) "  🇳🇱 lexeme"
                                                                  (when (not (= 1 (count lexemes))) "s") "")]
                                                (draw-node-html lexeme)])
 
@@ -105,7 +105,7 @@
                                         [:h4 (str "no rules")]) 
                                       (mapv (fn [rule]
                                               [:div.rule 
-                                               [:div.number (str (u/get-in rule [::i]) " of " (count rules) " rule"
+                                               [:div.number (str (u/get-in rule [::i]) " of " (count rules) " 🇳🇱 rule"
                                                                  (when (not (= 1 (count rules))) "s") "")]
                                                (draw-node-html rule)])
 
