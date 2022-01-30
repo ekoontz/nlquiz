@@ -33,20 +33,20 @@
           (reset! nl-surface-atom nl-surface)
 
           ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
-          (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+          (let [nl-parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start/nl?q=" nl-surface (when server-side-parsing? "&all"))))
                                    :body decode-parse)
-                lexemes (-> (<! (http/get (str (language-server-endpoint-url)
+                nl-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
                                                "/analyze/nl?q=" nl-surface)))
                             :body decode-analyze)
-                rules (-> (<! (http/get (str (language-server-endpoint-url)
+                nl-rules (-> (<! (http/get (str (language-server-endpoint-url)
                                              "/rule/nl?q=" nl-surface)))
                           :body decode-rules)]
             (when (fresh?)
               ;; 2. With this information ready,
               (let [;; 2.a. do the NL parsing:
-                    nl-parses (->> (nl-parses parse-response @nl-grammar @nl-morphology
-                                             nl-surface))
+                    nl-parses (->> (nl-parses nl-parse-response @nl-grammar @nl-morphology
+                                              nl-surface))
                     ;; 2.b. For that set of NL parses in 2.a., get the equivalent
                     ;; set of specifications for the english:
                     en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
@@ -76,37 +76,37 @@
                                                  (->> (range 1 (+ 1 (count nl-parses)))
                                                       (map (fn [i] {::i i})))))))))
                       
-                      (seq lexemes)
+                      (seq nl-lexemes)
                       (reset! nl-tree-atom
                               (vec
                                (cons
                                 :div.section
-                                (cons (when (= (count lexemes) 0)
+                                (cons (when (= (count nl-lexemes) 0)
                                         [:h4 (str "no lexemes.")])
                                       (mapv (fn [lexeme]
                                               [:div.lexeme
-                                               [:div.number (str (u/get-in lexeme [::i]) " of " (count lexemes) "  🇳🇱 lexeme"
-                                                                 (when (not (= 1 (count lexemes))) "s") "")]
+                                               [:div.number (str (u/get-in lexeme [::i]) " of " (count nl-lexemes) "  🇳🇱 lexeme"
+                                                                 (when (not (= 1 (count nl-lexemes))) "s") "")]
                                                (draw-node-html lexeme)])
 
                                             (map merge
                                                  (sort (fn [a b]
                                                          (compare (str a) (str b)))
-                                                       lexemes)
-                                                 (->> (range 1 (+ 1 (count lexemes)))
+                                                       nl-lexemes)
+                                                 (->> (range 1 (+ 1 (count nl-lexemes)))
                                                       (map (fn [i] {::i i})))))))))
 
-                      (seq rules)
+                      (seq nl-rules)
                       (reset! nl-tree-atom
                               (vec
                                (cons
                                 :div.section
-                                (cons (when (= (count rules) 0)
+                                (cons (when (= (count nl-rules) 0)
                                         [:h4 (str "no rules")]) 
                                       (mapv (fn [rule]
                                               [:div.rule 
-                                               [:div.number (str (u/get-in rule [::i]) " of " (count rules) " 🇳🇱 rule"
-                                                                 (when (not (= 1 (count rules))) "s") "")]
+                                               [:div.number (str (u/get-in rule [::i]) " of " (count nl-rules) " 🇳🇱 rule"
+                                                                 (when (not (= 1 (count nl-rules))) "s") "")]
                                                (draw-node-html rule)])
 
                                             ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
@@ -115,8 +115,8 @@
                                                  ;; sort the rules. This is the first sequence: each member of *this* sequence .. 
                                                  (sort (fn [a b]
                                                          (compare (str a) (str b)))
-                                                       rules)
-                                                 (->> (range 1 (+ 1 (count rules))) ;; .. is merged with the member in this second sequence
+                                                       nl-rules)
+                                                 (->> (range 1 (+ 1 (count nl-rules))) ;; .. is merged with the member in this second sequence
                                                       (map (fn [i] {::i i})))))))))
 
                       (seq nl-surface)
