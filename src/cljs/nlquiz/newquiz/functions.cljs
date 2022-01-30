@@ -18,16 +18,16 @@
                    nl-tree-atom :tree
                    nl-grammar :grammar
                    nl-morphology :morphology} :nl
-                  {en-surfaces-atom :surfaces} :en}]
+                  {en-surface-atom :surface
+                   en-tree-atom :tree
+                   en-grammar :grammar
+                   en-morphology :morphology} :en}]
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value string/trim)
           fresh? (fn [] (= @nl-surface-atom nl-surface))]
       (when (not (fresh?))
         ;; Only start the (go) if there is a difference between the input we are given (nl-surface)
         ;; and the last input that was processed (@nl-surface-atom).
-
-        ;; Change english output to spinner since it will be updated, if not by this (go)-invocation, then by a subsequent (go)-invocation:
-        (if en-surfaces-atom (reset! en-surfaces-atom spinner))
 
         (go
           (reset! nl-surface-atom nl-surface)
@@ -47,9 +47,8 @@
               (let [;; 2.a. do the NL parsing:
                     nl-parses (->> (nl-parses nl-parse-response @nl-grammar @nl-morphology
                                               nl-surface))
-                    ;; 2.b. For that set of NL parses in 2.a., get the equivalent
-                    ;; set of specifications for the english:
-                    en-specs (when en-surfaces-atom (nl-parses-to-en-specs nl-parses))]
+                    ;; 2.b. do the EN parsing:
+                    ]
                 (cond (and nl-parses (seq nl-parses))
                       (reset! nl-tree-atom
                               (vec
@@ -122,28 +121,7 @@
                       (seq nl-surface)
                       (reset! nl-tree-atom [:span "'" [:i @nl-surface-atom] [:span "' : "] [:b "Helemaal niks"]])
                       :else
-                      (reset! nl-tree-atom ""))))
-
-                (when en-surfaces-atom
-                  ;; 3. For each such spec, generate an english expression, and
-                  ;;    for each generated expression, add it to the 'update-to' atom.
-                  (let [update-to (atom [])]
-                    (doseq [en-spec en-specs]
-                      (when (fresh?)
-                        (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                              "/generate/en?spec=" (-> en-spec
-                                                                                       dag-to-string))))]
-                          (when (fresh?)
-                            (reset! update-to (-> (cons (-> gen-response :body :surface)
-                                                        @update-to)
-                                                  set
-                                                  vec))))))
-                    ;; 4. Update the english UI element with a common-delimited string of all of
-                    ;; the members of the 'update-to' atom:
-                    (when (fresh?)
-                      (reset! en-surfaces-atom (if (seq @update-to)
-                                                 (string/join "," @update-to)
-                                                 "??")))))))))))
+                      (reset! nl-tree-atom ""))))))))))
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true
