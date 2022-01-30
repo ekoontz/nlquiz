@@ -34,13 +34,13 @@
 
           ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                      "/parse-start?q=" nl-surface (when server-side-parsing? "&all"))))
+                                                      "/parse-start/nl?q=" nl-surface (when server-side-parsing? "&all"))))
                                    :body decode-parse)
                 lexemes (-> (<! (http/get (str (language-server-endpoint-url)
-                                               "/analyze?q=" nl-surface)))
+                                               "/analyze/nl?q=" nl-surface)))
                             :body decode-analyze)
                 rules (-> (<! (http/get (str (language-server-endpoint-url)
-                                             "/rule?q=" nl-surface)))
+                                             "/rule/nl?q=" nl-surface)))
                           :body decode-rules)]
             (when (fresh?)
               ;; 2. With this information ready,

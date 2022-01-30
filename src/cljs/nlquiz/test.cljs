@@ -93,7 +93,7 @@
 
           ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
           (let [parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                      "/parse-start?q=" nl-surface)))
+                                                      "/parse-start/nl?q=" nl-surface)))
                                    :body decode-parse)]
             (when (fresh?)
 

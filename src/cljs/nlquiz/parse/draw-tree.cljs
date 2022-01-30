@@ -24,6 +24,7 @@
   (let [
         interesting-key? (fn [k] (or (= k :ref)
                                      (= k :obj)
+                                     (= k :subcat)
                                      (= k :top)))
 
         ;; hide {k v=:top} pairs since
@@ -103,7 +104,8 @@
 (def ^:const h-unit 50)
 
 (defn draw-node [tree x y is-head?]
-  (let [left-is-head? (= (get tree :head) (get tree :1))
+  (let [left-is-head? (or (= (get tree :head) (get tree :1))
+                          (true? (get tree :left-is-head?)))
         rule (u/get-in tree [:rule] nil)
         surface (u/get-in tree [:surface] nil)
         canonical (u/get-in tree [:canonical] nil)
