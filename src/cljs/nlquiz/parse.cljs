@@ -9,7 +9,7 @@
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           nl-parses nl-parses-to-en-specs]]
    [nlquiz.parse.widgets :refer [en-question-widget en-widget nl-widget]]
-   [nlquiz.newquiz.functions :refer [on-change new-question]]
+   [nlquiz.parse.functions :refer [on-change new-question]]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
@@ -39,13 +39,15 @@
     ;; UI and associated functionality
     ;; 2. atoms that link the UI and the functionality:
     (let [nl-surface-atom (r/atom "")
-          nl-tree-atom (r/atom "")
+          nl-trees-atom (r/atom "")
+          nl-lexemes-atom (r/atom "")
+          nl-rules-atom (r/atom "")
           nl-node-html-atom (r/atom "")
 
           en-question-atom (r/atom spinner)
 
           en-surface-atom (r/atom "")
-          en-tree-atom (r/atom "")
+          en-trees-atom (r/atom "")
           en-node-html-atom (r/atom "")]
 
       ;; 3. initialize the UI: e.g. a new question:
@@ -63,16 +65,16 @@
                                            ;; unless language-models-loaded? is true,
                                            ;; we can't parse user's guess.
                                            (on-change {:nl {:surface nl-surface-atom
-                                                            :tree nl-tree-atom
+                                                            :tree nl-trees-atom
                                                             :node-html nl-node-html-atom
                                                             :grammar nl-grammar
                                                             :morphology nl-morphology}
                                                        :en {:surface en-surface-atom
-                                                            :tree en-tree-atom
+                                                            :tree en-trees-atom
                                                             :node-html en-node-html-atom
                                                             :grammar en-grammar
                                                             :morphology en-morphology}}))}]]
-         (nl-widget nl-tree-atom)]))))
+         (nl-widget nl-trees-atom nl-lexemes-atom nl-rules-atom)]))))
 
 
 

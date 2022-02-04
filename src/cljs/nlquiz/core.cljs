@@ -7,9 +7,7 @@
    [cljs-http.client :as http]
    [nlquiz.about :as about]   
    [nlquiz.quiz :as quiz]
-   [nlquiz.newquiz :as newquiz]
    [nlquiz.parse :as parse]
-   [nlquiz.test :as test]
    [reagent.core :as r]
    [reagent.session :as session]
    [reitit.frontend :as reitit])
@@ -30,9 +28,7 @@
 (def router
   (reitit/router
    [["/nlquiz"                          :index]
-    ["/nlquiz/test"                     :test]
     ["/nlquiz/about"                    :about]
-    ["/nlquiz/newquiz"                  :newquiz]
     ["/nlquiz/parse"                    :parse]
     ["/nlquiz/curriculum"
      ["" {:name :curriculum}]
@@ -89,9 +85,7 @@
     :curriculum #'quiz/quiz
     :curriculum-major #'quiz/quiz-component
     :curriculum-minor #'quiz/quiz-component
-    :newquiz  #'newquiz/component
-    :parse  #'parse/component
-    :test  #'test/component))
+    :parse  #'parse/component))
 
 ;; -------------------------
 ;; Initialize app
