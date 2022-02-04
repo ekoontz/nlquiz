@@ -44,7 +44,9 @@
           nl-lexemes-atom (r/atom "")
           nl-rules-atom (r/atom "")
 
-          en-trees-atom (r/atom "")]
+          en-trees-atom (r/atom "")
+          en-lexemes-atom (r/atom "")
+          en-rules-atom (r/atom "")]
 
       ;; 3. initialize the UI: e.g. a new question:
 
@@ -61,10 +63,14 @@
                                            ;; unless language-models-loaded? is true,
                                            ;; we can't parse user's guess.
                                            (on-change {:input surface-atom
-                                                       :nl {:tree nl-trees-atom
+                                                       :nl {:trees nl-trees-atom
+                                                            :lexemes nl-lexemes-atom
+                                                            :rules nl-rules-atom
                                                             :grammar nl-grammar
                                                             :morphology nl-morphology}
-                                                       :en {:tree en-trees-atom
+                                                       :en {:trees en-trees-atom
+                                                            :lexemes en-lexemes-atom
+                                                            :rules en-rules-atom
                                                             :grammar en-grammar
                                                             :morphology en-morphology}}))}]]
          (nl-widget nl-trees-atom nl-lexemes-atom nl-rules-atom)]))))

@@ -15,10 +15,14 @@
 (def server-side-parsing? true)
 
 (defn on-change [{input :input
-                  {nl-trees-atom :tree
+                  {nl-trees-atom :trees
+                   nl-lexemes-atom :lexemes
+                   nl-rules-atom :rules
                    nl-grammar :grammar
                    nl-morphology :morphology} :nl
-                  {en-tree-atom :tree
+                  {en-tree-atom :trees
+                   en-lexemes-atom :lexemes
+                   en-rules-atom :rules
                    en-grammar :grammar
                    en-morphology :morphology} :en}]
   (fn [input-element]
