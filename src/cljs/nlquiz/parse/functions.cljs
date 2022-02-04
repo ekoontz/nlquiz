@@ -1,4 +1,4 @@
-(ns nlquiz.newquiz.functions
+(ns nlquiz.parse.functions
   (:require
    [dag_unify.core :as u]
    [dag_unify.serialization :as s]   
@@ -15,13 +15,15 @@
 (def server-side-parsing? true)
 
 (defn on-change [{{nl-surface-atom :surface
-                   nl-tree-atom :tree
+                   nl-trees-atom :tree
                    nl-grammar :grammar
                    nl-morphology :morphology} :nl
                   {en-surface-atom :surface
                    en-tree-atom :tree
                    en-grammar :grammar
                    en-morphology :morphology} :en}]
+  (log/info (str "INPUT NL-TREE_ATOM: " nl-trees-atom))
+  (log/info (str "INPUT @NL-TREE_ATOM: " @nl-trees-atom))  
   (fn [input-element]
     (let [nl-surface (-> input-element .-target .-value string/trim)
           fresh? (fn [] (= @nl-surface-atom nl-surface))]
@@ -50,7 +52,7 @@
                     ;; 2.b. do the EN parsing:
                     ]
                 (cond (and nl-parses (seq nl-parses))
-                      (reset! nl-tree-atom
+                      (reset! nl-trees-atom
                               (vec
                                (cons
                                 :div.section
@@ -76,7 +78,7 @@
                                                       (map (fn [i] {::i i})))))))))
                       
                       (seq nl-lexemes)
-                      (reset! nl-tree-atom
+                      (reset! nl-trees-atom
                               (vec
                                (cons
                                 :div.section
@@ -96,7 +98,7 @@
                                                       (map (fn [i] {::i i})))))))))
 
                       (seq nl-rules)
-                      (reset! nl-tree-atom
+                      (reset! nl-trees-atom
                               (vec
                                (cons
                                 :div.section
@@ -119,9 +121,9 @@
                                                       (map (fn [i] {::i i})))))))))
 
                       (seq nl-surface)
-                      (reset! nl-tree-atom [:span "'" [:i @nl-surface-atom] [:span "' : "] [:b "Helemaal niks"]])
+                      (reset! nl-trees-atom [:span "'" [:i @nl-surface-atom] [:span "' : "] [:b "Helemaal niks"]])
                       :else
-                      (reset! nl-tree-atom ""))))))))))
+                      (reset! nl-trees-atom ""))))))))))
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true

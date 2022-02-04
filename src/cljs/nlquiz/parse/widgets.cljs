@@ -18,6 +18,9 @@
     [:div.monospace
      @text]]])
 
-(defn nl-widget [trees]
+(defn nl-widget [trees lexemes rules]
   [:div.nl_widget
-   @trees])
+   @trees
+   @lexemes
+   @rules])
+
