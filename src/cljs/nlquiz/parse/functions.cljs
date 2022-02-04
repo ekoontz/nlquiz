@@ -14,41 +14,38 @@
 
 (def server-side-parsing? true)
 
-(defn on-change [{{nl-surface-atom :surface
-                   nl-trees-atom :tree
+(defn on-change [{input :input
+                  {nl-trees-atom :tree
                    nl-grammar :grammar
                    nl-morphology :morphology} :nl
-                  {en-surface-atom :surface
-                   en-tree-atom :tree
+                  {en-tree-atom :tree
                    en-grammar :grammar
                    en-morphology :morphology} :en}]
-  (log/info (str "INPUT NL-TREE_ATOM: " nl-trees-atom))
-  (log/info (str "INPUT @NL-TREE_ATOM: " @nl-trees-atom))  
   (fn [input-element]
-    (let [nl-surface (-> input-element .-target .-value string/trim)
-          fresh? (fn [] (= @nl-surface-atom nl-surface))]
+    (let [input-value (-> input-element .-target .-value string/trim)
+          fresh? (fn [] (= @input input-value))]
       (when (not (fresh?))
-        ;; Only start the (go) if there is a difference between the input we are given (nl-surface)
-        ;; and the last input that was processed (@nl-surface-atom).
+        ;; Only start the (go) if there is a difference between the input we are given (input-value)
+        ;; and the last input that was processed (@input).
 
         (go
-          (reset! nl-surface-atom nl-surface)
+          (reset! input input-value)
 
           ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
           (let [nl-parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                      "/parse-start/nl?q=" nl-surface (when server-side-parsing? "&all"))))
+                                                      "/parse-start/nl?q=" input-value (when server-side-parsing? "&all"))))
                                    :body decode-parse)
                 nl-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
-                                               "/analyze/nl?q=" nl-surface)))
+                                               "/analyze/nl?q=" input-value)))
                             :body decode-analyze)
                 nl-rules (-> (<! (http/get (str (language-server-endpoint-url)
-                                             "/rule/nl?q=" nl-surface)))
+                                             "/rule/nl?q=" input-value)))
                           :body decode-rules)]
             (when (fresh?)
               ;; 2. With this information ready,
               (let [;; 2.a. do the NL parsing:
                     nl-parses (->> (nl-parses nl-parse-response @nl-grammar @nl-morphology
-                                              nl-surface))
+                                              input-value))
                     ;; 2.b. do the EN parsing:
                     ]
                 (cond (and nl-parses (seq nl-parses))
@@ -120,8 +117,8 @@
                                                  (->> (range 1 (+ 1 (count nl-rules))) ;; .. is merged with the member in this second sequence
                                                       (map (fn [i] {::i i})))))))))
 
-                      (seq nl-surface)
-                      (reset! nl-trees-atom [:span "'" [:i @nl-surface-atom] [:span "' : "] [:b "Helemaal niks"]])
+                      (seq input-value)
+                      (reset! nl-trees-atom [:span "'" [:i @input] [:span "' : "] [:b "Helemaal niks"]])
                       :else
                       (reset! nl-trees-atom ""))))))))))
 
