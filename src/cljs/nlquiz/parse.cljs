@@ -43,12 +43,8 @@
           nl-trees-atom (r/atom "")
           nl-lexemes-atom (r/atom "")
           nl-rules-atom (r/atom "")
-          nl-node-html-atom (r/atom "")
 
-          en-question-atom (r/atom spinner)
-
-          en-trees-atom (r/atom "")
-          en-node-html-atom (r/atom "")]
+          en-trees-atom (r/atom "")]
 
       ;; 3. initialize the UI: e.g. a new question:
 
@@ -66,11 +62,9 @@
                                            ;; we can't parse user's guess.
                                            (on-change {:input surface-atom
                                                        :nl {:tree nl-trees-atom
-                                                            :node-html nl-node-html-atom
                                                             :grammar nl-grammar
                                                             :morphology nl-morphology}
                                                        :en {:tree en-trees-atom
-                                                            :node-html en-node-html-atom
                                                             :grammar en-grammar
                                                             :morphology en-morphology}}))}]]
          (nl-widget nl-trees-atom nl-lexemes-atom nl-rules-atom)]))))
