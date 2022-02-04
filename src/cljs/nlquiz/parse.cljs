@@ -38,7 +38,8 @@
 
     ;; UI and associated functionality
     ;; 2. atoms that link the UI and the functionality:
-    (let [nl-surface-atom (r/atom "")
+    (let [surface-atom (r/atom "")
+
           nl-trees-atom (r/atom "")
           nl-lexemes-atom (r/atom "")
           nl-rules-atom (r/atom "")
@@ -46,7 +47,6 @@
 
           en-question-atom (r/atom spinner)
 
-          en-surface-atom (r/atom "")
           en-trees-atom (r/atom "")
           en-node-html-atom (r/atom "")]
 
@@ -64,7 +64,7 @@
                                            ;;^ we do the above (when) check because,
                                            ;; unless language-models-loaded? is true,
                                            ;; we can't parse user's guess.
-                                           (on-change {:input nl-surface-atom
+                                           (on-change {:input surface-atom
                                                        :nl {:tree nl-trees-atom
                                                             :node-html nl-node-html-atom
                                                             :grammar nl-grammar
