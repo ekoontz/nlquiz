@@ -64,13 +64,12 @@
                                            ;;^ we do the above (when) check because,
                                            ;; unless language-models-loaded? is true,
                                            ;; we can't parse user's guess.
-                                           (on-change {:nl {:surface nl-surface-atom
-                                                            :tree nl-trees-atom
+                                           (on-change {:input nl-surface-atom
+                                                       :nl {:tree nl-trees-atom
                                                             :node-html nl-node-html-atom
                                                             :grammar nl-grammar
                                                             :morphology nl-morphology}
-                                                       :en {:surface en-surface-atom
-                                                            :tree en-trees-atom
+                                                       :en {:tree en-trees-atom
                                                             :node-html en-node-html-atom
                                                             :grammar en-grammar
                                                             :morphology en-morphology}}))}]]
