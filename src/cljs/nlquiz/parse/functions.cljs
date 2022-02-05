@@ -123,14 +123,14 @@
                   :which-is nl-rules
                   :where nl-rules-atom})
 
-                (comment (display-linguistics-content
-                 {:if-none-message (str "geen " en-flag " woord")
+                (display-linguistics-content
+                 {:if-none-message (str "no " en-flag " word")
                   :input-value input-value
                   :language-flag en-flag
-                  :plural "woorden"
-                  :singular "woord"
-                  :which-is nl-lexemes
-                  :where nl-lexemes-atom}))
+                  :plural "words"
+                  :singular "word"
+                  :which-is en-lexemes
+                  :where en-lexemes-atom})
 
 
                 ))))))))
