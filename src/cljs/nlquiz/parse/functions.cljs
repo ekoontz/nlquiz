@@ -6,7 +6,8 @@
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
-   [nlquiz.menard :refer [dag-to-string decode-analyze decode-grammar decode-parse decode-rules
+   [nlquiz.menard :refer [dag-to-string decode-analyze decode-grammar
+                          decode-parse decode-rules
                           nl-parses nl-parses-to-en-specs]]
    [nlquiz.parse.draw-tree :refer [draw-node-html draw-tree]])
   (:require-macros [cljs.core.async.macros :refer [go]]
@@ -14,13 +15,19 @@
 
 (def server-side-parsing? true)
 
+(defn helemaal-niks [& atoms]
+  (log/info (str "doing helemaal.."))
+  (doall (map (fn [atom]
+                (reset! atom [:b "helemaal niks"]))
+              atoms)))
+
 (defn on-change [{input :input
                   {nl-trees-atom :trees
                    nl-lexemes-atom :lexemes
                    nl-rules-atom :rules
                    nl-grammar :grammar
                    nl-morphology :morphology} :nl
-                  {en-tree-atom :trees
+                  {en-trees-atom :trees
                    en-lexemes-atom :lexemes
                    en-rules-atom :rules
                    en-grammar :grammar
@@ -79,7 +86,7 @@
                                                       (map (fn [i] {::i i})))))))))
                       
                       (seq nl-lexemes)
-                      (reset! nl-trees-atom
+                      (reset! nl-lexemes-atom
                               (vec
                                (cons
                                 :div.section
@@ -99,7 +106,7 @@
                                                       (map (fn [i] {::i i})))))))))
 
                       (seq nl-rules)
-                      (reset! nl-trees-atom
+                      (reset! nl-rules-atom
                               (vec
                                (cons
                                 :div.section
@@ -121,10 +128,12 @@
                                                  (->> (range 1 (+ 1 (count nl-rules))) ;; .. is merged with the member in this second sequence
                                                       (map (fn [i] {::i i})))))))))
 
-                      (seq input-value)
-                      (reset! nl-trees-atom [:span "'" [:i @input] [:span "' : "] [:b "Helemaal niks"]])
-                      :else
-                      (reset! nl-trees-atom ""))))))))))
+                      :else (do
+                              (log/info (str "DOING HELEMAAL!!"))
+                              (helemaal-niks nl-trees-atom nl-rules-atom nl-lexemes-atom)
+                              (helemaal-niks en-trees-atom en-rules-atom en-lexemes-atom)))))))))))
+                              
+                              
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true
