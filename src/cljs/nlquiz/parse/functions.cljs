@@ -18,6 +18,8 @@
 (defn display-linguistics-content [{do-each-fn :do-each-fn
                                     if-one :if-one
                                     if-none-message :if-none-message
+                                    plural :plural
+                                    singular :singular
                                     where :where
                                     which-is :which-is}]
   (if (not (empty? which-is))
@@ -28,8 +30,8 @@
               (mapv (fn [elem]
                       [:div.parse-cell
                        [:div.number (str (u/get-in elem [::i]) " van " (count which-is) " 🇳🇱 "
-                                         (if (not (= 1 (count which-is))) "bomen" "boom"))]
-                       (do-each-fn elem)
+                                         (if (not (= 1 (count which-is))) plural singular))]
+                       (if do-each-fn (do-each-fn elem))
                        (draw-node-html
                         (-> elem
                             (dissoc :1)
@@ -88,10 +90,12 @@
                     ;; 2.b. do the EN parsing:
                     ]
                 (display-linguistics-content
-                 {:which-is nl-parses
-                  :where nl-trees-atom
-                  :do-each-fn draw-tree
-                  :if-none-message "geen boometje! ah.. wat jammer!"})
+                 {:do-each-fn draw-tree
+                  :if-none-message "geen boometje! ah.. wat jammer!"
+                  :plural "bomen"
+                  :singular "boom"
+                  :which-is nl-parses
+                  :where nl-trees-atom})
                 
                 (if (not (empty? nl-lexemes))
                   (reset! nl-lexemes-atom
