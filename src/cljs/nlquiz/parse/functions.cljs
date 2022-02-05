@@ -18,6 +18,8 @@
 (defn display-linguistics-content [{do-each-fn :do-each-fn
                                     if-one :if-one
                                     if-none-message :if-none-message
+                                    input-value :input-value
+                                    language-flag :language-flag
                                     plural :plural
                                     singular :singular
                                     where :where
@@ -29,7 +31,9 @@
               :div.section
               (mapv (fn [elem]
                       [:div.parse-cell
-                       [:div.number (str (u/get-in elem [::i]) " van " (count which-is) " 🇳🇱 "
+                       [:div.number (str (u/get-in elem [::i])
+                                         " van "
+                                         (count which-is) " " language-flag " "
                                          (if (not (= 1 (count which-is))) plural singular))]
                        (if do-each-fn (do-each-fn elem))
                        (draw-node-html
@@ -91,7 +95,9 @@
                     ]
                 (display-linguistics-content
                  {:do-each-fn draw-tree
-                  :if-none-message "geen boometje! ah.. wat jammer!"
+                  :if-none-message "geen boom"
+                  :input-value input-value
+                  :language-flag "🇳🇱"
                   :plural "bomen"
                   :singular "boom"
                   :which-is nl-parses
