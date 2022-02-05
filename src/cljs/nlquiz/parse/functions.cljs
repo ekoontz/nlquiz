@@ -87,6 +87,12 @@
                 en-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
                                                   "/analyze/en?q=" input-value)))
                                :body decode-analyze)
+
+                en-rules (-> (<! (http/get (str (language-server-endpoint-url)
+                                                "/rule/en?q=" input-value)))
+                             :body decode-rules)
+
+                
                 ]
             (when (fresh?)
               ;; 2. With this information ready,
@@ -133,6 +139,16 @@
                   :where en-lexemes-atom})
 
 
+                (display-linguistics-content
+                 {:if-none-message (str "no " en-flag " rule")
+                  :input-value input-value
+                  :language-flag en-flag
+                  :plural "rules"
+                  :singular "rule"
+                  :which-is en-rules
+                  :where en-rules-atom})
+
+                
                 ))))))))
 
                 
