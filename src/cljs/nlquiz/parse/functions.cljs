@@ -15,20 +15,22 @@
 
 (def server-side-parsing? true)
 
-(defn display-linguistics-content [{nl-trees-atom :where
-                                    nl-parses :which-is}]
-  (if (not (empty? nl-parses))
-    (reset! nl-trees-atom
+(defn display-linguistics-content [{where :where
+                                    which-is :which-is
+                                    if-one :if-one
+                                    if-none-message :if-none-message}]
+  (if (not (empty? which-is))
+    (reset! where
             (vec
              (cons
               :div.section
-              (cons (when (= (count nl-parses) 0)
+              (cons (when (= (count which-is) 0)
                       [:h4
                        (str "geen bomen")])
                     (mapv (fn [parse]
                             [:div.parse-cell
-                             [:div.number (str (u/get-in parse [::i]) " van " (count nl-parses) " 🇳🇱 "
-                                               (if (not (= 1 (count nl-parses))) "bomen" "boom"))]
+                             [:div.number (str (u/get-in parse [::i]) " van " (count which-is) " 🇳🇱 "
+                                               (if (not (= 1 (count which-is))) "bomen" "boom"))]
                              (draw-tree parse)
                              (draw-node-html
                               (-> parse
@@ -39,10 +41,10 @@
                           (map merge
                                              (sort (fn [a b]
                                                      (compare (str a) (str b)))
-                                                   nl-parses)
-                                             (->> (range 1 (+ 1 (count nl-parses)))
+                                                   which-is)
+                                             (->> (range 1 (+ 1 (count which-is)))
                                                   (map (fn [i] {::i i})))))))))
-    (reset! nl-trees-atom [:div.section [:b "geen boometje owe!"]])))
+    (reset! where [:div.section [:b if-none-message]])))
 
 (defn on-change [{input :input
                   {nl-trees-atom :trees
@@ -89,7 +91,8 @@
                     ]
                 (display-linguistics-content
                  {:which-is nl-parses
-                  :where nl-trees-atom})
+                  :where nl-trees-atom
+                  :if-none-message "geen boometje! wat jammer! :( :("})
                 
                 (if (not (empty? nl-lexemes))
                   (reset! nl-lexemes-atom
