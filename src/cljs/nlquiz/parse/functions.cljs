@@ -16,9 +16,9 @@
 (def server-side-parsing? true)
 
 (defn helemaal-niks [& atoms]
-  (log/info (str "doing helemaal.."))
-  (doall (map (fn [atom]
-                (reset! atom [:b "helemaal niks"]))
+  (doall (map (fn [{atom :atom
+                    none-message :none}]
+                (reset! atom [:b none-message]))
               atoms)))
 
 (defn on-change [{input :input
@@ -66,11 +66,11 @@
                                 :div.section
                                 (cons (when (= (count nl-parses) 0)
                                         [:h4
-                                         (str "no parses.")])
+                                         (str "geen bomen")])
                                       (mapv (fn [parse]
                                               [:div.parse-cell
-                                               [:div.number (str (u/get-in parse [::i]) " of " (count nl-parses) " 🇳🇱 parse"
-                                                                 (when (not (= 1 (count nl-parses))) "s") "")]
+                                               [:div.number (str (u/get-in parse [::i]) " van " (count nl-parses) " 🇳🇱 "
+                                                                 (if (not (= 1 (count nl-parses))) "bomen") "boom")]
                                                (draw-tree parse)
                                                (draw-node-html
                                                 (-> parse
@@ -91,11 +91,11 @@
                                (cons
                                 :div.section
                                 (cons (when (= (count nl-lexemes) 0)
-                                        [:h4 (str "no lexemes.")])
+                                        [:h4 (str "geen worden")])
                                       (mapv (fn [lexeme]
                                               [:div.lexeme
-                                               [:div.number (str (u/get-in lexeme [::i]) " of " (count nl-lexemes) "  🇳🇱 lexeme"
-                                                                 (when (not (= 1 (count nl-lexemes))) "s") "")]
+                                               [:div.number (str (u/get-in lexeme [::i]) " van " (count nl-lexemes) " 🇳🇱 "
+                                                                 (if (not (= 1 (count nl-lexemes))) "worden" "woord"))]
                                                (draw-node-html lexeme)])
 
                                             (map merge
@@ -111,11 +111,11 @@
                                (cons
                                 :div.section
                                 (cons (when (= (count nl-rules) 0)
-                                        [:h4 (str "no rules")]) 
+                                        [:h4 (str "geen regels")]) 
                                       (mapv (fn [rule]
                                               [:div.rule 
-                                               [:div.number (str (u/get-in rule [::i]) " of " (count nl-rules) " 🇳🇱 rule"
-                                                                 (when (not (= 1 (count nl-rules))) "s") "")]
+                                               [:div.number (str (u/get-in rule [::i]) " van " (count nl-rules) " 🇳🇱 "
+                                                                 (if (not (= 1 (count nl-rules))) "regels" "regel"))]
                                                (draw-node-html rule)])
 
                                             ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
@@ -129,9 +129,12 @@
                                                       (map (fn [i] {::i i})))))))))
 
                       :else (do
-                              (log/info (str "DOING HELEMAAL!!"))
-                              (helemaal-niks nl-trees-atom nl-rules-atom nl-lexemes-atom)
-                              (helemaal-niks en-trees-atom en-rules-atom en-lexemes-atom)))))))))))
+                              (helemaal-niks {:atom nl-trees-atom :none "geen bomen"}
+                                             {:atom nl-rules-atom :none "geen regels"}
+                                             {:atom nl-lexemes-atom :none "geen woorden"})
+                              (helemaal-niks {:atom en-trees-atom :none "no trees"}
+                                             {:atom en-rules-atom :none "no rules"}
+                                             {:atom en-lexemes-atom :none "no words"})))))))))))
                               
                               
 
