@@ -40,13 +40,13 @@
     ;; 2. atoms that link the UI and the functionality:
     (let [surface-atom (r/atom "")
 
-          nl-trees-atom (r/atom "nl-trees")
-          nl-lexemes-atom (r/atom "nl-lexemes")
-          nl-rules-atom (r/atom "nl-rules")
+          nl-trees-atom (r/atom " ")
+          nl-lexemes-atom (r/atom " ")
+          nl-rules-atom (r/atom " ")
 
-          en-trees-atom (r/atom "en-trees")
-          en-lexemes-atom (r/atom "en-lexemes")
-          en-rules-atom (r/atom "en-rules")]
+          en-trees-atom (r/atom " ")
+          en-lexemes-atom (r/atom " ")
+          en-rules-atom (r/atom " ")]
 
       ;; 3. initialize the UI: e.g. a new question:
 

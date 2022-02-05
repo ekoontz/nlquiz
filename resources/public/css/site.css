@@ -512,7 +512,7 @@ div.parse input {
 }
 
 div.nl_widget {
-    border:3px dashed blue;
+    border:0px dashed blue;
     padding:1%;
     display: grid; 
     grid-template-columns: 1fr; 
@@ -524,7 +524,7 @@ div.nl_widget {
 }
 
 div.en_widget {
-    border:3px dashed red;
+    border:0px dashed red;
     padding:1%;
     display: grid; 
     grid-template-columns: 1fr; 
