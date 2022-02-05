@@ -59,7 +59,7 @@
                                               input-value))
                     ;; 2.b. do the EN parsing:
                     ]
-                (cond (and nl-parses (seq nl-parses))
+                (cond (seq nl-parses)
                       (reset! nl-trees-atom
                               (vec
                                (cons
@@ -70,7 +70,7 @@
                                       (mapv (fn [parse]
                                               [:div.parse-cell
                                                [:div.number (str (u/get-in parse [::i]) " van " (count nl-parses) " 🇳🇱 "
-                                                                 (if (not (= 1 (count nl-parses))) "bomen") "boom")]
+                                                                 (if (not (= 1 (count nl-parses))) "bomen" "boom"))]
                                                (draw-tree parse)
                                                (draw-node-html
                                                 (-> parse
