@@ -138,7 +138,6 @@
                   :which-is en-lexemes
                   :where en-lexemes-atom})
 
-
                 (display-linguistics-content
                  {:if-none-message (str "no " en-flag " rule")
                   :input-value input-value
@@ -147,7 +146,6 @@
                   :singular "rule"
                   :which-is en-rules
                   :where en-rules-atom})
-
                 
                 ))))))))
 
