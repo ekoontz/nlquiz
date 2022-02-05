@@ -512,7 +512,7 @@ div.parse input {
 }
 
 div.nl_widget {
-    border:1px solid aliceblue;
+    border:3px dashed blue;
     padding:1%;
     display: grid; 
     grid-template-columns: 1fr; 
@@ -520,7 +520,21 @@ div.nl_widget {
     gap: 0px 0px; 
     grid-template-areas: 
 	".";
+    float:left;
 }
+
+div.en_widget {
+    border:3px dashed red;
+    padding:1%;
+    display: grid; 
+    grid-template-columns: 1fr; 
+    grid-template-rows: 1fr;
+    gap: 0px 0px; 
+    grid-template-areas: 
+	".";
+    float:left;    
+}
+
 
 div.tree {
     float:left;

@@ -8,7 +8,7 @@
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           nl-parses nl-parses-to-en-specs]]
-   [nlquiz.parse.widgets :refer [en-question-widget en-widget nl-widget]]
+   [nlquiz.parse.widgets :refer [en-widget nl-widget]]
    [nlquiz.parse.functions :refer [on-change new-question]]
    [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]
@@ -40,13 +40,13 @@
     ;; 2. atoms that link the UI and the functionality:
     (let [surface-atom (r/atom "")
 
-          nl-trees-atom (r/atom "")
-          nl-lexemes-atom (r/atom "")
-          nl-rules-atom (r/atom "")
+          nl-trees-atom (r/atom "nl-trees")
+          nl-lexemes-atom (r/atom "nl-lexemes")
+          nl-rules-atom (r/atom "nl-rules")
 
-          en-trees-atom (r/atom "")
-          en-lexemes-atom (r/atom "")
-          en-rules-atom (r/atom "")]
+          en-trees-atom (r/atom "en-trees")
+          en-lexemes-atom (r/atom "en-lexemes")
+          en-rules-atom (r/atom "en-rules")]
 
       ;; 3. initialize the UI: e.g. a new question:
 
@@ -73,7 +73,9 @@
                                                             :rules en-rules-atom
                                                             :grammar en-grammar
                                                             :morphology en-morphology}}))}]]
-         (nl-widget nl-trees-atom nl-lexemes-atom nl-rules-atom)]))))
+         (nl-widget nl-trees-atom nl-lexemes-atom nl-rules-atom)
+         (en-widget en-trees-atom en-lexemes-atom en-rules-atom)]))))
+
 
 
 
