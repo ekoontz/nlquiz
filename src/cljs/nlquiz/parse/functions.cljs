@@ -15,6 +15,35 @@
 
 (def server-side-parsing? true)
 
+(defn display-linguistics-content [{nl-trees-atom :where
+                                    nl-parses :which-is}]
+  (if (not (empty? nl-parses))
+    (reset! nl-trees-atom
+            (vec
+             (cons
+              :div.section
+              (cons (when (= (count nl-parses) 0)
+                      [:h4
+                       (str "geen bomen")])
+                    (mapv (fn [parse]
+                            [:div.parse-cell
+                             [:div.number (str (u/get-in parse [::i]) " van " (count nl-parses) " 🇳🇱 "
+                                               (if (not (= 1 (count nl-parses))) "bomen" "boom"))]
+                             (draw-tree parse)
+                             (draw-node-html
+                              (-> parse
+                                  (dissoc :1)
+                                  (dissoc :2)
+                                  (dissoc :head)
+                                  (dissoc :comp)))])
+                          (map merge
+                                             (sort (fn [a b]
+                                                     (compare (str a) (str b)))
+                                                   nl-parses)
+                                             (->> (range 1 (+ 1 (count nl-parses)))
+                                                  (map (fn [i] {::i i})))))))))
+    (reset! nl-trees-atom [:div.section [:b "geen boometje owe!"]])))
+
 (defn on-change [{input :input
                   {nl-trees-atom :trees
                    nl-lexemes-atom :lexemes
@@ -51,9 +80,6 @@
                                                   "/analyze/en?q=" input-value)))
                                :body decode-analyze)
                 ]
-
-
-                
             (when (fresh?)
               ;; 2. With this information ready,
               (let [;; 2.a. do the NL parsing. (we specified "&all" above in the query so actually this nl-parses call doesn't do anything much):
@@ -61,33 +87,10 @@
                                               input-value))
                     ;; 2.b. do the EN parsing:
                     ]
-                (if (not (empty? nl-parses))
-                  (reset! nl-trees-atom
-                          (vec
-                           (cons
-                            :div.section
-                            (cons (when (= (count nl-parses) 0)
-                                    [:h4
-                                     (str "geen bomen")])
-                                  (mapv (fn [parse]
-                                          [:div.parse-cell
-                                           [:div.number (str (u/get-in parse [::i]) " van " (count nl-parses) " 🇳🇱 "
-                                                             (if (not (= 1 (count nl-parses))) "bomen" "boom"))]
-                                           (draw-tree parse)
-                                           (draw-node-html
-                                            (-> parse
-                                                (dissoc :1)
-                                                (dissoc :2)
-                                                (dissoc :head)
-                                                (dissoc :comp)))])
-                                        (map merge
-                                             (sort (fn [a b]
-                                                     (compare (str a) (str b)))
-                                                   nl-parses)
-                                             (->> (range 1 (+ 1 (count nl-parses)))
-                                                  (map (fn [i] {::i i})))))))))
-                  (reset! nl-trees-atom [:div.section [:b "geen boom"]]))
-                      
+                (display-linguistics-content
+                 {:which-is nl-parses
+                  :where nl-trees-atom})
+                
                 (if (not (empty? nl-lexemes))
                   (reset! nl-lexemes-atom
                           (vec
