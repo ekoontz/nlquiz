@@ -15,10 +15,11 @@
 
 (def server-side-parsing? true)
 
-(defn display-linguistics-content [{where :where
-                                    which-is :which-is
+(defn display-linguistics-content [{do-each-fn :do-each-fn
                                     if-one :if-one
-                                    if-none-message :if-none-message}]
+                                    if-none-message :if-none-message
+                                    where :where
+                                    which-is :which-is}]
   (if (not (empty? which-is))
     (reset! where
             (vec
@@ -27,13 +28,13 @@
               (cons (when (= (count which-is) 0)
                       [:h4
                        (str "geen bomen")])
-                    (mapv (fn [parse]
+                    (mapv (fn [elem]
                             [:div.parse-cell
-                             [:div.number (str (u/get-in parse [::i]) " van " (count which-is) " 🇳🇱 "
+                             [:div.number (str (u/get-in elem [::i]) " van " (count which-is) " 🇳🇱 "
                                                (if (not (= 1 (count which-is))) "bomen" "boom"))]
-                             (draw-tree parse)
+                             (do-each-fn elem)
                              (draw-node-html
-                              (-> parse
+                              (-> elem
                                   (dissoc :1)
                                   (dissoc :2)
                                   (dissoc :head)
@@ -92,7 +93,8 @@
                 (display-linguistics-content
                  {:which-is nl-parses
                   :where nl-trees-atom
-                  :if-none-message "geen boometje! wat jammer! :( :("})
+                  :do-each-fn draw-tree
+                  :if-none-message "geen boometje! ah.. wat jammer!"})
                 
                 (if (not (empty? nl-lexemes))
                   (reset! nl-lexemes-atom
