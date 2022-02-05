@@ -16,7 +16,6 @@
 (def server-side-parsing? true)
 
 (defn display-linguistics-content [{do-each-fn :do-each-fn
-                                    if-one :if-one
                                     if-none-message :if-none-message
                                     input-value :input-value
                                     language-flag :language-flag
@@ -102,51 +101,24 @@
                   :singular "boom"
                   :which-is nl-parses
                   :where nl-trees-atom})
-                
-                (if (not (empty? nl-lexemes))
-                  (reset! nl-lexemes-atom
-                          (vec
-                           (cons
-                            :div.section
-                            (cons (when (= (count nl-lexemes) 0)
-                                    [:h4 (str "geen worden")])
-                                  (mapv (fn [lexeme]
-                                          [:div.lexeme
-                                           [:div.number (str (u/get-in lexeme [::i]) " van " (count nl-lexemes) " 🇳🇱 "
-                                                             (if (not (= 1 (count nl-lexemes))) "worden" "woord"))]
-                                           (draw-node-html lexeme)])
-                                        
-                                        (map merge
-                                             (sort (fn [a b]
-                                                     (compare (str a) (str b)))
-                                                   nl-lexemes)
-                                             (->> (range 1 (+ 1 (count nl-lexemes)))
-                                                  (map (fn [i] {::i i})))))))))
-                  (reset! nl-lexemes-atom [:div.section [:b "geen woord"]]))
-                  
-                (if (not (empty? nl-rules))
-                  (reset! nl-rules-atom
-                          (vec
-                           (cons
-                            :div.section
-                            (cons (when (= (count nl-rules) 0)
-                                    [:h4 (str "geen regels")]) 
-                                  (mapv (fn [rule]
-                                          [:div.rule 
-                                           [:div.number (str (u/get-in rule [::i]) " van " (count nl-rules) " 🇳🇱 "
-                                                             (if (not (= 1 (count nl-rules))) "regels" "regel"))]
-                                           (draw-node-html rule)])
-                                        
-                                        ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
-                                        (map merge ;; map will use 'merge' as the function to map over.
-                                             
-                                             ;; sort the rules. This is the first sequence: each member of *this* sequence .. 
-                                             (sort (fn [a b]
-                                                     (compare (str a) (str b)))
-                                                   nl-rules)
-                                             (->> (range 1 (+ 1 (count nl-rules))) ;; .. is merged with the member in this second sequence
-                                                  (map (fn [i] {::i i})))))))))
-                  (reset! nl-rules-atom [:div.section [:b "geen regel"]]))))))))))
+
+                (display-linguistics-content
+                 {:if-none-message "geen woord"
+                  :input-value input-value
+                  :language-flag "🇳🇱"
+                  :plural "woorden"
+                  :singular "woord"
+                  :which-is nl-lexemes
+                  :where nl-lexemes-atom})
+
+                (display-linguistics-content
+                 {:if-none-message "geen regel"
+                  :input-value input-value
+                  :language-flag "🇳🇱"
+                  :plural "regels"
+                  :singular "regel"
+                  :which-is nl-rules
+                  :where nl-rules-atom})))))))))
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true

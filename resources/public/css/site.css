@@ -596,6 +596,7 @@ div.number {
     border-bottom: 4px solid lightblue;
     margin-top:0.5em;
     text-align:right;
+    margin-bottom:0.5em;
 }
 
 div.parse-cell {
