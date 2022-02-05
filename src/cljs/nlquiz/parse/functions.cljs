@@ -25,27 +25,24 @@
             (vec
              (cons
               :div.section
-              (cons (when (= (count which-is) 0)
-                      [:h4
-                       (str "geen bomen")])
-                    (mapv (fn [elem]
-                            [:div.parse-cell
-                             [:div.number (str (u/get-in elem [::i]) " van " (count which-is) " 🇳🇱 "
-                                               (if (not (= 1 (count which-is))) "bomen" "boom"))]
-                             (do-each-fn elem)
-                             (draw-node-html
-                              (-> elem
-                                  (dissoc :1)
-                                  (dissoc :2)
-                                  (dissoc :head)
-                                  (dissoc :comp)))])
-                          (map merge
-                                             (sort (fn [a b]
-                                                     (compare (str a) (str b)))
-                                                   which-is)
-                                             (->> (range 1 (+ 1 (count which-is)))
-                                                  (map (fn [i] {::i i})))))))))
-    (reset! where [:div.section [:b if-none-message]])))
+              (mapv (fn [elem]
+                      [:div.parse-cell
+                       [:div.number (str (u/get-in elem [::i]) " van " (count which-is) " 🇳🇱 "
+                                         (if (not (= 1 (count which-is))) "bomen" "boom"))]
+                       (do-each-fn elem)
+                       (draw-node-html
+                        (-> elem
+                            (dissoc :1)
+                            (dissoc :2)
+                            (dissoc :head)
+                            (dissoc :comp)))])
+                    (map merge
+                         (sort (fn [a b]
+                                 (compare (str a) (str b)))
+                               which-is)
+                         (->> (range 1 (+ 1 (count which-is)))
+                              (map (fn [i] {::i i}))))))))
+  (reset! where [:div.section [:b if-none-message]])))
 
 (defn on-change [{input :input
                   {nl-trees-atom :trees
