@@ -82,6 +82,8 @@
                              :body decode-rules)
                 nl-flag "🇳🇱"
 
+                en-flag "🇬🇧"
+                
                 en-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
                                                   "/analyze/en?q=" input-value)))
                                :body decode-analyze)
@@ -97,7 +99,7 @@
                  {:do-each-fn draw-tree
                   :if-none-message (str "geen " nl-flag " boom")
                   :input-value input-value
-                  :language-flag "🇳🇱"
+                  :language-flag nl-flag
                   :plural "bomen"
                   :singular "boom"
                   :which-is nl-parses
@@ -106,7 +108,7 @@
                 (display-linguistics-content
                  {:if-none-message (str "geen " nl-flag " woord")
                   :input-value input-value
-                  :language-flag "🇳🇱"
+                  :language-flag nl-flag
                   :plural "woorden"
                   :singular "woord"
                   :which-is nl-lexemes
@@ -115,11 +117,25 @@
                 (display-linguistics-content
                  {:if-none-message (str "geen " nl-flag " regel")
                   :input-value input-value
-                  :language-flag "🇳🇱"
+                  :language-flag nl-flag
                   :plural "regels"
                   :singular "regel"
                   :which-is nl-rules
-                  :where nl-rules-atom})))))))))
+                  :where nl-rules-atom})
+
+                (comment (display-linguistics-content
+                 {:if-none-message (str "geen " en-flag " woord")
+                  :input-value input-value
+                  :language-flag en-flag
+                  :plural "woorden"
+                  :singular "woord"
+                  :which-is nl-lexemes
+                  :where nl-lexemes-atom}))
+
+
+                ))))))))
+
+                
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true
