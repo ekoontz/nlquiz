@@ -54,7 +54,7 @@
                           :body decode-rules)]
             (when (fresh?)
               ;; 2. With this information ready,
-              (let [;; 2.a. do the NL parsing:
+              (let [;; 2.a. do the NL parsing. (we specified "&all" above in the query so actually this nl-parses call doesn't do anything much):
                     nl-parses (->> (nl-parses nl-parse-response @nl-grammar @nl-morphology
                                               input-value))
                     ;; 2.b. do the EN parsing:
