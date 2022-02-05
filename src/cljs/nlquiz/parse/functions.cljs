@@ -88,7 +88,7 @@
                                                   (map (fn [i] {::i i})))))))))
                   (reset! nl-trees-atom [:div.section [:b "geen boom"]]))
                       
-                (when (seq nl-lexemes)
+                (if (not (empty? nl-lexemes))
                   (reset! nl-lexemes-atom
                           (vec
                            (cons
@@ -106,9 +106,10 @@
                                                      (compare (str a) (str b)))
                                                    nl-lexemes)
                                              (->> (range 1 (+ 1 (count nl-lexemes)))
-                                                  (map (fn [i] {::i i}))))))))))
+                                                  (map (fn [i] {::i i})))))))))
+                  (reset! nl-lexemes-atom [:div.section [:b "geen woord"]]))
                   
-                (when (seq nl-rules)
+                (if (not (empty? nl-rules))
                   (reset! nl-rules-atom
                           (vec
                            (cons
@@ -129,7 +130,8 @@
                                                      (compare (str a) (str b)))
                                                    nl-rules)
                                              (->> (range 1 (+ 1 (count nl-rules))) ;; .. is merged with the member in this second sequence
-                                                  (map (fn [i] {::i i}))))))))))))))))))
+                                                  (map (fn [i] {::i i})))))))))
+                  (reset! nl-rules-atom [:div.section [:b "geen regel"]]))))))))))
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true
