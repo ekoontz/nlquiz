@@ -80,6 +80,7 @@
                 nl-rules (-> (<! (http/get (str (language-server-endpoint-url)
                                              "/rule/nl?q=" input-value)))
                              :body decode-rules)
+                nl-flag "🇳🇱"
 
                 en-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
                                                   "/analyze/en?q=" input-value)))
@@ -94,7 +95,7 @@
                     ]
                 (display-linguistics-content
                  {:do-each-fn draw-tree
-                  :if-none-message "geen boom"
+                  :if-none-message (str "geen " nl-flag " boom")
                   :input-value input-value
                   :language-flag "🇳🇱"
                   :plural "bomen"
@@ -103,7 +104,7 @@
                   :where nl-trees-atom})
 
                 (display-linguistics-content
-                 {:if-none-message "geen woord"
+                 {:if-none-message (str "geen " nl-flag " woord")
                   :input-value input-value
                   :language-flag "🇳🇱"
                   :plural "woorden"
@@ -112,7 +113,7 @@
                   :where nl-lexemes-atom})
 
                 (display-linguistics-content
-                 {:if-none-message "geen regel"
+                 {:if-none-message (str "geen " nl-flag " regel")
                   :input-value input-value
                   :language-flag "🇳🇱"
                   :plural "regels"
