@@ -15,12 +15,6 @@
 
 (def server-side-parsing? true)
 
-(defn helemaal-niks [& atoms]
-  (doall (map (fn [{atom :atom
-                    none-message :none}]
-                (reset! atom [:b none-message]))
-              atoms)))
-
 (defn on-change [{input :input
                   {nl-trees-atom :trees
                    nl-lexemes-atom :lexemes
@@ -59,84 +53,74 @@
                                               input-value))
                     ;; 2.b. do the EN parsing:
                     ]
-                (cond (seq nl-parses)
-                      (reset! nl-trees-atom
-                              (vec
-                               (cons
-                                :div.section
-                                (cons (when (= (count nl-parses) 0)
-                                        [:h4
-                                         (str "geen bomen")])
-                                      (mapv (fn [parse]
-                                              [:div.parse-cell
-                                               [:div.number (str (u/get-in parse [::i]) " van " (count nl-parses) " 🇳🇱 "
-                                                                 (if (not (= 1 (count nl-parses))) "bomen" "boom"))]
-                                               (draw-tree parse)
-                                               (draw-node-html
-                                                (-> parse
-                                                    (dissoc :1)
-                                                    (dissoc :2)
-                                                    (dissoc :head)
-                                                    (dissoc :comp)))])
-                                            (map merge
-                                                 (sort (fn [a b]
-                                                         (compare (str a) (str b)))
-                                                       nl-parses)
-                                                 (->> (range 1 (+ 1 (count nl-parses)))
-                                                      (map (fn [i] {::i i})))))))))
+                (when (seq nl-parses)
+                  (reset! nl-trees-atom
+                          (vec
+                           (cons
+                            :div.section
+                            (cons (when (= (count nl-parses) 0)
+                                    [:h4
+                                     (str "geen bomen")])
+                                  (mapv (fn [parse]
+                                          [:div.parse-cell
+                                           [:div.number (str (u/get-in parse [::i]) " van " (count nl-parses) " 🇳🇱 "
+                                                             (if (not (= 1 (count nl-parses))) "bomen" "boom"))]
+                                           (draw-tree parse)
+                                           (draw-node-html
+                                            (-> parse
+                                                (dissoc :1)
+                                                (dissoc :2)
+                                                (dissoc :head)
+                                                (dissoc :comp)))])
+                                        (map merge
+                                             (sort (fn [a b]
+                                                     (compare (str a) (str b)))
+                                                   nl-parses)
+                                             (->> (range 1 (+ 1 (count nl-parses)))
+                                                  (map (fn [i] {::i i}))))))))))
                       
-                      (seq nl-lexemes)
-                      (reset! nl-lexemes-atom
-                              (vec
-                               (cons
-                                :div.section
-                                (cons (when (= (count nl-lexemes) 0)
-                                        [:h4 (str "geen worden")])
-                                      (mapv (fn [lexeme]
-                                              [:div.lexeme
-                                               [:div.number (str (u/get-in lexeme [::i]) " van " (count nl-lexemes) " 🇳🇱 "
-                                                                 (if (not (= 1 (count nl-lexemes))) "worden" "woord"))]
-                                               (draw-node-html lexeme)])
-
-                                            (map merge
-                                                 (sort (fn [a b]
-                                                         (compare (str a) (str b)))
-                                                       nl-lexemes)
-                                                 (->> (range 1 (+ 1 (count nl-lexemes)))
-                                                      (map (fn [i] {::i i})))))))))
-
-                      (seq nl-rules)
-                      (reset! nl-rules-atom
-                              (vec
-                               (cons
-                                :div.section
-                                (cons (when (= (count nl-rules) 0)
-                                        [:h4 (str "geen regels")]) 
-                                      (mapv (fn [rule]
-                                              [:div.rule 
-                                               [:div.number (str (u/get-in rule [::i]) " van " (count nl-rules) " 🇳🇱 "
-                                                                 (if (not (= 1 (count nl-rules))) "regels" "regel"))]
-                                               (draw-node-html rule)])
-
-                                            ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
-                                            (map merge ;; map will use 'merge' as the function to map over.
-
-                                                 ;; sort the rules. This is the first sequence: each member of *this* sequence .. 
-                                                 (sort (fn [a b]
-                                                         (compare (str a) (str b)))
-                                                       nl-rules)
-                                                 (->> (range 1 (+ 1 (count nl-rules))) ;; .. is merged with the member in this second sequence
-                                                      (map (fn [i] {::i i})))))))))
-
-                      :else (do
-                              (helemaal-niks {:atom nl-trees-atom :none "geen bomen"}
-                                             {:atom nl-rules-atom :none "geen regels"}
-                                             {:atom nl-lexemes-atom :none "geen woorden"})
-                              (helemaal-niks {:atom en-trees-atom :none "no trees"}
-                                             {:atom en-rules-atom :none "no rules"}
-                                             {:atom en-lexemes-atom :none "no words"})))))))))))
-                              
-                              
+                (when (seq nl-lexemes)
+                  (reset! nl-lexemes-atom
+                          (vec
+                           (cons
+                            :div.section
+                            (cons (when (= (count nl-lexemes) 0)
+                                    [:h4 (str "geen worden")])
+                                  (mapv (fn [lexeme]
+                                          [:div.lexeme
+                                           [:div.number (str (u/get-in lexeme [::i]) " van " (count nl-lexemes) " 🇳🇱 "
+                                                             (if (not (= 1 (count nl-lexemes))) "worden" "woord"))]
+                                           (draw-node-html lexeme)])
+                                        
+                                        (map merge
+                                             (sort (fn [a b]
+                                                     (compare (str a) (str b)))
+                                                   nl-lexemes)
+                                             (->> (range 1 (+ 1 (count nl-lexemes)))
+                                                  (map (fn [i] {::i i}))))))))))
+                  
+                (when (seq nl-rules)
+                  (reset! nl-rules-atom
+                          (vec
+                           (cons
+                            :div.section
+                            (cons (when (= (count nl-rules) 0)
+                                    [:h4 (str "geen regels")]) 
+                                  (mapv (fn [rule]
+                                          [:div.rule 
+                                           [:div.number (str (u/get-in rule [::i]) " van " (count nl-rules) " 🇳🇱 "
+                                                             (if (not (= 1 (count nl-rules))) "regels" "regel"))]
+                                           (draw-node-html rule)])
+                                        
+                                        ;; add an 'i' index to each rule: e.g. first rule has {:i 0}, second rule has {:i 1}, etc.
+                                        (map merge ;; map will use 'merge' as the function to map over.
+                                             
+                                             ;; sort the rules. This is the first sequence: each member of *this* sequence .. 
+                                             (sort (fn [a b]
+                                                     (compare (str a) (str b)))
+                                                   nl-rules)
+                                             (->> (range 1 (+ 1 (count nl-rules))) ;; .. is merged with the member in this second sequence
+                                                  (map (fn [i] {::i i}))))))))))))))))))
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true
