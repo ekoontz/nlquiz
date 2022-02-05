@@ -45,7 +45,15 @@
                             :body decode-analyze)
                 nl-rules (-> (<! (http/get (str (language-server-endpoint-url)
                                              "/rule/nl?q=" input-value)))
-                          :body decode-rules)]
+                             :body decode-rules)
+
+                en-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
+                                                  "/analyze/en?q=" input-value)))
+                               :body decode-analyze)
+                ]
+
+
+                
             (when (fresh?)
               ;; 2. With this information ready,
               (let [;; 2.a. do the NL parsing. (we specified "&all" above in the query so actually this nl-parses call doesn't do anything much):
@@ -53,7 +61,7 @@
                                               input-value))
                     ;; 2.b. do the EN parsing:
                     ]
-                (when (seq nl-parses)
+                (if (not (empty? nl-parses))
                   (reset! nl-trees-atom
                           (vec
                            (cons
@@ -77,7 +85,8 @@
                                                      (compare (str a) (str b)))
                                                    nl-parses)
                                              (->> (range 1 (+ 1 (count nl-parses)))
-                                                  (map (fn [i] {::i i}))))))))))
+                                                  (map (fn [i] {::i i})))))))))
+                  (reset! nl-trees-atom [:div.section [:b "geen boom"]]))
                       
                 (when (seq nl-lexemes)
                   (reset! nl-lexemes-atom
