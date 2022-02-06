@@ -69,7 +69,7 @@
         [:div.parse
          [:div.input [:input {:type "text"
                               :size 50
-                              :placeholder "type something in Dutch"
+                              :placeholder "type something in Dutch or English"
                               ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
                               
                               :on-change (when language-models-loaded?
