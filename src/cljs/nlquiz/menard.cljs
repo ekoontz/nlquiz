@@ -69,7 +69,7 @@
   (binding [parse/split-on #"[ ]"]
     (parse/tokenize input-string)))
 
-(defn nl-parses [input-map grammar morphology surface]
+(defn parses [input-map grammar morphology surface]
   (let [input-length (count (tokenize surface))
         syntax-tree (fn [tree] (s/syntax-tree tree morphology))
         morph (fn [tree] (s/morph tree morphology))]

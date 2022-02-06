@@ -11,7 +11,7 @@
    [menard.translate.spec :as tr]
    [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
-                          nl-parses remove-duplicates]]
+                          parses remove-duplicates]]
    [nlquiz.speak :as speak]
    [reagent.core :as r]
    [reagent.session :as session])
@@ -165,7 +165,7 @@
                (<! (http/get (str (language-server-endpoint-url)
                                   "/parse-start/nl?q=" guess-string)))
                :body decode-parse)
-              nl-parses (nl-parses parse-response @grammar @morphology @guess-text)
+              nl-parses (parses parse-response @grammar @morphology @guess-text)
               specs (->> nl-parses
                          (map serialize)
                          set
