@@ -8,7 +8,8 @@
    [clojure.string :as string :refer [trim]]
    [nlquiz.menard :refer [dag-to-string decode-analyze decode-grammar
                           decode-parse decode-rules
-                          nl-parses nl-parses-to-en-specs]]
+                          nl-parses-to-en-specs
+                          parses]]
    [nlquiz.parse.draw-tree :refer [draw-node-html draw-tree]])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
@@ -19,6 +20,7 @@
                                     if-none-message :if-none-message
                                     input-value :input-value
                                     language-flag :language-flag
+                                    of :of
                                     plural :plural
                                     singular :singular
                                     where :where
@@ -31,7 +33,7 @@
               (mapv (fn [elem]
                       [:div.parse-cell
                        [:div.number (str (u/get-in elem [::i])
-                                         " van "
+                                         " " of " "
                                          (count which-is) " " language-flag " "
                                          (if (not (= 1 (count which-is))) plural singular))]
                        (if do-each-fn (do-each-fn elem))
@@ -69,11 +71,11 @@
 
         (go
           (reset! input input-value)
-
+          
           ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
           (let [nl-parse-response (-> (<! (http/get (str (language-server-endpoint-url)
                                                       "/parse-start/nl?q=" input-value (when server-side-parsing? "&all"))))
-                                   :body decode-parse)
+                                      :body decode-parse)
                 nl-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
                                                "/analyze/nl?q=" input-value)))
                             :body decode-analyze)
@@ -81,31 +83,29 @@
                                              "/rule/nl?q=" input-value)))
                              :body decode-rules)
                 nl-flag "🇳🇱"
-
                 en-flag "🇬🇧"
-                
+                en-parse-response (-> (<! (http/get (str (language-server-endpoint-url)
+                                                         "/parse-start/en?q=" input-value (when server-side-parsing? "&all"))))
+                                      :body decode-parse)
                 en-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
                                                   "/analyze/en?q=" input-value)))
                                :body decode-analyze)
-
                 en-rules (-> (<! (http/get (str (language-server-endpoint-url)
                                                 "/rule/en?q=" input-value)))
-                             :body decode-rules)
-
-                
-                ]
+                             :body decode-rules)]
             (when (fresh?)
               ;; 2. With this information ready,
-              (let [;; 2.a. do the NL parsing. (we specified "&all" above in the query so actually this nl-parses call doesn't do anything much):
-                    nl-parses (->> (nl-parses nl-parse-response @nl-grammar @nl-morphology
-                                              input-value))
-                    ;; 2.b. do the EN parsing:
-                    ]
+              (let [;; 2 do the NL and EN parsing. (we specified "&all" above in the query so actually these (parses) calls doesn't do anything much):
+                    nl-parses (->> (parses nl-parse-response @nl-grammar @nl-morphology
+                                           input-value))
+                    en-parses (->> (parses en-parse-response @en-grammar @en-morphology
+                                           input-value))]
                 (display-linguistics-content
                  {:do-each-fn draw-tree
                   :if-none-message (str "geen " nl-flag " boom")
                   :input-value input-value
                   :language-flag nl-flag
+                  :of "van"
                   :plural "bomen"
                   :singular "boom"
                   :which-is nl-parses
@@ -115,6 +115,7 @@
                  {:if-none-message (str "geen " nl-flag " woord")
                   :input-value input-value
                   :language-flag nl-flag
+                  :of "van"
                   :plural "woorden"
                   :singular "woord"
                   :which-is nl-lexemes
@@ -124,15 +125,28 @@
                  {:if-none-message (str "geen " nl-flag " regel")
                   :input-value input-value
                   :language-flag nl-flag
+                  :of "van"
                   :plural "regels"
                   :singular "regel"
                   :which-is nl-rules
                   :where nl-rules-atom})
 
                 (display-linguistics-content
+                 {:do-each-fn draw-tree
+                  :if-none-message (str "no " en-flag " tree")
+                  :input-value input-value
+                  :language-flag en-flag
+                  :of "of"
+                  :plural "trees"
+                  :singular "tree"
+                  :which-is en-parses
+                  :where en-trees-atom})
+
+                (display-linguistics-content
                  {:if-none-message (str "no " en-flag " word")
                   :input-value input-value
                   :language-flag en-flag
+                  :of "of"
                   :plural "words"
                   :singular "word"
                   :which-is en-lexemes
@@ -142,14 +156,13 @@
                  {:if-none-message (str "no " en-flag " rule")
                   :input-value input-value
                   :language-flag en-flag
+                  :of "of"
                   :plural "rules"
                   :singular "rule"
                   :which-is en-rules
                   :where en-rules-atom})
                 
                 ))))))))
-
-                
 
 (defn new-question [en-question-atom]
   (let [spec {:phrasal true
