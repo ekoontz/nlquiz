@@ -17,6 +17,14 @@
         deserialize
         draw-node-html-with-binding)))
 
+(defn display-derivation [deriv]
+  (->> (seq (zipmap (vals deriv) (keys deriv)))
+       (map (fn [[x y]]
+              {(get x :menard.lexiconfn/order) y}))
+       (sort (fn [x y]
+               (< (first (first x)) (first (first y)))))
+       (reduce merge)))
+  
 (defn draw-node-html-with-binding [parse-node]
   (if (nil? html-index-map)
     (log/error (str "html-index-map is NULL :(; parse-node: "
@@ -81,6 +89,9 @@
                                 ;; already seen index:
                                 (and ref-index entry-if-any) ""
 
+                                (= k :menard.lexiconfn/derivation)
+                                (draw-node-html-with-binding (display-derivation val))
+                                
                                 (map? val)
                                 (draw-node-html-with-binding val)
                                 (= val :menard.nederlands/none) "none"
