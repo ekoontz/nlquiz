@@ -30,7 +30,9 @@
     (log/error (str "html-index-map is NULL :(; parse-node: "
                     (u/pprint parse-node))))
   (let [
-        interesting-key? (fn [k] (or (= k :ref)
+        interesting-key? (fn [k] (or (= k :agr)
+                                     (= k :number)
+                                     (= k :ref)
                                      (= k :obj)
                                      (= k :subcat)
                                      (= k :top)))
