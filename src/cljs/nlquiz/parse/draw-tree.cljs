@@ -91,7 +91,9 @@
                                 ;; already seen index:
                                 (and ref-index entry-if-any) ""
 
-                                (= k :menard.lexiconfn/derivation)
+                                (or (= k :menard.lexiconfn/derivation)
+                                    (= k :head-derivation)
+                                    (= k :comp-derivation))
                                 (draw-node-html-with-binding (display-derivation val))
                                 
                                 (map? val)
