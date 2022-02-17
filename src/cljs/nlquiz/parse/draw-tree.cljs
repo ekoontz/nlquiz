@@ -19,10 +19,11 @@
 
 (defn display-derivation [deriv]
   (->> (seq (zipmap (vals deriv) (keys deriv)))
-       (map (fn [[x y]]
-              {(get x :menard.lexiconfn/order) y}))
-       (sort (fn [x y]
-               (< (first (first x)) (first (first y)))))
+       (map (fn [x] {(-> x first :menard.lexiconfn/order)
+                     (if (-> x first :sense)
+                       {:rule (-> x second)
+                        :sense (-> x first :sense)}
+                       (-> x second))}))
        (reduce merge)))
   
 (defn draw-node-html-with-binding [parse-node]
