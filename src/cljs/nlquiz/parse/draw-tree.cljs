@@ -30,8 +30,7 @@
   (if (nil? html-index-map)
     (log/error (str "html-index-map is NULL :(; parse-node: "
                     (u/pprint parse-node))))
-  (let [
-        interesting-key? (fn [k] (or (= k :agr)
+  (let [interesting-key? (fn [k] (or (= k :agr)
                                      (= k :number)
                                      (= k :ref)
                                      (= k :obj)
