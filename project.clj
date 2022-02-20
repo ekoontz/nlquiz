@@ -4,7 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.10.1"]
+  :dependencies [[org.clojure/clojure "1.10.3"]
+                 [thedavidmeister/cljc-md5 "0.0.2"]
                  [ring-server "0.5.0"]
                  [prismatic/dommy "1.1.0"]
                  [reagent "0.10.0"]
@@ -22,8 +23,8 @@
                  [cljslog "0.1.0"]
                  [clj-http "3.10.2"]
                  [cljs-http "0.1.46"]
-                 [org.clojure/tools.logging "1.2.2"]
-                 [dag_unify "1.9.8"]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [dag_unify "1.10.1"]
                  [menard "1.4.5"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
