@@ -11,29 +11,24 @@ fi
 
 # lowercase hostname: browsers are sensitive to it for enforcing policies for
 # cross-site scripting:
-HOSTNAME=$(echo $(perl -e "print lc('$HOSTNAME');"))
+export HOSTNAME=$(echo $(perl -e "print lc('$HOSTNAME');"))
 
-echo "USING HOSTNAME: ${HOSTNAME}"
+echo "** local.sh: USING HOSTNAME: ${HOSTNAME}"
 
 lein clean
-# Start the language endpoint server in the background. This will generate
-# expressions for the user and parse their responses. It listens on port
-# 3000, where it handles requests to:
-# - generate expressions for the user
-# - parse the user's guesses of answers to those expressions
-# The ORIGIN is the URL for the UI server (started below).
-# The language endpoint needs to know that URL so it can set the
-# header: 'Access-Control-Allow-Origin' to that.
-pushd .
-cd ~/menard/server
-ORIGIN=http://${HOSTNAME}:3449 lein ring server-headless &
+
+# Start the language endpoint server in the background. 
+~/menard/server/start.sh &
 LANGUAGE_SERVER_PID=$!
-popd
+
+echo "** local.sh: language server pid : ${LANGUAGE_SERVER_PID} **"
+
 # Start the UI server. It needs to know the URL for the language endpoint server
 # so it can tell the client to use that URL for generating guesses and parse answers:
 # Here we set the ROOT_PATH to "/" but we could have also set it to "", or simply not
 # set it at all, and the same effect would be had.
-LANGUAGE_ENDPOINT_URL=http://${HOSTNAME}:3000 ROOT_PATH="/" lein figwheel &
+LANGUAGE_ENDPOINT_URL=http://${HOSTNAME}:3000 ROOT_PATH="/" \
+ lein figwheel &
 
 UI_SERVER_PID=$!
 
