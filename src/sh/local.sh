@@ -1,20 +1,7 @@
 (cd ../menard && lein install)
 
-OLD_UI_SERVER=$(lsof -i TCP:3449 | grep LISTEN | awk '{print $2}')
-OLD_LANGUAGE_SERVER=$(lsof -i TCP:3000 | grep LISTEN | awk '{print $2}')
-
-if [ "${OLD_UI_SERVER}" != "" ]; then
-    echo "it seems like a UI server is already running as pid ${OLD_UI_SERVER}. Killing it."
-    kill -TERM ${OLD_UI_SERVER}
-    sleep 2
-    echo "continuing after killing UI server."
-fi
-if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
-    echo "it seems like a language server is already running as pid ${OLD_LANGUAGE_SERVER}. Killing it."
-    kill -TERM ${OLD_LANGUAGE_SERVER}
-    sleep 2
-    echo "continuing after killing language server."
-fi
+# kill any old processes running that this script wants to start:
+./src/sh/cleanup.sh
 
 if [ "${HOSTNAME}" == "" ]; then
     echo "no HOSTNAME found in environment. Will look at 'ifconfig' and try to determine one..."
@@ -69,18 +56,7 @@ echo ""
 echo ""
 
 _cleanup() { 
-  echo "Caught SIGINT signal - cleaning up."
-  echo kill -TERM "$LANGUAGE_SERVER_PID"
-  kill -TERM "$LANGUAGE_SERVER_PID"
-  echo kill -TERM "$UI_SERVER_PID"
-  kill -TERM "$UI_SERVER_PID"
-
-  OLD_LANGUAGE_SERVER=$(lsof -i TCP:3000 | grep LISTEN | awk '{print $2}')
-  if [ "${OLD_LANGUAGE_SERVER}" != "" ]; then
-      echo "it seems like a language server is still running as pid ${OLD_LANGUAGE_SERVER}: killing it."
-      echo kill -TERM "${OLD_LANGUAGE_SERVER}"
-      kill -TERM "${OLD_LANGUAGE_SERVER}"
-  fi
+    ./src/sh/cleanup.sh
 }
 
 trap _cleanup SIGINT
