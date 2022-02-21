@@ -297,6 +297,14 @@
                      inline-resource
                      cljs.reader/read-string)))
 
+(def curriculum-content-atom (r/atom ""))
+(defn get-curriculum-content []
+  (let [root-path (root-path-from-env)]
+    (log/info (str "getting content.."))
+    (go (let [response (<! (http/get (str root-path "edn/curriculum/content.edn")))]
+          (log/info (str "got THE response: " response :body))
+          (reset! curriculum-content-atom (-> response :body))))))
+
 (defn get-curriculum []
   (let [root-path (root-path-from-env)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
