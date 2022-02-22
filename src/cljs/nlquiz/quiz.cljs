@@ -297,13 +297,23 @@
                      inline-resource
                      cljs.reader/read-string)))
 
-(def curriculum-content-atom (r/atom ""))
-(defn get-curriculum-content []
+(defn get-curriculum-content [use-atom]
   (let [root-path (root-path-from-env)]
     (log/info (str "getting content.."))
     (go (let [response (<! (http/get (str root-path "edn/curriculum/content.edn")))]
-          (log/info (str "got THE response: " response :body))
-          (reset! curriculum-content-atom (-> response :body))))))
+          (reset! use-atom (-> response :body))
+          (let [content @use-atom]
+            (doall
+             (map (fn [[k v]] 
+                    (println "k: " k)
+                    (doall (map (fn [v]
+                                  (if (and (vector? v) (= (first v) :show-examples))
+                                    (println (str " SHOW-EXAMPLES: " (second v)))
+                                    (println " v: " v)))
+                                v)))
+                    content)))))))
+  
+(def curriculum-content-atom (r/atom "hi"))
 
 (defn get-curriculum []
   (let [root-path (root-path-from-env)]
@@ -391,6 +401,7 @@
 
 (defn quiz-component []
   (get-curriculum)
+  (get-curriculum-content curriculum-content-atom)
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
