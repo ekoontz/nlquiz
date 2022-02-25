@@ -17,7 +17,6 @@
                  [org.clojure/clojurescript "1.10.866"
                   :scope "provided"]
                  [metosin/reitit "0.5.10"]
-                 [pez/clerk "1.0.0"]
                  [venantius/accountant "0.2.5"
                   :exclusions [org.clojure/tools.reader]]
                  [cljslog "0.1.0"]

@@ -1,7 +1,6 @@
 (ns nlquiz.core
   (:require
    [accountant.core :as accountant]
-   [clerk.core :as clerk]
    [cljs.core.async :refer [<!]]
    [cljslog.core :as log]
    [cljs-http.client :as http]
@@ -94,18 +93,15 @@
   (r/render [current-page] (.getElementById js/document "app")))
 
 (defn init! []
-  (clerk/initialize!)
   (accountant/configure-navigation!
    {:nav-handler
     (fn [path]
       (let [match (reitit/match-by-path router path)
             current-page (:name (:data match))
             route-params (:path-params match)]
-        (r/after-render clerk/after-render!)
         (session/put! :route {:current-page (page-for current-page)
                               :route-params route-params})
         (session/put! :path path)
-        (clerk/navigate-page! path)
         ))
     :path-exists?
     (fn [path]
