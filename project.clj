@@ -12,7 +12,6 @@
                  [reagent-utils "0.3.3"]
                  [ring "1.8.0"]
                  [ring/ring-defaults "0.3.2"]
-                 [hiccup "1.0.5"]
                  [yogthos/config "1.1.6"]
                  [org.clojure/clojurescript "1.10.866"
                   :scope "provided"]
