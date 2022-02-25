@@ -401,7 +401,6 @@
 
 (defn quiz-component []
   (get-curriculum)
-  (get-curriculum-content curriculum-content-atom)
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
