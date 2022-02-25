@@ -347,6 +347,7 @@
         " and " [:i "het"] ". A noun will always use " [:i "de"] " when it's plural, regardless of the noun's gender:"]
        [show-examples
         [{:cat :noun
+          :rule "np:2"
           :phrasal? true
           :subcat []
           :sem {:quant :the}
@@ -356,6 +357,7 @@
         [:li "If the noun is of " [:b "common"] " gender, then the definite article is " [:i "de"] ", for example:"
          [show-examples
           [{:cat :noun
+            :rule "np:2"
             :subcat []
             :sem {:quant :the}
             :agr {:gender :common
@@ -365,6 +367,7 @@
         [:li "If the noun is of " [:b "neuter"] " gender, then the definite article is " [:i "het"] ", for example:"
          [show-examples
           [{:cat :noun
+            :rule "np:2"
             :subcat []
             :sem {:quant :the}
             :agr {:gender :neuter
