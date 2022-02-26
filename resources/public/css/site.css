@@ -136,6 +136,7 @@ div.question {
     min-height:1.2em;
     float:left;
     width:100%;
+    margin-bottom:0.25em;
 }
 
 div.question > div {
