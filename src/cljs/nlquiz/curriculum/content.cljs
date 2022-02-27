@@ -34,11 +34,8 @@
     content))
   
 (def curriculum
-  {"adjectives"
-   (fn [] (do
-            (log/info (str "getting adjectives curric...."))
-            (log/info (str "got adjectives curric: " @adj-edn))
-            (rewrite-content @adj-edn)))
+  {"adjectives" (fn [] (rewrite-content @adj-edn))
+            
    "verbs"
    {"subject-pronouns-and-present-tense"
     (fn []
