@@ -9,7 +9,7 @@
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
    [menard.translate.spec :as tr]
-   [nlquiz.curriculum.content :refer [curriculum]]
+   [nlquiz.curriculum.content :refer [curriculum get-content]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           parses remove-duplicates]]
    [nlquiz.speak :as speak]
@@ -404,13 +404,13 @@
                  [:h4 (get-title-for major minor)]]
                 [:div.content [(-> curriculum (get major) (get minor))]]])
 
-             (and major curriculum (fn? (get curriculum major)))
+             major
              (do
-               (log/info (str "content variant 2"))
+               (log/info (str "content variant 2 (major only)"))
                [:div.guide
                 [:div.h4
                  [:h4 (get-title-for major)]]
-                [:div.content [(-> curriculum (get major))]]])
+                [:div.content [(get-content major)]]])
 
              (and major curriculum (fn? (-> curriculum (get major) :general)))
              (do

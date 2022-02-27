@@ -7,21 +7,26 @@
     :refer [show-alternate-examples
             show-examples]])
   (:require-macros [cljs.core.async.macros :refer [go]]
-                   [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
+                   [nlquiz.handler :refer [root-path-from-env]]))
 
-(def adj-edn (r/atom nil))
+(def path-to-content (r/atom {}))
 
-(defn get-content [path]
+(defn set-content [path]
   (let [root-path (root-path-from-env)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
-          (log/info (str "GOT A RESPONSE!!! " response))
-          (reset! adj-edn (-> response :body))))))
+          (reset! path-to-content
+                  (merge {path (-> response :body)}
+                         @path-to-content))))))
 
-(get-content "adjectives")
+(defn get-content [path]
+  (fn [] (rewrite-content (or (get @path-to-content path)
+                              (do (set-content path)
+                                  (get @path-to-content path))))))
 
-(defn rewrite-content [content]
+(defn rewrite-content
+  "transform all instances of '[:show-examples ...]' with '[show-examples ...]'"
+  [content]
   (cond
-    
     (and (vector? content)
          (= (first content) :show-examples))
     [show-examples (second content) 5]
@@ -34,8 +39,7 @@
     content))
   
 (def curriculum
-  {"adjectives" (fn [] (rewrite-content @adj-edn))
-            
+  {"adjectives" (get-content "adjectives")
    "verbs"
    {"subject-pronouns-and-present-tense"
     (fn []
