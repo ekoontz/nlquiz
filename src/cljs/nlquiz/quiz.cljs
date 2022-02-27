@@ -424,7 +424,7 @@
 
              (and major curriculum (fn? (get curriculum major)))
              (do
-               (log/debug (str "content variant 2"))
+               (log/info (str "content variant 2"))
                [:div.guide
                 [:div.h4
                  [:h4 (get-title-for major)]]

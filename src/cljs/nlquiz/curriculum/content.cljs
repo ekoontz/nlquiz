@@ -1,23 +1,43 @@
 (ns nlquiz.curriculum.content
   (:require
+   [cljslog.core :as log]
    [nlquiz.curriculum.functions
     :refer [show-alternate-examples
             show-examples]]))
 
-(def curriculum
-  {"adjectives"
-   (fn []
+(defn rewrite-content [content]
+  (log/info (str "rewrite-content: " content))
+  (cond
+    
+    (and (vector? content)
+         (= (first content) :show-examples))
+    [show-examples (second content) 3]
+
+    (vector? content)
+    (vec (map (fn [x]
+                (rewrite-content x))
+              content))
+    :else
+    content))
+
+(defn adjectives []
+  (log/info (str "CALLING ADJECTIVES 2!!!"))
+  (fn []
+    (rewrite-content
      [:div
       [:p "Adjectives modify nouns. Adverbs, in turn, modify
       adjectives. Here are some examples of an adjective modified by
-      an adverb:"]
-      [show-examples
+      an adverb:::"]
+      [:show-examples
        [{:cat :adjective
          :mod nil
          :subcat []
-         :phrasal? true
+        :phrasal? true
          :head {:phrasal? false}
-         :comp {:phrasal? false}}]]])
+         :comp {:phrasal? false}}]]])))
+
+(def curriculum
+  {"adjectives" adjectives
 
    "verbs"
    {
