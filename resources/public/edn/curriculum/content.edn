@@ -1,17 +1,4 @@
-{"adjectives"
- [:div
-  [:p "Adjectives modify nouns. Adverbs, in turn, modify
-      adjectives. Here are some examples of an adjective modified by
-      an adverb:"]
-  [:show-examples
-   [{:cat :adjective
-     :mod nil
-     :subcat []
-     :phrasal? true
-     :head {:phrasal? false}
-     :comp {:phrasal? false}}]]]
-
- "verbs"
+{"verbs"
  {"subject-pronouns-and-present-tense"
   [:div
    [:p "The first verb construction we will look at is a pronoun subject with a

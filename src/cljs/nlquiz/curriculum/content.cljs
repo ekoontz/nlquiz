@@ -9,7 +9,7 @@
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
 (def adj-edn (r/atom
-              (-> "public/edn/curriculum/content.edn"
+              (-> "public/edn/curriculum/adjectives.edn"
                   inline-resource
                   cljs.reader/read-string)))
 
@@ -28,7 +28,7 @@
     content))
   
 (def curriculum
-  {"adjectives" (fn [] (rewrite-content (-> adj-edn deref (get "adjectives"))))
+  {"adjectives" (fn [] (rewrite-content (-> adj-edn deref)))
    "verbs"
    {"subject-pronouns-and-present-tense"
     (fn []
