@@ -1,12 +1,19 @@
 (ns nlquiz.curriculum.content
   (:require
    [cljslog.core :as log]
+   [reagent.core :as r]
    [nlquiz.curriculum.functions
     :refer [show-alternate-examples
-            show-examples]]))
+            show-examples]])
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
+
+(def adj-edn (r/atom
+              (-> "public/edn/curriculum/content.edn"
+                  inline-resource
+                  cljs.reader/read-string)))
 
 (defn rewrite-content [content]
-  (log/info (str "rewrite-content: " content))
   (cond
     
     (and (vector? content)
@@ -21,24 +28,14 @@
     content))
 
 (defn adjectives []
-  (log/info (str "CALLING ADJECTIVES 2!!!"))
-  (fn []
-    (rewrite-content
-     [:div
-      [:p "Adjectives modify nouns. Adverbs, in turn, modify
-      adjectives. Here are some examples of an adjective modified by
-      an adverb:::"]
-      [:show-examples
-       [{:cat :adjective
-         :mod nil
-         :subcat []
-        :phrasal? true
-         :head {:phrasal? false}
-         :comp {:phrasal? false}}]]])))
-
+  (log/info (str "CALLING ADJECTIVES!!"))
+  (let [adj-edn  (-> adj-edn deref (get "adjectives"))]
+    (log/info (str "adj-edn: " adj-edn))
+    (fn []
+      (rewrite-content adj-edn))))
+  
 (def curriculum
   {"adjectives" adjectives
-
    "verbs"
    {
     "subject-pronouns-and-present-tense"
