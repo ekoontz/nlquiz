@@ -26,19 +26,11 @@
               content))
     :else
     content))
-
-(defn adjectives []
-  (log/info (str "CALLING ADJECTIVES!!"))
-  (let [adj-edn  (-> adj-edn deref (get "adjectives"))]
-    (log/info (str "adj-edn: " adj-edn))
-    (fn []
-      (rewrite-content adj-edn))))
   
 (def curriculum
-  {"adjectives" adjectives
+  {"adjectives" (fn [] (rewrite-content (-> adj-edn deref (get "adjectives"))))
    "verbs"
-   {
-    "subject-pronouns-and-present-tense"
+   {"subject-pronouns-and-present-tense"
     (fn []
       [:div
        [:p "The first verb construction we will look at is a pronoun subject with a
