@@ -297,24 +297,6 @@
                      inline-resource
                      cljs.reader/read-string)))
 
-(defn get-curriculum-content [use-atom]
-  (let [root-path (root-path-from-env)]
-    (log/info (str "getting content.."))
-    (go (let [response (<! (http/get (str root-path "edn/curriculum/content.edn")))]
-          (reset! use-atom (-> response :body))
-          (let [content @use-atom]
-            (doall
-             (map (fn [[k v]] 
-                    (println "k: " k)
-                    (doall (map (fn [v]
-                                  (if (and (vector? v) (= (first v) :show-examples))
-                                    (println (str " SHOW-EXAMPLES: " (second v)))
-                                    (println " v: " v)))
-                                v)))
-                    content)))))))
-  
-(def curriculum-content-atom (r/atom "hi"))
-
 (defn get-curriculum []
   (let [root-path (root-path-from-env)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]

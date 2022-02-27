@@ -1,5 +1,6 @@
 (ns nlquiz.curriculum.content
   (:require
+   [cljs-http.client :as http]
    [cljslog.core :as log]
    [reagent.core :as r]
    [nlquiz.curriculum.functions
@@ -8,10 +9,15 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
-(def adj-edn (r/atom
-              (-> "public/edn/curriculum/adjectives.edn"
-                  inline-resource
-                  cljs.reader/read-string)))
+(def adj-edn (r/atom nil))
+
+(defn get-adjectives []
+  (let [root-path (root-path-from-env)]
+    (go (let [response (<! (http/get (str root-path "edn/curriculum/adjectives.edn")))]
+          (log/info (str "GOT A RESPONSE!!! " response))
+          (reset! adj-edn (-> response :body))))))
+
+(get-adjectives)
 
 (defn rewrite-content [content]
   (cond
@@ -28,7 +34,11 @@
     content))
   
 (def curriculum
-  {"adjectives" (fn [] (rewrite-content (-> adj-edn deref)))
+  {"adjectives"
+   (fn [] (do
+            (log/info (str "getting adjectives curric...."))
+            (log/info (str "got adjectives curric: " @adj-edn))
+            (rewrite-content @adj-edn)))
    "verbs"
    {"subject-pronouns-and-present-tense"
     (fn []
