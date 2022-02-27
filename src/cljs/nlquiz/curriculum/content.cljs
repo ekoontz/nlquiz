@@ -11,20 +11,20 @@
 
 (def adj-edn (r/atom nil))
 
-(defn get-adjectives []
+(defn get-content [path]
   (let [root-path (root-path-from-env)]
-    (go (let [response (<! (http/get (str root-path "edn/curriculum/adjectives.edn")))]
+    (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           (log/info (str "GOT A RESPONSE!!! " response))
           (reset! adj-edn (-> response :body))))))
 
-(get-adjectives)
+(get-content "adjectives")
 
 (defn rewrite-content [content]
   (cond
     
     (and (vector? content)
          (= (first content) :show-examples))
-    [show-examples (second content) 3]
+    [show-examples (second content) 5]
 
     (vector? content)
     (vec (map (fn [x]
