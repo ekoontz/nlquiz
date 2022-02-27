@@ -393,16 +393,13 @@
        (quiz-layout (get-expression major minor))
        (cond (and
               major
-              minor
-              curriculum
-              (get curriculum major)
-              (-> curriculum (get major) (get minor)))
+              minor)
              (do
-               (log/debug (str "content variant 1"))
+               (log/info (str "content variant 1 (major and minor)"))
                [:div.guide
                 [:div.h4
                  [:h4 (get-title-for major minor)]]
-                [:div.content [(-> curriculum (get major) (get minor))]]])
+                [:div.content [(get-content (str major "/" minor))]]])
 
              major
              (do
