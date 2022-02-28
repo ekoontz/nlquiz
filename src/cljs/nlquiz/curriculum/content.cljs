@@ -37,6 +37,10 @@
          (= (first content) :show-examples))
     [show-examples (second content) 5]
 
+    (and (vector? content)
+         (= (first content) :show-alternate-examples))
+    [show-alternate-examples (nth content 1) (nth content 2)]
+    
     (vector? content)
     (vec (map (fn [x]
                 (rewrite-content x))
