@@ -1,0 +1,23 @@
+[:div
+ [:p "As with English, the simple past has many exceptions, which must be "
+  "learned by rote."]
+ [:show-examples
+  [{:phrasal? true
+    :subcat []
+    :cat :verb
+    :infl :past-simple
+    :sem {:obj {:top :top}}
+    :head {:modal false
+           :head {:phrasal? false
+                  :irregular-past-simple? true
+                  :subcat {:2 {:cat :noun}}}}}
+   {:phrasal? true
+    :subcat []
+    :cat :verb
+    :infl :past-simple
+    :sem {:obj :none}
+    :head {:modal false
+           :irregular-past-simple? true
+           :phrasal? false}}]]]
+
+
