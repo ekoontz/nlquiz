@@ -1,0 +1,96 @@
+[:div
+ [:p "A noun's pluralization depends on its singular form, as shown in "
+  "the following examples."]
+ [:ul
+  
+  [:li "Nouns where the plural is formed by adding " [:i "s"]
+   [:show-alternate-examples
+    {:cat :noun
+     :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :s}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  [:li "Nouns where the plural is formed by adding " [:i "en"]
+   [:show-alternate-examples
+    {:cat :noun
+     :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :en}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  [:li "Nouns with a repeated vowel"
+   [:show-alternate-examples
+    {:cat :noun
+     :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :repeated-vowel}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  [:li "Nouns that end in " [:i "n"] ", " [:i "p"] " or " [:i "t"]
+   [:show-alternate-examples
+    {:cat :noun
+     :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :repeated-consonant}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  [:li "Nouns that end in " [:i "k"] " (sometimes, like in these examples)"
+   [:show-alternate-examples
+    {:cat :noun
+     :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :repeated-k}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  [:li "Nouns that end in " [:i "f"] " or " [:i "s"]
+   [:show-alternate-examples
+    {:cat :noun
+      :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :f2v}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  [:li "Nouns that end in " [:i "heid"]
+   [:show-alternate-examples
+    {:cat :noun
+     :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :heid}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  [:li "Nouns that end in " [:i "y"] " or a vowel other than " [:i "e"]
+   [:show-alternate-examples
+    {:cat :noun
+     :mod nil
+     :sem {:quant :the}
+     :phrasal? true
+     :head {:phrasal? false
+            :inflection :apostrophe-s}}
+    [{:sem {:ref {:number :sing}}}
+     {:sem {:ref {:number :plur}}}]]]
+  
+  ]]
+
+       
