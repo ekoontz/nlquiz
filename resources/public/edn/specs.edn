@@ -90,7 +90,8 @@
         :obj {:obj :none}}
   :head {:comp {:agr {:person :1st}
                 :pronoun? true}}
-  :training-wheels {:head {:rule "vp"
+  :training-wheels {:rule "s"
+                    :head {:rule "vp"
                            :head {:phrasal? false}}}}
  {:major-tags ["pronouns"]
   :minor-tags ["object-12"]
