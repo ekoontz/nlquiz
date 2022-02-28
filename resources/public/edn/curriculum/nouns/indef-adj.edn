@@ -1,0 +1,60 @@
+[:div
+ [:p "In most cases, when an adjective modifies a noun, the adjective will"
+  " have an " [:i "-e"] " at the end. For example:"]
+ 
+ [:show-examples
+  [{:cat :noun
+    :agr {:number :plur}
+    :sem {:mod {:first {:number? false}
+                :rest []}
+          :quant :some}
+    :subcat []
+    :phrasal? true
+    :head {:phrasal? true}
+    :comp {:phrasal? false}}
+   
+   {:cat :noun
+    :agr {:number :sing
+          :gender :common}
+    :sem {:mod {:first {:number? false}
+                :rest []}
+          :quant :some}
+    :subcat []
+    :phrasal? true
+    :head {:phrasal? true}
+    :comp {:phrasal? false}}
+   
+   {:cat :noun
+    :agr {:number :sing
+          :gender :common}
+    :sem {:mod {:first {:number? false}
+                :rest []}
+          :quant :the}
+    :subcat []
+    :phrasal? true
+    :head {:phrasal? true}
+    :comp {:phrasal? false}}
+   
+   ]]
+ 
+ 
+ [:p "However, if:"]
+ [:ul
+  [:li "the noun is singular,"]
+  [:li "the noun is of " [:b "neuter"] " gender, and"]
+  [:li "the article is indefinite (" [:i "een"] "),"]]
+ [:p "then the adjective will " [:b "not"] " have an -e ending, "
+  "for example: "]
+ 
+ [:show-examples
+  [{:cat :noun
+    :agr {:number :sing
+          :gender :neuter}
+    :sem {:mod {:first {:number? false}
+                :rest []}
+          :quant :some}
+    :subcat []
+    :phrasal? true
+    :head {:phrasal? true}
+    :comp {:phrasal? false}}]]]
+

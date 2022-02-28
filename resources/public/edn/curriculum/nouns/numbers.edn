@@ -1,0 +1,35 @@
+[:div
+ [:p "In English, a number like 'twenty four' is expressed first with the base-10 word: 'twenty', and " [:i "then"] " the base-1 word: 'four'. But in Dutch, the word order is reversed, so 'twenty four' is " [:i "vier en twintig"] "."]
+ [:show-examples
+  [{:example "de vier kliene vogels"
+    :cat :noun
+    :mod nil
+    :sem {:quant :the
+          :mod {:first {:number? true}
+                :rest {:first {:number? false}
+                       :rest []}}}
+    :phrasal? true
+    :training-wheels {:head {:comp {:phrasal? false}
+                             :head {:comp {:phrasal? false}
+                                    :head {:phrasal? false}}}
+                      :comp {:cat :det}}}
+   
+   {:major-tags ["nouns"]
+    :minor-tags ["numbers"]
+    :example "de vier en twintig kleine vogels"
+    :cat :noun
+    :subcat []
+    :sem {:quant :the
+                :ref {:number :plur}
+          :mod {:first {:number? true}
+                :rest {:first {:number? false
+                               :rest []}}}}
+    :phrasal? true
+    :training-wheels {:comp {:cat :det}
+                      :head {:comp {:comp {:phrasal? false}
+                                    :head {:head {:phrasal? false
+                                                  :sem {:number? true}}
+                                           :comp {:phrasal? false}}}
+                             :head {:head {:phrasal? false}
+                                    :comp {:phrasal? false}}}}}]]]
+
