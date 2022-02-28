@@ -6,6 +6,7 @@
   [:li "Nouns where the plural is formed by adding " [:i "s"]
    [:show-alternate-examples
     {:cat :noun
+     :rule "np:2"
      :mod nil
      :sem {:quant :the}
      :phrasal? true
@@ -17,6 +18,7 @@
   [:li "Nouns where the plural is formed by adding " [:i "en"]
    [:show-alternate-examples
     {:cat :noun
+     :rule "np:2"
      :mod nil
      :sem {:quant :the}
      :phrasal? true
@@ -28,6 +30,7 @@
   [:li "Nouns with a repeated vowel"
    [:show-alternate-examples
     {:cat :noun
+     :rule "np:2"
      :mod nil
      :sem {:quant :the}
      :phrasal? true
@@ -39,6 +42,7 @@
   [:li "Nouns that end in " [:i "n"] ", " [:i "p"] " or " [:i "t"]
    [:show-alternate-examples
     {:cat :noun
+     :rule "np:2"
      :mod nil
      :sem {:quant :the}
      :phrasal? true
@@ -50,6 +54,7 @@
   [:li "Nouns that end in " [:i "k"] " (sometimes, like in these examples)"
    [:show-alternate-examples
     {:cat :noun
+     :rule "np:2"
      :mod nil
      :sem {:quant :the}
      :phrasal? true
@@ -61,7 +66,8 @@
   [:li "Nouns that end in " [:i "f"] " or " [:i "s"]
    [:show-alternate-examples
     {:cat :noun
-      :mod nil
+     :rule "np:2"
+     :mod nil
      :sem {:quant :the}
      :phrasal? true
      :head {:phrasal? false
@@ -72,6 +78,7 @@
   [:li "Nouns that end in " [:i "heid"]
    [:show-alternate-examples
     {:cat :noun
+     :rule "np:2"
      :mod nil
      :sem {:quant :the}
      :phrasal? true
@@ -83,6 +90,7 @@
   [:li "Nouns that end in " [:i "y"] " or a vowel other than " [:i "e"]
    [:show-alternate-examples
     {:cat :noun
+     :rule "np:2"
      :mod nil
      :sem {:quant :the}
      :phrasal? true
