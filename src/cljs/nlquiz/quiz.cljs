@@ -9,7 +9,7 @@
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
    [menard.translate.spec :as tr]
-   [nlquiz.curriculum.content :refer [curriculum get-content]]
+   [nlquiz.curriculum.content :refer [get-content]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           parses remove-duplicates]]
    [nlquiz.speak :as speak]

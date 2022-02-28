@@ -5,7 +5,6 @@
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
    [nlquiz.constants :refer [spinner]]
-   [nlquiz.curriculum.content :refer [curriculum]]
    [nlquiz.menard :refer [decode-grammar decode-morphology]]
    [nlquiz.parse.widgets :refer [en-widget nl-widget]]
    [nlquiz.parse.functions :refer [on-change new-question]]
