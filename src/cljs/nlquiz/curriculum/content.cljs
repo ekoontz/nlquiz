@@ -15,9 +15,14 @@
   (let [root-path (root-path-from-env)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           ;; TODO: check for server errors
-          (reset! path-to-content
-                  (merge {path (-> response :body)}
-                         @path-to-content))))))
+          (if (= 200 (-> response :status))
+            (reset! path-to-content
+                    (merge {path (-> response :body)}
+                           @path-to-content))
+
+            (log/error (str "unexpected response for path:"
+                            path "; response was: " 
+                            response)))))))
 
 (defn get-content [path]
   (fn [] (rewrite-content (or (get @path-to-content path)
