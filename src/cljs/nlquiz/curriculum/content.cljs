@@ -2,14 +2,13 @@
   (:require
    [cljs-http.client :as http]
    [cljslog.core :as log]
-   [reagent.core :as r]
    [nlquiz.curriculum.functions
     :refer [show-alternate-examples
             show-examples]])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env]]))
 
-(def path-to-content (r/atom {}))
+(def path-to-content (atom {}))
 
 (defn set-content [path]
   (let [root-path (root-path-from-env)]
