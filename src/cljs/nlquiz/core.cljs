@@ -4,7 +4,8 @@
    [cljs.core.async :refer [<!]]
    [cljslog.core :as log]
    [cljs-http.client :as http]
-   [nlquiz.about :as about]   
+   [nlquiz.about :as about]
+   [nlquiz.curriculum.content :as content]
    [nlquiz.quiz :as quiz]
    [nlquiz.parse :as parse]
    [reagent.core :as r]
@@ -42,8 +43,8 @@
 (defn current-page []
   (fn []
     (let [page (:current-page (session/get :route))
+          extra-stuff (:extra-stuff (session/get :route))
           path (session/get :path)]
-      (log/debug (str "current path: " path))
       [:div#page
        [:header
         [:a {:class (if (or (= path "/")
@@ -60,6 +61,7 @@
 
         ]
        [page]
+       [extra-stuff]
        [:footer
         [:p
          [:a {:href "https://github.com/ekoontz/nlquiz"}
@@ -86,6 +88,19 @@
     :curriculum-minor quiz/quiz-component
     :parse  parse/component))
 
+(defn extra-stuff []
+  (fn [] [:div [:h1 "extra stuff is here!!"]]))
+
+(defn extra-stuff-for [route]
+  (case route
+    nil extra-stuff
+    :about extra-stuff
+    :index extra-stuff
+    :curriculum extra-stuff
+    :curriculum-major content/major
+    :curriculum-minor extra-stuff
+    :parse extra-stuff))
+
 ;; -------------------------
 ;; Initialize app
 
@@ -100,6 +115,7 @@
             current-page (:name (:data match))
             route-params (:path-params match)]
         (session/put! :route {:current-page (page-for current-page)
+                              :extra-stuff (extra-stuff-for current-page)
                               :route-params route-params})
         (session/put! :path path)
         ))

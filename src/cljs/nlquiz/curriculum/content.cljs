@@ -4,29 +4,25 @@
    [cljslog.core :as log]
    [nlquiz.curriculum.functions
     :refer [show-alternate-examples
-            show-examples]])
+            show-examples]]
+   [nlquiz.quiz :refer [get-title-for get-curriculum]]
+   [reagent.session :as session]
+   [reagent.core :as r])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env]]))
 
-(def path-to-content (atom {}))
+(def the-content (r/atom ""))
 
 (defn set-content [path]
+  (get-curriculum)
   (let [root-path (root-path-from-env)]
-    (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
-          ;; TODO: check for server errors
-          (if (= 200 (-> response :status))
-            (reset! path-to-content
-                    (merge {path (-> response :body)}
-                           @path-to-content))
-
-            (log/error (str "unexpected response for path:"
-                            path "; response was: " 
-                            response)))))))
-
-(defn get-content [path]
-  (fn [] (rewrite-content (or (get @path-to-content path)
-                              (do (set-content path)
-                                  (get @path-to-content path))))))
+    (go
+      (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
+        (if (= 200 (-> response :status))
+          (reset! the-content (rewrite-content (-> response :body)))
+          (log/error (str "unexpected response for path:"
+                          path "; response was: " 
+                          response)))))))
 
 (defn rewrite-content
   "transform all instances of '[:show-examples ...]' with '[show-examples ...]'"
@@ -50,4 +46,13 @@
     :else
     content))
 
+(defn major []
+  (let [routing-data (session/get :route)
+        major (get-in routing-data [:route-params :major])]
+    (set-content major)
+    (fn []
+      [:div.curr-major
+       [:div.guide
+        [:div.h4 [:h4 (get-title-for major)]]
+        [:div.content @the-content]]])))
 

@@ -9,7 +9,6 @@
    [menard.parse :as parse]
    [nlquiz.constants :refer [spinner]]
    [menard.translate.spec :as tr]
-   [nlquiz.curriculum.content :refer [get-content]]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           parses remove-duplicates]]
    [nlquiz.speak :as speak]
@@ -291,7 +290,7 @@
   )
 
 (def topic-name (r/atom ""))
-(def curriculum-atom (r/atom nil))
+(def curriculum-atom (atom nil))
 (def specs-atom (r/atom
                  (-> "public/edn/specs.edn"
                      inline-resource
@@ -310,6 +309,7 @@
         true node))
 
 (defn get-title-for [major & [minor]]
+  (log/info (str "LOOKING FOR TITLE OF MAJOR: " major " IN: " @curriculum-atom))
   (->> @curriculum-atom
        (map get-name-or-children)
        flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
@@ -389,26 +389,5 @@
     (new-question (get-expression major minor))
     (fn []
       [:div.curr-major
-       (quiz-layout (get-expression major minor))
-       (cond (and
-              major
-              minor)
-             (do
-               (log/info (str "content variant 1 (major and minor)"))
-               [:div.guide
-                [:div.h4
-                 [:h4 (get-title-for major minor)]]
-                [:div.content [(get-content (str major "/" minor))]]])
+       (quiz-layout (get-expression major minor))])))
 
-             major
-             (do
-               (log/info (str "content variant 2 (major only)"))
-               [:div.guide
-                [:div.h4
-                 [:h4 (get-title-for major)]]
-                [:div.content [(get-content major)]]])
-
-             true
-             (do
-               (log/warn (str "no content found."))
-               ""))])))
