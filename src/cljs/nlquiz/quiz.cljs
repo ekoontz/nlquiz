@@ -382,7 +382,6 @@
         (http/get generate-http {:query-params {"q" serialized-spec}})))))
 
 (defn quiz-component []
-  (get-curriculum)
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
@@ -408,12 +407,6 @@
                 [:div.h4
                  [:h4 (get-title-for major)]]
                 [:div.content [(get-content major)]]])
-
-             (and major curriculum (fn? (-> curriculum (get major) :general)))
-             (do
-               (log/debug (str "content variant 3"))
-               [:div.guide
-                [(-> curriculum (get major) :general)]])
 
              true
              (do
