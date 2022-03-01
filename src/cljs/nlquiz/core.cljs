@@ -78,13 +78,13 @@
 ;; Translate routes -> page components
 (defn page-for [route]
   (case route
-    nil #'quiz/quiz
-    :about #'about/component
-    :index #'quiz/quiz
-    :curriculum #'quiz/quiz
-    :curriculum-major #'quiz/quiz-component
-    :curriculum-minor #'quiz/quiz-component
-    :parse  #'parse/component))
+    nil quiz/quiz
+    :about about/component
+    :index quiz/quiz
+    :curriculum quiz/quiz
+    :curriculum-major quiz/quiz-component
+    :curriculum-minor quiz/quiz-component
+    :parse  parse/component))
 
 ;; -------------------------
 ;; Initialize app
