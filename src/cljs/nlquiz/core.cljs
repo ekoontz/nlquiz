@@ -98,7 +98,7 @@
     :index extra-stuff
     :curriculum extra-stuff
     :curriculum-major content/major
-    :curriculum-minor extra-stuff
+    :curriculum-minor content/major-minor
     :parse extra-stuff))
 
 ;; -------------------------

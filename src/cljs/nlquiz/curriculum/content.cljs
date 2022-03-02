@@ -56,3 +56,14 @@
         [:div.h4 [:h4 (get-title-for major)]]
         [:div.content @the-content]]])))
 
+(defn major-minor []
+  (let [routing-data (session/get :route)
+        major (get-in routing-data [:route-params :major])
+        minor (get-in routing-data [:route-params :minor])]
+    (set-content (str major "/" minor))
+    (fn []
+      [:div.curr-major
+       [:div.guide
+        [:div.h4 [:h4 (get-title-for major minor)]]
+        [:div.content @the-content]]])))
+
