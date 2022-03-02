@@ -290,7 +290,7 @@
   )
 
 (def topic-name (r/atom ""))
-(def curriculum-atom (atom nil))
+(def curriculum-atom (r/atom nil))
 (def specs-atom (r/atom
                  (-> "public/edn/specs.edn"
                      inline-resource
