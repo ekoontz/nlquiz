@@ -89,7 +89,7 @@
     :parse  parse/component))
 
 (defn empty []
-  (fn [] []))
+  (fn [] ""))
 
 (defn curriculum-content-for [route]
   (case route
