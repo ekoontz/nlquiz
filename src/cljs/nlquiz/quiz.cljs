@@ -309,7 +309,6 @@
         true node))
 
 (defn get-title-for [major & [minor]]
-  (log/info (str "LOOKING FOR TITLE OF MAJOR: " major " IN: " @curriculum-atom))
   (->> @curriculum-atom
        (map get-name-or-children)
        flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
