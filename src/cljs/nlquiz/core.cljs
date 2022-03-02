@@ -5,7 +5,7 @@
    [cljslog.core :as log]
    [cljs-http.client :as http]
    [nlquiz.about :as about]
-   [nlquiz.curriculum.content :as content]
+   [nlquiz.curriculum :as curriculum]
    [nlquiz.quiz :as quiz]
    [nlquiz.parse :as parse]
    [reagent.core :as r]
@@ -97,8 +97,8 @@
     :about empty
     :index empty
     :curriculum empty
-    :curriculum-major content/major
-    :curriculum-minor content/major-minor
+    :curriculum-major curriculum/major
+    :curriculum-minor curriculum/major-minor
     :parse empty))
 
 ;; -------------------------
