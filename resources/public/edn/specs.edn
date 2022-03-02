@@ -91,6 +91,25 @@
   :head {:comp {:agr {:person :1st}
                 :pronoun? true}}
   :training-wheels {:rule "s"
+                    :comp {:phrasal? false}
+                    :head {:rule "vp"
+                           :head {:phrasal? false}}}}
+ {:major-tags ["pronouns"]
+  :minor-tags ["object-12"]
+  :example "de hond zie me niet"
+  :max-depth 3
+  :reflexive? false
+  :cat :verb
+  :subcat []
+  :sem {:pred :see
+        :obj {:obj :none}}
+  :head {:comp {:agr {:person :1st}
+                :pronoun? true}}
+  :training-wheels {:rule "s"
+                    :comp {:cat :noun
+                           :phrasal? true
+                           :head {:phrasal? false}
+                           :comp {:phrasal? false}}
                     :head {:rule "vp"
                            :head {:phrasal? false}}}}
  {:major-tags ["pronouns"]
@@ -137,17 +156,18 @@
   :comp {:phrasal? true}}
  
   {:major-tags ["pronouns"]
-  :minor-tags ["object-3"]
-  :example "Ik zie haar niet"
-  :max-depth 3
-  :reflexive? false
-  :cat :verb
-  :subcat []
-  :sem {:pred :see
-        :obj {:obj :none}}
-  :head {:comp {:agr {:person :3rd}
-                :pronoun? true}}
-  :training-wheels {:head {:rule "vp"
+   :minor-tags ["object-3"]
+   :example "Ik zie haar niet"
+   :max-depth 3
+   :reflexive? false
+   :cat :verb
+   :subcat []
+   :sem {:pred :see
+         :obj {:obj :none}}
+   :head {:comp {:agr {:person :3rd}
+                 :pronoun? true}}
+   :training-wheels {:comp {:phrasal? false}
+                     :head {:rule "vp"
                            :head {:phrasal? false}}}}
  {:major-tags ["pronouns"]
   :minor-tags ["object-3"]
@@ -162,7 +182,8 @@
          :head {:phrasal? false}},
   :sem {:pred :see, :obj {:obj :none}},
   :max-depth 3,
-  :comp {:phrasal? true}}
+  :comp {:phrasal? true}
+  :training-wheels {:comp {:phrasal? false}}}
  
  {:major-tags ["nouns"]
   :minor-tags ["indef-adj"]
