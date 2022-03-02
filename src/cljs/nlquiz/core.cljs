@@ -43,7 +43,7 @@
 (defn current-page []
   (fn []
     (let [page (:current-page (session/get :route))
-          extra-stuff (:extra-stuff (session/get :route))
+          curriculum-content (:curriculum-content (session/get :route))
           path (session/get :path)]
       [:div#page
        [:header
@@ -61,7 +61,7 @@
 
         ]
        [page]
-       [extra-stuff]
+       [curriculum-content]
        [:footer
         [:p
          [:a {:href "https://github.com/ekoontz/nlquiz"}
@@ -88,18 +88,18 @@
     :curriculum-minor quiz/quiz-component
     :parse  parse/component))
 
-(defn extra-stuff []
-  (fn [] [:div [:h1 "extra stuff is here!!"]]))
+(defn empty []
+  (fn [] []))
 
-(defn extra-stuff-for [route]
+(defn curriculum-content-for [route]
   (case route
-    nil extra-stuff
-    :about extra-stuff
-    :index extra-stuff
-    :curriculum extra-stuff
+    nil empty
+    :about empty
+    :index empty
+    :curriculum empty
     :curriculum-major content/major
     :curriculum-minor content/major-minor
-    :parse extra-stuff))
+    :parse empty))
 
 ;; -------------------------
 ;; Initialize app
@@ -115,7 +115,7 @@
             current-page (:name (:data match))
             route-params (:path-params match)]
         (session/put! :route {:current-page (page-for current-page)
-                              :extra-stuff (extra-stuff-for current-page)
+                              :curriculum-content (curriculum-content-for current-page)
                               :route-params route-params})
         (session/put! :path path)
         ))
