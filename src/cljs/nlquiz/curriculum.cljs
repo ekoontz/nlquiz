@@ -12,7 +12,11 @@
                    [nlquiz.handler :refer [language-server-endpoint-url
                                            root-path-from-env]]))
 
-(def the-content (r/atom ""))
+(def curriculum-content-atom (r/atom ""))
+(def this-many-examples 5)
+
+(def generate-http (str (language-server-endpoint-url) "/generate"))
+(def generate-with-alts-http (str (language-server-endpoint-url) "/generate-with-alts"))
 
 (defn set-content [path]
   (get-curriculum)
@@ -20,7 +24,7 @@
     (go
       (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
         (if (= 200 (-> response :status))
-          (reset! the-content (rewrite-content (-> response :body)))
+          (reset! curriculum-content-atom (rewrite-content (-> response :body)))
           (log/error (str "unexpected response for path:"
                           path "; response was: " 
                           response)))))))
@@ -55,7 +59,7 @@
       [:div.curr-major
        [:div.guide
         [:div.h4 [:h4 (get-title-for major)]]
-        [:div.content @the-content]]])))
+        [:div.content @curriculum-content-atom]]])))
 
 (defn major-minor []
   (let [routing-data (session/get :route)
@@ -66,12 +70,7 @@
       [:div.curr-major
        [:div.guide
         [:div.h4 [:h4 (get-title-for major minor)]]
-        [:div.content @the-content]]])))
-
-(def this-many-examples 5)
-
-(def generate-http (str (language-server-endpoint-url) "/generate"))
-(def generate-with-alts-http (str (language-server-endpoint-url) "/generate-with-alts"))
+        [:div.content @curriculum-content-atom]]])))
 
 (defn new-pair [spec]
   (let [input (r/atom nil)
