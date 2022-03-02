@@ -4,7 +4,6 @@
    [cljs.core.async :refer [<!]]
    [cljslog.core :as log]
    [nlquiz.constants :refer [spinner]]
-   [nlquiz.quiz :refer [get-title-for get-curriculum]]
    [nlquiz.speak :as speak]
    [reagent.session :as session]
    [reagent.core :as r])
@@ -12,11 +11,58 @@
                    [nlquiz.handler :refer [language-server-endpoint-url
                                            root-path-from-env]]))
 
+(def curriculum-atom (r/atom nil))
 (def curriculum-content-atom (r/atom ""))
 (def this-many-examples 5)
 
 (def generate-http (str (language-server-endpoint-url) "/generate"))
 (def generate-with-alts-http (str (language-server-endpoint-url) "/generate-with-alts"))
+
+(defn tree-node [i node selected-path]
+  [:div {:key (str "node-" (swap! i inc))}
+   [:h1
+    (if (:href node)
+      (let [url (str "/nlquiz/curriculum/" (:href node))]
+        (if (and (not (empty? selected-path))
+                 (= url selected-path))
+         (reset! topic-name (:name node)))
+        [:a {:class (if (= url selected-path)
+                      "selected" "")
+             :href (str "/nlquiz/curriculum/" (:href node))}
+         (:name node)])
+      (:name node))]
+   (doall
+    (map (fn [child]
+           (tree-node i child selected-path))
+         (:child node)))])
+
+(defn tree [selected-path]
+  (get-curriculum)
+  (let [i (atom 0)]
+    (fn []
+      [:div.curriculum
+       (doall (map (fn [node]
+                     (tree-node i node selected-path))
+                   @curriculum-atom))])))
+
+(defn get-curriculum []
+  (let [root-path (root-path-from-env)]
+    (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
+          (reset! curriculum-atom (-> response :body))))))
+
+(defn get-name-or-children [node]
+  (cond (and (:child node) (:name node))
+        (cons node (map get-name-or-children (:child node)))
+        (:child node)
+        (map get-name-or-children (:child node))
+        true node))
+
+(defn get-title-for [major & [minor]]
+  (->> @curriculum-atom
+       (map get-name-or-children)
+       flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
+                            (and (nil? minor) (= (:href %) major))))
+       (map :name) first))
 
 (defn set-content [path]
   (get-curriculum)

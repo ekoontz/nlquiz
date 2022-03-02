@@ -7,8 +7,9 @@
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
    [menard.parse :as parse]
-   [nlquiz.constants :refer [spinner]]
    [menard.translate.spec :as tr]
+   [nlquiz.constants :refer [spinner]]
+   [nlquiz.curriculum :as curriculum]
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           parses remove-duplicates]]
    [nlquiz.speak :as speak]
@@ -290,30 +291,10 @@
   )
 
 (def topic-name (r/atom ""))
-(def curriculum-atom (r/atom nil))
 (def specs-atom (r/atom
                  (-> "public/edn/specs.edn"
                      inline-resource
                      cljs.reader/read-string)))
-
-(defn get-curriculum []
-  (let [root-path (root-path-from-env)]
-    (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
-          (reset! curriculum-atom (-> response :body))))))
-
-(defn get-name-or-children [node]
-  (cond (and (:child node) (:name node))
-        (cons node (map get-name-or-children (:child node)))
-        (:child node)
-        (map get-name-or-children (:child node))
-        true node))
-
-(defn get-title-for [major & [minor]]
-  (->> @curriculum-atom
-       (map get-name-or-children)
-       flatten (filter #(or (and minor (= (:href %) (str major "/" minor)))
-                            (and (nil? minor) (= (:href %) major))))
-       (map :name) first))
 
 (defn get-specs []
   (let [root-path (root-path-from-env)]
@@ -331,33 +312,6 @@
                      (not (empty? (filter #(= % minor)
                                           (get spec :minor-tags)))))))))
 
-(defn tree-node [i node selected-path]
-  [:div {:key (str "node-" (swap! i inc))}
-   [:h1
-    (if (:href node)
-      (let [url (str "/nlquiz/curriculum/" (:href node))]
-        (if (and (not (empty? selected-path))
-                 (= url selected-path))
-         (reset! topic-name (:name node)))
-        [:a {:class (if (= url selected-path)
-                      "selected" "")
-             :href (str "/nlquiz/curriculum/" (:href node))}
-         (:name node)])
-      (:name node))]
-   (doall
-    (map (fn [child]
-           (tree-node i child selected-path))
-         (:child node)))])
-
-(defn tree [selected-path]
-  (get-curriculum)
-  (let [i (atom 0)]
-    (fn []
-      [:div.curriculum
-       (doall (map (fn [node]
-                     (tree-node i node selected-path))
-                   @curriculum-atom))])))
-
 (defn quiz []
   (fn []
     (let [routing-data (session/get :route)
@@ -365,7 +319,7 @@
       [:div.curr-major
        [:h4.normal
         "Welcome to nlquiz! Choose a topic to study."]
-       [tree path "curriculum full"]])))
+       [curriculum/tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
   (log/debug (str "get-expression: major: " major))
