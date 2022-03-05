@@ -291,18 +291,46 @@
   )
 
 (def topic-name (r/atom ""))
-(def specs-atom (r/atom
-                 (-> "public/edn/specs.edn"
-                     inline-resource
-                     cljs.reader/read-string)))
+(def specs-atom (r/atom nil))
 
-(defn get-specs []
+(def other-specs-atom (r/atom))
+
+(defn get-specs-from [content]
+  (cond
+    (and (keyword? (first content))
+         (not (= :show-examples (first content))))
+    (get-specs-from (rest content))
+
+    (and (keyword? (first content))
+         (= :show-examples (first content)))
+    (first (rest content))
+
+    (and (or (seq? content)
+             (vector? content))
+         (empty? content))
+    nil
+
+    (or (seq? content)
+        (vector? content))
+    (remove nil?
+            (map get-specs-from
+                 content))
+
+    :else
+    nil))
+
+(defn get-specs [path]
   (let [root-path (root-path-from-env)]
     (go (let [response (<! (http/get (str root-path "edn/specs.edn")))]
-          (reset! specs-atom (-> response :body))))))
+          (reset! specs-atom (-> response :body))
+          (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
+                (reset! other-specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
+                (log/info (str "other-specs-atom: " @other-specs-atom))))))))
 
 (defn find-matching-specs [major & [minor]]
-  (get-specs)
+  (get-specs (if minor
+               (str major "/" minor)
+               major))
   (->> @specs-atom
        (filter (fn [spec]
                  (not (empty? (filter #(= % major)
@@ -338,9 +366,11 @@
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
-        minor (get-in routing-data [:route-params :minor])]
-    (new-question (get-expression major minor))
+        minor (get-in routing-data [:route-params :minor])
+        expression (get-expression major minor)] 
+    (new-question expression)
     (fn []
       [:div.curr-major
-       (quiz-layout (get-expression major minor))])))
+       (quiz-layout expression)])))
+
 
