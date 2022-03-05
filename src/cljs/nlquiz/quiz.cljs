@@ -205,7 +205,7 @@
               ;; got it wrong:
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
-(defn quiz-layout []
+(defn quiz-layout [question-fn]
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))
@@ -213,6 +213,9 @@
                                                  "/morphology/nl")))]
       (reset! grammar (-> grammar-response :body decode-grammar))
       (reset! morphology (-> morphology-response :body decode-morphology))))
+  (log/info (str "CALLING THE Q FN.."))
+  (question-fn)
+  (log/info (str "DONE CALLING THE Q FN."))  
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
@@ -346,24 +349,23 @@
        [curriculum/tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
-  (log/debug (str "get-expression: major: " major))
-  (log/debug (str "get-expression: minor: " minor))
-  (fn []
-    (let [root-path (root-path-from-env)
-          path (if minor
-                 (str major "/" minor)
-                 major)]
-      (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
-            (reset! other-specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
-            (log/info (str "other-specs-atom: " @other-specs-atom))
-            (let [specs @other-specs-atom
-                  spec (-> specs shuffle first)
-                  serialized-spec (-> spec dag_unify.serialization/serialize str)]
-              (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
-                (reset! question-content (-> response :body))
-                (reset! question-html (-> @question-content :source))
-                (log/info (str "question-content: " @question-content))
-                (log/info (str "set question-html: " @question-html)))))))))
+  (log/info (str "get-expression: major: " major))
+  (log/info (str "get-expression: minor: " minor))
+  (let [root-path (root-path-from-env)
+        path (if minor
+               (str major "/" minor)
+               major)]
+    (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
+          (reset! other-specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
+          (log/info (str "other-specs-atom: " @other-specs-atom))
+          (let [specs @other-specs-atom
+                spec (-> specs shuffle first)
+                serialized-spec (-> spec dag_unify.serialization/serialize str)]
+            (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
+              (reset! question-content (-> response :body))
+              (reset! question-html (-> @question-content :source))
+              (log/info (str "question-content: " @question-content))
+              (log/info (str "set question-html: " @question-html))))))))
 
 (defn quiz-component []
   (let [routing-data (session/get :route)
