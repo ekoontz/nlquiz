@@ -51,24 +51,6 @@
 (def parse-http (str (language-server-endpoint-url) "/parse"))
 (def generate-http (str (language-server-endpoint-url) "/generate"))
 
-(defn new-question [specification-fn]
-  (go (let [response (<! (specification-fn))]
-        (log/info (str "one possible correct answer to this question is: '"
-                        (-> response :body :target) "'"))
-        (reset! question-html (-> response :body :source))
-        (reset! guess-text "")
-        (reset! show-answer (-> response :body :target))
-        (reset! show-answer-display "none")
-        (reset! input-state "")
-        (reset! possible-correct-semantics
-                (->> (-> response :body :source-sem)
-                     (map cljs.reader/read-string)
-                     (map dag_unify.serialization/deserialize)))
-        (reset! not-answered-yet? true)
-        (log/info (str "setting focus to input-guess"))
-        (.focus (.getElementById js/document "input-guess"))
-        (log/info (str "set focus to input-guess")))))
-
 (defn show-possible-answer []
   (reset! show-answer-display "block")
   (reset! guess-text "")
@@ -165,7 +147,7 @@
     (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
-    (log/debug (str "submitting your guess: " guess-string))
+    (log/info (str "submitting your guess: " guess-string))
     (reset! translation-of-guess spinner)
     (go (let [parse-response
               (->
@@ -186,6 +168,9 @@
               ]
           (reset! translation-of-guess "")
           (doseq [en-spec specs]
+            (log/info (str "en-spec to be used for /generate/en: " en-spec))
+            (log/info (str "en-spec to be used for /generate/en after dag-to-string: "
+                           (-> en-spec dag-to-string)))
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
                                                                            dag-to-string))))]
