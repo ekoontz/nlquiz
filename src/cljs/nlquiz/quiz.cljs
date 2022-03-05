@@ -206,6 +206,8 @@
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
 (defn quiz-layout []
+  ;; TODO: move this (go) somewhere else: (quiz-layout) should strictly be
+  ;; just the layout of the page with all of the atoms.
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))
