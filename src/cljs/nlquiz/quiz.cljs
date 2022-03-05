@@ -85,13 +85,18 @@
 (def get-question-fn-atom (atom (fn []
                                   (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
 
+(def major-atom (atom nil))
+(def minor-atom (atom nil))
+
 (defn on-submit [e]
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
     (let [correct-answer @show-answer
           question @question-html]
-      (new-question @get-question-fn-atom)
+      (if @minor-atom
+        (get-expression @major-atom @minor-atom)
+        (get-expression @major-atom))
       (show-praise)
       (swap! answer-count inc)
       (reset! got-it-right? false)
@@ -390,6 +395,8 @@
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
+    (reset! major-atom major)
+    (reset! minor-atom minor)    
     (get-expression major minor)
     (fn []
       [:div.curr-major
