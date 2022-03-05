@@ -5,7 +5,7 @@
  [:show-examples
   [{:major-tags ["pronouns"]
     :minor-tags ["object"]
-    :example "Ik zie haar niet"
+    :example "Ik zie haar"
     :max-depth 3
     :reflexive? false
     :cat :verb
@@ -25,7 +25,7 @@
   [
    {:major-tags ["pronouns"]
     :minor-tags ["object"]
-    :example "Ik zie haar niet"
+    :example "Ik zie ze"
     :max-depth 3
     :reflexive? false
     :cat :verb
