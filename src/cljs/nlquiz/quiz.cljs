@@ -27,13 +27,14 @@
 (def input-state (r/atom "disabled"))
 (def possible-correct-semantics (r/atom nil))
 (def question-table (r/atom nil))
-(def question-html (r/atom nil))
+(def question-html (r/atom spinner))
 (def show-answer (r/atom nil))
 (def show-praise-text (r/atom nil))
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
 (def not-answered-yet? (atom true))
+(def question-content (r/atom nil))
 
 ;; group 2
 (def ik-weet-niet-button-state (r/atom initial-button-state))
@@ -51,9 +52,8 @@
 (def generate-http (str (language-server-endpoint-url) "/generate"))
 
 (defn new-question [specification-fn]
-  (reset! question-html spinner)
   (go (let [response (<! (specification-fn))]
-        (log/debug (str "one possible correct answer to this question is: '"
+        (log/info (str "one possible correct answer to this question is: '"
                         (-> response :body :target) "'"))
         (reset! question-html (-> response :body :source))
         (reset! guess-text "")
@@ -205,7 +205,7 @@
               ;; got it wrong:
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
-(defn quiz-layout [get-question-fn]
+(defn quiz-layout []
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))
@@ -219,8 +219,7 @@
    [:div.question-and-guess
     [:form#quiz {:on-submit on-submit}
      [:div.guess
-      [:div.question
-       (or @question-html spinner)]
+      [:div.question @question-html]
       [:div
        [:input {:type "text" :size "1"
                 :input-mode "none"
@@ -249,7 +248,6 @@
                                                (reset! guess-text "")
                                                (reset! not-answered-yet? false)
                                                (reset! got-it-right? true)
-                                               (reset! get-question-fn-atom get-question-fn)
                                                (reset! show-answer correct-answer)
                                                (reset! translation-of-guess "")
                                                (if (.-requestSubmit (.getElementById js/document "quiz"))
@@ -351,24 +349,30 @@
   (log/debug (str "get-expression: major: " major))
   (log/debug (str "get-expression: minor: " minor))
   (fn []
-    (let [specs (find-matching-specs major minor)]
-      (if (empty? specs)
-        (log/error (str "no specs found matching major=" major " and minor=" minor "!!"))
-        (log/info (str "found: " (count specs) " matching major=" major " and minor=" minor ".")))
-      (let [spec (-> specs shuffle first)
-            serialized-spec (-> spec dag_unify.serialization/serialize str)]
-        (log/info (str "requesting generate with spec: " spec))
-        (http/get generate-http {:query-params {"q" serialized-spec}})))))
+    (let [root-path (root-path-from-env)
+          path (if minor
+                 (str major "/" minor)
+                 major)]
+      (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
+            (reset! other-specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
+            (log/info (str "other-specs-atom: " @other-specs-atom))
+            (let [specs @other-specs-atom
+                  spec (-> specs shuffle first)
+                  serialized-spec (-> spec dag_unify.serialization/serialize str)]
+              (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
+                (reset! question-content (-> response :body))
+                (reset! question-html (-> @question-content :source))
+                (log/info (str "question-content: " @question-content))
+                (log/info (str "set question-html: " @question-html)))))))))
 
 (defn quiz-component []
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
-        minor (get-in routing-data [:route-params :minor])
-        expression (get-expression major minor)] 
-    (new-question expression)
+        minor (get-in routing-data [:route-params :minor])]
     (fn []
       [:div.curr-major
-       (quiz-layout expression)])))
+       (quiz-layout (fn [] (get-expression major minor)))])))
+
 
 
