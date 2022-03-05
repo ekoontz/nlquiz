@@ -363,6 +363,7 @@
             (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
               (reset! question-content (-> response :body))
               (reset! question-html (-> @question-content :source))
+              (reset! show-answer (-> @question-content :target))
               (log/info (str "question-content: " @question-content))
               (log/info (str "set question-html: " @question-html))))))))
 
