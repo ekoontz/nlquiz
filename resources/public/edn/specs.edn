@@ -182,8 +182,7 @@
          :head {:phrasal? false}},
   :sem {:pred :see, :obj {:obj :none}},
   :max-depth 3,
-  :comp {:phrasal? true}
-  :training-wheels {:comp {:phrasal? false}}}
+  :comp {:phrasal? true}}
  
  {:major-tags ["nouns"]
   :minor-tags ["indef-adj"]
