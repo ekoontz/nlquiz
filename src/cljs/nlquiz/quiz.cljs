@@ -168,13 +168,11 @@
               ]
           (reset! translation-of-guess "")
           (doseq [en-spec specs]
-            (log/info (str "en-spec to be used for /generate/en: " en-spec))
-            (log/info (str "en-spec to be used for /generate/en after dag-to-string: "
-                           (-> en-spec dag-to-string)))
+            (log/debug (str "en-spec to be used for /generate/en: " en-spec))
             (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                   "/generate/en?spec=" (-> en-spec
                                                                            dag-to-string))))]
-              (log/info (str "gen-response: " (-> gen-response :body :surface)))
+              (log/debug (str "gen-response: " (-> gen-response :body :surface)))
               (reset! translation-of-guess (-> gen-response :body :surface)))) ;; TODO: concatentate rather than overwrite.
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
@@ -261,15 +259,12 @@
                :disabled @ik-weet-niet-button-state}]
       [:button {:class "weetniet"
                 :on-click #(do
-                             (log/info (str "got here 1"))
-;;                             (.focus (.getElementById js/document "other-input"))
-                             (log/info (str "got here 2 (nothing before)"))
+                             ;; this switching-around of focus is necessary
+                             ;; for iOS Safari if I recall.
+                             (.focus (.getElementById js/document "other-input"))
                              (reset! guess-text "")
-                             (log/info (str "got here 3"))                             
                              (reset! translation-of-guess "")
-                             (log/info (str "got here 4"))                             
                              (.focus (.getElementById js/document "input-guess"))
-                             (log/info (str "got here 5"))                             
                              (.preventDefault %))} "Reset"]]]]
    [:div.answertable
     [:table
@@ -288,7 +283,6 @@
 
 (def topic-name (r/atom ""))
 (def specs-atom (r/atom nil))
-(def other-specs-atom (r/atom))
 
 (defn get-specs-from [content]
   (cond
@@ -319,8 +313,7 @@
     (go (let [response (<! (http/get (str root-path "edn/specs.edn")))]
           (reset! specs-atom (-> response :body))
           (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
-                (reset! other-specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
-                (log/info (str "other-specs-atom: " @other-specs-atom))))))))
+                (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))))))))
 
 (defn find-matching-specs [major & [minor]]
   (get-specs (if minor
@@ -345,16 +338,16 @@
        [curriculum/tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
-  (log/info (str "get-expression: major: " major))
-  (log/info (str "get-expression: minor: " minor))
+  (log/debug (str "get-expression: major: " major))
+  (log/debug (str "get-expression: minor: " minor))
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)
                major)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
-          (reset! other-specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
-          (log/info (str "other-specs-atom: " @other-specs-atom))
-          (let [specs @other-specs-atom
+          (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
+          (log/debug (str "specs-atom: " @specs-atom))
+          (let [specs @specs-atom
                 spec (-> specs shuffle first)
                 serialized-spec (-> spec dag_unify.serialization/serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
@@ -365,15 +358,13 @@
                       (->> (-> @question-content :source-sem)
                            (map cljs.reader/read-string)
                            (map dag_unify.serialization/deserialize)))
-              (log/info (str "question-content: " @question-content))
-              (log/info (str "set question-html: " @question-html))
-              (log/info (str "possible-correct-semantics: "
-                             @possible-correct-semantics))
+              (log/debug (str "question-content: " @question-content))
+              (log/debug (str "set question-html: " @question-html))
+              (log/debug (str "possible-correct-semantics: "
+                              @possible-correct-semantics))
               (reset! not-answered-yet? true)
               (reset! input-state "")
-              (log/info (str "setting focus to input-guess.."))
-              (.focus (.getElementById js/document "input-guess"))
-              (log/info (str "set focus to input-guess."))))))))
+              (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn quiz-component []
   (let [routing-data (session/get :route)
