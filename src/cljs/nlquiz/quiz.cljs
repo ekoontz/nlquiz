@@ -205,7 +205,7 @@
               ;; got it wrong:
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
-(defn quiz-layout [question-fn]
+(defn quiz-layout []
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))
@@ -213,9 +213,6 @@
                                                  "/morphology/nl")))]
       (reset! grammar (-> grammar-response :body decode-grammar))
       (reset! morphology (-> morphology-response :body decode-morphology))))
-  (log/info (str "CALLING THE Q FN.."))
-  (question-fn)
-  (log/info (str "DONE CALLING THE Q FN."))  
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
@@ -372,9 +369,10 @@
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
+    (get-expression major minor)
     (fn []
       [:div.curr-major
-       (quiz-layout (fn [] (get-expression major minor)))])))
+       (quiz-layout)])))
 
 
 
