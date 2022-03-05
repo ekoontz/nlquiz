@@ -380,6 +380,7 @@
               (log/info (str "possible-correct-semantics: "
                              @possible-correct-semantics))
               (reset! not-answered-yet? true)
+              (reset! input-state "")
               (log/info (str "setting focus to input-guess.."))
               (.focus (.getElementById js/document "input-guess"))
               (log/info (str "set focus to input-guess."))))))))
