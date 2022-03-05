@@ -28,9 +28,13 @@ echo "** local.sh: language server pid : ${LANGUAGE_SERVER_PID} **"
 # Here we set the ROOT_PATH to "/" but we could have also set it to "", or simply not
 # set it at all, and the same effect would be had.
 LANGUAGE_ENDPOINT_URL=http://${HOSTNAME}:3000 ROOT_PATH="/" \
- lein figwheel &
-
+		     lein figwheel &
 UI_SERVER_PID=$!
+
+if [ "${DEV}" == "" ]; then
+    LANGUAGE_ENDPOINT_URL=http://${HOSTNAME}:3000 ROOT_PATH="/" \
+			 lein cljsbuild once min
+fi
 
 RESPONSE=$(curl -s http://${HOSTNAME}:3000)
 while [ "$?" -ne "0" ]; do
