@@ -205,7 +205,7 @@
               ;; got it wrong:
               (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
-(defn quiz-layout [get-question-fn & [question-type-chooser-fn]]
+(defn quiz-layout [get-question-fn]
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))
@@ -216,7 +216,6 @@
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
-   (if question-type-chooser-fn (question-type-chooser-fn get-question-fn))
    [:div.question-and-guess
     [:form#quiz {:on-submit on-submit}
      [:div.guess
@@ -292,7 +291,6 @@
 
 (def topic-name (r/atom ""))
 (def specs-atom (r/atom nil))
-
 (def other-specs-atom (r/atom))
 
 (defn get-specs-from [content]
