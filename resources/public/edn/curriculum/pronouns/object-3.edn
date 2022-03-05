@@ -17,7 +17,7 @@
             :obj {:obj :none}}
     :training-wheels {:head {:rule "vp"
                              :head {:phrasal? false}}}}
-   ] 1]
+   ] 5]
  
  [:h3 "Third person plural"]
  
@@ -37,6 +37,6 @@
           :obj {:obj :none}}
     :training-wheels {:head {:rule "vp"
                              :head {:phrasal? false}}}}
-   ] 1]]
+   ] 5]]
 
 
