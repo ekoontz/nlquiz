@@ -65,7 +65,9 @@
                      (map cljs.reader/read-string)
                      (map dag_unify.serialization/deserialize)))
         (reset! not-answered-yet? true)
-        (.focus (.getElementById js/document "input-guess")))))
+        (log/info (str "setting focus to input-guess"))
+        (.focus (.getElementById js/document "input-guess"))
+        (log/info (str "set focus to input-guess")))))
 
 (defn show-possible-answer []
   (reset! show-answer-display "block")
@@ -269,10 +271,15 @@
                :disabled @ik-weet-niet-button-state}]
       [:button {:class "weetniet"
                 :on-click #(do
-                             (.focus (.getElementById js/document "other-input"))
+                             (log/info (str "got here 1"))
+;;                             (.focus (.getElementById js/document "other-input"))
+                             (log/info (str "got here 2 (nothing before)"))
                              (reset! guess-text "")
+                             (log/info (str "got here 3"))                             
                              (reset! translation-of-guess "")
+                             (log/info (str "got here 4"))                             
                              (.focus (.getElementById js/document "input-guess"))
+                             (log/info (str "got here 5"))                             
                              (.preventDefault %))} "Reset"]]]]
    [:div.answertable
     [:table
@@ -364,8 +371,18 @@
               (reset! question-content (-> response :body))
               (reset! question-html (-> @question-content :source))
               (reset! show-answer (-> @question-content :target))
+              (reset! possible-correct-semantics
+                      (->> (-> @question-content :source-sem)
+                           (map cljs.reader/read-string)
+                           (map dag_unify.serialization/deserialize)))
               (log/info (str "question-content: " @question-content))
-              (log/info (str "set question-html: " @question-html))))))))
+              (log/info (str "set question-html: " @question-html))
+              (log/info (str "possible-correct-semantics: "
+                             @possible-correct-semantics))
+              (reset! not-answered-yet? true)
+              (log/info (str "setting focus to input-guess.."))
+              (.focus (.getElementById js/document "input-guess"))
+              (log/info (str "set focus to input-guess."))))))))
 
 (defn quiz-component []
   (let [routing-data (session/get :route)
