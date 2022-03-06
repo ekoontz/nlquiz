@@ -204,9 +204,11 @@
       (reset! morphology (-> morphology-response :body decode-morphology)))))
 
 (def timer (atom (.getTime (js/Date.))))
+(def last-guess-checked (r/atom ""))
 
 (defn quiz-layout []
   [:div.main
+   [:div "Last checked: " @last-guess-checked]
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
    [:div.question-and-guess
