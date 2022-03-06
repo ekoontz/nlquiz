@@ -34,7 +34,6 @@
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
 (def not-answered-yet? (atom true))
-(def question-content (r/atom nil))
 
 ;; group 2
 (def ik-weet-niet-button-state (r/atom initial-button-state))
@@ -347,21 +346,14 @@
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
           (log/debug (str "specs-atom: " @specs-atom))
-          (let [specs @specs-atom
-                spec (-> specs shuffle first)
-                serialized-spec (-> spec dag_unify.serialization/serialize str)]
+          (let [serialized-spec (-> @specs-atom shuffle first dag_unify.serialization/serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
-              (reset! question-content (-> response :body))
-              (reset! question-html (-> @question-content :source))
-              (reset! show-answer (-> @question-content :target))
+              (reset! question-html (-> response :body :source))
+              (reset! show-answer (-> response :body :target))
               (reset! possible-correct-semantics
-                      (->> (-> @question-content :source-sem)
+                      (->> (-> response :body :source-sem)
                            (map cljs.reader/read-string)
                            (map dag_unify.serialization/deserialize)))
-              (log/debug (str "question-content: " @question-content))
-              (log/debug (str "set question-html: " @question-html))
-              (log/debug (str "possible-correct-semantics: "
-                              @possible-correct-semantics))
               (reset! not-answered-yet? true)
               (reset! input-state "")
               (.focus (.getElementById js/document "input-guess"))))))))
