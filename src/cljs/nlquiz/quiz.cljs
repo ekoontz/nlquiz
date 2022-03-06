@@ -148,6 +148,8 @@
   (.focus (.getElementById js/document "input-guess"))
   (reset! show-answer correct-answer))
 
+(def last-guess-checked (r/atom ""))
+
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
@@ -173,6 +175,7 @@
                     local-sem  (->> nl-parses
                                     (map #(u/get-in % [:sem])))
                     ]
+                (reset! last-guess-checked guess-string)
                 (reset! translation-of-guess "")
                 (doseq [en-spec specs]
                   (log/debug (str "en-spec to be used for /generate/en: " en-spec))
@@ -204,7 +207,6 @@
       (reset! morphology (-> morphology-response :body decode-morphology)))))
 
 (def timer (atom (.getTime (js/Date.))))
-(def last-guess-checked (r/atom ""))
 
 (defn quiz-layout []
   [:div.main
