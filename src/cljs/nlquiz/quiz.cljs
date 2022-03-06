@@ -22,7 +22,6 @@
 ;; group 1
 (def answer-count (atom 0))
 (def expression-index (atom 0))
-(def guess-text (r/atom nil))
 (def initial-state-is-enabled? true)
 (def initial-button-state (if initial-state-is-enabled? "" "disabled"))
 (def input-state (r/atom "disabled"))
@@ -54,7 +53,6 @@
 
 (defn show-possible-answer []
   (reset! show-answer-display "block")
-  (reset! guess-text "")
   (.focus (.getElementById js/document "input-guess"))
   (reset! translation-of-guess "")
   (js/setTimeout #(reset! show-answer-display "none") 3000)
@@ -122,14 +120,7 @@
                                          (log/debug (str "correct subj: " (serialize (u/get-in correct-semantics [:subj]))))
                                          (log/debug (str "guess   subj: " (serialize (u/get-in guess [:subj]))))
                                          (log/debug (str "correct obj: " (serialize (u/get-in correct-semantics [:obj]))))
-                                         (log/debug (str "guess   obj: " (serialize (u/get-in guess [:obj]))))
-                                         )
-                                         
-                                       (if (not correct?)
-                                         (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
-                                                         (if fail-path (str "fail-path: " fail-path)) "; "
-                                                         "subsumes? " (u/subsumes? correct-semantics guess)))
-                                         (log/debug (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
+                                         (log/debug (str "guess   obj: " (serialize (u/get-in guess [:obj])))))
                                        correct?))))))
                (remove #(= false %)))]
       (not (empty? result)))))
@@ -146,7 +137,6 @@
 
 (defn handle-correct-answer [correct-answer]
   (.focus (.getElementById js/document "other-input"))
-  (reset! guess-text "")
   (reset! not-answered-yet? false)
   (reset! got-it-right? true)
   (reset! show-answer correct-answer)
@@ -232,10 +222,10 @@
                 :id "input-guess"
                 :input-mode "text"
                 :autoComplete "off"
-                :size @guess-input-size
-                :value @guess-text
+                :size "20"
                 :disabled @input-state
                 :on-change (fn [input-element]
+                             (log/info (str "updating input element with: " (-> input-element .-target .-value)))
                              (let [old-timer-value @timer]
                                (reset! timer (.getTime (js/Date.)))
                                (log/debug (str "time since last check: " (- @timer old-timer-value) "; currently: '" (-> input-element .-target .-value) "'"))
@@ -249,7 +239,6 @@
                                      (log/info (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                      (submit-guess (-> input-element .-target .-value)))
                                    (log/debug (str "too recent: not checking.")))
-                                 (reset! guess-text (-> input-element .-target .-value))
                                  (reset! not-answered-yet? true)
                                  (reset! input-state "")
                                  (.focus (.getElementById js/document "input-guess"))
@@ -266,7 +255,6 @@
                              ;; this switching-around of focus is necessary
                              ;; for iOS Safari if I recall.
                              (.focus (.getElementById js/document "other-input"))
-                             (reset! guess-text "")
                              (reset! translation-of-guess "")
                              (.focus (.getElementById js/document "input-guess"))
                              (.preventDefault %))} "Reset"]]]]
@@ -368,7 +356,7 @@
 
 (defn check-user-input []
   (let [last-input-checked @last-input-checked
-        guess-text @guess-text]
+        guess-text (-> input-element .-target .-value)]
     (if (and (seq guess-text)
              (not (= guess-text last-input-checked)))
       (do
@@ -385,7 +373,7 @@
     (reset! major-atom major)
     (reset! minor-atom minor)
     (reset! question-html spinner)
-    (if true
+    (if false
     (timer/every timer/main-thread
                  400
                  check-user-input
