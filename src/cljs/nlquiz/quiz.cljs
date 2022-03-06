@@ -286,12 +286,15 @@
 (defn get-specs-from [content]
   (cond
     (and (keyword? (first content))
-         (not (= :show-examples (first content))))
-    (get-specs-from (rest content))
-
-    (and (keyword? (first content))
          (= :show-examples (first content)))
     (first (rest content))
+
+    (and (keyword? (first content))
+         (= :show-alternate-examples (first content)))
+    (first (rest content))
+
+    (keyword? (first content))
+    (get-specs-from (rest content))
 
     (and (or (seq? content)
              (vector? content))
