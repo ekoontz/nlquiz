@@ -194,16 +194,16 @@
               ;; got it wrong:
               (do (log/debug (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
-(defn quiz-layout []
-  ;; TODO: move this (go) somewhere else: (quiz-layout) should strictly be
-  ;; just the layout of the page with all of the atoms.
+(defn load-linguistics []
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
                                               "/grammar/nl")))
           morphology-response (<! (http/get (str (language-server-endpoint-url)
                                                  "/morphology/nl")))]
       (reset! grammar (-> grammar-response :body decode-grammar))
-      (reset! morphology (-> morphology-response :body decode-morphology))))
+      (reset! morphology (-> morphology-response :body decode-morphology)))))
+  
+(defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
@@ -362,6 +362,7 @@
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn quiz-component []
+  (load-linguistics)
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])
