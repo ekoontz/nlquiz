@@ -143,7 +143,7 @@
 (def grammar (atom nil))
 (def morphology (atom nil))
 
-(defn submit-guess [guess-text the-input-element
+(defn submit-guess [the-input-element
                     parse-html possible-correct-semantics
                     if-correct-fn nl-parses-atom]
   (log/info (str "submit-guess: input: " the-input-element))
@@ -180,23 +180,14 @@
           ;; Show english translation of whatever
           ;; the person said, if it could be parsed as Dutch and
           ;; translated to English:
-          ;; @not-answered-yet? *was* true when we fired off the request, but might not be true anymore,
-          ;; if the user correctly answered this question, and another guess is being submitted
-          ;; because they're still typing after that, so prevent re-evaluation in that case.
-          (if (or false
-                  (and @not-answered-yet?
-                       (= guess-string @guess-text)))
-            (do
-              (log/debug (str "*LOCAL* semantics of guess: " local-sem))
-              (if (evaluate-guess local-sem
-                                  @possible-correct-semantics)
-                ;; got it right!
-                (if-correct-fn guess-string)
-                
-                ;; got it wrong:
-                (do (log/debug (str "sorry, your guess: '" guess-string "' was not right.")))))
-            (do
-              (log/info (str "not updating with any response to guess-string: " guess-string))))))))
+          (log/debug (str "*LOCAL* semantics of guess: " local-sem))
+          (if (evaluate-guess local-sem
+                              @possible-correct-semantics)
+            ;; got it right!
+            (if-correct-fn guess-string)
+            
+            ;; got it wrong:
+            (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))
   
 (defn load-linguistics []
   (go
@@ -242,8 +233,7 @@
                                  (if (> (- @timer old-timer-value) 200)
                                    (do
                                      (log/info (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
-                                     (submit-guess guess-text
-                                                   (-> input-element .-target .-value)
+                                     (submit-guess (-> input-element .-target .-value)
                                                    parse-html
                                                    possible-correct-semantics
                                                    ;; function called if the user guessed correctly:
