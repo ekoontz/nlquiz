@@ -88,18 +88,18 @@
     :curriculum-minor quiz/quiz-component
     :parse  parse/component))
 
-(defn empty []
+(defn empty-content []
   (fn [] ""))
 
 (defn curriculum-content-for [route]
   (case route
-    nil empty
-    :about empty
-    :index empty
-    :curriculum empty
+    nil empty-content
+    :about empty-content
+    :index empty-content
+    :curriculum empty-content
     :curriculum-major curriculum/major
     :curriculum-minor curriculum/major-minor
-    :parse empty))
+    :parse empty-content))
 
 ;; -------------------------
 ;; Initialize app
