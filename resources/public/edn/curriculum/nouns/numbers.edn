@@ -20,7 +20,7 @@
     :cat :noun
     :subcat []
     :sem {:quant :the
-                :ref {:number :plur}
+          :ref {:number :plur}
           :mod {:first {:number? true}
                 :rest {:first {:number? false
                                :rest []}}}}
