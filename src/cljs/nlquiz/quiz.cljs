@@ -144,7 +144,7 @@
 (def morphology (atom nil))
 
 (defn submit-guess [the-input-element
-                    parse-html possible-correct-semantics
+                    possible-correct-semantics
                     if-correct-fn nl-parses-atom]
   (log/info (str "submit-guess: input: " the-input-element))
   (if (empty? @possible-correct-semantics)
@@ -234,7 +234,6 @@
                                    (do
                                      (log/info (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                      (submit-guess (-> input-element .-target .-value)
-                                                   parse-html
                                                    possible-correct-semantics
                                                    ;; function called if the user guessed correctly:
                                                    (fn [correct-answer]
