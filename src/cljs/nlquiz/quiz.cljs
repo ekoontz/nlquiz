@@ -346,14 +346,14 @@
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
           (log/debug (str "specs-atom: " @specs-atom))
-          (let [serialized-spec (-> @specs-atom shuffle first dag_unify.serialization/serialize str)]
+          (let [serialized-spec (-> @specs-atom shuffle first serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
               (reset! question-html (-> response :body :source))
               (reset! show-answer (-> response :body :target))
               (reset! possible-correct-semantics
                       (->> (-> response :body :source-sem)
                            (map cljs.reader/read-string)
-                           (map dag_unify.serialization/deserialize)))
+                           (map deserialize)))
               (reset! not-answered-yet? true)
               (reset! input-state "")
               (.focus (.getElementById js/document "input-guess"))))))))
