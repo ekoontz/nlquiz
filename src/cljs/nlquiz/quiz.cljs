@@ -359,14 +359,11 @@
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn check-user-input []
-  (let [last-input-checked @last-input-checked
-        guess-text (-> input-element .-target .-value)]
-    (if (and (seq guess-text)
-             (not (= guess-text last-input-checked)))
-      (do
-        (log/info (str "check-user-input: submitting your guess: " guess-text))
-        (submit-guess guess-text))
-      (log/debug (str "check-user-input: nothing changed: " guess-text "; last-input-checked: " last-input-checked)))))
+  (.focus (.getElementById js/document "input-guess"))
+  (let [current-input-value (-> (.getElementById js/document "input-guess") .-value)]
+    (log/info (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
+    (if (not (= current-input-value @last-input-checked))
+      (submit-guess current-input-value))))
 
 (defn quiz-component []
   (load-linguistics)
@@ -377,15 +374,9 @@
     (reset! major-atom major)
     (reset! minor-atom minor)
     (reset! question-html spinner)
-    (if false
     (timer/every timer/main-thread
                  400
-                 check-user-input
-                 (fn on-lag [delta]
-                   ;; Optional
-                   (log/info (str "some lag found: delta=" delta))
-                   )))
-    
+                 check-user-input)
     (get-expression major minor)
     (fn []
       [:div.curr-major
