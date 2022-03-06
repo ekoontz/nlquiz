@@ -279,9 +279,9 @@ a.selected {
 div.answertable {
     overflow:scroll;
     padding:0;
-    padding-right:1em;
+    padding-right:1%;
     position:relative;
-    width:100%;
+    float:right;
 }
 
 div.answertable table {
