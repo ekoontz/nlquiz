@@ -35,6 +35,7 @@
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
 (def not-answered-yet? (atom true))
+(def last-input-checked (atom ""))
 
 ;; group 2
 (def ik-weet-niet-button-state (r/atom initial-button-state))
@@ -143,50 +144,65 @@
 (def grammar (atom nil))
 (def morphology (atom nil))
 
-(defn submit-guess [the-input-element
-                    if-correct-fn nl-parses-atom]
-  (log/info (str "submit-guess: input: " the-input-element))
-  (if (empty? @possible-correct-semantics)
-    (log/error (str "there are no correct answers for this question.")))
-  (let [guess-string the-input-element]
-    (log/info (str "submitting your guess: " guess-string))
-    (reset! translation-of-guess spinner)
-    (go (let [parse-response
-              (->
-               (<! (http/get (str (language-server-endpoint-url)
-                                  "/parse-start/nl?q=" guess-string)))
-               :body decode-parse)
-              nl-parses (parses parse-response @grammar @morphology guess-string)
-              specs (->> nl-parses
-                         (map serialize)
-                         set
-                         vec
-                         (map deserialize)
-                         (map tr/nl-to-en-spec)
-                         remove-duplicates)
+(defn handle-correct-answer [correct-answer]
+  (.focus (.getElementById js/document "other-input"))
+  (reset! guess-text "")
+  (reset! not-answered-yet? false)
+  (reset! got-it-right? true)
+  (reset! show-answer correct-answer)
+  (reset! translation-of-guess "")
+  (if (.-requestSubmit (.getElementById js/document "quiz"))
+    (.requestSubmit (.getElementById js/document "quiz"))
+    (.dispatchEvent (.getElementById js/document "quiz")
+                    (new js/Event "submit" {:cancelable true})))
+  (.focus (.getElementById js/document "input-guess"))
+  (reset! show-answer correct-answer))
 
-              local-sem  (->> nl-parses
-                              (map #(u/get-in % [:sem])))
-              ]
-          (reset! translation-of-guess "")
-          (doseq [en-spec specs]
-            (log/debug (str "en-spec to be used for /generate/en: " en-spec))
-            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                  "/generate/en?spec=" (-> en-spec
-                                                                           dag-to-string))))]
-              (log/debug (str "gen-response: " (-> gen-response :body :surface)))
-              (reset! translation-of-guess (-> gen-response :body :surface)))) ;; TODO: concatentate rather than overwrite.
-          ;; Show english translation of whatever
-          ;; the person said, if it could be parsed as Dutch and
-          ;; translated to English:
-          (log/debug (str "*LOCAL* semantics of guess: " local-sem))
-          (if (evaluate-guess local-sem
-                              @possible-correct-semantics)
-            ;; got it right!
-            (if-correct-fn guess-string)
-            
-            ;; got it wrong:
-            (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))
+(defn submit-guess [guess-string]
+  (if (empty? @possible-correct-semantics)
+    (log/error (str "there are no correct answers for this question."))
+    (do
+      (if (not (empty? guess-string))
+        (do
+          (log/info (str "submitting your guess: " guess-string))
+          (reset! translation-of-guess spinner)
+          (go (let [parse-response
+                    (->
+                     (<! (http/get (str (language-server-endpoint-url)
+                                        "/parse-start/nl?q=" guess-string)))
+                     :body decode-parse)
+                    nl-parses (parses parse-response @grammar @morphology guess-string)
+                    specs (->> nl-parses
+                               (map serialize)
+                               set
+                           vec
+                           (map deserialize)
+                           (map tr/nl-to-en-spec)
+                           remove-duplicates)
+                    
+                    local-sem  (->> nl-parses
+                                    (map #(u/get-in % [:sem])))
+                    ]
+                (reset! translation-of-guess "")
+                (doseq [en-spec specs]
+                  (log/debug (str "en-spec to be used for /generate/en: " en-spec))
+                  (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                        "/generate/en?spec=" (-> en-spec
+                                                                                 dag-to-string))))]
+                    (log/debug (str "gen-response: " (-> gen-response :body :surface)))
+                    (reset! translation-of-guess (-> gen-response :body :surface)))) ;; TODO: concatentate rather than overwrite.
+                ;; Show english translation of whatever
+                ;; the person said, if it could be parsed as Dutch and
+                ;; translated to English:
+                (log/debug (str "*LOCAL* semantics of guess: " local-sem))
+                (reset! last-input-checked guess-string)
+                (if (evaluate-guess local-sem
+                                    @possible-correct-semantics)
+                  ;; got it right!
+                  (handle-correct-answer guess-string)
+                  
+                  ;; got it wrong:
+                  (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))))
   
 (defn load-linguistics []
   (go
@@ -197,11 +213,10 @@
       (reset! grammar (-> grammar-response :body decode-grammar))
       (reset! morphology (-> morphology-response :body decode-morphology)))))
 
-(def timer (r/atom (.getTime (js/Date.))))
+(def timer (atom (.getTime (js/Date.))))
 
 (defn quiz-layout []
   [:div.main
-   [:div#timer @timer]
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
    [:div.question-and-guess
@@ -223,7 +238,7 @@
                 :on-change (fn [input-element]
                              (let [old-timer-value @timer]
                                (reset! timer (.getTime (js/Date.)))
-                               (log/info (str "TIME SINCE LAST KEYSTROKE: " (- @timer old-timer-value) "; currently: '" (-> input-element .-target .-value) "'"))
+                               (log/debug (str "time since last check: " (- @timer old-timer-value) "; currently: '" (-> input-element .-target .-value) "'"))
                                (when @not-answered-yet?
                                  (reset! input-state "disabled")
                                  (reset! not-answered-yet? false)                               
@@ -231,24 +246,9 @@
                                  (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                  (if (> (- @timer old-timer-value) 200)
                                    (do
-                                     (log/info (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
-                                     (submit-guess (-> input-element .-target .-value)
-                                                   ;; function called if the user guessed correctly:
-                                                   (fn [correct-answer]
-                                                     (.focus (.getElementById js/document "other-input"))
-                                                     (reset! guess-text "")
-                                                     (reset! not-answered-yet? false)
-                                                     (reset! got-it-right? true)
-                                                     (reset! show-answer correct-answer)
-                                                     (reset! translation-of-guess "")
-                                                     (if (.-requestSubmit (.getElementById js/document "quiz"))
-                                                       (.requestSubmit (.getElementById js/document "quiz"))
-                                                       (.dispatchEvent (.getElementById js/document "quiz")
-                                                                       (new js/Event "submit" {:cancelable true})))
-                                                     (.focus (.getElementById js/document "input-guess"))
-                                                     (reset! show-answer correct-answer)
-                                                     nl-parses-atom)))
-                                   (log/info (str "TOO SHORT!! NOT RECHECKING!")))
+                                     (log/debug (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
+                                     (submit-guess (-> input-element .-target .-value)))
+                                   (log/debug (str "too recent: not checking.")))
                                  (reset! guess-text (-> input-element .-target .-value))
                                  (reset! not-answered-yet? true)
                                  (reset! input-state "")
@@ -367,7 +367,9 @@
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn check-user-input []
-  (log/info (str "checking user input which is currently: " @guess-text)))
+  (if (not (= @guess-text @last-input-checked))
+    (submit-guess @guess-text)
+    (log/debug (str "check-user-input: nothing changed.."))))
 
 (defn quiz-component []
   (load-linguistics)
@@ -380,7 +382,7 @@
     (reset! question-html spinner)
     (if true
     (timer/every timer/main-thread
-                 2000
+                 400
                  check-user-input
                  (fn on-lag [delta]
                    ;; Optional
