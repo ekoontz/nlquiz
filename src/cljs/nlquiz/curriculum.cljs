@@ -3,6 +3,7 @@
    [cljs-http.client :as http]
    [cljs.core.async :refer [<!]]
    [cljslog.core :as log]
+   [dag_unify.serialization :refer [deserialize serialize]]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.speak :as speak]
    [reagent.session :as session]
@@ -120,7 +121,7 @@
 
 (defn new-pair [spec]
   (let [input (r/atom nil)
-        serialized-spec (-> spec dag_unify.serialization/serialize str)
+        serialized-spec (-> spec serialize str)
         get-pair-fn (fn [] (http/get generate-http
                                      {:query-params {"q" serialized-spec
                                                      ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
@@ -135,23 +136,28 @@
 (defn new-pair-alternate-set [spec alternates]
   (let [input-alternate-a (r/atom nil)
         input-alternate-b (r/atom nil)
-        serialized-spec (-> spec dag_unify.serialization/serialize str)
+        serialized-spec (-> spec serialize str)
         serialized-alternates (->> alternates
-                                   (map dag_unify.serialization/serialize)
+                                   (map serialize)
                                    str)
         get-pair-fn (fn [] (http/get generate-with-alts-http
                                      {:query-params {"spec" serialized-spec
                                                      "alts" serialized-alternates
                                                      ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
-                                                     "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))
-                                                     }}))]
+                                                     "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))}}))]
     (go (let [response (<! (get-pair-fn))]
-          (reset! input-alternate-a
-                  {:source (-> response :body (nth 0) :source)
-                   :target (-> response :body (nth 0) :target)})
-          (reset! input-alternate-b
-                  {:source (-> response :body (nth 1) :source)
-                   :target (-> response :body (nth 1) :target)})))
+          (if (true? (-> response :success))
+            (do
+              (reset! input-alternate-a
+                      {:source (-> response :body (nth 0) :source)
+                       :target (-> response :body (nth 0) :target)})
+              (reset! input-alternate-b
+                      {:source (-> response :body (nth 1) :source)
+                       :target (-> response :body (nth 1) :target)}))
+            (log/error (str "failed to get alternate set for spec:    " serialized-spec " and alts: " serialized-alternates "; response was: " response ".")))))
+
+    ;; Note that we're returning the *refererences*, not the responses themselves.
+    ;; The responses will be set asynchronously by the reset!s immediately above.
     [input-alternate-a input-alternate-b]))
 
 (defn add-one [expressions spec]
@@ -188,7 +194,7 @@
 (defn show-alternate-examples [spec alternates]
   (let [expressions (r/atom [])
         specs [spec]]
-    (log/info (str "show-alternate-examples: spec: " spec))
+    (log/debug (str "show-alternate-examples: spec: " spec))
     (doall (take this-many-examples
                  (repeatedly #(add-one-alternates
                                expressions (first (shuffle specs)) alternates))))
