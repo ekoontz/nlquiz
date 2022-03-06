@@ -11,7 +11,8 @@
     :subcat []
     :phrasal? true
     :head {:phrasal? true}
-    :comp {:phrasal? false}}
+    :comp {:phrasal? false}
+    :training-wheels {:head {:rule "nbar"}}}
    
    {:cat :noun
     :agr {:number :sing
@@ -22,7 +23,8 @@
     :subcat []
     :phrasal? true
     :head {:phrasal? true}
-    :comp {:phrasal? false}}
+    :comp {:phrasal? false}
+    :training-wheels {:head {:rule "nbar"}}}
    
    {:cat :noun
     :agr {:number :sing
@@ -33,7 +35,8 @@
     :subcat []
     :phrasal? true
     :head {:phrasal? true}
-    :comp {:phrasal? false}}
+    :comp {:phrasal? false}
+    :training-wheels {:head {:rule "nbar"}}}    
    
    ]]
  
@@ -56,5 +59,6 @@
     :subcat []
     :phrasal? true
     :head {:phrasal? true}
-    :comp {:phrasal? false}}]]]
+    :comp {:phrasal? false}
+    :training-wheels {:head {:rule "nbar"}}}]]]
 
