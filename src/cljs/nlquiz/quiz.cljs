@@ -164,7 +164,7 @@
     (do
       (if (not (empty? guess-string))
         (do
-          (log/info (str "submitting your guess: " guess-string))
+          (log/info (str "submit-guess: your guess: " guess-string))
           (reset! translation-of-guess spinner)
           (go (let [parse-response
                     (->
@@ -190,19 +190,19 @@
                                                         "/generate/en?spec=" (-> en-spec
                                                                                  dag-to-string))))]
                     (log/debug (str "gen-response: " (-> gen-response :body :surface)))
-                    (reset! translation-of-guess (-> gen-response :body :surface)))) ;; TODO: concatentate rather than overwrite.
-                ;; Show english translation of whatever
-                ;; the person said, if it could be parsed as Dutch and
-                ;; translated to English:
-                (log/debug (str "*LOCAL* semantics of guess: " local-sem))
-                (reset! last-input-checked guess-string)
-                (if (evaluate-guess local-sem
-                                    @possible-correct-semantics)
-                  ;; got it right!
-                  (handle-correct-answer guess-string)
-                  
-                  ;; got it wrong:
-                  (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))))
+                    (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
+                    ;; Show english translation of whatever
+                    ;; the person said, if it could be parsed as Dutch and
+                    ;; translated to English:
+                    (log/debug (str "*LOCAL* semantics of guess: " local-sem))
+                    (reset! last-input-checked guess-string)
+                    (if (evaluate-guess local-sem
+                                        @possible-correct-semantics)
+                      ;; got it right!
+                      (handle-correct-answer guess-string)
+                      
+                      ;; got it wrong:
+                      (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))))))
   
 (defn load-linguistics []
   (go
@@ -246,7 +246,7 @@
                                  (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                  (if (> (- @timer old-timer-value) 200)
                                    (do
-                                     (log/debug (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
+                                     (log/info (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                      (submit-guess (-> input-element .-target .-value)))
                                    (log/debug (str "too recent: not checking.")))
                                  (reset! guess-text (-> input-element .-target .-value))
@@ -367,9 +367,14 @@
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn check-user-input []
-  (if (not (= @guess-text @last-input-checked))
-    (submit-guess @guess-text)
-    (log/debug (str "check-user-input: nothing changed.."))))
+  (let [last-input-checked @last-input-checked
+        guess-text @guess-text]
+    (if (and (seq guess-text)
+             (not (= guess-text last-input-checked)))
+      (do
+        (log/info (str "check-user-input: submitting your guess: " guess-text))
+        (submit-guess guess-text))
+      (log/debug (str "check-user-input: nothing changed: " guess-text "; last-input-checked: " last-input-checked)))))
 
 (defn quiz-component []
   (load-linguistics)
