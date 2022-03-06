@@ -93,15 +93,15 @@
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (when (seq guesses-semantics-set)
-    (log/info (str "guess count:  " (count guesses-semantics-set)))
-    (log/info (str "correct count:" (count correct-semantics-set)))
+    (log/debug (str "guess count:  " (count guesses-semantics-set)))
+    (log/debug (str "correct count:" (count correct-semantics-set)))
     (let [result
           (->> guesses-semantics-set
                (mapcat (fn [guess]
-                         (log/info (str "evaluating guess:          " (serialize guess)))
+                         (log/debug (str "evaluating guess:          " (serialize guess)))
                          (->> correct-semantics-set
                               (map (fn [correct-semantics]
-                                     (log/info (str "correct semantics option: " (serialize correct-semantics)))
+                                     (log/debug (str "correct semantics option: " (serialize correct-semantics)))
                                      ;; the guess is correct if and only if there is a semantic interpretation _guess_ of the guess where both of these are true:
                                      ;; - unifying _guess_ with some member _correct-semantics_ of the set of correct semantics is not :fail.
                                      ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
@@ -109,30 +109,30 @@
                                            subsumes? (u/subsumes? correct-semantics guess)
                                            correct? (and (not fails?) subsumes?)
                                            fail-path (if fails? (select-keys (d/fail-path correct-semantics guess) [:path :arg1 :arg2]))]
-                                       (log/info (str "unifies?  " (not fails?)))
-                                       (log/info (str "subsumes? " subsumes?))
-                                       (log/info (str "correct?  " correct?))
+                                       (log/debug (str "unifies?  " (not fails?)))
+                                       (log/debug (str "subsumes? " subsumes?))
+                                       (log/debug (str "correct?  " correct?))
                                        (when (not subsumes?)
-                                         (log/info (str "=== guess was not correct because semantics has something that guess semantics lacks. ==="))
-                                         (log/info (str "correct semantics: " (serialize correct-semantics)))
-                                         (log/info (str "guess semantics:   " (serialize guess)))
-                                         (log/info (str "correct subj: " (serialize (u/get-in correct-semantics [:subj]))))
-                                         (log/info (str "guess   subj: " (serialize (u/get-in guess [:subj]))))
-                                         (log/info (str "correct obj: " (serialize (u/get-in correct-semantics [:obj]))))
-                                         (log/info (str "guess   obj: " (serialize (u/get-in guess [:obj]))))
+                                         (log/debug (str "=== guess was not correct because semantics has something that guess semantics lacks. ==="))
+                                         (log/debug (str "correct semantics: " (serialize correct-semantics)))
+                                         (log/debug (str "guess semantics:   " (serialize guess)))
+                                         (log/debug (str "correct subj: " (serialize (u/get-in correct-semantics [:subj]))))
+                                         (log/debug (str "guess   subj: " (serialize (u/get-in guess [:subj]))))
+                                         (log/debug (str "correct obj: " (serialize (u/get-in correct-semantics [:obj]))))
+                                         (log/debug (str "guess   obj: " (serialize (u/get-in guess [:obj]))))
                                          )
                                          
                                        (if (not correct?)
-                                         (log/info (str "semantics of guess: '" @guess-text "' are NOT correct: "
+                                         (log/debug (str "semantics of guess: '" @guess-text "' are NOT correct: "
                                                          (if fail-path (str "fail-path: " fail-path)) "; "
                                                          "subsumes? " (u/subsumes? correct-semantics guess)))
-                                         (log/info (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
+                                         (log/debug (str "Found an interpretation of the guess '" @guess-text "' which matched the correct semantics.")))
                                        correct?))))))
                (remove #(= false %)))]
       (not (empty? result)))))
 
 ;; quiz-layout -> submit-guess -> evaluate-guess
-;;             -> new-question-fn (in scope of quiz-layout, but called from within evaluate-guess,
+;;             -> get-expression (in scope of quiz-layout, but called from within evaluate-guess,
 ;;                and only called if guess is correct)
 
 (def placeholder "wat is dit in Nederlands?")
@@ -146,7 +146,7 @@
     (log/error (str "there are no correct answers for this question.")))
   (reset! guess-text the-input-element)
   (let [guess-string @guess-text]
-    (log/info (str "submitting your guess: " guess-string))
+    (log/debug (str "submitting your guess: " guess-string))
     (reset! translation-of-guess spinner)
     (go (let [parse-response
               (->
@@ -192,7 +192,7 @@
               (if-correct-fn guess-string)
 
               ;; got it wrong:
-              (do (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))
+              (do (log/debug (str "sorry, your guess: '" guess-string "' was not right.")))))))))
 
 (defn quiz-layout []
   ;; TODO: move this (go) somewhere else: (quiz-layout) should strictly be
