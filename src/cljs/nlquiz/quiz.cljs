@@ -157,7 +157,7 @@
                (<! (http/get (str (language-server-endpoint-url)
                                   "/parse-start/nl?q=" guess-string)))
                :body decode-parse)
-              nl-parses (parses parse-response @grammar @morphology @guess-text)
+              nl-parses (parses parse-response @grammar @morphology guess-string)
               specs (->> nl-parses
                          (map serialize)
                          set
@@ -260,7 +260,8 @@
                                                                        (new js/Event "submit" {:cancelable true})))
                                                      (.focus (.getElementById js/document "input-guess"))
                                                      (reset! show-answer correct-answer)
-                                                     nl-parses-atom))))
+                                                     nl-parses-atom)))
+                                   (log/info (str "TOO SHORT!! NOT RECHECKING!")))
                                  (reset! guess-text (-> input-element .-target .-value))
                                  (reset! not-answered-yet? true)
                                  (reset! input-state "")
