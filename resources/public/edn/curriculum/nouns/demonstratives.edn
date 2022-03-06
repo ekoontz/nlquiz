@@ -11,11 +11,14 @@
     :subcat []
     :phrasal? true
     :comp {:phrasal? false
-                 :sem {:pred :this}}}
+           :sem {:pred :this}}
+    :training-wheels {:rule "np:2"}}
    {:cat :noun
           :subcat []
     :phrasal? true
     :comp {:phrasal? false
-           :sem {:pred :that}}}]
+           :sem {:pred :that}}
+    :training-wheels {:rule "np:2"}}]
   10]]
+
 
