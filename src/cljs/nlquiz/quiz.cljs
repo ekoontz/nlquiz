@@ -54,6 +54,7 @@
   (reset! show-answer-display "block")
   (reset! guess-text "")
   (.focus (.getElementById js/document "input-guess"))
+  (reset! translation-of-guess "")
   (js/setTimeout #(reset! show-answer-display "none") 3000)
   false)
 
@@ -368,7 +369,8 @@
         major (get-in routing-data [:route-params :major])
         minor (get-in routing-data [:route-params :minor])]
     (reset! major-atom major)
-    (reset! minor-atom minor)    
+    (reset! minor-atom minor)
+    (reset! question-html spinner)
     (get-expression major minor)
     (fn []
       [:div.curr-major
