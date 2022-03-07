@@ -33,7 +33,6 @@
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
-(def not-answered-yet? (atom true))
 (def last-input-checked (atom ""))
 
 ;; group 2
@@ -144,7 +143,6 @@
 (defn handle-correct-answer [correct-answer]
   (set-input-value)
   (.focus (.getElementById js/document "other-input"))
-  (reset! not-answered-yet? false)
   (reset! got-it-right? true)
   (reset! translation-of-guess "")
   (if (.-requestSubmit (.getElementById js/document "quiz"))
@@ -244,7 +242,6 @@
                                  (log/info (str "nothing new: last thing checked was current input value which is: " guess-string))
                                  (do
                                    (reset! input-state "disabled")
-                                   (reset! not-answered-yet? false)                               
                                    (log/debug (str "current guess size: " (-> input-element .-target .-value count)))
                                    (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                    (if (> (- @timer old-timer-value) 200)
@@ -252,7 +249,6 @@
                                        (log/info (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                        (submit-guess (-> input-element .-target .-value)))
                                      (log/debug (str "too recent: not checking.")))
-                                   (reset! not-answered-yet? true)
                                    (reset! input-state "")
                                    (.focus (.getElementById js/document "input-guess"))))))
                 }]]] ;; /div.guess
@@ -362,7 +358,6 @@
                       (->> (-> response :body :source-sem)
                            (map cljs.reader/read-string)
                            (map deserialize)))
-              (reset! not-answered-yet? true)
               (reset! input-state "")
               (.focus (.getElementById js/document "input-guess"))))))))
 
