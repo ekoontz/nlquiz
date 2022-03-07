@@ -139,9 +139,7 @@
   (-> (.getElementById js/document "input-guess") .-value))
 
 (defn set-input-value []
-  (log/info (str "setting the input value from: " (get-input-value) " to blank."))
-  (set! (-> (.getElementById js/document "input-guess") .-value) "")
-  (log/info (str "after setting the input value: " (get-input-value))))
+  (set! (-> (.getElementById js/document "input-guess") .-value) ""))
 
 (defn handle-correct-answer [correct-answer]
   (set-input-value)
@@ -173,40 +171,37 @@
                     specs (->> nl-parses
                                (map serialize)
                                set
-                           vec
-                           (map deserialize)
-                           (map tr/nl-to-en-spec)
-                           remove-duplicates)
-                    
+                               vec
+                               (map deserialize)
+                               (map tr/nl-to-en-spec)
+                               remove-duplicates)
                     local-sem  (->> nl-parses
                                     (map #(u/get-in % [:sem])))
                     current-input-value (get-input-value)]
                 (if (not (= current-input-value guess-string))
-                  (log/info (str "submit-guess: current-input-value: [" current-input-value "] != [" guess-string "]"))
+                  (log/info (str "submit-guess: ignoring guess-string: [" guess-string "] since it's older than current-input-value: [" current-input-value "]"))
 
                   ;; else
-                  (doseq [en-spec specs]
-                    (log/debug (str "en-spec to be used for /generate/en: " en-spec))
-                    (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                          "/generate/en?spec=" (-> en-spec
-                                                                                   dag-to-string))))]
-                      (log/info (str "english generation response: " (-> gen-response :body :surface)))
-                      (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
-                      ;; Show english translation of whatever
-                      ;; the person said, if it could be parsed as Dutch and
-                      ;; translated to English:
-                      (log/debug (str "*LOCAL* semantics of guess: " local-sem))
-                      ;;                    (reset! last-input-checked guess-string)
-
-                      (reset! last-input-checked guess-string)
-
-                      (if (evaluate-guess local-sem
-                                          @possible-correct-semantics)
-                        ;; got it right!
-                        (handle-correct-answer guess-string)
+                  (do
+                    (log/info (str "doing english generation with this many specs: " (count specs)))
+                    (log/info (str "doing english generation with specs: " (clojure.string/join "," specs)))
+                    (doseq [en-spec specs]
+                      (log/debug (str "en-spec to be used for /generate/en: " en-spec))
+                      (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                            "/generate/en?spec=" (-> en-spec
+                                                                                     dag-to-string))))]
+                        (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface)))
+                        (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
+                        (reset! last-input-checked guess-string)
                         
-                        ;; got it wrong:
-                        (log/info (str "sorry, your guess: '" guess-string "' was not right.")))))))))))))
+                        (log/info (str "evaluating your guess: " guess-string))
+                        (if (evaluate-guess local-sem
+                                            @possible-correct-semantics)
+                          ;; got it right!
+                          (handle-correct-answer guess-string)
+                          
+                          ;; got it wrong:
+                          (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))))))))
   
 (defn load-linguistics []
   (go
@@ -374,7 +369,7 @@
 (defn check-user-input []
   (.focus (.getElementById js/document "input-guess"))
   (let [current-input-value (get-input-value)]
-    (log/info (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
+    (log/debug (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
     (if (not (= current-input-value @last-input-checked))
       (submit-guess current-input-value))))
 
