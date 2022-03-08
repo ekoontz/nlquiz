@@ -81,7 +81,7 @@
         (get-expression @major-atom))
       (show-praise)
       (swap! answer-count inc)
-      (reset! got-it-right? false)
+;;      (reset! got-it-right? false)
       (reset! question-table
               (concat
                [{:source question :target correct-answer}]
@@ -158,6 +158,8 @@
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
+
+    ;; else, there are some correct answers:
     (do
       (if (not (empty? guess-string))
         (do
@@ -184,31 +186,30 @@
 
                   ;; else
                   (do
-                    (log/info (str "doing english generation with this many specs: " (count specs)))
+                    (log/debug (str "doing english generation with this many specs: " (count specs)))
                     (log/debug (str "doing english generation with specs: " (clojure.string/join "," specs)))
                     (reset! got-it-right? false)
                     (doseq [en-spec specs]
-                      (log/info (str "looking at one of the specs with got-it-right? " @got-it-right?))
-                      (log/debug (str "en-spec to be used for /generate/en: " en-spec))
-                      (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                            "/generate/en?spec=" (-> en-spec
-                                                                                     dag-to-string))))]
-                        (log/debug (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface)))
-                        (log/info (str "evaluating gen-response with: got-it-right? " @got-it-right?))
-                        (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
-                        (reset! last-input-checked guess-string)
-                        (if (evaluate-guess local-sem
-                                            @possible-correct-semantics)
-                          ;; got it right!
-                          (if (false? @got-it-right?)
-                            (do
-                              (log/info (str "setting got-it-right? to true."))
-                              (reset! got-it-right? true)
-                              (handle-correct-answer guess-string))
-                            (log/info (str "answer was right, but it was already answered right.")))
-                          
-                          ;; got it wrong:
-                          (log/debug (str "sorry, your guess: '" guess-string "' was not right."))))))))))))))
+                      (log/info (str "en-spec to be used for /generate/en: " en-spec))
+                      (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                                "/generate/en?spec=" (-> en-spec
+                                                                                         dag-to-string))))]
+                            (log/info (str "checking got-it-right?: " @got-it-right?))
+                            (if (false? @got-it-right?)
+                              (do
+                                (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
+                                (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
+                                (reset! last-input-checked guess-string)
+                                (if (evaluate-guess local-sem
+                                                    @possible-correct-semantics)
+                                  ;; got it right!
+                                  (do (log/info (str "you got it right!"))
+                                      (reset! got-it-right? true)
+                                      (handle-correct-answer guess-string))
+                                  
+                                  ;; got it wrong:
+                                  (do (log/debug (str "sorry, your guess: '" guess-string "' was not right."))
+                                      :incorrect))))))))))))))))
   
 (defn load-linguistics []
   (go
@@ -368,6 +369,7 @@
                            (map cljs.reader/read-string)
                            (map deserialize)))
               (reset! input-state "")
+              (reset! got-it-right? false)
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn check-user-input []
