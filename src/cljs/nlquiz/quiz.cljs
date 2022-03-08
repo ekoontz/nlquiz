@@ -70,7 +70,7 @@
 (def minor-atom (atom nil))
 
 (defn on-submit [e]
-  (log/info (str "on-submit: start: show-answer is: " @show-answer))
+  (log/debug (str "on-submit: start: show-answer is: " @show-answer))
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
@@ -82,7 +82,7 @@
         (get-expression @major-atom))
       (show-praise)
       (swap! answer-count inc)
-      (log/info (str "ok, concatting the correct answer: " @show-answer))
+      (log/debug (str "ok, concatting the correct answer: " @show-answer))
       (reset! question-table
               (concat
                [{:source question :target @show-answer}]
@@ -144,11 +144,11 @@
   (set! (-> (.getElementById js/document "input-guess") .-value) ""))
 
 (defn handle-correct-answer [correct-answer]
-  (log/info (str "handle-correct-answer with: " correct-answer))
+  (log/debug (str "handle-correct-answer with: " correct-answer))
   (set-input-value)
   (.focus (.getElementById js/document "other-input"))
   (reset! translation-of-guess "")
-  (log/info (str "setting show-answer to correct-answer: " correct-answer))
+  (log/debug (str "setting show-answer to correct-answer: " correct-answer))
   (reset! show-answer correct-answer)
   (if (.-requestSubmit (.getElementById js/document "quiz"))
     (.requestSubmit (.getElementById js/document "quiz"))
@@ -189,11 +189,11 @@
                     (log/debug (str "doing english generation with this many specs: " (count specs)))
                     (log/debug (str "doing english generation with specs: " (clojure.string/join "," specs)))
                     (doseq [en-spec specs]
-                      (log/info (str "en-spec to be used for /generate/en: " en-spec))
+                      (log/debug (str "en-spec to be used for /generate/en: " en-spec))
                       (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                 "/generate/en?spec=" (-> en-spec
                                                                                          dag-to-string))))]
-                            (log/info (str "generating english: checking got-it-right?: " @got-it-right?))
+                            (log/debug (str "generating english: checking got-it-right?: " @got-it-right?))
                             ;; if user's already answered the question correctly, then
                             ;; @got-it-right? will be true. If true, then don't re-evaluate.
                             (if (false? @got-it-right?)
@@ -207,7 +207,7 @@
                                 (if (evaluate-guess local-sem
                                                     @possible-correct-semantics)
                                   ;; got it right!
-                                  (do (log/info (str "you got it right!"))
+                                  (do (log/debug (str "you got it right!"))
                                       (reset! got-it-right? true)
                                       (handle-correct-answer guess-string))
                                   
@@ -258,7 +258,7 @@
                                    (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                    (if (> (- @timer old-timer-value) 200)
                                      (do
-                                       (log/info (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
+                                       (log/debug (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                        (submit-guess (-> input-element .-target .-value)))
                                      (log/debug (str "too recent: not checking.")))
                                    (reset! input-state "")
@@ -368,7 +368,7 @@
           (let [serialized-spec (-> @specs-atom shuffle first serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
               (reset! question-html (-> response :body :source))
-              (log/info (str "get-expression: setting got-it-right? to false."))
+              (log/debug (str "get-expression: setting got-it-right? to false."))
               (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
               (reset! possible-correct-semantics
