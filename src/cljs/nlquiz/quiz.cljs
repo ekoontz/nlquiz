@@ -187,13 +187,12 @@
                   (do
                     (log/debug (str "doing english generation with this many specs: " (count specs)))
                     (log/debug (str "doing english generation with specs: " (clojure.string/join "," specs)))
-                    (reset! got-it-right? false)
                     (doseq [en-spec specs]
                       (log/info (str "en-spec to be used for /generate/en: " en-spec))
                       (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                 "/generate/en?spec=" (-> en-spec
                                                                                          dag-to-string))))]
-                            (log/info (str "checking got-it-right?: " @got-it-right?))
+                            (log/info (str "generating english: checking got-it-right?: " @got-it-right?))
                             ;; if user's already answered the question correctly, then
                             ;; @got-it-right? will be true. If true, then don't re-evaluate.
                             (if (false? @got-it-right?)
@@ -365,6 +364,8 @@
           (let [serialized-spec (-> @specs-atom shuffle first serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
               (reset! question-html (-> response :body :source))
+              (log/info (str "get-expression: setting got-it-right? to false."))
+              (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
               (reset! possible-correct-semantics
                       (->> (-> response :body :source-sem)
