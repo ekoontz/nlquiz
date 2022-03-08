@@ -70,20 +70,22 @@
 (def minor-atom (atom nil))
 
 (defn on-submit [e]
-  (log/info (str "on-submit: start."))
+  (log/info (str "on-submit: start: show-answer is: " @show-answer))
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
     (let [correct-answer @show-answer
           question @question-html]
+      ;; get the new expression now to save time, since this takes awhile..
       (if @minor-atom
         (get-expression @major-atom @minor-atom)
         (get-expression @major-atom))
       (show-praise)
       (swap! answer-count inc)
+      (log/info (str "ok, concatting the correct answer: " @show-answer))
       (reset! question-table
               (concat
-               [{:source question :target correct-answer}]
+               [{:source question :target @show-answer}]
                (take 4 @question-table))))
 
     ;; else
@@ -142,16 +144,16 @@
 
 (defn handle-correct-answer [correct-answer]
   (log/info (str "handle-correct-answer with: " correct-answer))
-  (when true
-    (set-input-value)
-    (.focus (.getElementById js/document "other-input"))
-    (reset! translation-of-guess "")
-    (if (.-requestSubmit (.getElementById js/document "quiz"))
-      (.requestSubmit (.getElementById js/document "quiz"))
-      (.dispatchEvent (.getElementById js/document "quiz")
-                      (new js/Event "submit" {:cancelable true})))
-    (.focus (.getElementById js/document "input-guess"))
-    (reset! show-answer correct-answer)))
+  (set-input-value)
+  (.focus (.getElementById js/document "other-input"))
+  (reset! translation-of-guess "")
+  (log/info (str "setting show-answer to correct-answer: " correct-answer))
+  (reset! show-answer correct-answer)
+  (if (.-requestSubmit (.getElementById js/document "quiz"))
+    (.requestSubmit (.getElementById js/document "quiz"))
+    (.dispatchEvent (.getElementById js/document "quiz")
+                    (new js/Event "submit" {:cancelable true})))
+  (.focus (.getElementById js/document "input-guess")))
   
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
