@@ -394,10 +394,9 @@
     (reset! major-atom major)
     (reset! minor-atom minor)
     (reset! question-html spinner)
-    (if true
-      (timer/every timer/main-thread
-                   400
-                   check-user-input))
+    (timer/every timer/main-thread
+                 400
+                 check-user-input)
     (get-expression major minor)
     (fn []
       [:div.curr-major
