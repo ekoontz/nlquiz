@@ -195,8 +195,10 @@
                                                                                          dag-to-string))))]
                             (log/info (str "checking got-it-right?: " @got-it-right?))
                             ;; if user's already answered the question correctly, then
-                            ;; don't re-evaluate:
+                            ;; @got-it-right? will be true. If true, then don't re-evaluate.
                             (if (false? @got-it-right?)
+
+                              ;; if false, then evaluate user's answer:
                               (do
                                 (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
                                 (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
@@ -209,8 +211,7 @@
                                       (handle-correct-answer guess-string))
                                   
                                   ;; got it wrong:
-                                  (do (log/debug (str "sorry, your guess: '" guess-string "' was not right."))
-                                      :incorrect))))))))))))))))
+                                  (log/debug (str "sorry, your guess: '" guess-string "' was not right.")))))))))))))))))
   
 (defn load-linguistics []
   (go
