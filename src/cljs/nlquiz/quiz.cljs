@@ -201,7 +201,8 @@
                               ;; if false, then evaluate user's answer:
                               (do
                                 (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
-                                (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
+                                (if (not (nil? (-> gen-response :body :sem deserialize)))
+                                  (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
                                 (reset! last-input-checked guess-string)
                                 (if (evaluate-guess local-sem
                                                     @possible-correct-semantics)
