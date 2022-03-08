@@ -138,7 +138,8 @@
 (def morphology (atom nil))
 
 (defn get-input-value []
-  (-> (.getElementById js/document "input-guess") .-value))
+  (if (.getElementById js/document "input-guess")
+    (-> (.getElementById js/document "input-guess") .-value)))
 
 (defn set-input-value []
   (set! (-> (.getElementById js/document "input-guess") .-value) ""))
