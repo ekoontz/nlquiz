@@ -62,7 +62,7 @@
   (reset! show-praise-text (-> praises shuffle first))
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
-(def got-it-right? (atom false))
+(def got-it-right? (atom nil))
 (def get-question-fn-atom (atom (fn []
                                   (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
 
@@ -81,7 +81,6 @@
         (get-expression @major-atom))
       (show-praise)
       (swap! answer-count inc)
-;;      (reset! got-it-right? false)
       (reset! question-table
               (concat
                [{:source question :target correct-answer}]
@@ -146,7 +145,6 @@
   (when true
     (set-input-value)
     (.focus (.getElementById js/document "other-input"))
-    (reset! got-it-right? true)
     (reset! translation-of-guess "")
     (if (.-requestSubmit (.getElementById js/document "quiz"))
       (.requestSubmit (.getElementById js/document "quiz"))
@@ -158,7 +156,6 @@
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
-
     ;; else, there are some correct answers:
     (do
       (if (not (empty? guess-string))
@@ -195,6 +192,8 @@
                                                                 "/generate/en?spec=" (-> en-spec
                                                                                          dag-to-string))))]
                             (log/info (str "checking got-it-right?: " @got-it-right?))
+                            ;; if user's already answered the question correctly, then
+                            ;; don't re-evaluate:
                             (if (false? @got-it-right?)
                               (do
                                 (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
@@ -369,7 +368,6 @@
                            (map cljs.reader/read-string)
                            (map deserialize)))
               (reset! input-state "")
-              (reset! got-it-right? false)
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn check-user-input []
