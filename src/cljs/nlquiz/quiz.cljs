@@ -225,7 +225,6 @@
 
 (defn quiz-layout []
   [:div.main
-   [:div "Last checked: " @last-input-checked]
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
    [:div#praise {:style {:display @show-praise-display}} @show-praise-text]
    [:div.question-and-guess
@@ -269,12 +268,15 @@
      [:div.dontknow
       [:input {:class "weetniet" :type "submit" :value "Ik weet het niet"
                :disabled @ik-weet-niet-button-state}]
+
+      ;; reset button
       [:button {:class "weetniet"
                 :on-click #(do
                              ;; this switching-around of focus is necessary
                              ;; for iOS Safari if I recall.
                              (.focus (.getElementById js/document "other-input"))
                              (reset! translation-of-guess "")
+                             (set-input-value "")
                              (.focus (.getElementById js/document "input-guess"))
                              (.preventDefault %))} "Reset"]]]]
    [:div.answertable
