@@ -379,7 +379,6 @@
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn check-user-input []
-  (.focus (.getElementById js/document "input-guess"))
   (let [current-input-value (get-input-value)]
     (log/debug (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
     (if (not (= current-input-value @last-input-checked))
