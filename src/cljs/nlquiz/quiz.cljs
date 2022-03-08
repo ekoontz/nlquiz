@@ -89,7 +89,8 @@
                (take 4 @question-table))))
 
     ;; else
-    (show-possible-answer))
+    (do (set-input-value "")    
+        (show-possible-answer)))
   (.focus (.getElementById js/document "input-guess"))
   (.click (.getElementById js/document "input-guess")))
 
