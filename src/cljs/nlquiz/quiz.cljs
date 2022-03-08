@@ -390,7 +390,7 @@
     (reset! major-atom major)
     (reset! minor-atom minor)
     (reset! question-html spinner)
-    (if false
+    (if true
       (timer/every timer/main-thread
                    400
                    check-user-input))
