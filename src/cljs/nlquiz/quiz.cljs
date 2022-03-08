@@ -70,6 +70,7 @@
 (def minor-atom (atom nil))
 
 (defn on-submit [e]
+  (log/info (str "on-submit: start."))
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
@@ -141,24 +142,26 @@
   (set! (-> (.getElementById js/document "input-guess") .-value) ""))
 
 (defn handle-correct-answer [correct-answer]
-  (set-input-value)
-  (.focus (.getElementById js/document "other-input"))
-  (reset! got-it-right? true)
-  (reset! translation-of-guess "")
-  (if (.-requestSubmit (.getElementById js/document "quiz"))
-    (.requestSubmit (.getElementById js/document "quiz"))
-    (.dispatchEvent (.getElementById js/document "quiz")
-                    (new js/Event "submit" {:cancelable true})))
-  (.focus (.getElementById js/document "input-guess"))
-  (reset! show-answer correct-answer))
-
+  (log/info (str "handle-correct-answer with: " correct-answer))
+  (when true
+    (set-input-value)
+    (.focus (.getElementById js/document "other-input"))
+    (reset! got-it-right? true)
+    (reset! translation-of-guess "")
+    (if (.-requestSubmit (.getElementById js/document "quiz"))
+      (.requestSubmit (.getElementById js/document "quiz"))
+      (.dispatchEvent (.getElementById js/document "quiz")
+                      (new js/Event "submit" {:cancelable true})))
+    (.focus (.getElementById js/document "input-guess"))
+    (reset! show-answer correct-answer)))
+  
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
     (do
       (if (not (empty? guess-string))
         (do
-          (log/info (str "submit-guess: your guess: " guess-string))
+          (log/debug (str "submit-guess: your guess: " guess-string))
           (reset! translation-of-guess spinner)
           (go (let [parse-response
                     (->
@@ -177,29 +180,35 @@
                                     (map #(u/get-in % [:sem])))
                     current-input-value (get-input-value)]
                 (if (not (= current-input-value guess-string))
-                  (log/info (str "submit-guess: ignoring guess-string: [" guess-string "] since it's older than current-input-value: [" current-input-value "]"))
+                  (log/debug (str "submit-guess: ignoring guess-string: [" guess-string "] since it's older than current-input-value: [" current-input-value "]"))
 
                   ;; else
                   (do
                     (log/info (str "doing english generation with this many specs: " (count specs)))
-                    (log/info (str "doing english generation with specs: " (clojure.string/join "," specs)))
+                    (log/debug (str "doing english generation with specs: " (clojure.string/join "," specs)))
+                    (reset! got-it-right? false)
                     (doseq [en-spec specs]
+                      (log/info (str "looking at one of the specs with got-it-right? " @got-it-right?))
                       (log/debug (str "en-spec to be used for /generate/en: " en-spec))
                       (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                             "/generate/en?spec=" (-> en-spec
                                                                                      dag-to-string))))]
-                        (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface)))
+                        (log/debug (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface)))
+                        (log/info (str "evaluating gen-response with: got-it-right? " @got-it-right?))
                         (reset! translation-of-guess (-> gen-response :body :surface)) ;; TODO: concatentate rather than overwrite.
                         (reset! last-input-checked guess-string)
-                        
-                        (log/info (str "evaluating your guess: " guess-string))
                         (if (evaluate-guess local-sem
                                             @possible-correct-semantics)
                           ;; got it right!
-                          (handle-correct-answer guess-string)
+                          (if (false? @got-it-right?)
+                            (do
+                              (log/info (str "setting got-it-right? to true."))
+                              (reset! got-it-right? true)
+                              (handle-correct-answer guess-string))
+                            (log/info (str "answer was right, but it was already answered right.")))
                           
                           ;; got it wrong:
-                          (log/info (str "sorry, your guess: '" guess-string "' was not right."))))))))))))))
+                          (log/debug (str "sorry, your guess: '" guess-string "' was not right."))))))))))))))
   
 (defn load-linguistics []
   (go
@@ -235,11 +244,11 @@
                 :on-change (fn [input-element]
                              (let [old-timer-value @timer
                                    guess-string (-> input-element .-target .-value)]
-                               (log/info (str "updating input element with: " guess-string))
+                               (log/debug (str "updating input element with: " guess-string))
                                (reset! timer (.getTime (js/Date.)))
                                (log/debug (str "time since last check: " (- @timer old-timer-value) "; currently: '" guess-string "'"))
                                (if (= @last-input-checked guess-string)
-                                 (log/info (str "nothing new: last thing checked was current input value which is: " guess-string))
+                                 (log/debug (str "nothing new: last thing checked was current input value which is: " guess-string))
                                  (do
                                    (reset! input-state "disabled")
                                    (log/debug (str "current guess size: " (-> input-element .-target .-value count)))
@@ -377,9 +386,10 @@
     (reset! major-atom major)
     (reset! minor-atom minor)
     (reset! question-html spinner)
-    (timer/every timer/main-thread
-                 400
-                 check-user-input)
+    (if false
+      (timer/every timer/main-thread
+                   400
+                   check-user-input))
     (get-expression major minor)
     (fn []
       [:div.curr-major
