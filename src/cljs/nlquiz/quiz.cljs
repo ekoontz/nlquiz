@@ -227,7 +227,7 @@
       (reset! grammar (-> grammar-response :body decode-grammar))
       (reset! morphology (-> morphology-response :body decode-morphology)))))
 
-(def timer (atom (.getTime (js/Date.))))
+(def timer-ref (atom (.getTime (js/Date.))))
 
 (defn quiz-layout []
   [:div.main
@@ -249,18 +249,18 @@
                 :size "20"
                 :disabled @input-state
                 :on-change (fn [input-element]
-                             (let [old-timer-value @timer
+                             (let [old-timer-value @timer-ref
                                    guess-string (-> input-element .-target .-value)]
                                (log/debug (str "updating input element with: " guess-string))
-                               (reset! timer (.getTime (js/Date.)))
-                               (log/debug (str "time since last check: " (- @timer old-timer-value) "; currently: '" guess-string "'"))
+                               (reset! timer-ref (.getTime (js/Date.)))
+                               (log/debug (str "time since last check: " (- @timer-ref old-timer-value) "; currently: '" guess-string "'"))
                                (if (= @last-input-checked guess-string)
                                  (log/debug (str "nothing new: last thing checked was current input value which is: " guess-string))
                                  (do
                                    (reset! input-state "disabled")
                                    (log/debug (str "current guess size: " (-> input-element .-target .-value count)))
                                    (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
-                                   (if (> (- @timer old-timer-value) 200)
+                                   (if (> (- @timer-ref old-timer-value) 200)
                                      (do
                                        (log/debug (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                        (submit-guess (-> input-element .-target .-value)))
@@ -359,10 +359,22 @@
         "Welcome to nlquiz! Choose a topic to study."]
        [curriculum/tree path "curriculum full"]])))
 
+(defn check-user-input []
+  (let [current-input-value (get-input-value)]
+    (log/debug (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
+    (if (not (= current-input-value @last-input-checked))
+      (submit-guess current-input-value))))
+
+(defn setup-timer []
+  (log/debug (str "starting timer.."))
+  (timer/every timer/main-thread
+               400
+               check-user-input))
+
 (defn get-expression [major & [minor]]
   (log/debug (str "get-expression: major: " major))
   (log/debug (str "get-expression: minor: " minor))
-  (setup-timer)
+;;  (setup-timer)
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)
@@ -382,18 +394,6 @@
                            (map deserialize)))
               (reset! input-state "")
               (.focus (.getElementById js/document "input-guess"))))))))
-
-(defn check-user-input []
-  (let [current-input-value (get-input-value)]
-    (log/debug (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
-    (if (not (= current-input-value @last-input-checked))
-      (submit-guess current-input-value))))
-
-(defn setup-timer []
-  (log/debug (str "starting timer.."))
-  (timer/every timer/main-thread
-               400
-               check-user-input))
 
 (defn quiz-component []
   (load-linguistics)
