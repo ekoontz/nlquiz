@@ -147,7 +147,7 @@
 
 (defn handle-correct-answer [correct-answer]
   (reset! got-it-right? true)
-  (log/info (str "handle-correct-answer with: " correct-answer))
+  (log/debug (str "handle-correct-answer with: " correct-answer))
   (set-input-value)
   (.focus (.getElementById js/document "other-input"))
   (reset! translation-of-guess "")
@@ -166,7 +166,7 @@
     (let [guess-string (trim guess-string)]
       (if (not (empty? guess-string))
         (do
-          (log/info (str "submit-guess: your guess: " guess-string "; show-answer: " @show-answer))
+          (log/debug (str "submit-guess: your guess: " guess-string "; show-answer: " @show-answer))
           (if (= guess-string @show-answer)
             ;; user's answer was the same as the server-derived correct answer:
             (handle-correct-answer guess-string)
@@ -209,7 +209,7 @@
                                   
                                   ;; if false, then evaluate user's answer:
                                   (do
-                                    (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
+                                    (log/debug (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
                                     (if (not (nil? (-> gen-response :body :sem deserialize)))
                                       (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
                                     (reset! last-input-checked guess-string)
@@ -390,7 +390,7 @@
       (submit-guess current-input-value))))
 
 (defn setup-timer []
-  (log/info (str "starting timer.."))
+  (log/debug (str "starting timer.."))
   (timer/every timer/main-thread
                400
                check-user-input))
