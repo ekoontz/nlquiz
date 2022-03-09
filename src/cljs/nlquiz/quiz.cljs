@@ -359,6 +359,7 @@
 (defn get-expression [major & [minor]]
   (log/debug (str "get-expression: major: " major))
   (log/debug (str "get-expression: minor: " minor))
+  (setup-timer)
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)
@@ -385,6 +386,12 @@
     (if (not (= current-input-value @last-input-checked))
       (submit-guess current-input-value))))
 
+(defn setup-timer []
+  (log/info (str "starting timer.."))
+  (timer/every timer/main-thread
+               400
+               check-user-input))
+
 (defn quiz-component []
   (load-linguistics)
   (let [routing-data (session/get :route)
@@ -394,9 +401,6 @@
     (reset! major-atom major)
     (reset! minor-atom minor)
     (reset! question-html spinner)
-    (timer/every timer/main-thread
-                 400
-                 check-user-input)
     (get-expression major minor)
     (fn []
       [:div.curr-major
