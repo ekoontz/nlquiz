@@ -3,6 +3,7 @@
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
+   [clojure.string :refer [trim]]
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
@@ -145,7 +146,8 @@
   (set! (-> (.getElementById js/document "input-guess") .-value) ""))
 
 (defn handle-correct-answer [correct-answer]
-  (log/debug (str "handle-correct-answer with: " correct-answer))
+  (reset! got-it-right? true)
+  (log/info (str "handle-correct-answer with: " correct-answer))
   (set-input-value)
   (.focus (.getElementById js/document "other-input"))
   (reset! translation-of-guess "")
@@ -161,59 +163,60 @@
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
     ;; else, there are some correct answers:
-    (do
+    (let [guess-string (trim guess-string)]
       (if (not (empty? guess-string))
         (do
-          (log/debug (str "submit-guess: your guess: " guess-string))
-          (reset! translation-of-guess spinner)
-          (go (let [parse-response
-                    (->
-                     (<! (http/get (str (language-server-endpoint-url)
-                                        "/parse-start/nl?q=" guess-string)))
-                     :body decode-parse)
-                    nl-parses (parses parse-response @grammar @morphology guess-string)
-                    specs (->> nl-parses
-                               (map serialize)
-                               set
-                               vec
-                               (map deserialize)
+          (log/info (str "submit-guess: your guess: " guess-string "; show-answer: " @show-answer))
+          (if (= guess-string @show-answer)
+            ;; user's answer was the same as the server-derived correct answer:
+            (handle-correct-answer guess-string)
+
+            ;; user's answer was not the same as the server-derived correct answer, but still might be correct:
+            (do
+              (reset! translation-of-guess spinner)
+              (go (let [parse-response
+                        (->
+                         (<! (http/get (str (language-server-endpoint-url)
+                                            "/parse-start/nl?q=" guess-string)))
+                         :body decode-parse)
+                        nl-parses (parses parse-response @grammar @morphology guess-string)
+                        specs (->> nl-parses
+                                   (map serialize)
+                                   set
+                                   vec
+                                   (map deserialize)
                                (map tr/nl-to-en-spec)
                                remove-duplicates)
-                    local-sem  (->> nl-parses
-                                    (map #(u/get-in % [:sem])))
-                    current-input-value (get-input-value)]
-                (if (not (= current-input-value guess-string))
-                  (log/debug (str "submit-guess: ignoring guess-string: [" guess-string "] since it's older than current-input-value: [" current-input-value "]"))
-
-                  ;; else
-                  (do
-                    (log/debug (str "doing english generation with this many specs: " (count specs)))
-                    (log/debug (str "doing english generation with specs: " (clojure.string/join "," specs)))
-                    (doseq [en-spec specs]
-                      (log/debug (str "en-spec to be used for /generate/en: " en-spec))
-                      (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                                "/generate/en?spec=" (-> en-spec
-                                                                                         dag-to-string))))]
-                            (log/debug (str "generating english: checking got-it-right?: " @got-it-right?))
-                            ;; if user's already answered the question correctly, then
-                            ;; @got-it-right? will be true. If true, then don't re-evaluate.
-                            (if (false? @got-it-right?)
-
-                              ;; if false, then evaluate user's answer:
-                              (do
-                                (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
-                                (if (not (nil? (-> gen-response :body :sem deserialize)))
-                                  (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
-                                (reset! last-input-checked guess-string)
-                                (if (evaluate-guess local-sem
-                                                    @possible-correct-semantics)
-                                  ;; got it right!
-                                  (do (log/debug (str "you got it right!"))
-                                      (reset! got-it-right? true)
-                                      (handle-correct-answer guess-string))
+                        local-sem  (->> nl-parses
+                                        (map #(u/get-in % [:sem])))
+                        current-input-value (get-input-value)]
+                    (if (not (= current-input-value guess-string))
+                      (log/debug (str "submit-guess: ignoring guess-string: [" guess-string "] since it's older than current-input-value: [" current-input-value "]"))
+                      
+                      ;; else
+                      (do
+                        (log/debug (str "doing english generation with this many specs: " (count specs)))
+                        (log/debug (str "doing english generation with specs: " (clojure.string/join "," specs)))
+                        (doseq [en-spec specs]
+                          (log/debug (str "en-spec to be used for /generate/en: " en-spec))
+                          (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                                    "/generate/en?spec=" (-> en-spec
+                                                                                             dag-to-string))))]
+                                (log/debug (str "generating english: checking got-it-right?: " @got-it-right?))
+                                ;; if user's already answered the question correctly, then
+                                ;; @got-it-right? will be true. If true, then don't re-evaluate.
+                                (if (false? @got-it-right?)
                                   
-                                  ;; got it wrong:
-                                  (log/debug (str "sorry, your guess: '" guess-string "' was not right.")))))))))))))))))
+                                  ;; if false, then evaluate user's answer:
+                                  (do
+                                    (log/info (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
+                                    (if (not (nil? (-> gen-response :body :sem deserialize)))
+                                      (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
+                                    (reset! last-input-checked guess-string)
+                                    (if (evaluate-guess local-sem
+                                                        @possible-correct-semantics)
+                                      ;; got it right!
+                                      (handle-correct-answer guess-string))))))))))))))))))
   
 (defn load-linguistics []
   (go
