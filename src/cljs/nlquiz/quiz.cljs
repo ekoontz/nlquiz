@@ -162,7 +162,7 @@
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
     ;; else, there are some correct answers:
-    (let [guess-string (trim guess-string)]
+    (let [guess-string (if guess-string (trim guess-string))]
       (if (not (empty? guess-string))
         (do
           (log/debug (str "submit-guess: your guess: " guess-string "; show-answer: " @show-answer))
