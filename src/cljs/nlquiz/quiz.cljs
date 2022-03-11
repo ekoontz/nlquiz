@@ -146,6 +146,7 @@
 
 (defn handle-correct-answer [correct-answer]
   (reset! got-it-right? true)
+  (reset! question-html spinner)
   (log/debug (str "handle-correct-answer with: " correct-answer))
   (set-input-value)
   (.focus (.getElementById js/document "other-input"))
