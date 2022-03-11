@@ -28,6 +28,7 @@
 (def possible-correct-semantics (r/atom nil))
 (def question-table (r/atom nil))
 (def question-html (r/atom spinner))
+(def save-question (atom ""))
 (def show-answer (r/atom nil))
 (def show-praise-text (r/atom nil))
 (def show-answer-display (r/atom "none"))
@@ -70,7 +71,6 @@
 (def minor-atom (atom nil))
 
 (defn on-submit [e]
-  (log/debug (str "on-submit: start: show-answer is: " @show-answer))
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (if (= true @got-it-right?)
@@ -85,7 +85,7 @@
       (log/debug (str "ok, concatting the correct answer: " @show-answer))
       (reset! question-table
               (concat
-               [{:source question :target @show-answer}]
+               [{:source @save-question :target @show-answer}]
                (take 4 @question-table))))
 
     ;; else
@@ -146,6 +146,7 @@
 
 (defn handle-correct-answer [correct-answer]
   (reset! got-it-right? true)
+  (reset! save-question @question-html)
   (reset! question-html spinner)
   (log/debug (str "handle-correct-answer with: " correct-answer))
   (set-input-value)
@@ -264,7 +265,7 @@
                                      (do
                                        (log/debug (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                        (submit-guess (-> input-element .-target .-value)))
-                                     (log/info (str "too recent: not checking guess-string: " guess-string)))
+                                     (log/debug (str "too recent: not checking guess-string: " guess-string)))
                                    (reset! input-state "")
                                    (.focus (.getElementById js/document "input-guess"))))))
                 }]]] ;; /div.guess
