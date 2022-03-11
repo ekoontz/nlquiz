@@ -139,7 +139,7 @@
 
 (defn get-input-value []
   (if (.getElementById js/document "input-guess")
-    (-> (.getElementById js/document "input-guess") .-value)))
+    (trim (-> (.getElementById js/document "input-guess") .-value))))
 
 (defn set-input-value []
   (set! (-> (.getElementById js/document "input-guess") .-value) ""))
