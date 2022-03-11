@@ -365,7 +365,7 @@
     (if (and (not (empty? current-input-value))
              (not (= current-input-value @last-input-checked)))
       (do
-        (log/info (str "current-input: [" current-input-value "] != last-input-checked: [" @last-input-checked "]"))
+        (log/debug (str "current-input: [" current-input-value "] != last-input-checked: [" @last-input-checked "]"))
         (submit-guess current-input-value)))
     (setup-timer)))
 
