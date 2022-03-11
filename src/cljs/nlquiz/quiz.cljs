@@ -173,8 +173,10 @@
             ;; user's answer was the same as the server-derived correct answer:
             (handle-correct-answer guess-string)
 
-            ;; user's answer was not the same as the server-derived correct answer, but still might be correct:
+            ;; user's answer was not the same as the server-derived correct answer, 
+            ;; but still might be correct: we have to analyze it to find out.
             (do
+              (log/info (str "submitting guess: '" guess-string "'"))
               (reset! translation-of-guess spinner)
               (go (let [parse-response
                         (->
