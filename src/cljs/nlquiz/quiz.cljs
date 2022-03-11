@@ -7,7 +7,6 @@
    [dag_unify.core :as u]
    [dag_unify.diagnostics :as d]
    [dag_unify.serialization :refer [deserialize serialize]]
-   [helins.timer :as timer]
    [menard.parse :as parse]
    [menard.translate.spec :as tr]
    [nlquiz.constants :refer [spinner]]
@@ -264,7 +263,7 @@
                                      (do
                                        (log/debug (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
                                        (submit-guess (-> input-element .-target .-value)))
-                                     (log/debug (str "too recent: not checking.")))
+                                     (log/info (str "too recent: not checking guess-string: " guess-string)))
                                    (reset! input-state "")
                                    (.focus (.getElementById js/document "input-guess"))))))
                 }]]] ;; /div.guess
@@ -363,18 +362,17 @@
   (let [current-input-value (get-input-value)]
     (log/debug (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
     (if (not (= current-input-value @last-input-checked))
-      (submit-guess current-input-value))))
+      (submit-guess current-input-value))
+    (setup-timer)))
 
 (defn setup-timer []
   (log/debug (str "starting timer.."))
-  (timer/every timer/main-thread
-               400
-               check-user-input))
+  (js/setTimeout check-user-input 400))
 
 (defn get-expression [major & [minor]]
   (log/debug (str "get-expression: major: " major))
   (log/debug (str "get-expression: minor: " minor))
-;;  (setup-timer)
+  (setup-timer)
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)
