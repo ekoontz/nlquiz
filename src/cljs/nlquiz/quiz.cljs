@@ -167,6 +167,7 @@
       (if (not (empty? guess-string))
         (do
           (log/debug (str "submit-guess: your guess: " guess-string "; show-answer: " @show-answer))
+          (reset! last-input-checked guess-string)
           (if (= guess-string @show-answer)
             ;; user's answer was the same as the server-derived correct answer:
             (handle-correct-answer guess-string)
@@ -212,7 +213,6 @@
                                     (log/debug (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
                                     (if (not (nil? (-> gen-response :body :sem deserialize)))
                                       (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
-                                    (reset! last-input-checked guess-string)
                                     (if (evaluate-guess local-sem
                                                         @possible-correct-semantics)
                                       ;; got it right!
@@ -361,9 +361,11 @@
 
 (defn check-user-input []
   (let [current-input-value (get-input-value)]
-    (log/debug (str "current-input: " current-input-value "; last-input-checked: " @last-input-checked))
-    (if (not (= current-input-value @last-input-checked))
-      (submit-guess current-input-value))
+    (if (and (not (empty? current-input-value))
+             (not (= current-input-value @last-input-checked)))
+      (do
+        (log/info (str "current-input: [" current-input-value "] != last-input-checked: [" @last-input-checked "]"))
+        (submit-guess current-input-value)))
     (setup-timer)))
 
 (defn setup-timer []
