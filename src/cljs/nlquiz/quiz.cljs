@@ -87,7 +87,7 @@
                (take 4 @question-table))))
 
     ;; else
-    (do (set-input-value "")    
+    (do (set-input-value "")
         (show-possible-answer)))
   (.focus (.getElementById js/document "input-guess"))
   (.click (.getElementById js/document "input-guess")))
@@ -157,7 +157,7 @@
     (.dispatchEvent (.getElementById js/document "quiz")
                     (new js/Event "submit" {:cancelable true})))
   (.focus (.getElementById js/document "input-guess")))
-  
+
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
@@ -194,7 +194,6 @@
                         current-input-value (get-input-value)]
                     (if (not (= current-input-value guess-string))
                       (log/debug (str "submit-guess: ignoring guess-string: [" guess-string "] since it's older than current-input-value: [" current-input-value "]"))
-                      
                       ;; else
                       (do
                         (log/debug (str "doing english generation with this many specs: " (count specs)))
@@ -208,7 +207,6 @@
                                 ;; if user's already answered the question correctly, then
                                 ;; @got-it-right? will be true. If true, then don't re-evaluate.
                                 (if (false? @got-it-right?)
-                                  
                                   ;; if false, then evaluate user's answer:
                                   (do
                                     (log/debug (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
@@ -218,7 +216,7 @@
                                                         @possible-correct-semantics)
                                       ;; got it right!
                                       (handle-correct-answer guess-string))))))))))))))))))
-  
+
 (defn load-linguistics []
   (go
     (let [grammar-response (<! (http/get (str (language-server-endpoint-url)
@@ -269,7 +267,7 @@
                                    (reset! input-state "")
                                    (.focus (.getElementById js/document "input-guess"))))))
                 }]]] ;; /div.guess
-      
+
      [:div.english @translation-of-guess]
 
      [:div.dontknow
