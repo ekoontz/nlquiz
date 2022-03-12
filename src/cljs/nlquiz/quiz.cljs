@@ -19,9 +19,9 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
-;; group 1
 (def answer-count (atom 0))
 (def expression-index (atom 0))
+(def ik-weet-niet-button-state (r/atom initial-button-state))
 (def initial-state-is-enabled? true)
 (def initial-button-state (if initial-state-is-enabled? "" "disabled"))
 (def input-state (r/atom "disabled"))
@@ -36,8 +36,6 @@
 (def translation-of-guess (r/atom ""))
 (def last-input-checked (atom ""))
 
-;; group 2
-(def ik-weet-niet-button-state (r/atom initial-button-state))
 
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
