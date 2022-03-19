@@ -2,9 +2,9 @@
   (:require
    [cljslog.core :as log]))
 
-(defn nederlands [input]
+(defn nederlands [say-this-in-nederlands]
   (let [synth (. js/window -speechSynthesis)
-        utterThis (new js/SpeechSynthesisUtterance input)
+        utterance (new js/SpeechSynthesisUtterance say-this-in-nederlands)
         nl-voice
         (->> (.getVoices synth)
              (filter #(or (= "nl" (-> % .-lang))
@@ -19,6 +19,9 @@
              shuffle
              first)]
     (if nl-voice
-      (do (aset utterThis "voice" nl-voice)
-          (.speak synth utterThis))
+      (do
+        ;; 1. set the voice for the utterance:
+        (aset utterance "voice" nl-voice)
+        ;; 2. speak the utterance using synth:
+        (.speak synth utterance))
       (log/warn (str "could not find a nl voice to speak Dutch on this device; will not attempt speech.")))))
