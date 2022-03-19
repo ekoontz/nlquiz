@@ -80,7 +80,6 @@
         (get-expression @major-atom))
       (show-praise)
       (swap! answer-count inc)
-      (log/debug (str "ok, concatting the correct answer: " @show-answer))
       (reset! question-table
               (concat
                [{:source @save-question :target @show-answer}]
@@ -94,15 +93,11 @@
 
 (defn evaluate-guess [guesses-semantics-set correct-semantics-set]
   (when (seq guesses-semantics-set)
-    (log/debug (str "guess count:  " (count guesses-semantics-set)))
-    (log/debug (str "correct count:" (count correct-semantics-set)))
     (let [result
           (->> guesses-semantics-set
                (mapcat (fn [guess]
-                         (log/debug (str "evaluating guess:          " (serialize guess)))
                          (->> correct-semantics-set
                               (map (fn [correct-semantics]
-                                     (log/debug (str "correct semantics option: " (serialize correct-semantics)))
                                      ;; the guess is correct if and only if there is a semantic interpretation _guess_ of the guess where both of these are true:
                                      ;; - unifying _guess_ with some member _correct-semantics_ of the set of correct semantics is not :fail.
                                      ;; - this _correct_semantics_ is more general (i.e. subsumes) _guess_.
@@ -110,17 +105,6 @@
                                            subsumes? (u/subsumes? correct-semantics guess)
                                            correct? (and (not fails?) subsumes?)
                                            fail-path (if fails? (select-keys (d/fail-path correct-semantics guess) [:path :arg1 :arg2]))]
-                                       (log/debug (str "unifies?  " (not fails?)))
-                                       (log/debug (str "subsumes? " subsumes?))
-                                       (log/debug (str "correct?  " correct?))
-                                       (when (not subsumes?)
-                                         (log/debug (str "=== guess was not correct because semantics has something that guess semantics lacks. ==="))
-                                         (log/debug (str "correct semantics: " (serialize correct-semantics)))
-                                         (log/debug (str "guess semantics:   " (serialize guess)))
-                                         (log/debug (str "correct subj: " (serialize (u/get-in correct-semantics [:subj]))))
-                                         (log/debug (str "guess   subj: " (serialize (u/get-in guess [:subj]))))
-                                         (log/debug (str "correct obj: " (serialize (u/get-in correct-semantics [:obj]))))
-                                         (log/debug (str "guess   obj: " (serialize (u/get-in guess [:obj])))))
                                        correct?))))))
                (remove #(= false %)))]
       (not (empty? result)))))
@@ -146,11 +130,9 @@
   (reset! got-it-right? true)
   (reset! save-question @question-html)
   (reset! question-html spinner)
-  (log/debug (str "handle-correct-answer with: " correct-answer))
   (set-input-value)
   (.focus (.getElementById js/document "other-input"))
   (reset! translation-of-guess "")
-  (log/debug (str "setting show-answer to correct-answer: " correct-answer))
   (reset! show-answer correct-answer)
   (if (.-requestSubmit (.getElementById js/document "quiz"))
     (.requestSubmit (.getElementById js/document "quiz"))
@@ -165,7 +147,6 @@
     (let [guess-string (if guess-string (trim guess-string))]
       (if (not (empty? guess-string))
         (do
-          (log/debug (str "submit-guess: your guess: " guess-string "; show-answer: " @show-answer))
           (reset! last-input-checked guess-string)
           (if (= guess-string @show-answer)
             ;; user's answer was the same as the server-derived correct answer:
@@ -174,7 +155,6 @@
             ;; user's answer was not the same as the server-derived correct answer, 
             ;; but still might be correct: we have to analyze it to find out.
             (do
-              (log/info (str "submitting guess: '" guess-string "'"))
               (reset! translation-of-guess spinner)
               (go (let [parse-response
                         (->
@@ -192,24 +172,17 @@
                         local-sem  (->> nl-parses
                                         (map #(u/get-in % [:sem])))
                         current-input-value (get-input-value)]
-                    (if (not (= current-input-value guess-string))
-                      (log/debug (str "submit-guess: ignoring guess-string: [" guess-string "] since it's older than current-input-value: [" current-input-value "]"))
-                      ;; else
+                    (if (= current-input-value guess-string)
                       (do
-                        (log/debug (str "doing english generation with this many specs: " (count specs)))
-                        (log/debug (str "doing english generation with specs: " (clojure.string/join "," specs)))
                         (doseq [en-spec specs]
-                          (log/debug (str "en-spec to be used for /generate/en: " en-spec))
                           (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                     "/generate/en?spec=" (-> en-spec
                                                                                              dag-to-string))))]
-                                (log/debug (str "generating english: checking got-it-right?: " @got-it-right?))
                                 ;; if user's already answered the question correctly, then
                                 ;; @got-it-right? will be true. If true, then don't re-evaluate.
                                 (if (false? @got-it-right?)
                                   ;; if false, then evaluate user's answer:
                                   (do
-                                    (log/debug (str "english generation response to: '" guess-string "': " (-> gen-response :body :surface) " with got-it-right? " @got-it-right?))
                                     (if (not (nil? (-> gen-response :body :sem deserialize)))
                                       (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
                                     (if (evaluate-guess local-sem
@@ -250,20 +223,14 @@
                 :on-change (fn [input-element]
                              (let [old-timer-value @timer-ref
                                    guess-string (-> input-element .-target .-value)]
-                               (log/debug (str "updating input element with: " guess-string))
                                (reset! timer-ref (.getTime (js/Date.)))
-                               (log/debug (str "time since last check: " (- @timer-ref old-timer-value) "; currently: '" guess-string "'"))
-                               (if (= @last-input-checked guess-string)
-                                 (log/debug (str "nothing new: last thing checked was current input value which is: " guess-string))
+                               (if (not (= @last-input-checked guess-string))
                                  (do
                                    (reset! input-state "disabled")
-                                   (log/debug (str "current guess size: " (-> input-element .-target .-value count)))
                                    (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                    (if (> (- @timer-ref old-timer-value) 200)
                                      (do
-                                       (log/debug (str "it's been long enough to try parsing a new guess: " (-> input-element .-target .-value)))
-                                       (submit-guess (-> input-element .-target .-value)))
-                                     (log/debug (str "too recent: not checking guess-string: " guess-string)))
+                                       (submit-guess (-> input-element .-target .-value))))
                                    (reset! input-state "")
                                    (.focus (.getElementById js/document "input-guess"))))))
                 }]]] ;; /div.guess
@@ -363,7 +330,6 @@
     (if (and (not (empty? current-input-value))
              (not (= current-input-value @last-input-checked)))
       (do
-        (log/debug (str "current-input: [" current-input-value "] != last-input-checked: [" @last-input-checked "]"))
         (submit-guess current-input-value)))
     (setup-timer)))
 
@@ -372,8 +338,6 @@
   (js/setTimeout check-user-input 400))
 
 (defn get-expression [major & [minor]]
-  (log/debug (str "get-expression: major: " major))
-  (log/debug (str "get-expression: minor: " minor))
   (setup-timer)
   (let [root-path (root-path-from-env)
         path (if minor
@@ -381,11 +345,9 @@
                major)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
-          (log/debug (str "specs-atom: " @specs-atom))
           (let [serialized-spec (-> @specs-atom shuffle first serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
               (reset! question-html (-> response :body :source))
-              (log/debug (str "get-expression: setting got-it-right? to false."))
               (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
               (reset! possible-correct-semantics
