@@ -61,7 +61,13 @@
         
         (let [q (-> (:query (url/url (-> js/window .-location .-href)))
                     (get "q")
-                    ((fn [x] (if (seq x) (trim (string/replace x #"\+" " "))))))]
+                    ((fn [x] (if (seq x) (-> x
+                                             (string/replace #"\+" " ")
+                                             url/url-decode
+                                             trim)))))]
+          (log/info (str "q: " q))
+          (log/info (str "query: " (-> (:query (url/url (-> js/window .-location .-href)))
+                                       (get "q"))))
           (when (seq q)
             (reset! surface-atom q)
             (if true (set! (.-value (.getElementById js/document "parse-input")) q))
