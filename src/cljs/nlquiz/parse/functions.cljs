@@ -2,6 +2,7 @@
   (:require
    [dag_unify.core :as u]
    [dag_unify.serialization :as s]   
+   [cemerick.url :as url]
    [cljs-http.client :as http]
    [cljslog.core :as log]
    [cljs.core.async :refer [<!]]
@@ -53,6 +54,7 @@
 
 
 (defn on-change [{input :input
+                  link-atom :link-atom
                   {nl-trees-atom :trees
                    nl-lexemes-atom :lexemes
                    nl-rules-atom :rules
@@ -66,6 +68,7 @@
   (fn [input-element]
     (let [input-value (-> input-element .-target .-value string/trim)
           fresh? (fn [] (= @input input-value))]
+      (reset! link-atom (str "?q=" (url/url-encode input-value)))
       (when (not (fresh?))
         ;; Only start the (go) if there is a difference between the input we are given (input-value)
         ;; and the last input that was processed (@input).
@@ -132,7 +135,7 @@
           :language-flag nl-flag
           :of "van"
           :plural "bomen"
-            :singular "boom"
+          :singular "boom"
           :which-is nl-parses
           :where nl-trees-atom})
         

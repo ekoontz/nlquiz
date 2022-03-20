@@ -504,6 +504,13 @@ div.parse > div {
     float:left;
     width:100%;
 }
+
+div.parse > div.link > a {
+    font-size:small;
+    float:right;
+}
+
+
 div.parse input {
     float:left;
 }

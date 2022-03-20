@@ -29,7 +29,8 @@
         nl-rules-atom (r/atom " ")
         en-trees-atom (r/atom " ")
         en-lexemes-atom (r/atom " ")
-        en-rules-atom (r/atom " ")]
+        en-rules-atom (r/atom " ")
+        link-atom (r/atom "")]
         
     ;; 1. initialize linguistic resources from server:
     (go
@@ -69,21 +70,19 @@
           (log/info (str "query: " (-> (:query (url/url (-> js/window .-location .-href)))
                                        (get "q"))))
           (when (seq q)
-            (reset! surface-atom q)
-            (if true (set! (.-value (.getElementById js/document "parse-input")) q))
-            (when true
-              (do-analysis @surface-atom
-                           {:input surface-atom
-                            :nl {:trees nl-trees-atom
-                                 :lexemes nl-lexemes-atom
-                                 :rules nl-rules-atom
-                                 :grammar nl-grammar
-                                 :morphology nl-morphology}
-                            :en {:trees en-trees-atom
+            (set! (.-value (.getElementById js/document "parse-input")) q)
+            (do-analysis q
+                         {:input surface-atom
+                          :nl {:trees nl-trees-atom
+                               :lexemes nl-lexemes-atom
+                               :rules nl-rules-atom
+                               :grammar nl-grammar
+                               :morphology nl-morphology}
+                          :en {:trees en-trees-atom
                                  :lexemes en-lexemes-atom
-                                 :rules en-rules-atom
-                                 :grammar en-grammar
-                                 :morphology en-morphology}}))))))
+                               :rules en-rules-atom
+                               :grammar en-grammar
+                               :morphology en-morphology}})))))
 
     ;; UI and associated functionality
     ;; 2. atoms that link the UI and the functionality:
@@ -92,6 +91,7 @@
       ;; 4. render the UI:
       (fn []
         [:div.parse
+         [:div.link [:a {:href @link-atom} "Link"]]
          [:div.input [:input {:type "text"
                               :size 50
                               :id "parse-input"
@@ -99,6 +99,7 @@
                               ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
                               
                               :on-change (on-change {:input surface-atom
+                                                     :link-atom link-atom
                                                      :nl {:trees nl-trees-atom
                                                           :lexemes nl-lexemes-atom
                                                           :rules nl-rules-atom
@@ -114,6 +115,7 @@
          (en-widget en-trees-atom en-lexemes-atom en-rules-atom)
 
          ]))))
+
 
 
 
