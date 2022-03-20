@@ -353,11 +353,6 @@ div.english {
     min-height:1.3em;
 }
 
-body {
-    font-size: 24px;
-}
-
-
 #input-guess {
     font-size:larger;
     margin-bottom:0.5em;
@@ -619,4 +614,3 @@ div.section {
 .outer {
   width:100%
 }
-
