@@ -29,7 +29,8 @@
                  [ring/ring-devel "1.7.1"]
                  [org.clojure/data.json "0.2.7"]
                  [org.clojure/core.async "0.4.474"]
-                 [ring/ring-jetty-adapter "1.7.1"]]
+                 [ring/ring-jetty-adapter "1.7.1"]
+                 [com.cemerick/url "0.1.1"]]
   
   :plugins [[lein-environ "1.1.0"]
             [lein-cljsbuild "1.1.8"]
