@@ -33,10 +33,10 @@
               :div.section
               (mapv (fn [elem]
                       [:div.parse-cell
-                       [:div.number (str (u/get-in elem [::i])
-                                         " " of " "
-                                         (count which-is) " " language-flag " "
-                                         (if (not (= 1 (count which-is))) plural singular))]
+                       [:div.number [:span (str (u/get-in elem [::i])
+                                                " " of " "
+                                                (count which-is) " " language-flag " "
+                                                (if (not (= 1 (count which-is))) plural singular) " for input: '")] [:i input-value] [:span "'."]]
                        (if do-each-fn (do-each-fn elem))
                        (draw-node-html
                         (-> elem
