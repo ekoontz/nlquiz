@@ -38,21 +38,25 @@ and stopped by running:
 
 See [src/sh](src/sh) for build scripts.
 
-## Add new curriculum items
+## Add new curriculum topic
 
-Modify the following:
+1. Add a new .edn file for the topic content to the file hierarchy
+with [edn/curriculum](edn/curriculum), See
+[edn/curriculum/subject-pronouns-and-present-tense.edn](edn/curriculum/subject-pronouns-and-present-tense.edn)
+for an example of what the content looks like.
 
-### `resources/public/edn/specs.edn`
+2. Choose a name for your new curriculum topic, e.g. "Pronouns and how
+   they work with the Present Tense"
 
-Add some new specs with new major and minor tags.
-
-### `src/cljs/nlquiz/curriculum/content.cljs`
-
-Add a new `"the-new-section" (fn [] [:div "Hello world"])` section under `majorsection`
-
-### `resources/public/edn/curriculum.edn`
-
-Add a new `{:name "A nice human friendly name" :href "majorsection/the-new-section"}`.
+3. Modify [edn/curriculum.edn](edn/curriculum.pedn) to add a new
+   `:name,:href` pair to the .edn map in that file, using the name you
+   chose in step 2 as the `:name` and the path to the .edn file that you created in
+   step 1 as the `:href`, for example:
+   
+```
+{:name "Pronouns and Present Tense"
+ :href "verbs/subject-pronouns-and-present-tense"}
+``` 
 
 
 
