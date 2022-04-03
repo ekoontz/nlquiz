@@ -101,6 +101,8 @@
                                 (= val :menard.nederlands/none) "none"
                                 (= :rule k) val
                                 (string? val) [:i val]
+                                (= val :top) [:span "⊤"]
+                                (= val :fail) [:span "⊥"]
                                 (keyword? val) val
                                 (boolean? val) [:b (if (true? val) "+" "-")]
                                 (nil? val) [:tt "NULL"]
