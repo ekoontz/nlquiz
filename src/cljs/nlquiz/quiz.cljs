@@ -34,28 +34,6 @@
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
-(def last-input-checked (atom ""))
-
-;; <typing and timeouts>
-;; typing and timeouts: trying to preserve
-;; a good balance between responsiveness
-;; and wasted effort:
-(defn setup-timer [get-input-value-fn last-input-ref submit-guess-fn]
-  (log/debug (str "starting timer.."))
-  (let [check-input-every 400
-        check-user-input
-        (fn []
-          (let [current-input-value (get-input-value-fn)]
-            (if (and (not (empty? current-input-value))
-                     (not (= current-input-value @last-input-ref)))
-              (do
-                (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
-                (submit-guess-fn current-input-value)))
-            (setup-timer get-input-value-fn last-input-ref submit-guess-fn)))]
-    (js/setTimeout check-user-input check-input-every)))
-
-;; <typing and timeouts>
-
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
               "goed gedaan! 🚲"
@@ -235,9 +213,7 @@
                 :autoComplete "off"
                 :disabled @input-state
                 :on-change (fn [input-element]
-                             (let [guess-string (-> input-element .-target .-value)]
-                               (log/info (str "not doing anything with input: " guess-string))
-                               (.focus (.getElementById js/document "input-guess"))))
+                             (.focus (.getElementById js/document "input-guess")))
                 }]]] ;; /div.guess
 
      [:div.english @translation-of-guess]
@@ -329,6 +305,25 @@
        [:h4.normal
         "Welcome to nlquiz! Choose a topic to study."]
        [curriculum/tree path "curriculum full"]])))
+
+(def last-input-checked (atom ""))
+
+;; typing and timeouts: trying to preserve
+;; a good balance between responsiveness
+;; and wasted effort:
+(defn setup-timer [get-input-value-fn last-input-ref submit-guess-fn]
+  (log/debug (str "starting timer.."))
+  (let [check-input-every 400
+        check-user-input
+        (fn []
+          (let [current-input-value (get-input-value-fn)]
+            (if (and (not (empty? current-input-value))
+                     (not (= current-input-value @last-input-ref)))
+              (do
+                (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
+                (submit-guess-fn current-input-value)))
+            (setup-timer get-input-value-fn last-input-ref submit-guess-fn)))]
+    (js/setTimeout check-user-input check-input-every)))
 
 (defn get-expression [major & [minor]]
   (setup-timer get-input-value last-input-checked submit-guess)
