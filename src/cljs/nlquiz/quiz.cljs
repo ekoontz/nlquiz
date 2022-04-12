@@ -308,24 +308,6 @@
        [curriculum/tree path "curriculum full"]])))
 
 (def last-input-checked (atom ""))
-
-;; typing and timeouts: trying to preserve
-;; a good balance between responsiveness
-;; and wasted effort:
-(defn setup-timer-old [get-input-value-fn last-input-ref submit-guess-fn]
-  (log/debug (str "starting timer.."))
-  (let [check-input-every 400
-        check-user-input
-        (fn []
-          (let [current-input-value (get-input-value-fn)]
-            (if (and (not (empty? current-input-value))
-                     (not (= current-input-value @last-input-ref)))
-              (do
-                (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
-                (submit-guess-fn current-input-value)))
-            (setup-timer-old get-input-value-fn last-input-ref submit-guess-fn)))]
-    (js/setTimeout check-user-input check-input-every)))
-
 (defn get-expression [major & [minor]]
   (setup-timer get-input-value last-input-checked submit-guess)
   (let [root-path (root-path-from-env)
