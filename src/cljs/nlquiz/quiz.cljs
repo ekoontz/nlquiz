@@ -14,6 +14,7 @@
    [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
                           parses remove-duplicates]]
    [nlquiz.speak :as speak]
+   [nlquiz.timer :refer [setup-timer]]
    [reagent.core :as r]
    [reagent.session :as session])
   (:require-macros [cljs.core.async.macros :refer [go]]
@@ -311,7 +312,7 @@
 ;; typing and timeouts: trying to preserve
 ;; a good balance between responsiveness
 ;; and wasted effort:
-(defn setup-timer [get-input-value-fn last-input-ref submit-guess-fn]
+(defn setup-timer-old [get-input-value-fn last-input-ref submit-guess-fn]
   (log/debug (str "starting timer.."))
   (let [check-input-every 400
         check-user-input
@@ -322,7 +323,7 @@
               (do
                 (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
                 (submit-guess-fn current-input-value)))
-            (setup-timer get-input-value-fn last-input-ref submit-guess-fn)))]
+            (setup-timer-old get-input-value-fn last-input-ref submit-guess-fn)))]
     (js/setTimeout check-user-input check-input-every)))
 
 (defn get-expression [major & [minor]]
