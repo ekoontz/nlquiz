@@ -40,11 +40,7 @@
 ;; typing and timeouts: trying to preserve
 ;; a good balance between responsiveness
 ;; and wasted effort:
-
-(def interval-between-keystrokes 400)
-(def check-input-every 400)
-
-(def timer-ref (atom (.getTime (js/Date.))))
+(def check-input-every 500)
 
 (defn setup-timer []
   (log/debug (str "starting timer.."))
@@ -138,8 +134,6 @@
 ;;                and only called if guess is correct)
 
 (def placeholder "wat is dit in Nederlands?")
-(def initial-guess-input-size (count placeholder))
-(def guess-input-size (r/atom initial-guess-input-size))
 (def grammar (atom nil))
 (def morphology (atom nil))
 
@@ -240,23 +234,11 @@
                 :id "input-guess"
                 :input-mode "text"
                 :autoComplete "off"
-                :size "20"
                 :disabled @input-state
                 :on-change (fn [input-element]
-                             (let [old-timer-value @timer-ref
-                                   guess-string (-> input-element .-target .-value)]
-                               (reset! timer-ref (.getTime (js/Date.)))
-                               (if (not (= @last-input-checked guess-string))
-                                 (do
-                                   (reset! input-state "disabled")
-                                   (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
-                                   (if (not (> (- @timer-ref old-timer-value) interval-between-keystrokes))
-                                     (log/info (str "will *NOT* submit guess: too soon.")))
-                                   (when (> (- @timer-ref old-timer-value) interval-between-keystrokes)
-                                     (log/info (str "typing timeout reached: submitting: '" (-> input-element .-target .-value) "'"))
-                                     (submit-guess (-> input-element .-target .-value)))
-                                   (reset! input-state "")
-                                   (.focus (.getElementById js/document "input-guess"))))))
+                             (let [guess-string (-> input-element .-target .-value)]
+                               (log/info (str "not doing anything with input: " guess-string))
+                               (.focus (.getElementById js/document "input-guess"))))
                 }]]] ;; /div.guess
 
      [:div.english @translation-of-guess]
