@@ -136,6 +136,8 @@
                     (new js/Event "submit" {:cancelable true})))
   (.focus (.getElementById js/document "input-guess")))
 
+(def last-input-checked (atom ""))
+
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
@@ -213,8 +215,7 @@
                 :input-mode "text"
                 :autoComplete "off"
                 :disabled @input-state
-                :on-change (fn [input-element]
-                             (.focus (.getElementById js/document "input-guess")))
+                :on-change (fn [input-element])
                 }]]] ;; /div.guess
 
      [:div.english @translation-of-guess]
@@ -307,7 +308,6 @@
         "Welcome to nlquiz! Choose a topic to study."]
        [curriculum/tree path "curriculum full"]])))
 
-(def last-input-checked (atom ""))
 (defn get-expression [major & [minor]]
   (setup-timer get-input-value last-input-checked submit-guess)
   (let [root-path (root-path-from-env)
