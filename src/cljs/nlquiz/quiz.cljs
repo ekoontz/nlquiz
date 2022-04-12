@@ -40,20 +40,19 @@
 ;; typing and timeouts: trying to preserve
 ;; a good balance between responsiveness
 ;; and wasted effort:
-(def check-input-every 500)
-
-(defn setup-timer []
+(defn setup-timer [get-input-value-fn last-input-ref]
   (log/debug (str "starting timer.."))
-  (let [check-user-input
+  (let [check-input-every 500
+        check-user-input
         (fn []
-          (let [current-input-value (get-input-value)]
+          (let [current-input-value (get-input-value-fn)]
             (if (and (not (empty? current-input-value))
-                     (not (= current-input-value @last-input-checked)))
+                     (not (= current-input-value @last-input-ref)))
               (do
                 (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
                 (submit-guess current-input-value)))
-            (setup-timer)))]
-  (js/setTimeout check-user-input check-input-every)))
+            (setup-timer get-input-value-fn last-input-ref)))]
+    (js/setTimeout check-user-input check-input-every)))
 
 ;; <typing and timeouts>
 
@@ -332,7 +331,7 @@
        [curriculum/tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
-  (setup-timer)
+  (setup-timer get-input-value last-input-checked)
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)
