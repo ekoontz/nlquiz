@@ -36,6 +36,30 @@
 (def translation-of-guess (r/atom ""))
 (def last-input-checked (atom ""))
 
+;; <typing and timeouts>
+;; typing and timeouts: trying to preserve
+;; a good balance between responsiveness
+;; and wasted effort:
+
+(def interval-between-keystrokes 400)
+(def check-input-every 400)
+
+(def timer-ref (atom (.getTime (js/Date.))))
+
+(defn setup-timer []
+  (log/debug (str "starting timer.."))
+  (let [check-user-input
+        (fn []
+          (let [current-input-value (get-input-value)]
+            (if (and (not (empty? current-input-value))
+                     (not (= current-input-value @last-input-checked)))
+              (do
+                (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
+                (submit-guess current-input-value)))
+            (setup-timer)))]
+  (js/setTimeout check-user-input check-input-every)))
+
+;; <typing and timeouts>
 
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
@@ -199,8 +223,6 @@
       (reset! grammar (-> grammar-response :body decode-grammar))
       (reset! morphology (-> morphology-response :body decode-morphology)))))
 
-(def timer-ref (atom (.getTime (js/Date.))))
-
 (defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -228,9 +250,11 @@
                                  (do
                                    (reset! input-state "disabled")
                                    (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
-                                   (if (> (- @timer-ref old-timer-value) 200)
-                                     (do
-                                       (submit-guess (-> input-element .-target .-value))))
+                                   (if (not (> (- @timer-ref old-timer-value) interval-between-keystrokes))
+                                     (log/info (str "will *NOT* submit guess: " too soon.")))
+                                   (when (> (- @timer-ref old-timer-value) interval-between-keystrokes)
+                                     (log/info (str "typing timeout reached: submitting: '" (-> input-element .-target .-value) "'"))
+                                     (submit-guess (-> input-element .-target .-value)))
                                    (reset! input-state "")
                                    (.focus (.getElementById js/document "input-guess"))))))
                 }]]] ;; /div.guess
@@ -324,18 +348,6 @@
        [:h4.normal
         "Welcome to nlquiz! Choose a topic to study."]
        [curriculum/tree path "curriculum full"]])))
-
-(defn check-user-input []
-  (let [current-input-value (get-input-value)]
-    (if (and (not (empty? current-input-value))
-             (not (= current-input-value @last-input-checked)))
-      (do
-        (submit-guess current-input-value)))
-    (setup-timer)))
-
-(defn setup-timer []
-  (log/debug (str "starting timer.."))
-  (js/setTimeout check-user-input 400))
 
 (defn get-expression [major & [minor]]
   (setup-timer)
