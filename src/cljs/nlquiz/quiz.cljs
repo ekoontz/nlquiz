@@ -251,7 +251,7 @@
                                    (reset! input-state "disabled")
                                    (reset! guess-input-size (max initial-guess-input-size (+ 0 (-> input-element .-target .-value count))))
                                    (if (not (> (- @timer-ref old-timer-value) interval-between-keystrokes))
-                                     (log/info (str "will *NOT* submit guess: " too soon.")))
+                                     (log/info (str "will *NOT* submit guess: too soon.")))
                                    (when (> (- @timer-ref old-timer-value) interval-between-keystrokes)
                                      (log/info (str "typing timeout reached: submitting: '" (-> input-element .-target .-value) "'"))
                                      (submit-guess (-> input-element .-target .-value)))
