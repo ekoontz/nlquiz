@@ -136,8 +136,6 @@
                     (new js/Event "submit" {:cancelable true})))
   (.focus (.getElementById js/document "input-guess")))
 
-(def last-input-checked (atom ""))
-
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
@@ -145,7 +143,6 @@
     (let [guess-string (if guess-string (trim guess-string))]
       (if (not (empty? guess-string))
         (do
-          (reset! last-input-checked guess-string)
           (if (= guess-string @show-answer)
             ;; user's answer was the same as the server-derived correct answer:
             (handle-correct-answer guess-string)
@@ -215,6 +212,9 @@
                 :input-mode "text"
                 :autoComplete "off"
                 :disabled @input-state
+                ;; Note that we don't do anything here:
+                ;;  it's the timer (the use of (setup-timer) in
+                ;;  (defn get-expression) that does it.
                 :on-change (fn [input-element])
                 }]]] ;; /div.guess
 
@@ -309,7 +309,6 @@
        [curriculum/tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
-  (setup-timer get-input-value last-input-checked submit-guess)
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)
@@ -330,6 +329,7 @@
 
 (defn quiz-component []
   (load-linguistics)
+  (setup-timer get-input-value submit-guess)
   (let [routing-data (session/get :route)
         path (session/get :path)
         major (get-in routing-data [:route-params :major])

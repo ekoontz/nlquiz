@@ -2,8 +2,9 @@
   (:require
    [cljslog.core :as log]))
 
-(defn setup-timer [get-input-value-fn last-input-ref submit-guess-fn]
-  (let [check-input-every 400
+(defn setup-timer [get-input-value-fn submit-guess-fn & [last-input-ref]]
+  (let [last-input-ref (or last-input-ref (atom ""))
+        check-input-every 400
         check-user-input
         (fn []
           (let [current-input-value (get-input-value-fn)]
@@ -11,7 +12,8 @@
                      (not (= current-input-value @last-input-ref)))
               (do
                 (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
+                (reset! last-input-ref current-input-value)
                 (submit-guess-fn current-input-value)))
-            (setup-timer get-input-value-fn last-input-ref submit-guess-fn)))]
+            (setup-timer get-input-value-fn submit-guess-fn last-input-ref)))]
     (js/setTimeout check-user-input check-input-every)))
 
