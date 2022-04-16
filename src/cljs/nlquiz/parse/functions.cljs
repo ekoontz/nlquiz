@@ -87,8 +87,7 @@
                            :morphology en-morphology}})))))
 
 (defn do-analysis [input-value
-                   {input :input
-                    {nl-trees-atom :trees
+                   {{nl-trees-atom :trees
                      nl-lexemes-atom :lexemes
                      nl-rules-atom :rules
                      nl-grammar :grammar
@@ -99,7 +98,6 @@
                      en-grammar :grammar
                      en-morphology :morphology} :en}]
   (go
-    (reset! input input-value)
           
     ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
     (let [nl-parse-response (-> (<! (http/get (str (language-server-endpoint-url)
