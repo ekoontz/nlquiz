@@ -16,28 +16,11 @@
 
 (defn get-input-value []
   (let [input-value (.getElementById js/document "parse-input")]
-    (log/info (str "*** get-input-value ***: '" input-value "'"))
-    (if input-value
-      (trim (-> (.getElementById js/document "parse-input") .-value)))))
-
-(defn submit-query [string-to-parse]
-  (log/info (str "*** submit-query ***: '" string-to-parse "'"))
-  (do-analysis string-to-parse
-               {:input surface-atom
-                :nl {:trees nl-trees-atom
-                     :lexemes nl-lexemes-atom
-                     :rules nl-rules-atom
-                     :grammar nl-grammar
-                     :morphology nl-morphology}
-                :en {:trees en-trees-atom
-                     :lexemes en-lexemes-atom
-                     :rules en-rules-atom
-                     :grammar en-grammar
-                     :morphology en-morphology}}))
+    (when input-value
+      (trim (-> input-value .-value)))))
 
 ;; routed to by: core.cljs/(defn page-for)
 (defn component []
-  (setup-timer get-input-value submit-query)
   (let [;; linguistic atoms:
         en-grammar (atom nil)
         en-morphology (atom nil)
@@ -53,8 +36,21 @@
         en-trees-atom (r/atom " ")
         en-lexemes-atom (r/atom " ")
         en-rules-atom (r/atom " ")
-        link-atom (r/atom "")]
-        
+        link-atom (r/atom "")
+        submit-query (fn [string-to-parse]
+                       (do-analysis string-to-parse
+                                    {:nl {:trees nl-trees-atom
+                                          :lexemes nl-lexemes-atom
+                                          :rules nl-rules-atom
+                                          :grammar nl-grammar
+                                          :morphology nl-morphology}
+                                     :en {:trees en-trees-atom
+                                          :lexemes en-lexemes-atom
+                                          :rules en-rules-atom
+                                          :grammar en-grammar
+                                          :morphology en-morphology}}))]
+    (setup-timer get-input-value submit-query)
+    
     ;; 1. initialize linguistic resources from server:
     (go
       (let [en-grammar-response (<! (http/get (str (language-server-endpoint-url)
@@ -95,8 +91,7 @@
           (when (seq q)
             (set! (.-value (.getElementById js/document "parse-input")) q)
             (do-analysis q
-                         {:input surface-atom
-                          :nl {:trees nl-trees-atom
+                         {:nl {:trees nl-trees-atom
                                :lexemes nl-lexemes-atom
                                :rules nl-rules-atom
                                :grammar nl-grammar
@@ -121,23 +116,12 @@
                               :placeholder "type something in Dutch or English"
                               ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
                               
-                              :on-change (on-change {:input surface-atom
-                                                     :link-atom link-atom
-                                                     :nl {:trees nl-trees-atom
-                                                          :lexemes nl-lexemes-atom
-                                                          :rules nl-rules-atom
-                                                          :grammar nl-grammar
-                                                          :morphology nl-morphology}
-                                                     :en {:trees en-trees-atom
-                                                          :lexemes en-lexemes-atom
-                                                          :rules en-rules-atom
-                                                          :grammar en-grammar
-                                                          :morphology en-morphology}})}]]
-                                           
+                              :on-change (fn [input-element]
+                                           (log/info (str "** on-change is now a no-op.")))}]]
          (nl-widget nl-trees-atom nl-lexemes-atom nl-rules-atom)
-         (en-widget en-trees-atom en-lexemes-atom en-rules-atom)
+         (en-widget en-trees-atom en-lexemes-atom en-rules-atom)]))))
 
-         ]))))
+
 
 
 
