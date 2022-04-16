@@ -2,9 +2,11 @@
   (:require
    [cljslog.core :as log]))
 
-(defn setup-timer [get-input-value-fn submit-guess-fn & [last-input-ref]]
+(def default-check-input-every 300)
+
+(defn setup-timer [get-input-value-fn submit-guess-fn & [last-input-ref check-input-every]]
   (let [last-input-ref (or last-input-ref (atom ""))
-        check-input-every 400
+        check-input-every (or check-input-every default-check-input-every)
         check-user-input
         (fn []
           (let [current-input-value (get-input-value-fn)]
