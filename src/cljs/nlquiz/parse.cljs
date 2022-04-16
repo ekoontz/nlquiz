@@ -8,13 +8,36 @@
    [nlquiz.menard :refer [decode-grammar decode-morphology]]
    [nlquiz.parse.widgets :refer [en-widget nl-widget]]
    [nlquiz.parse.functions :refer [do-analysis on-change new-question]]
+   [nlquiz.timer :refer [setup-timer]]
    [reagent.core :as r]
    [cemerick.url :as url])
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
 
+(defn get-input-value []
+  (let [input-value (.getElementById js/document "parse-input")]
+    (log/info (str "*** get-input-value ***: '" input-value "'"))
+    (if input-value
+      (trim (-> (.getElementById js/document "parse-input") .-value)))))
+
+(defn submit-query [string-to-parse]
+  (log/info (str "*** submit-query ***: '" string-to-parse "'"))
+  (do-analysis string-to-parse
+               {:input surface-atom
+                :nl {:trees nl-trees-atom
+                     :lexemes nl-lexemes-atom
+                     :rules nl-rules-atom
+                     :grammar nl-grammar
+                     :morphology nl-morphology}
+                :en {:trees en-trees-atom
+                     :lexemes en-lexemes-atom
+                     :rules en-rules-atom
+                     :grammar en-grammar
+                     :morphology en-morphology}}))
+
 ;; routed to by: core.cljs/(defn page-for)
 (defn component []
+  (setup-timer get-input-value submit-query)
   (let [;; linguistic atoms:
         en-grammar (atom nil)
         en-morphology (atom nil)
