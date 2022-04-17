@@ -45,8 +45,7 @@ with [edn/curriculum](https://github.com/ekoontz/nlquiz/tree/master/resources/pu
 [edn/curriculum/nouns/indef-adj.edn](https://github.com/ekoontz/nlquiz/blob/master/resources/public/edn/curriculum/nouns/indef-adj.edn)
 for an example of what the content looks like.
 
-2. Choose a name for your new curriculum topic, e.g. "Pronouns and how
-   they work with the Present Tense"
+2. Choose a human-readable phrase as a name for your new curriculum topic, e.g. "Indefinite articles and adjectives"
 
 3. Modify [edn/curriculum.edn](https://github.com/ekoontz/nlquiz/blob/master/resources/public/edn/curriculum.edn) to add a new
    `:name,:href` pair to the .edn map in that file, using the name you
