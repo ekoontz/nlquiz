@@ -16,7 +16,7 @@
 (def curriculum-content-atom (r/atom ""))
 (def this-many-examples 5)
 
-(def generate-http (str (language-server-endpoint-url) "/generate"))
+(def generate-http (str (language-server-endpoint-url) "/generate/nl"))
 (def generate-with-alts-http (str (language-server-endpoint-url) "/generate-with-alts"))
 
 (defn tree-node [i node selected-path]
