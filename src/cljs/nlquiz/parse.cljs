@@ -14,11 +14,6 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [language-server-endpoint-url]]))
 
-(defn get-input-value []
-  (let [input-value (.getElementById js/document "parse-input")]
-    (when input-value
-      (trim (-> input-value .-value)))))
-
 ;; routed to by: core.cljs/(defn page-for)
 (defn component []
   (let [;; linguistic atoms:
@@ -37,19 +32,28 @@
         en-lexemes-atom (r/atom " ")
         en-rules-atom (r/atom " ")
         link-atom (r/atom "")
-        submit-query (fn [string-to-parse]
-                       (do-analysis string-to-parse
-                                    {:nl {:trees nl-trees-atom
-                                          :lexemes nl-lexemes-atom
-                                          :rules nl-rules-atom
-                                          :grammar nl-grammar
-                                          :morphology nl-morphology}
-                                     :en {:trees en-trees-atom
-                                          :lexemes en-lexemes-atom
+
+        get-input-value-fn (fn []
+                             (let [input-value (.getElementById js/document "parse-input")]
+                               (when input-value
+                                 (trim (-> input-value .-value)))))
+                             
+        submit-query-fn (fn [string-to-parse]
+                          ;; reset! link-atom here so
+                          ;; users can refer to this query via URL:
+                          (reset! link-atom (str "?q=" (url/url-encode string-to-parse)))
+                          (do-analysis string-to-parse
+                                       {:nl {:trees nl-trees-atom
+                                             :lexemes nl-lexemes-atom
+                                             :rules nl-rules-atom
+                                             :grammar nl-grammar
+                                             :morphology nl-morphology}
+                                        :en {:trees en-trees-atom
+                                             :lexemes en-lexemes-atom
                                           :rules en-rules-atom
-                                          :grammar en-grammar
-                                          :morphology en-morphology}}))]
-    (setup-timer get-input-value submit-query)
+                                             :grammar en-grammar
+                                             :morphology en-morphology}}))]
+    (setup-timer get-input-value-fn submit-query-fn)
     
     ;; 1. initialize linguistic resources from server:
     (go
