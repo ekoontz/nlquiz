@@ -41,8 +41,8 @@ See [src/sh](src/sh) for build scripts.
 ## Add new curriculum topic
 
 1. Add a new .edn file for the topic content to the file hierarchy
-with [edn/curriculum](edn/curriculum), See
-[edn/curriculum/subject-pronouns-and-present-tense.edn](edn/curriculum/subject-pronouns-and-present-tense.edn)
+with [edn/curriculum](../tree/master/resources/edn/curriculum), See
+[edn/curriculum/subject-pronouns-and-present-tense.edn](../tree/master/resources/edn/curriculum/subject-pronouns-and-present-tense.edn)
 for an example of what the content looks like.
 
 2. Choose a name for your new curriculum topic, e.g. "Pronouns and how
