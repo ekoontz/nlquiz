@@ -45,7 +45,7 @@
               "prima!!😎 "])
 
 (def parse-http (str (language-server-endpoint-url) "/parse"))
-(def generate-http (str (language-server-endpoint-url) "/generate"))
+(def generate-http (str (language-server-endpoint-url) "/generate/nl"))
 
 (defn show-possible-answer []
   (reset! show-answer-display "block")
