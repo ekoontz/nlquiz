@@ -1,7 +1,11 @@
 [:div 
  [:p "How to say 'I need...'?"]
  [:show-examples
-  [{:phrasal? true
+  [
+
+   ;; 1. variant with pronouns for
+   ;; both subject and object:
+   {:phrasal? true
     :head {:rule "adverb-nodig"
            :comp {:rule "vp"
                   :head {:infl :present :phrasal? false}
@@ -13,5 +17,52 @@
     :infl :present
     :sem {:tense :present
           :aspect :simple
-          :pred :need}}]]]
+          :pred :need}}
+
+   ;; 2. variant with subject 
+   ;; as a noun phrase:
+   {:phrasal? true
+    :head {:rule "adverb-nodig"
+           :comp {:rule "vp"
+                 :head {:infl :present :phrasal? false}
+                  :comp {:pronoun? true}}}
+    :comp {:cat :noun
+           :phrasal? true
+           ;; this extra {:cat :noun}
+           ;; prevents negp from happening here.
+           :head {:cat :noun
+                  :phrasal? false}
+           :comp {:phrasal? false}}
+    :subcat []
+    :cat :verb
+    :infl :present
+    :sem {:tense :present
+          :aspect :simple
+          :pred :need}}
+
+   ;; 3. variant with object 
+   ;; as a noun phrase:
+   {:phrasal? true
+    :head {:rule "adverb-nodig"
+           :comp {:rule "vp"
+                  :head {:infl :present :phrasal? false}
+                  :comp {:cat :noun
+                         :phrasal? true
+                         ;; this extra {:cat :noun}
+                         ;; prevents negp from happening here.
+                         :head {:cat :noun
+                                :phrasal? false}
+                         :comp {:phrasal? false}}}}
+    :comp {:pronoun? true
+           :phrasal? false}
+    :subcat []
+    :cat :verb
+    :infl :present
+    :sem {:tense :present
+          :aspect :simple
+          :pred :need}}
+   ]]]
+
+   
+
 
