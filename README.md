@@ -53,9 +53,6 @@ for an example of what the content looks like.
    step 1 as the `:href`, for example:
    
 ```
-{:name "Pronouns and Present Tense"
- :href "verbs/subject-pronouns-and-present-tense"}
-``` 
-
-
-
+{:name "Indefinite articles and adjectives"
+ :href "nouns/indef-adj"}
+```
