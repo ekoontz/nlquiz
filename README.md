@@ -41,7 +41,7 @@ See [src/sh](src/sh) for build scripts.
 ## Add new curriculum topic
 
 1. Add a new .edn file for the topic content to the file hierarchy
-with [edn/curriculum](https://github.com/ekoontz/nlquiz/tree/master/resources/edn/curriculum), See
+with [edn/curriculum](https://github.com/ekoontz/nlquiz/tree/master/resources/public/edn/curriculum), See
 [edn/curriculum/subject-pronouns-and-present-tense.edn](/ekoontz/nlquiz/blob/master/resources/edn/curriculum/subject-pronouns-and-present-tense.edn)
 for an example of what the content looks like.
 
