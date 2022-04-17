@@ -42,13 +42,13 @@ See [src/sh](src/sh) for build scripts.
 
 1. Add a new .edn file for the topic content to the file hierarchy
 with [edn/curriculum](https://github.com/ekoontz/nlquiz/tree/master/resources/public/edn/curriculum), See
-[edn/curriculum/subject-pronouns-and-present-tense.edn](/ekoontz/nlquiz/blob/master/resources/edn/curriculum/subject-pronouns-and-present-tense.edn)
+[edn/curriculum/nouns/indef-adj.edn](https://github.com/ekoontz/nlquiz/blob/master/resources/public/edn/curriculum/nouns/indef-adj.edn)
 for an example of what the content looks like.
 
 2. Choose a name for your new curriculum topic, e.g. "Pronouns and how
    they work with the Present Tense"
 
-3. Modify [edn/curriculum.edn](edn/curriculum.edn) to add a new
+3. Modify [edn/curriculum.edn](https://github.com/ekoontz/nlquiz/blob/master/resources/public/edn/curriculum.edn) to add a new
    `:name,:href` pair to the .edn map in that file, using the name you
    chose in step 2 as the `:name` and the path to the .edn file that you created in
    step 1 as the `:href`, for example:
