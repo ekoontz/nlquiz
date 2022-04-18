@@ -171,6 +171,9 @@
                         local-sem  (->> nl-parses
                                         (map #(u/get-in % [:sem])))
                         current-input-value (get-input-value)]
+                    (if (empty? specs)
+                      (do (log/debug (str "couldn't parse this mess: '" guess-string "'"))
+                          (reset! translation-of-guess "??")))
                     (if (= current-input-value guess-string)
                       (do
                         (doseq [en-spec specs]
