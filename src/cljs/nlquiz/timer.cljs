@@ -16,6 +16,6 @@
                 (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
                 (reset! last-input-ref current-input-value)
                 (submit-guess-fn current-input-value)))
-            (setup-timer get-input-value-fn submit-guess-fn last-input-ref)))]
+            (setup-timer get-input-value-fn submit-guess-fn last-input-ref check-input-every)))]
     (js/setTimeout check-user-input check-input-every)))
 
