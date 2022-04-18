@@ -165,11 +165,9 @@
                         nl-parses (parses parse-response @grammar @morphology guess-string)
                         specs (->> nl-parses
                                    (map serialize)
-                                   set
-                                   vec
                                    (map deserialize)
-                               (map tr/nl-to-en-spec)
-                               remove-duplicates)
+                                   (map tr/nl-to-en-spec)
+                                   remove-duplicates)
                         local-sem  (->> nl-parses
                                         (map #(u/get-in % [:sem])))
                         current-input-value (get-input-value)]
