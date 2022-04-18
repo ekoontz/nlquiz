@@ -174,6 +174,16 @@
                     (if (empty? specs)
                       (do (log/debug (str "couldn't parse this mess: '" guess-string "'"))
                           (reset! translation-of-guess "??")))
+
+                    ;; TODO: the idea is that we should avoid the overhead
+                    ;; of the english generation if the input has changed in the
+                    ;; meantime of the call above, but it doesn't ever seem to
+                    ;; happen that we make this log statement: if it
+                    ;; can't ever happen, try to understand why.
+                    (if (not (= current-input-value guess-string))
+                      (log/debug (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value)))
+
+                    
                     (if (= current-input-value guess-string)
                       (do
                         (doseq [en-spec specs]
