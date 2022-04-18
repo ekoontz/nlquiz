@@ -471,19 +471,27 @@ line.thick {
 }
 
 text.leaf {
-    font: normal italic 12px serif; fill: black;
+    font-style: italic;
+    font-size:12px;
+    font-family: serif;
 }
 
 text.leaf-head {
-    font: bold italic 12px serif; fill: black;
+    font-style: italic;
+    font-size:12px;
+    font-weight: bold;    
+    font-family: serif;
 }
 
 text.rule {
-    font: normal 12px sans; fill: black;
+    font-size:12px;
+    font-family: sans;
 }
 
 text.rule-head {
-    font: bold 12px sans; fill: black;
+    font-weight: bold;
+    font-size:12px;
+    font-family: sans;    
 }
 
 svg {
