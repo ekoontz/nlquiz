@@ -20,6 +20,12 @@
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [nlquiz.handler :refer [root-path-from-env inline-resource language-server-endpoint-url]]))
 
+
+;; we create a timer loop:
+;;   (setup-timer get-input-value submit-guess)
+;; which calls (defn submit-guess) below.
+;; 
+
 (def answer-count (atom 0))
 (def expression-index (atom 0))
 (def ik-weet-niet-button-state (r/atom initial-button-state))
@@ -107,7 +113,7 @@
                (remove #(= false %)))]
       (not (empty? result)))))
 
-;; quiz-layout -> submit-guess -> evaluate-guess
+;; setup-timer -> submit-guess -> evaluate-guess
 ;;             -> get-expression (in scope of quiz-layout, but called from within evaluate-guess,
 ;;                and only called if guess is correct)
 
