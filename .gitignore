@@ -18,3 +18,4 @@ pom.xml.asc
 *.min.css
 *.min.js
 *#*
+bugs/*
