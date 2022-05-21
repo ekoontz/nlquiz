@@ -12,7 +12,7 @@
           {:name "Gender"
            :href "nouns/definite-articles"}
           {:name "Possessive articles"
-           :href "nouns/poss"}
+           :href "nouns/possessives"}
           {:name "Indefinite articles and adjectives"
            :href "nouns/indef-adj"}
           {:name "Demonstratives"
