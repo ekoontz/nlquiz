@@ -14,7 +14,7 @@
 
 (def curriculum-atom (r/atom nil))
 (def curriculum-content-atom (r/atom ""))
-(def this-many-examples 5)
+(def default-count-of-examples 5)
 
 (def generate-http (str (language-server-endpoint-url) "/generate/nl"))
 (def generate-with-alts-http (str (language-server-endpoint-url) "/generate-with-alts"))
@@ -77,15 +77,20 @@
                           response)))))))
 
 (defn rewrite-content
-  "transform all instances of '[:show-examples ...]' with '[show-examples ...]'"
+  "transform all instances of '[:show-examples ...]' with '[show-examples ...]'
+   Input can be of the form of either: 
+      - '[:show-examples <spec>]' or:
+      - '[:show-examples <spec> <number>]'.
+   If the latter, then <number> of examples will be returned.
+   If the former, then the default number of examples will be shown."
   [content]
   (cond
     (and (vector? content)
          (= (first content) :show-examples))
     [show-examples (second content) (if (= 3 (count content))
                                       (nth content 2)
-                                      ;; default to showing 5 examples:
-                                      5)]
+                                      ;; default number of examples:
+                                      default-count-of-examples)]
 
     (and (vector? content)
          (= (first content) :show-alternate-examples))
@@ -174,7 +179,7 @@
 
 (defn show-examples [specs & [supply-this-many-examples]]
   (let [expressions (r/atom [])
-        this-many-examples (or supply-this-many-examples this-many-examples)]
+        this-many-examples (or supply-this-many-examples default-count-of-examples)]
     (doall (take this-many-examples
                  (repeatedly #(add-one expressions (first (shuffle specs))))))
     (fn []
@@ -195,7 +200,7 @@
   (let [expressions (r/atom [])
         specs [spec]]
     (log/debug (str "show-alternate-examples: spec: " spec))
-    (doall (take this-many-examples
+    (doall (take default-count-of-examples
                  (repeatedly #(add-one-alternates
                                expressions (first (shuffle specs)) alternates))))
     (fn []
