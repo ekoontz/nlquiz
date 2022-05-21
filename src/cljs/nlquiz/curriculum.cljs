@@ -48,7 +48,7 @@
 
 (defn get-curriculum []
   (let [root-path (root-path-from-env)]
-    (go (let [response (<! (http/get (str root-path "edn/curriculum.edn")))]
+    (go (let [response (<! (http/get (str root-path "edn/toc.edn")))]
           (reset! curriculum-atom (-> response :body))))))
 
 (defn get-name-or-children [node]
