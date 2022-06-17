@@ -1,5 +1,5 @@
 [:div
- [:p "Adjectives modify nouns. Adverbs, in turn, modify
+ [:p "Adjectives [:i bijvoeglijke naamwoorden] modify nouns [:i zelfstandige naamwoorden]. Adverbs [:i bijwoorden], in turn, modify
       adjectives. Here are some examples of an adjective modified by
       an adverb:"]
  [:show-examples
