@@ -117,7 +117,7 @@
 ;;             -> get-expression (in scope of quiz-layout, but called from within evaluate-guess,
 ;;                and only called if guess is correct)
 
-(def placeholder "wat is dit in Nederlands?")
+(def placeholder "wat is dit in het Nederlands?")
 (def grammar (atom nil))
 (def morphology (atom nil))
 
