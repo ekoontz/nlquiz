@@ -124,11 +124,12 @@
         [:div.h4 [:h4 (get-title-for major minor)]]
         [:div.content @curriculum-content-atom]]])))
 
-(defn new-pair [spec]
+(defn new-pair [spec & [model-name]]
   (let [input (r/atom nil)
         serialized-spec (-> spec serialize str)
         get-pair-fn (fn [] (http/get generate-http
                                      {:query-params {"q" serialized-spec
+                                                     "model" (or model-name "complete-model")
                                                      ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
                                                      "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))
                                                      }}))]
@@ -138,7 +139,7 @@
                    :target (-> response :body :target)})))
     input))
 
-(defn new-pair-alternate-set [spec alternates]
+(defn new-pair-alternate-set [spec alternates & [model-name]]
   (let [input-alternate-a (r/atom nil)
         input-alternate-b (r/atom nil)
         serialized-spec (-> spec serialize str)
@@ -148,6 +149,7 @@
         get-pair-fn (fn [] (http/get generate-with-alts-http
                                      {:query-params {"spec" serialized-spec
                                                      "alts" serialized-alternates
+                                                     "model" (or model-name "complete-model")
                                                      ;; append a cache-busting argument: some browsers don't support 'Cache-Control:no-cache':
                                                      "r" (hash (str (.getTime (js/Date.)) (rand-int 1000)))}}))]
     (go (let [response (<! (get-pair-fn))]
