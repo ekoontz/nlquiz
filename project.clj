@@ -105,7 +105,7 @@
    :server-port 3449
    :nrepl-port 7002
    :nrepl-middleware [cider.piggieback/wrap-cljs-repl]
-   
+   :hawk-options {:watcher :polling}
    :css-dirs ["resources/public/css"]
    :ring-handler nlquiz.handler/app}
 
