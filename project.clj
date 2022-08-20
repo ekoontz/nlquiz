@@ -4,16 +4,16 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :dependencies [[org.clojure/clojure "1.11.0"]
+  :dependencies [[org.clojure/clojure "1.11.1"]
                  [thedavidmeister/cljc-md5 "0.0.2"]
                  [ring-server "0.5.0"]
                  [prismatic/dommy "1.1.0"]
                  [reagent "0.10.0"]
                  [reagent-utils "0.3.3"]
-                 [ring "1.8.0"]
+                 [ring "1.9.5"]
                  [ring/ring-defaults "0.3.2"]
                  [yogthos/config "1.1.6"]
-                 [org.clojure/clojurescript "1.10.866"
+                 [org.clojure/clojurescript "1.11.60"
                   :scope "provided"]
                  [metosin/reitit "0.5.10"]
                  [venantius/accountant "0.2.5"
@@ -21,15 +21,15 @@
                  [cljslog "0.1.0"]
                  [clj-http "3.10.2"]
                  [cljs-http "0.1.46"]
-                 [org.clojure/tools.logging "1.1.0"]
+                 [org.clojure/tools.logging "1.2.4"]
                  [dag_unify "1.10.2"]
                  [menard "1.5.0"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-devel "1.7.1"]
-                 [org.clojure/data.json "0.2.7"]
-                 [org.clojure/core.async "0.4.474"]
-                 [ring/ring-jetty-adapter "1.7.1"]
+                 [org.clojure/data.json "2.4.0"]
+                 [org.clojure/core.async "1.5.648"]
+                 [ring/ring-jetty-adapter "1.9.5"]
                  [com.cemerick/url "0.1.1"]]
   
   :plugins [[lein-environ "1.1.0"]
