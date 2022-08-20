@@ -303,19 +303,6 @@
           (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
                 (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))))))))
 
-(defn find-matching-specs [major & [minor]]
-  (get-specs (if minor
-               (str major "/" minor)
-               major))
-  (->> @specs-atom
-       (filter (fn [spec]
-                 (not (empty? (filter #(= % major)
-                                      (get spec :major-tags))))))
-       (filter (fn [spec]
-                 (or (nil? minor)
-                     (not (empty? (filter #(= % minor)
-                                          (get spec :minor-tags)))))))))
-
 (defn quiz []
   (fn []
     (let [routing-data (session/get :route)
