@@ -319,8 +319,12 @@
                major)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
-          (let [serialized-spec (-> @specs-atom shuffle first serialize str)]
-            (let [response (<! (http/get generate-http {:query-params {"q" serialized-spec}}))]
+          (let [spec (-> @specs-atom shuffle first)
+                model (or (u/get-in spec [:model]) "complete")
+                spec (dissoc spec :model)
+                serialized-spec (-> spec serialize str)]
+            (let [response (<! (http/get generate-http {:query-params {"model" model
+                                                                       "q" serialized-spec}}))]
               (reset! question-html (-> response :body :source))
               (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
