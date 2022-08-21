@@ -1,0 +1,11 @@
+[:div
+ [:p "Woordenlijst 1"]
+ [:show-examples
+  [{:model "woordenlijst"
+    :cat :noun
+    :rule "np:2"
+    :phrasal? true
+    :subcat []
+    :sem {:quant :the}
+    :agr {:number :plur}}]]]
+

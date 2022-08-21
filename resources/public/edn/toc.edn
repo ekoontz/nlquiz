@@ -27,5 +27,11 @@
           {:name "Irregular Simple Past"
            :href "verbs/past-simple-irregular"}
           {:name "Nodig"
-           :href "verbs/nodig"}]}]
+           :href "verbs/nodig"}]}
+
+
+ {:name "Woodenlijst"
+ :child [{:name "Woordenlijst 1"
+          :href "woordenlijst/1"}]}]
+ 
 
