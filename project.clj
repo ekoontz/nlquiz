@@ -18,11 +18,10 @@
                  [metosin/reitit "0.5.10"]
                  [venantius/accountant "0.2.5"
                   :exclusions [org.clojure/tools.reader]]
-                 [cljslog "0.1.0"]
                  [clj-http "3.10.2"]
                  [cljs-http "0.1.46"]
-                 [org.clojure/tools.logging "1.2.4"]
-                 [dag_unify "1.10.2"]
+                 [org.clojure/tools.logging "1.1.0"]
+                 [dag_unify "1.10.3-SNAPSHOT"]
                  [menard "1.5.0"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]

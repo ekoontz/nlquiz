@@ -2,7 +2,7 @@
   (:require
    [dag_unify.core :as u :refer [ref?]]
    [dag_unify.serialization :refer [deserialize final-reference-of serialize]]
-   [cljslog.core :as log]
+   [nlquiz.log :as log]
    [reagent.core :as r]))
 
 (def ref-counter (atom 0))

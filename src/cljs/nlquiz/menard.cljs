@@ -1,7 +1,7 @@
 ;; interface with menard api
 (ns nlquiz.menard
   (:require
-   [cljslog.core :as log]
+   [nlquiz.log :as log]
    [clojure.string :as string]
    [dag_unify.core :as u]
    [dag_unify.dissoc :refer [dissoc-in]]

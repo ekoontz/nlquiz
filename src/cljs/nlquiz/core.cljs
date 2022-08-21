@@ -2,7 +2,7 @@
   (:require
    [accountant.core :as accountant]
    [cljs.core.async :refer [<!]]
-   [cljslog.core :as log]
+   [nlquiz.log :as log]
    [cljs-http.client :as http]
    [nlquiz.about :as about]
    [nlquiz.curriculum :as curriculum]

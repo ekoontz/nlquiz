@@ -4,7 +4,7 @@
    [dag_unify.serialization :as s]   
    [cemerick.url :as url]
    [cljs-http.client :as http]
-   [cljslog.core :as log]
+   [nlquiz.log :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :as string :refer [trim]]
    [nlquiz.menard :refer [dag-to-string decode-analyze decode-grammar

@@ -2,7 +2,8 @@
   (:require
    [cljs-http.client :as http]
    [cljs.core.async :refer [<!]]
-   [cljslog.core :as log]
+   [nlquiz.log :as log]
+   [dag_unify.core :as u]
    [dag_unify.serialization :refer [deserialize serialize]]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.speak :as speak]

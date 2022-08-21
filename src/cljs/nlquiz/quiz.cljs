@@ -1,7 +1,7 @@
 (ns nlquiz.quiz
   (:require
    [cljs-http.client :as http]
-   [cljslog.core :as log]
+   [nlquiz.log :as log]
    [cljs.core.async :refer [<!]]
    [clojure.string :refer [trim]]
    [dag_unify.core :as u]

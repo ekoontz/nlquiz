@@ -1,6 +1,6 @@
 (ns nlquiz.timer
   (:require
-   [cljslog.core :as log]))
+   [nlquiz.log :as log]))
 
 (def default-check-input-every 300)
 

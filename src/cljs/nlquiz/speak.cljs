@@ -1,6 +1,6 @@
 (ns nlquiz.speak
   (:require
-   [cljslog.core :as log]))
+   [nlquiz.log :as log]))
 
 (defn nederlands [say-this-in-nederlands]
   (let [synth (. js/window -speechSynthesis)
