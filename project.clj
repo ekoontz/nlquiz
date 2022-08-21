@@ -11,20 +11,21 @@
                  [reagent "0.10.0"]
                  [reagent-utils "0.3.3"]
                  [ring "1.9.5"]
-                 [ring/ring-defaults "0.3.3"]
-                 [yogthos/config "1.2.0"]
+                 [ring/ring-defaults "0.3.2"]
+                 [yogthos/config "1.1.6"]
                  [org.clojure/clojurescript "1.11.60"
                   :scope "provided"]
                  [metosin/reitit "0.5.10"]
                  [venantius/accountant "0.2.5"
                   :exclusions [org.clojure/tools.reader]]
                  [clj-http "3.10.2"]
-                 [clj-http "3.12.3"]
                  [cljs-http "0.1.46"]
                  [org.clojure/tools.logging "1.1.0"]
                  [dag_unify "1.10.3-SNAPSHOT"]
-                 [org.clojure/tools.logging "1.2.4"]
                  [menard "1.5.0"]
+                 [ring/ring-core "1.7.1"]
+                 [ring/ring-defaults "0.3.2"]
+                 [ring/ring-devel "1.7.1"]
                  [org.clojure/data.json "2.4.0"]
                  [org.clojure/core.async "1.5.648"]
                  [ring/ring-jetty-adapter "1.9.5"]
@@ -109,18 +110,18 @@
 
   :profiles {:dev {:repl-options {:init-ns nlquiz.repl
                                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
-                   :dependencies [[cider/piggieback "0.5.3"]
-                                  [binaryage/devtools "1.0.6"]
+                   :dependencies [[cider/piggieback "0.5.0"]
+                                  [binaryage/devtools "0.9.11"]
                                   [ring/ring-mock "0.4.0"]
-                                  [ring/ring-devel "1.9.5"]
+                                  [ring/ring-devel "1.8.0"]
                                   [org.clojure/tools.nrepl "0.2.13"]
-                                  [prone "2021-04-23"]
-                                  [figwheel-sidecar "0.5.20"]
-                                  [nrepl "0.9.0"]
+                                  [prone "2019-07-08"]
+                                  [figwheel-sidecar "0.5.19"]
+                                  [nrepl "0.7.0"]
                                   [pjstadig/humane-test-output "0.10.0"]]
 
                    :source-paths ["env/dev/clj"]
-                   :plugins [[lein-figwheel "0.5.20"]]
+                   :plugins [[lein-figwheel "0.5.19"]]
                    
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
