@@ -1,4 +1,10 @@
-[{:name "Adjectives"
+[
+ {:name "Woodenlijst"
+ :child [{:name "Woordenlijst 1"
+          :href "woordenlijst/1"}]}
+
+
+ {:name "Adjectives"
   :child [{:name "Adjectives and Adverbs"
            :href "adjectives"}]}
  {:name "Pronouns"
@@ -29,9 +35,6 @@
           {:name "Nodig"
            :href "verbs/nodig"}]}
 
-
- {:name "Woodenlijst"
- :child [{:name "Woordenlijst 1"
-          :href "woordenlijst/1"}]}]
+]
  
 
