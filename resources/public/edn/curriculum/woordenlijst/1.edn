@@ -1,5 +1,8 @@
 [:div
  [:p "Woordenlijst 1"]
+
+ [:p "Some examples from this set:"]
+
  [:show-examples
   [{:model "woordenlijst"
     :cat :noun
