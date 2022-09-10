@@ -80,14 +80,16 @@
         input-length (count tokenized)
         syntax-tree (fn [tree] (s/syntax-tree tree morphology))
         morph (fn [tree] (s/morph tree morphology))]
-    (log/info (str "menard/parses GOT HERE!!: input-length: " input-length "; surface: " surface "; tokenized: " tokenized))
+    (log/debug (str "menard/parses input-length: " input-length "; surface: " surface "; tokenized: " tokenized))
     (if (seq (get input-map [0 input-length]))
+      ;; supplied input-map has the whole parse, all the way from [0, input-length]:
       (do
-        (log/info (str "WELP! IT'S APPARENTLY DONE!"))
         (get input-map [0 input-length]))
-      ;; else
+
+      ;; else, input-map supplied less than the full parse (e.g. just the
+      ;; tokenizations with all the lexemes looked up for the tokenizations),
+      ;; so parse is not complete yet: we need to parse ourselves.
       (do
-        (log/info (str "NO IT IS NOT DONE."))
         (binding [parse/syntax-tree syntax-tree
                   parse/morph morph
                   parse/truncate? true
@@ -97,7 +99,6 @@
                                           (dissoc :comp)
                                         (assoc :1 (strip-map (u/get-in tree [:1])))
                                         (assoc :2 (strip-map (u/get-in tree [:2])))))]
-          (log/info (str "input-map for parse/parse-in-stages: " input-map))
           (->
            (parse/parse-in-stages input-map input-length 2 grammar surface)
            (get [0 input-length])
