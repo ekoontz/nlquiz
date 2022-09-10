@@ -1,4 +1,4 @@
-( stat /tmp/nlquiz/ || (git clone $(pwd) /tmp/nlquiz ) && \
+( rm -rf /tmp/nlquiz/ ; (git clone $(pwd) /tmp/nlquiz ) && \
       cd /tmp/nlquiz && \
       git checkout master && lein clean && git config pull.ff only && \
       git fetch origin && git checkout origin/master && ./src/sh/update-prod-blue.sh && \
