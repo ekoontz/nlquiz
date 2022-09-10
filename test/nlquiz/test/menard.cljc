@@ -29,6 +29,3 @@
       (map (fn [decoded-lookup]
              (is (map? decoded-lookup))
              (is (= '(0 1) (keys decoded-lookup)))))))))
-
-
-  
