@@ -47,11 +47,17 @@
        (map cljs.reader/read-string)
        (map deserialize)))
 
+(defn decode-parses [response-body]
+  (if (seq response-body)
+    (cons
+     (decode-parse (first response-body))
+     (decode-parses (rest response-body)))))
+
 (defn decode-parse [response-body]
    ;; a map between:
    ;; keys: each key is a span e.g. [0 1]
    ;; vals: each val is a sequence of trees, each of which spans the span indicated by the key.
-   (into {}
+  (into {}
          (->> (keys response-body)
               (map (fn [k]
                      [(cljs.reader/read-string (string/join (rest (str k))))
@@ -70,25 +76,32 @@
     (parse/tokenize input-string)))
 
 (defn parses [input-map grammar morphology surface]
-  (let [input-length (count (tokenize surface))
+  (let [tokenized (first (tokenize surface))
+        input-length (count tokenized)
         syntax-tree (fn [tree] (s/syntax-tree tree morphology))
         morph (fn [tree] (s/morph tree morphology))]
+    (log/info (str "menard/parses GOT HERE!!: input-length: " input-length "; surface: " surface "; tokenized: " tokenized))
     (if (seq (get input-map [0 input-length]))
-      (get input-map [0 input-length])
+      (do
+        (log/info (str "WELP! IT'S APPARENTLY DONE!"))
+        (get input-map [0 input-length]))
       ;; else
-      (binding [parse/syntax-tree syntax-tree
-                parse/morph morph
-                parse/truncate? true
-                parse/truncate-fn (fn [tree]
-                                    (-> tree
-                                        (dissoc :head)
-                                        (dissoc :comp)
+      (do
+        (log/info (str "NO IT IS NOT DONE."))
+        (binding [parse/syntax-tree syntax-tree
+                  parse/morph morph
+                  parse/truncate? true
+                  parse/truncate-fn (fn [tree]
+                                      (-> tree
+                                          (dissoc :head)
+                                          (dissoc :comp)
                                         (assoc :1 (strip-map (u/get-in tree [:1])))
                                         (assoc :2 (strip-map (u/get-in tree [:2])))))]
-        (->
-         (parse/parse-in-stages input-map input-length 2 grammar surface)
-         (get [0 input-length])
-         remove-duplicates)))))
+          (log/info (str "input-map for parse/parse-in-stages: " input-map))
+          (->
+           (parse/parse-in-stages input-map input-length 2 grammar surface)
+           (get [0 input-length])
+           remove-duplicates))))))
 
 (defn nl-sem [nl-parses]
   (->> nl-parses

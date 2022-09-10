@@ -11,8 +11,8 @@
    [menard.translate.spec :as tr]
    [nlquiz.constants :refer [spinner]]
    [nlquiz.curriculum :as curriculum]
-   [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology decode-parse
-                          parses remove-duplicates]]
+   [nlquiz.menard :refer [dag-to-string decode-grammar decode-morphology
+                          decode-parses parses remove-duplicates]]
    [nlquiz.speak :as speak]
    [nlquiz.timer :refer [setup-timer]]
    [reagent.core :as r]
@@ -161,9 +161,13 @@
                         (->
                          (<! (http/get (str (language-server-endpoint-url)
                                             "/parse-start/nl?q=" guess-string)))
-                         :body decode-parse)
+                         :body decode-parses)
                         debug (log/info (str "parse-response: " parse-response))
-                        nl-parses (parses parse-response @grammar @morphology guess-string)
+                        nl-parses
+                        (->>
+                         parse-response
+                         (mapcat (fn [each-parse]
+                                   (parses each-parse @grammar @morphology guess-string))))
                         debug (log/info (str "nl-parses: " nl-parses))
                         specs (->> nl-parses
                                    (map serialize)
