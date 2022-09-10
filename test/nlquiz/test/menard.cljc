@@ -1,5 +1,6 @@
 (ns nlquiz.test.menard
   (:require [clojure.test :refer [deftest is]]
+            [clojure.tools.logging :as log]
             [dag_unify.serialization :as serialization]
             [dag_unify.core :as u]
             [menard.handlers :as handlers]))
@@ -22,6 +23,7 @@
         (->> "de kat"
              handlers/parse-nl-start
              (map decode-lookup))]
+    (log/info (str "decoded-lookups: " (vec decoded-lookups)))
     (doall
      (->>
       decoded-lookups
