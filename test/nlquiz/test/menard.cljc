@@ -23,7 +23,7 @@
         (->> "de kat"
              handlers/parse-nl-start
              (map decode-lookup))]
-    (log/info (str "decoded-lookups: " (vec decoded-lookups)))
+    (log/debug (str "decoded-lookups: " (vec decoded-lookups)))
     (doall
      (->>
       decoded-lookups
