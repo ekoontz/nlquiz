@@ -150,10 +150,11 @@
       (if (not (empty? guess-string))
         (do
           (if (= (clojure.string/lower-case guess-string) (clojure.string/lower-case (str @show-answer)))
-            ;; user's answer was the same as the server-derived correct answer:
+            ;; case 1: user's answer was the same as the server-derived correct answer. We can avoid doing
+            ;; expensive parsing of guess-string to see the answer could have been correct.
             (handle-correct-answer guess-string)
 
-            ;; user's answer was not the same as the server-derived correct answer, 
+            ;; case 2: user's answer was not the same as the server-derived correct answer, 
             ;; but still might be correct: we have to analyze it to find out.
             (do
               (reset! translation-of-guess spinner)
