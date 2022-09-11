@@ -333,7 +333,7 @@
                 serialized-spec (-> spec serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"model" model
                                                                        "q" serialized-spec}}))]
-              (log/debug (str "get-expression: got response: " response))
+              (log/debug (str "nlquiz.quiz: get-expression: got response: " response))
               (reset! question-html (-> response :body :source))
               (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
