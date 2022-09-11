@@ -149,7 +149,7 @@
     (let [guess-string (if guess-string (trim guess-string))]
       (if (not (empty? guess-string))
         (do
-          (if (= guess-string @show-answer)
+          (if (= (clojure.string/lower-case guess-string) (clojure.string/lower-case (str @show-answer)))
             ;; user's answer was the same as the server-derived correct answer:
             (handle-correct-answer guess-string)
 
