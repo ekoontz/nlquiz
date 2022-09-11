@@ -162,13 +162,13 @@
                          (<! (http/get (str (language-server-endpoint-url)
                                             "/parse-start/nl?q=" guess-string)))
                          :body decode-parses)
-                        debug (log/info (str "parse-response: " parse-response))
+                        debug (log/debug (str "parse-response: " parse-response))
                         nl-parses
                         (->>
                          parse-response
                          (mapcat (fn [each-parse]
                                    (parses each-parse @grammar @morphology guess-string))))
-                        debug (log/info (str "nl-parses: " nl-parses))
+                        debug (log/debug (str "nl-parses: " nl-parses))
                         specs (->> nl-parses
                                    (map serialize)
                                    (map deserialize)
@@ -187,10 +187,10 @@
                     ;; happen that we make this log statement: if it
                     ;; can't ever happen, try to understand why.
                     (if (not (= current-input-value guess-string))
-                      (log/info (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value))
-                      (log/info (str "(the else of the equality check)...")))
+                      (log/debug (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value))
+                      (log/debug (str "(the else of the equality check)...")))
 
-                    (log/info (str "en-spec: " en-spec))
+                    (log/debug (str "en-spec: " en-spec))
 
                     (if (= current-input-value guess-string)
                       (do
@@ -333,7 +333,7 @@
                 serialized-spec (-> spec serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"model" model
                                                                        "q" serialized-spec}}))]
-              (log/info (str "get-expression: got response: " response))
+              (log/debug (str "get-expression: got response: " response))
               (reset! question-html (-> response :body :source))
               (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
