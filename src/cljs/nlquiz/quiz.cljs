@@ -158,7 +158,10 @@
             ;; but still might be correct: we have to analyze it to find out.
             (do
               (reset! translation-of-guess spinner)
-              (reset! curriculum/model-name-atom "woordenlijst")
+              (or (seq @curriculum/model-name-atom)
+                  (do
+                    (log/error (str "curriculum/model-name-atom not set: resetting."))
+                    (reset! curriculum/model-name-atom "woordenlijst")))
               (if (empty? (deref curriculum/model-name-atom))
 
                 ;; TODO: handle this somehow..
