@@ -121,6 +121,10 @@
 (def grammar (atom nil))
 (def morphology (atom nil))
 
+;; TODO: get from curriculum:
+(def model-name (atom "woordenlijst"))
+;;(def model-name (atom "complete"))
+
 (defn get-input-value []
   (if (.getElementById js/document "input-guess")
     (trim (-> (.getElementById js/document "input-guess") .-value))))
@@ -161,20 +165,25 @@
               (go (let [parse-response
                         (->
                          (<! (http/get (str (language-server-endpoint-url)
-                                            "/parse-start/nl?q=" guess-string)))
+                                            "/parse-start/nl?q=" guess-string "&model=" @model-name)))
                          :body decode-parses)
-                        debug (log/debug (str "parse-response: " parse-response))
+                        debug (log/info (str "parse-response: " parse-response))
+                        debug (log/info (str "**** HELLLO???? ****"))
                         nl-parses
                         (->>
                          parse-response
                          (mapcat (fn [each-parse]
+                                   (log/info (str "OK LETS LOOK AT THE PARSE!!"))
                                    (parses each-parse @grammar @morphology guess-string))))
-                        debug (log/debug (str "nl-parses: " nl-parses))
+                        debug (log/info (str "OK NOW WHAT ARE THE nl-parses: " (vec nl-parses)))
                         specs (->> nl-parses
                                    (map serialize)
                                    (map deserialize)
                                    (map tr/nl-to-en-spec)
                                    remove-duplicates)
+
+                        debug (log/info (str "YAY WE GOT SOME SPECS: " (vec specs)))
+
                         local-sem  (->> nl-parses
                                         (map #(u/get-in % [:sem])))
                         current-input-value (get-input-value)]
@@ -191,14 +200,17 @@
                       (log/debug (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value))
                       (log/debug (str "(the else of the equality check)...")))
 
-                    (log/debug (str "en-spec: " en-spec))
+                    (log/debug (str "en-specs: " (vec en-specs)))
 
                     (if (= current-input-value guess-string)
                       (do
                         (doseq [en-spec specs]
+                          (log/info (str "GOING TO TRY TO GENERATE WITH EN-SPEC: "
+                                         en-spec))
                           (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                     "/generate/en?spec=" (-> en-spec
-                                                                                             dag-to-string))))]
+                                                                                             dag-to-string)
+                                                                    "&model=" @model-name)))]
                                 ;; if user's already answered the question correctly, then
                                 ;; @got-it-right? will be true. If true, then don't re-evaluate.
                                 (if (false? @got-it-right?)
@@ -206,6 +218,9 @@
                                   (do
                                     (if (not (nil? (-> gen-response :body :sem deserialize)))
                                       (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
+                                    (log/info (str "LOCAL-SEM: " local-sem "; PCR: " @possible-correct-semantics "; translation-of-guess: " @translation-of-guess))
+                                    (if @translation-of-guess
+                                      (log/info (str "non-empty english translation: " @translation-of-guess)))
                                     (if (evaluate-guess local-sem
                                                         @possible-correct-semantics)
                                       ;; got it right!
