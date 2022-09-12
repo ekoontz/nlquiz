@@ -72,11 +72,16 @@
     (go
       (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
         (if (= 200 (-> response :status))
-          (do (reset! curriculum-content-atom (-> response :body
+          (do
+            (log/info (str "got some content!!"))
+            (-> response :body interpret-meta)            
+            (reset! curriculum-content-atom (-> response :body
                                                   process-show-examples
                                                   remove-meta))
-              (set-meta-defaults)
-              (-> response :body interpret-meta))
+;;              (set-meta-defaults)
+;;              (-> response :body interpret-meta)
+
+              )
               
           (log/error (str "unexpected response for path:"
                           path "; response was: " 
@@ -114,11 +119,12 @@
   [content]
   (cond
     (map? content)
-    (if-let [use-model
-             (u/get-in content [:meta :use-model])]
-      (log/info (str "curriculum/interpret-meta: setting model to: " use-model))
-      (reset! model-name-atom use-model))
-
+    (let [use-model
+          (u/get-in content [:meta :use-model])]
+      (if use-model
+        (do (log/info (str "curriculum/interpret-meta: setting model to: " use-model))
+            (reset! model-name-atom use-model)
+            (log/info (str "curriculum/interpret-meta: ok, set it to: " @model-name-atom)))))
     (vector? content)
     (vec (map (fn [x]
                 (interpret-meta x))

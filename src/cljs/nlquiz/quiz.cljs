@@ -72,6 +72,8 @@
 (def major-atom (atom nil))
 (def minor-atom (atom nil))
 
+(def model-name-atom (atom nil))
+
 (defn on-submit [e]
   (.preventDefault e)
   (speak/nederlands @show-answer)
@@ -143,6 +145,11 @@
   (.focus (.getElementById js/document "input-guess")))
 
 (defn submit-guess [guess-string]
+  (log/info (str "submit-guess fuck 1: " (deref curriculum/model-name-atom)))
+  (log/info (str "submit-guess fuck 1.5 " (deref model-name-atom)))
+;;  (curriculum/set-meta-defaults)
+  (log/info (str "submit guess fuck 2: " (deref curriculum/model-name-atom)))
+  
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
     ;; else, there are some correct answers:
@@ -256,6 +263,7 @@
                 :input-mode "none"
                 :id "other-input"}]
        [:input {:type "text"
+                :size (* 1 (count placeholder))
                 :placeholder placeholder
                 :id "input-guess"
                 :input-mode "text"
@@ -345,6 +353,11 @@
        [curriculum/tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
+  (log/info (str "get-expression fuck 1: " (deref curriculum/model-name-atom)))
+;;  (log/info (str "get-expression fuck 1.5 " (deref model-name-atom)))
+;;  (curriculum/set-meta-defaults)
+;;  (log/info (str "get-expression fuck 2: " (deref curriculum/model-name-atom)))
+  
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)
@@ -352,7 +365,13 @@
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
           (log/info (str "**** <META> ***"))
-          (-> response :body curriculum/interpret-meta)
+          (log/info (str "get-expression fuck 1: " (deref curriculum/model-name-atom)))
+          (log/info (str "get-expression fuck 2: " (deref model-name-atom)))
+;;          (-> response :body curriculum/interpret-meta)
+          (log/info (str "get-expression fuck 2.5: " (deref curriculum/model-name-atom)))                    
+          (reset! model-name-atom (deref curriculum/model-name-atom))
+          (log/info (str "get-expression fuck 3: " (deref curriculum/model-name-atom)))          
+          (log/info (str "get-expression fuck 4: " (deref model-name-atom)))          
           (log/info (str "**** </META> ***"))
         
           (let [spec (-> @specs-atom shuffle first)
