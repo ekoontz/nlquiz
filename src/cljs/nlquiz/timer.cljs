@@ -13,7 +13,7 @@
             (if (and (not (empty? current-input-value))
                      (not (= current-input-value @last-input-ref)))
               (do
-                (log/info (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
+                (log/debug (str "submitting guess after timeout=" check-input-every  ": '" current-input-value "'"))
                 (reset! last-input-ref current-input-value)
                 (submit-guess-fn current-input-value)))
             (setup-timer get-input-value-fn submit-guess-fn last-input-ref check-input-every)))]

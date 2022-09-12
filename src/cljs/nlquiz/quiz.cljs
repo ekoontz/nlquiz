@@ -198,17 +198,11 @@
                                         (map #(u/get-in % [:sem])))
                         current-input-value (get-input-value)]
                     (when (empty? specs)
-                      (do (log/debug (str "couldn't parse this mess: '" guess-string "'"))
+                      (do (log/debug (str "couldn't parse: '" guess-string "'"))
                           (reset! translation-of-guess (str "'" guess-string "'..?"))))
 
-                    ;; TODO: the idea is that we should avoid the overhead
-                    ;; of the english generation if the input has changed in the
-                    ;; meantime of the call above, but it doesn't ever seem to
-                    ;; happen that we make this log statement: if it
-                    ;; can't ever happen, try to understand why.
                     (if (not (= current-input-value guess-string))
-                      (log/debug (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value))
-                      (log/debug (str "normal case: '" current-input-value "' = '" guess-string "'")))
+                      (log/debug (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value)))
 
                     (if (= current-input-value guess-string)
                       (do
@@ -358,7 +352,7 @@
                 serialized-spec (-> spec serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"model" model
                                                                        "q" serialized-spec}}))]
-              (log/debug (str "nlquiz.quiz: get-expression: got response: " response))
+              (log/debug (str "nlquiz.quiz: get-expression: got response: " (-> response :body)))
               (reset! question-html (-> response :body :source))
               (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
