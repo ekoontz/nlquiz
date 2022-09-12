@@ -1,6 +1,6 @@
 [:div
 
- {:meta {:use-english-model "woordenlijst"
+ {:meta {:use-model "woordenlijst"
          :comment "example comment"}}
 
  [:p "Woordenlijst 1"]

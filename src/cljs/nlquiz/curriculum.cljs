@@ -107,7 +107,7 @@
     :else
     content))
 
-(def model-name-atom (atom "complete"))
+(def model-name-atom (atom ""))
 
 (defn interpret-meta
   "set state (e.g. which language models to use) for this curriculum item."
@@ -115,9 +115,9 @@
   (cond
     (map? content)
     (if-let [use-english-model
-             (u/get-in content [:meta :use-english-model])]
-      (log/info (str "setting english model to: " use-english-model))      
-      (reset! model-name-atom (u/get-in content [:meta :use-english-model])))
+             (u/get-in content [:meta :use-model])]
+      (log/info (str "setting model to: " use-model))      
+      (reset! model-name-atom (u/get-in content [:meta :use-model])))
 
     (vector? content)
     (vec (map (fn [x]

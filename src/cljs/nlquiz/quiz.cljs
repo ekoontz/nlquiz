@@ -158,11 +158,11 @@
             ;; but still might be correct: we have to analyze it to find out.
             (do
               (reset! translation-of-guess spinner)
+              (reset! curriculum/model-name-atom "woordenlijst")
               (if (empty? (deref curriculum/model-name-atom))
 
                 ;; TODO: handle this somehow..
                 (log/error (str "No model was found!!")) 
-
 
                 (log/debug (str "doing nl parsing with model: '" (deref curriculum/model-name-atom) "'")))
               (go (let [parse-response
