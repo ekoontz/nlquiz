@@ -346,8 +346,6 @@
        [curriculum/tree path "curriculum full"]])))
 
 (defn get-expression [major & [minor]]
-  (log/info (str "get-expression fuck 1: " (deref curriculum/model-name-atom)))
-  
   (let [root-path (root-path-from-env)
         path (if minor
                (str major "/" minor)

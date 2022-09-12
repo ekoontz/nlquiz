@@ -73,16 +73,11 @@
       (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
         (if (= 200 (-> response :status))
           (do
-            (log/info (str "got some content!!"))
+            (set-meta-defaults)
             (-> response :body interpret-meta)            
             (reset! curriculum-content-atom (-> response :body
                                                   process-show-examples
-                                                  remove-meta))
-;;              (set-meta-defaults)
-;;              (-> response :body interpret-meta)
-
-              )
-              
+                                                  remove-meta)))
           (log/error (str "unexpected response for path:"
                           path "; response was: " 
                           response)))))))
@@ -118,7 +113,8 @@
   "set state (e.g. which language models to use) for this curriculum item."
   [content]
   (cond
-    (map? content)
+    (and (map? content)
+         (u/get-in content [:meta :use-model]))
     (let [use-model
           (u/get-in content [:meta :use-model])]
       (if use-model
