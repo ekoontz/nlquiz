@@ -80,7 +80,7 @@
         input-length (count tokenized)
         syntax-tree (fn [tree] (s/syntax-tree tree morphology))
         morph (fn [tree] (s/morph tree morphology))]
-    (log/info (str "nlquiz.menard PARSES!!.."))
+    (log/debug (str "nlquiz.menard parses begin.."))
     (log/debug (str "menard/parses input-length: " input-length "; surface: " surface "; tokenized: " tokenized))
     (if (seq (get input-map [0 input-length]))
       ;; supplied input-map has the whole parse, all the way from [0, input-length]:

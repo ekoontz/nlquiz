@@ -173,7 +173,10 @@
                          (<! (http/get (str (language-server-endpoint-url)
                                             "/parse-start/nl?q=" guess-string "&model=" (deref curriculum/model-name-atom))))
                          :body decode-parses)
-                        debug (log/debug (str "parse-response: " parse-response))
+                        debug (if (seq parse-response)
+                                (log/debug (str "found one or more parses for: "
+                                                "'" guess-string "'"))
+                                (log/debug (str "no parses for '" guess-string "' found in response.")))
                         nl-parses
                         (->>
                          parse-response
@@ -210,7 +213,7 @@
                     (if (= current-input-value guess-string)
                       (do
                         (doseq [en-spec specs]
-                          (log/info (str "GOING TO TRY TO GENERATE WITH EN-SPEC: "
+                          (log/debug (str "going to try to generate english with spec: "
                                          en-spec))
                           (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                     "/generate/en?spec=" (-> en-spec
@@ -223,9 +226,9 @@
                                   (do
                                     (if (not (nil? (-> gen-response :body :sem deserialize)))
                                       (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
-                                    (log/info (str "LOCAL-SEM: " local-sem "; PCR: " @possible-correct-semantics "; translation-of-guess: " @translation-of-guess))
+                                    (log/debug (str "semantics: " local-sem "; possible correct-semantics: " @possible-correct-semantics))
                                     (if @translation-of-guess
-                                      (log/info (str "non-empty english translation: " @translation-of-guess)))
+                                      (log/debug (str "non-empty english translation: " @translation-of-guess)))
                                     (if (evaluate-guess local-sem
                                                         @possible-correct-semantics)
                                       ;; got it right!
