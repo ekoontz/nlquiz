@@ -160,8 +160,8 @@
               (reset! translation-of-guess spinner)
               (or (seq @curriculum/model-name-atom)
                   (do
-                    (log/error (str "curriculum/model-name-atom not set: resetting."))
-                    (reset! curriculum/model-name-atom "woordenlijst")))
+                    (log/error (str "curriculum/model-name-atom not set: resetting to " curriculum/default-model-name))
+                    (reset! curriculum/model-name-atom curriculum/default-model-name)))
               (if (empty? (deref curriculum/model-name-atom))
 
                 ;; TODO: handle this somehow..
@@ -351,6 +351,10 @@
                major)]
     (go (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
           (reset! specs-atom (->> response :body get-specs-from flatten (remove nil?) set vec))
+          (log/info (str "**** <META> ***"))
+          (-> response :body curriculum/interpret-meta)
+          (log/info (str "**** </META> ***"))
+        
           (let [spec (-> @specs-atom shuffle first)
                 model (or (u/get-in spec [:model]) "complete")
                 spec (dissoc spec :model)

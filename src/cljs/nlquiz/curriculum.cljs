@@ -75,7 +75,9 @@
           (do (reset! curriculum-content-atom (-> response :body
                                                   process-show-examples
                                                   remove-meta))
+              (set-meta-defaults)
               (-> response :body interpret-meta))
+              
           (log/error (str "unexpected response for path:"
                           path "; response was: " 
                           response)))))))
@@ -107,17 +109,15 @@
     :else
     content))
 
-(def model-name-atom (atom ""))
-
 (defn interpret-meta
   "set state (e.g. which language models to use) for this curriculum item."
   [content]
   (cond
     (map? content)
-    (if-let [use-english-model
+    (if-let [use-model
              (u/get-in content [:meta :use-model])]
-      (log/info (str "setting model to: " use-model))      
-      (reset! model-name-atom (u/get-in content [:meta :use-model])))
+      (log/info (str "curriculum/interpret-meta: setting model to: " use-model))
+      (reset! model-name-atom use-model))
 
     (vector? content)
     (vec (map (fn [x]
@@ -125,6 +125,11 @@
               content))
     :else
     content))
+
+(def default-model-name "complete")
+(def model-name-atom (atom default-model-name))
+(defn set-meta-defaults []
+  (reset! model-name-atom default-model-name))
 
 (defn remove-meta
   "remove meta section, if any"
