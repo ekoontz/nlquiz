@@ -121,10 +121,6 @@
 (def grammar (atom nil))
 (def morphology (atom nil))
 
-;; TODO: get from curriculum:
-(def model-name (atom "woordenlijst"))
-;;(def model-name (atom "complete"))
-
 (defn get-input-value []
   (if (.getElementById js/document "input-guess")
     (trim (-> (.getElementById js/document "input-guess") .-value))))
@@ -162,34 +158,42 @@
             ;; but still might be correct: we have to analyze it to find out.
             (do
               (reset! translation-of-guess spinner)
+              (if (empty? (deref curriculum/model-name-atom))
+
+                ;; TODO: handle this somehow..
+                (log/error (str "No model was found!!")) 
+
+
+                (log/debug (str "doing nl parsing with model: '" (deref curriculum/model-name-atom) "'")))
               (go (let [parse-response
                         (->
                          (<! (http/get (str (language-server-endpoint-url)
-                                            "/parse-start/nl?q=" guess-string "&model=" @model-name)))
+                                            "/parse-start/nl?q=" guess-string "&model=" (deref curriculum/model-name-atom))))
                          :body decode-parses)
-                        debug (log/info (str "parse-response: " parse-response))
-                        debug (log/info (str "**** HELLLO???? ****"))
+                        debug (log/debug (str "parse-response: " parse-response))
                         nl-parses
                         (->>
                          parse-response
                          (mapcat (fn [each-parse]
-                                   (log/info (str "OK LETS LOOK AT THE PARSE!!"))
                                    (parses each-parse @grammar @morphology guess-string))))
-                        debug (log/info (str "OK NOW WHAT ARE THE nl-parses: " (vec nl-parses)))
+                        debug (log/debug (if (empty? nl-parses)
+                                           (str "no parses found.")
+                                           (str "at least one parse found.")))
                         specs (->> nl-parses
                                    (map serialize)
                                    (map deserialize)
                                    (map tr/nl-to-en-spec)
                                    remove-duplicates)
 
-                        debug (log/info (str "YAY WE GOT SOME SPECS: " (vec specs)))
-
+                        debug (log/debug (if (empty? specs)
+                                           (str "no specs found.")
+                                           (str "at least one spec found.")))
                         local-sem  (->> nl-parses
                                         (map #(u/get-in % [:sem])))
                         current-input-value (get-input-value)]
-                    (if (empty? specs)
+                    (when (empty? specs)
                       (do (log/debug (str "couldn't parse this mess: '" guess-string "'"))
-                          (reset! translation-of-guess "??")))
+                          (reset! translation-of-guess (str "'" guess-string "'..?"))))
 
                     ;; TODO: the idea is that we should avoid the overhead
                     ;; of the english generation if the input has changed in the
@@ -198,9 +202,7 @@
                     ;; can't ever happen, try to understand why.
                     (if (not (= current-input-value guess-string))
                       (log/debug (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value))
-                      (log/debug (str "(the else of the equality check)...")))
-
-                    (log/debug (str "en-specs: " (vec en-specs)))
+                      (log/debug (str "normal case: '" current-input-value "' = '" guess-string "'")))
 
                     (if (= current-input-value guess-string)
                       (do
@@ -210,7 +212,7 @@
                           (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                     "/generate/en?spec=" (-> en-spec
                                                                                              dag-to-string)
-                                                                    "&model=" @model-name)))]
+                                                                    "&model=" (deref curriculum/model-name-atom))))]
                                 ;; if user's already answered the question correctly, then
                                 ;; @got-it-right? will be true. If true, then don't re-evaluate.
                                 (if (false? @got-it-right?)

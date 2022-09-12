@@ -72,12 +72,15 @@
     (go
       (let [response (<! (http/get (str root-path "edn/curriculum/" path ".edn")))]
         (if (= 200 (-> response :status))
-          (reset! curriculum-content-atom (rewrite-content (-> response :body)))
+          (do (reset! curriculum-content-atom (-> response :body
+                                                  process-show-examples
+                                                  remove-meta))
+              (-> response :body interpret-meta))
           (log/error (str "unexpected response for path:"
                           path "; response was: " 
                           response)))))))
 
-(defn rewrite-content
+(defn process-show-examples
   "transform all instances of '[:show-examples ...]' with '[show-examples ...]'
    Input can be of the form of either: 
       - '[:show-examples <spec>]' or:
@@ -99,7 +102,41 @@
     
     (vector? content)
     (vec (map (fn [x]
-                (rewrite-content x))
+                (process-show-examples x))
+              content))
+    :else
+    content))
+
+(def model-name-atom (atom "complete"))
+
+(defn interpret-meta
+  "set state (e.g. which language models to use) for this curriculum item."
+  [content]
+  (cond
+    (map? content)
+    (if-let [use-english-model
+             (u/get-in content [:meta :use-english-model])]
+      (log/info (str "setting english model to: " use-english-model))      
+      (reset! model-name-atom (u/get-in content [:meta :use-english-model])))
+
+    (vector? content)
+    (vec (map (fn [x]
+                (interpret-meta x))
+              content))
+    :else
+    content))
+
+(defn remove-meta
+  "remove meta section, if any"
+  [content]
+  (cond
+    (and (map? content)
+         (get content :meta))
+    ""
+    
+    (vector? content)
+    (vec (map (fn [x]
+                (remove-meta x))
               content))
     :else
     content))
