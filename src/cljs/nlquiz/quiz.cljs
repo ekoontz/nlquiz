@@ -66,16 +66,25 @@
   (js/setTimeout #(reset! show-praise-display "none") 1000))
 
 (def got-it-right? (atom nil))
-(def get-question-fn-atom (atom (fn []
-                                  (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
+(def get-question-fn-atom
+  (atom (fn []
+          (log/error (str "should not get here! - get-question-fn was not set correctly.")))))
 
 (def major-atom (atom nil))
 (def minor-atom (atom nil))
 
+(defn volgende [e]
+  (log/info (str "volgende!!!"))
+  (.preventDefault e)
+  (show-possible-answer)
+  (speak/nederlands @show-answer))
+
 (defn on-submit [e]
+  (log/info (str "on-submit!"))
   (.preventDefault e)
   (speak/nederlands @show-answer)
-  (if (= true @got-it-right?)
+  (cond
+    (= true @got-it-right?)
     (let [correct-answer @show-answer
           question @question-html]
       ;; get the new expression now to save time, since this takes awhile..
@@ -84,12 +93,16 @@
         (get-expression @major-atom))
       (show-praise)
       (swap! answer-count inc)
+
+      ;; Show only last 5 questions answered:
       (reset! question-table
               (concat
+               ;; The one just-answered:
                [{:source @save-question :target @show-answer}]
-               (take 4 @question-table))))
 
-    ;; else
+               ;; ..and the 4 most recent before that:
+               (take 4 @question-table))))
+    :else
     (do (set-input-value)
         (show-possible-answer)))
   (.focus (.getElementById js/document "input-guess"))
@@ -268,7 +281,7 @@
       [:input {:class "weetniet" :type "submit" :value "Ik weet het niet"
                :disabled @ik-weet-niet-button-state}]
 
-      ;; reset button
+      ;; 'reset' button
       [:button {:class "weetniet"
                 :on-click #(do
                              ;; this switching-around of focus is necessary
@@ -277,7 +290,20 @@
                              (reset! translation-of-guess "")
                              (set-input-value "")
                              (.focus (.getElementById js/document "input-guess"))
-                             (.preventDefault %))} "Reset"]]]]
+                             (.preventDefault %))} "Reset"]
+
+      ;; 'next' button
+      [:button {:class "weetniet"
+                :on-click #(volgende %)
+                } "Volgende"]
+      
+      ] ;; /div.dontknow
+
+     ] ;; /form#quiz
+
+    ] ;; /div.question-and-guess
+
+      
    [:div.answertable
     [:table
      [:tbody
