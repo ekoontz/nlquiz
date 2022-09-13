@@ -75,9 +75,19 @@
 
 (defn volgende [e]
   (log/info (str "volgende!!!"))
-  (.preventDefault e)
-  (show-possible-answer)
-  (speak/nederlands @show-answer))
+  (reset! got-it-right? true)
+  (reset! save-question @question-html)
+  (reset! question-html spinner)
+  (set-input-value)
+  (.focus (.getElementById js/document "other-input"))
+  (reset! translation-of-guess "")
+  (reset! show-answer @show-answer)
+  (if (.-requestSubmit (.getElementById js/document "quiz"))
+    (.requestSubmit (.getElementById js/document "quiz"))
+    (.dispatchEvent (.getElementById js/document "quiz")
+                    (new js/Event "submit" {:cancelable true})))
+  (.focus (.getElementById js/document "input-guess"))
+  (.preventDefault e))
 
 (defn on-submit [e]
   (log/info (str "on-submit!"))
