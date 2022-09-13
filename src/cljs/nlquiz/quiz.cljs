@@ -72,22 +72,28 @@
 
 (def major-atom (atom nil))
 (def minor-atom (atom nil))
+(def show-this-many-answers 5)
+
+(defn add-new-row [row]
+  (reset! question-table
+          (concat
+           row
+           (take (- show-this-many-answers 1) @question-table))))
 
 (defn volgende [e]
-  (log/info (str "volgende!!!"))
-  (reset! got-it-right? true)
-  (reset! save-question @question-html)
-  (reset! question-html spinner)
-  (set-input-value)
-  (.focus (.getElementById js/document "other-input"))
-  (reset! translation-of-guess "")
-  (reset! show-answer @show-answer)
-  (if (.-requestSubmit (.getElementById js/document "quiz"))
-    (.requestSubmit (.getElementById js/document "quiz"))
-    (.dispatchEvent (.getElementById js/document "quiz")
-                    (new js/Event "submit" {:cancelable true})))
-  (.focus (.getElementById js/document "input-guess"))
-  (.preventDefault e))
+  (log/info (str "volgende!!"))
+  (.preventDefault e)
+  (speak/nederlands @show-answer)
+  (swap! answer-count inc)
+  ;; Show only last 5 questions answered:
+  (add-new-row [{:source @question-html :target @show-answer}])
+  (get-next-expression)
+  (log/info (str "done with 'volgende'")))
+
+(defn get-next-expression []
+  (if @minor-atom
+    (get-expression @major-atom @minor-atom)
+    (get-expression @major-atom)))
 
 (defn on-submit [e]
   (log/info (str "on-submit!"))
@@ -97,21 +103,14 @@
     (= true @got-it-right?)
     (let [correct-answer @show-answer
           question @question-html]
+
       ;; get the new expression now to save time, since this takes awhile..
-      (if @minor-atom
-        (get-expression @major-atom @minor-atom)
-        (get-expression @major-atom))
+      (get-next-expression)
       (show-praise)
       (swap! answer-count inc)
 
       ;; Show only last 5 questions answered:
-      (reset! question-table
-              (concat
-               ;; The one just-answered:
-               [{:source @save-question :target @show-answer}]
-
-               ;; ..and the 4 most recent before that:
-               (take 4 @question-table))))
+      (add-new-row [{:source @save-question :target @show-answer}]))
     :else
     (do (set-input-value)
         (show-possible-answer)))
