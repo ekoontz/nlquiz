@@ -118,9 +118,9 @@
     (let [use-model
           (u/get-in content [:meta :use-model])]
       (if use-model
-        (do (log/info (str "curriculum/interpret-meta: setting model to: " use-model))
+        (do (log/debug (str "curriculum/interpret-meta: setting model to: " use-model " for this quiz."))
             (reset! model-name-atom use-model)
-            (log/info (str "curriculum/interpret-meta: ok, set it to: " @model-name-atom)))))
+            (log/debug (str "curriculum/interpret-meta: ok, set it to: " @model-name-atom)))))
     (vector? content)
     (vec (map (fn [x]
                 (interpret-meta x))
