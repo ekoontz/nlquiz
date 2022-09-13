@@ -162,6 +162,7 @@
                     (new js/Event "submit" {:cancelable true})))
   (.focus (.getElementById js/document "input-guess")))
 
+;; TODO: split this huge (submit-guess) function into smaller, readable pieces:
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
     (log/error (str "there are no correct answers for this question."))
@@ -257,6 +258,20 @@
       (reset! grammar (-> grammar-response :body decode-grammar))
       (reset! morphology (-> morphology-response :body decode-morphology)))))
 
+(defn do-a-submit []
+  (if (.-requestSubmit (.getElementById js/document "quiz"))
+    (.requestSubmit (.getElementById js/document "quiz"))
+    (.dispatchEvent (.getElementById js/document "quiz")
+                    (new js/Event "submit" {:cancelable true}))))
+
+(defn reset-button []
+  ;; this switching-around of focus is necessary
+  ;; for iOS Safari if I recall.
+  (.focus (.getElementById js/document "other-input"))
+  (reset! translation-of-guess "")
+  (set-input-value "")  
+  (.focus (.getElementById js/document "input-guess")))
+
 (defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -291,12 +306,7 @@
       ;; 'reset' button
       [:button {:class "weetniet"
                 :on-click #(do
-                             ;; this switching-around of focus is necessary
-                             ;; for iOS Safari if I recall.
-                             (.focus (.getElementById js/document "other-input"))
-                             (reset! translation-of-guess "")
-                             (set-input-value "")
-                             (.focus (.getElementById js/document "input-guess"))
+                             (reset-button)
                              (.preventDefault %))} "Reset"]
 
       ;; 'next' button
@@ -394,6 +404,7 @@
                            (map cljs.reader/read-string)
                            (map deserialize)))
               (reset! input-state "")
+              (reset-button)
               (.focus (.getElementById js/document "input-guess"))))))))
 
 (defn quiz-component []
