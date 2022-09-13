@@ -81,14 +81,12 @@
            (take (- show-this-many-answers 1) @question-table))))
 
 (defn volgende [e]
-  (log/info (str "volgende!!"))
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (swap! answer-count inc)
   ;; Show only last 5 questions answered:
   (add-new-row [{:source @question-html :target @show-answer}])
-  (get-next-expression)
-  (log/info (str "done with 'volgende'")))
+  (get-next-expression))
 
 (defn get-next-expression []
   (if @minor-atom
@@ -96,7 +94,7 @@
     (get-expression @major-atom)))
 
 (defn on-submit [e]
-  (log/info (str "on-submit!"))
+  (log/debug (str "on-submit!"))
   (.preventDefault e)
   (speak/nederlands @show-answer)
   (cond
