@@ -302,19 +302,19 @@
      [:div.english @translation-of-guess]
 
      [:div.dontknow
-      [:input {:class "weetniet" :type "submit" :value "Ik weet het niet"
-               :disabled @ik-weet-niet-button-state}]
+      [:button {:class "weetniet" :title "Ik weet het niet"
+               :disabled @ik-weet-niet-button-state} "⁉️"]
 
       ;; 'reset' button
-      [:button {:class "weetniet"
+      [:button {:class "weetniet" :title "reset"
                 :on-click #(do
                              (reset-button)
-                             (.preventDefault %))} "Reset"]
+                             (.preventDefault %))} "❌"]
 
       ;; 'next' button
-      [:button {:class "weetniet"
+      [:button {:class "weetniet" :title "volgende"
                 :on-click #(volgende %)
-                } "Volgende"]
+                } "⏩"]
       
       ] ;; /div.dontknow
 
