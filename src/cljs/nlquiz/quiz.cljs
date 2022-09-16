@@ -80,8 +80,9 @@
            row
            (take (- show-this-many-answers 1) @question-table))))
 
-(defn volgende [e]
-  (.preventDefault e)
+(defn volgende [& [e]]
+  (when e
+    (.preventDefault e))
   (speak/nederlands @show-answer)
   (swap! answer-count inc)
   ;; Show only last 5 questions answered:
@@ -165,7 +166,8 @@
 ;; TODO: split this huge (submit-guess) function into smaller, readable pieces:
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
-    (log/error (str "there are no correct answers for this question."))
+    (do (log/error (str "there are no correct answers for this question."))
+        (volgende))
     ;; else, there are some correct answers:
     (let [guess-string (if guess-string (trim guess-string))]
       (if (not (empty? guess-string))
