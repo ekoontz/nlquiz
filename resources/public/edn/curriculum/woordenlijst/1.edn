@@ -13,6 +13,6 @@
     :rule "np:2"
     :phrasal? true
     :subcat []
-    :sem {:quant :the}
-    :agr {:number :plur}}]]]
+    :sem {:quant :the}}]]]
+
 
