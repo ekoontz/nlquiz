@@ -2,6 +2,7 @@
 }
 
 #other-input {
+    display:none;
     font-size:100%;
     float:right;
     background:transparent;
@@ -90,10 +91,11 @@ header {
     line-height:1em;
 }
 
-input.weetniet {
+button.weetniet {
     padding:0.5em;
     margin:0.5em;
     border-radius: 5px;
+    font-size:100%;
 }
 
 table {
