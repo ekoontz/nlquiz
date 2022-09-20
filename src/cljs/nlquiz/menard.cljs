@@ -72,16 +72,20 @@
 ;; TODO: use menard/nederlands.cljc's version
 ;; instead of duplicating here.
 (defn tokenize [input-string]
-  (binding [parse/split-on #"[ ]"]
-    (parse/tokenize input-string)))
+  (let [split-on #"[ ]"
+
+        ;; this analyze-fn simply returns true for every possible
+        ;; sequence of words combined as a token:
+        analyze-fn (fn [token] [true])]
+
+    (parse/tokenize input-string split-on analyze-fn)))
 
 (defn parses [input-map grammar morphology surface]
-  (let [tokenized (first (tokenize surface))
-        input-length (count tokenized)
-        syntax-tree (fn [tree] (s/syntax-tree tree morphology))
-        morph (fn [tree] (s/morph tree morphology))]
-    (log/debug (str "nlquiz.menard parses begin.."))
-    (log/debug (str "menard/parses input-length: " input-length "; surface: " surface "; tokenized: " tokenized))
+  (let [syntax-tree (fn [tree] (s/syntax-tree tree morphology))
+        morph (fn [tree] (s/morph tree morphology))
+        input-length (-> input-map keys count)]
+    (log/debug (str "nlquiz.menard parses begin with input-map: " input-map
+                    " of length: " input-length))
     (if (seq (get input-map [0 input-length]))
       ;; supplied input-map has the whole parse, all the way from [0, input-length]:
       (do
@@ -91,17 +95,9 @@
       ;; tokenizations with all the lexemes looked up for the tokenizations),
       ;; so parse is not complete yet: we need to parse ourselves.
       (do
-        (binding [parse/syntax-tree syntax-tree
-                  parse/morph morph
-                  parse/truncate? true
-                  parse/truncate-fn (fn [tree]
-                                      (-> tree
-                                          (dissoc :head)
-                                          (dissoc :comp)
-                                        (assoc :1 (strip-map (u/get-in tree [:1])))
-                                        (assoc :2 (strip-map (u/get-in tree [:2])))))]
+        (let [truncate? true]
           (->
-           (parse/parse-in-stages input-map input-length 2 grammar surface)
+           (parse/parse-in-stages input-map input-length 2 grammar syntax-tree morph truncate?)
            (get [0 input-length])
            remove-duplicates))))))
 
