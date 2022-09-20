@@ -271,7 +271,7 @@
   ;; for iOS Safari if I recall.
   (.focus (.getElementById js/document "other-input"))
   (reset! translation-of-guess "")
-  (set-input-value "")  
+  (set-input-value)  
   (.focus (.getElementById js/document "input-guess")))
 
 (defn quiz-layout []
