@@ -1,8 +1,12 @@
 .main {
 }
 
+/* this is used to switch focus
+   so that the speech input can be
+   dismissed after the user finishes
+   their input. */
 #other-input {
-    display:none;
+    display:block;
     font-size:100%;
     float:right;
     background:transparent;
