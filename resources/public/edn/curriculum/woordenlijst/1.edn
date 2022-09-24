@@ -21,4 +21,12 @@
     :rule "np:2"
     :phrasal? true
     :subcat []
-    :sem {:quant :some}}]]]
+    :sem {:quant :some}}
+   {:model "woordenlijst"
+    :agr {:number :sing}
+    :cat :noun
+    :rule "np:2"
+    :phrasal? true
+    :subcat []
+    :sem {:quant :the}}]]]
+
