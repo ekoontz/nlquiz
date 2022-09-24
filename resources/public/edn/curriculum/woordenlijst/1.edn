@@ -9,12 +9,14 @@
 
  [:show-examples
   [{:model "woordenlijst"
+    :agr {:number :plur}
     :cat :noun
     :rule "np:2"
     :phrasal? true
     :subcat []
     :sem {:quant :the}}
    {:model "woordenlijst"
+    :agr {:number :sing}
     :cat :noun
     :rule "np:2"
     :phrasal? true
