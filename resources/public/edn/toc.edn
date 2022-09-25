@@ -1,5 +1,5 @@
 [
- {:name "Woodenlijst"
+ {:name "Woordenlijst"
  :child [{:name "Woordenlijst 1"
           :href "woordenlijst/1"}]}
 
