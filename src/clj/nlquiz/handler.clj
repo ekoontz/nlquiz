@@ -46,10 +46,11 @@
   (html5
    (head)
    [:body {:class "body-container"}
-    mount-target
-    (if (= (System/getenv "DEV") "true")
-      (include-js (str root-path "js/app.js"))
-      (include-js (str root-path "js/app-optimized.js")))]))
+    [:main
+     mount-target
+     (if (= (System/getenv "DEV") "true")
+       (include-js (str root-path "js/app.js"))
+       (include-js (str root-path "js/app-optimized.js")))]]))
 
 (defn html-response
   [_request]
