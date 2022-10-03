@@ -24,7 +24,9 @@
           {:name "Demonstratives"
            :href "nouns/demonstratives"}
           {:name "Numbers"
-           :href "nouns/numbers"}]}
+           :href "nouns/numbers"}
+          {:name "Nouns and Adjectives"
+           :href "nouns/adjectives"}]}
  {:name "Verbs"
   :child [{:name "Pronouns and Present Tense"
            :href "verbs/subject-pronouns-and-present-tense"}

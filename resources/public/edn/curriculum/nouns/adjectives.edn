@@ -1,0 +1,18 @@
+[:div
+ [:p "Noun phrases with articles and adjectives:"]
+ 
+ [:show-examples
+  [{:cat :noun
+    :subcat []
+    :phrasal? true
+    :comp {:phrasal? false
+           :cat :det}
+    :head {:phrasal? true
+           :head {:phrasal? false}
+           :comp {:phrasal? false
+                  :cat :adjective
+                  :sem {:number? false}}}}]]]
+
+
+
+
