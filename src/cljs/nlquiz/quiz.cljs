@@ -241,8 +241,24 @@
                                 (if (false? @got-it-right?)
                                   ;; if false, then evaluate user's answer:
                                   (do
+
+
                                     (if (not (nil? (-> gen-response :body :sem deserialize)))
-                                      (reset! translation-of-guess (-> gen-response :body :surface))) ;; TODO: concatentate rather than overwrite.
+                                      ;; we got a (or another) translation to English, so concatenate it to the
+                                      ;; any existing translations:
+                                      (let [new-guess-response (-> gen-response :body :surface)
+                                            update-guess-text
+                                            (if (= @translation-of-guess [:i {:class "fas fa-stroopwafel fa-spin"}])
+                                              ;; no exisiting answer (just a spinning stroopwafel), 
+                                              ;; so simply replace with this single new translation:
+                                              (-> gen-response :body :surface)
+
+                                              ;; else, there was already a guess, so concatenate it to the end:
+                                              ;; TODO: sort them by whether they have a '_' in them
+                                              ;; (those go to the end, since they aren't as accurate).
+                                              (str @translation-of-guess ", " guess-response))]
+                                        (reset! translation-of-guess update-guess-text)))
+
                                     (log/debug (str "semantics: " local-sem "; possible correct-semantics: " @possible-correct-semantics))
                                     (if @translation-of-guess
                                       (log/debug (str "non-empty english translation: " @translation-of-guess)))
@@ -283,9 +299,14 @@
      [:div.guess
       [:div.question @question-html]
       [:div
+
+       ;; this is a blank input that we use to try to fool the
+       ;; speech input into focusing on to get out of
+       ;; speech input mode:
        [:input {:type "text" :size "1"
                 :input-mode "none"
                 :id "other-input"}]
+
        [:input {:type "text"
                 :size (* 1 (count placeholder))
                 :placeholder placeholder
