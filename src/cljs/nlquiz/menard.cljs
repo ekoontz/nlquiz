@@ -47,24 +47,26 @@
        (map cljs.reader/read-string)
        (map deserialize)))
 
-(defn decode-parse [response-body]
+(defn decode-parse [input-map]
    ;; a map between:
    ;; keys: each key is a span e.g. [0 1]
    ;; vals: each val is a sequence of trees, each of which spans the span indicated by the key.
+  (log/debug (str "decode-parse: input-map: " input-map))
   (into {}
-         (->> (keys response-body)
+         (->> (keys input-map)
               (map (fn [k]
+                     (log/info (str "decode-parse: got a key: " k))
                      [(cljs.reader/read-string (string/join (rest (str k))))
                       (map (fn [serialized-lexeme]
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
-                           (get response-body k))])))))
+                           (get input-map k))])))))
 
 (defn decode-parses [response-body]
+  (log/info (str "decode-parses: response-body: " response-body))
   (if (seq response-body)
     (cons
      (decode-parse (first response-body))
      (decode-parses (rest response-body)))))
-
 
 (defn strip-map [m]
   (select-keys m [:1 :2 :canonical :rule :surface]))
