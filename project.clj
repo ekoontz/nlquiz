@@ -22,7 +22,7 @@
                  [clj-http "3.12.3"]
                  [cljs-http "0.1.46"]
                  [org.clojure/tools.logging "1.1.0"]
-                 [dag_unify "1.10.3"]
+                 [dag_unify "1.11.0"]
                  [org.clojure/tools.logging "1.2.4"]
                  [menard "1.6.3"]
                  [ring/ring-core "1.7.1"]
