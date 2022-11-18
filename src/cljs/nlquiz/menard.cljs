@@ -55,14 +55,14 @@
   (into {}
          (->> (keys input-map)
               (map (fn [k]
-                     (log/info (str "decode-parse: got a key: " k))
+                     (log/debug (str "decode-parse: got a key: " k))
                      [(cljs.reader/read-string (string/join (rest (str k))))
                       (map (fn [serialized-lexeme]
                              (-> serialized-lexeme cljs.reader/read-string deserialize))
                            (get input-map k))])))))
 
 (defn decode-parses [response-body]
-  (log/info (str "decode-parses: response-body: " response-body))
+  (log/debug (str "decode-parses: response-body: " response-body))
   (if (seq response-body)
     (cons
      (decode-parse (first response-body))
