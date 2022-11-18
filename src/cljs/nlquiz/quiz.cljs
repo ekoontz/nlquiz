@@ -41,6 +41,7 @@
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
+(def translation-sync (r/atom ""))
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
               "goed gedaan! 🚲"
@@ -170,6 +171,7 @@
         (volgende))
     ;; else, there are some correct answers:
     (let [guess-string (if guess-string (trim guess-string))]
+      (log/debug (str "submit-guess: checking guess-string: " guess-string))
       (if (not (empty? guess-string))
         (do
           (if (= (clojure.string/lower-case guess-string) (clojure.string/lower-case (str @show-answer)))
@@ -208,64 +210,65 @@
                         debug (log/debug (if (empty? nl-parses)
                                            (str "no parses found.")
                                            (str "at least one parse found.")))
-                        specs (->> nl-parses
-                                   (map serialize)
-                                   (map deserialize)
-                                   (map tr/nl-to-en-spec)
-                                   remove-duplicates)
+                        english-specs (->> nl-parses
+                                           (map serialize)
+                                           (map deserialize)
+                                           (map tr/nl-to-en-spec)
+                                           remove-duplicates)
 
-                        debug (log/debug (if (empty? specs)
-                                           (str "no specs found.")
-                                           (str "at least one spec found.")))
+                        debug (log/debug (if (empty? english-specs)
+                                           (str "no english-specs found.")
+                                           (str "at least one english-spec found.")))
                         local-sem  (->> nl-parses
                                         (map #(u/get-in % [:sem])))
                         current-input-value (get-input-value)]
-                    (when (empty? specs)
+                    (when (empty? english-specs)
                       (do (log/debug (str "couldn't parse: '" guess-string "'"))
                           (reset! translation-of-guess (str "'" guess-string "'..?"))))
-
-                    (if (not (= current-input-value guess-string))
-                      (log/debug (str "input changed: will not try to generate english for input: " guess-string " since it's now changed to: " current-input-value)))
-
-                    (if (= current-input-value guess-string)
+                    (if (= (get-input-value) guess-string)
                       (do
-                        (doseq [en-spec specs]
-                          (log/debug (str "going to try to generate english with spec: "
-                                         en-spec))
-                          (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
-                                                                    "/generate/en?spec=" (-> en-spec
-                                                                                             dag-to-string)
-                                                                    "&model=" (deref curriculum/model-name-atom))))]
-                                ;; if user's already answered the question correctly, then
-                                ;; @got-it-right? will be true. If true, then don't re-evaluate.
-                                (if (false? @got-it-right?)
-                                  ;; if false, then evaluate user's answer:
-                                  (do
+                        (doseq [en-spec english-specs]
+                          (log/debug (str "going to try to generate english given Dutch: " guess-string))
+                          (if (= (get-input-value) guess-string)
+                            (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                                                                      "/generate/en?spec=" (-> en-spec
+                                                                                               dag-to-string)
+                                                                      "&model=" (deref curriculum/model-name-atom))))]
+                                  (reset! translation-sync (str {:input guess-string
+                                                                 :response (-> gen-response :body :sem serialize)}))
+                                  ;; if user's already answered the question correctly, then
+                                  ;; @got-it-right? will be true. If true, then don't re-evaluate.
+                                  (if (false? @got-it-right?)
+                                    ;; if false, then evaluate user's answer:
+                                    (do
+                                      (when (and (not (nil? (-> gen-response :body :sem deserialize)))
+                                                 (= (get-input-value) guess-string))
+                                        ;; we got a (or another) translation to English, so concatenate it to the
+                                        ;; any existing translations:
+                                        (let [new-guess-response (-> gen-response :body :surface)
+                                              update-guess-text
+                                              (if (= @translation-of-guess [:i {:class "fas fa-stroopwafel fa-spin"}])
+                                                ;; no existing answer (just a spinning stroopwafel), 
+                                                ;; so simply replace with this single new translation:
+                                                new-guess-response
 
+                                                ;; else, there was already a guess, so concatenate it to the end:
+                                                ;; TODO: sort them by whether they have a '_' in them
+                                                ;; (those go to the end, since they aren't as accurate).
+                                                (if (and (seq (trim new-guess-response))
+                                                         (not (= @translation-of-guess new-guess-response)))
+                                                  (str @translation-of-guess ", " new-guess-response)
+                                                  @translation-of-guess))]
+                                          (log/debug (str "update-guess-text: " update-guess-text " for dutch text: " guess-string))
+                                          (reset! translation-of-guess update-guess-text)))
 
-                                    (if (not (nil? (-> gen-response :body :sem deserialize)))
-                                      ;; we got a (or another) translation to English, so concatenate it to the
-                                      ;; any existing translations:
-                                      (let [new-guess-response (-> gen-response :body :surface)
-                                            update-guess-text
-                                            (if (= @translation-of-guess [:i {:class "fas fa-stroopwafel fa-spin"}])
-                                              ;; no exisiting answer (just a spinning stroopwafel), 
-                                              ;; so simply replace with this single new translation:
-                                              (-> gen-response :body :surface)
-
-                                              ;; else, there was already a guess, so concatenate it to the end:
-                                              ;; TODO: sort them by whether they have a '_' in them
-                                              ;; (those go to the end, since they aren't as accurate).
-                                              (str @translation-of-guess ", " guess-response))]
-                                        (reset! translation-of-guess update-guess-text)))
-
-                                    (log/debug (str "semantics: " local-sem "; possible correct-semantics: " @possible-correct-semantics))
-                                    (if @translation-of-guess
-                                      (log/debug (str "non-empty english translation: " @translation-of-guess)))
-                                    (if (evaluate-guess local-sem
-                                                        @possible-correct-semantics)
-                                      ;; got it right!
-                                      (handle-correct-answer guess-string))))))))))))))))))
+                                      (log/debug (str "semantics: " local-sem "; possible correct-semantics: " @possible-correct-semantics))
+                                      (if @translation-of-guess
+                                        (log/debug (str "non-empty english translation: " @translation-of-guess)))
+                                      (if (evaluate-guess local-sem
+                                                          @possible-correct-semantics)
+                                        ;; got it right!
+                                        (handle-correct-answer guess-string)))))))))))))))))))
 
 (defn load-linguistics []
   (go
@@ -321,6 +324,9 @@
                 }]]] ;; /div.guess
 
      [:div.english @translation-of-guess]
+
+     [:div.debug @translation-sync]
+     
 
      [:div.dontknow
       [:button {:class "weetniet" :title "Ik weet het niet"
