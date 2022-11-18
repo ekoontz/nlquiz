@@ -359,6 +359,17 @@ div.english {
     min-height:1.3em;
 }
 
+div.debug {
+    display:none;
+    float:left;
+    width:100%;
+    font-style:bold;
+    font-family:monospace;
+    color:blue;
+    border:0px dashed black;
+    min-height:1.3em;
+}
+
 #input-guess {
     font-size:larger;
     margin-bottom:0.5em;
