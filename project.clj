@@ -24,7 +24,7 @@
                  [org.clojure/tools.logging "1.1.0"]
                  [dag_unify "1.11.0"]
                  [org.clojure/tools.logging "1.2.4"]
-                 [menard "1.6.3"]
+                 [menard "1.6.4"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-devel "1.7.1"]
