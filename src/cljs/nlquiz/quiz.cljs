@@ -164,6 +164,20 @@
                     (new js/Event "submit" {:cancelable true})))
   (.focus (.getElementById js/document "input-guess")))
 
+(defn get-semantics-and-english-specs [parse-start-response]
+  (let [nl-parses (->> (-> parse-start-response :body decode-parses)
+                       (mapcat (fn [each-parse-start]
+                                 (parses each-parse-start @grammar @morphology guess-string))))
+        english-specs (->> nl-parses
+                           (map serialize)
+                           (map deserialize)
+                           (map tr/nl-to-en-spec)
+                           remove-duplicates)
+        user-guess-semantics (->> nl-parses
+                                  (map #(u/get-in % [:sem])))]
+    {:english-specs english-specs
+     :user-guess-semantics user-guess-semantics}))
+
 ;; TODO: split this huge (submit-guess) function into smaller, readable pieces:
 (defn submit-guess [guess-string]
   (if (empty? @possible-correct-semantics)
@@ -193,32 +207,14 @@
                 (log/error (str "No model was found!!")) 
 
                 (log/debug (str "doing nl parsing with model: '" (deref curriculum/model-name-atom) "'")))
-              (go (let [parse-response
-                        (->
-                         (<! (http/get (str (language-server-endpoint-url)
-                                            "/parse-start/nl?q=" guess-string "&model=" (deref curriculum/model-name-atom))))
-                         :body decode-parses)
-
-                        nl-parses
-                        (->>
-                         parse-response
-                         (mapcat (fn [each-parse]
-                                   (parses each-parse @grammar @morphology guess-string))))
-                        debug (log/info (if (empty? nl-parses)
-                                          (str "no parses found.")
-                                          (str "at least one parse found.")))
-
-                        english-specs (->> nl-parses
-                                           (map serialize)
-                                           (map deserialize)
-                                           (map tr/nl-to-en-spec)
-                                           remove-duplicates)
-
+              (go (let [semantics-and-english-specs
+                        (get-semantics-and-english-specs
+                         (<! (http/get (str (language-server-endpoint-url) "/parse-start/nl?q=" guess-string "&model=" (deref curriculum/model-name-atom)))))
+                        user-guess-semantics (-> semantics-and-english-specs :user-guess-semantics)
+                        english-specs (-> semantics-and-english-specs :english-specs)
                         debug (log/info (if (empty? english-specs)
                                            (str "no english-specs found.")
-                                           (str "at least one english-spec found.")))
-                        user-guess-semantics  (->> nl-parses
-                                                   (map #(u/get-in % [:sem])))]
+                                           (str "at least one english-spec found.")))]
                     (when (empty? english-specs)
                       (do (log/debug (str "couldn't parse: '" guess-string "'"))
                           (reset! translation-of-guess (str "'" guess-string "'..?"))))
