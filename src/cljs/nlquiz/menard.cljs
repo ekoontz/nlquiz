@@ -83,12 +83,15 @@
 
     (parse/tokenize input-string split-on analyze-fn)))
 
-(defn parses [input-map grammar morphology surface]
-  (let [syntax-tree (fn [tree] (s/syntax-tree tree morphology))
+(defn parses [input-map grammar morphology surface & [truncate?]]
+  (let [truncate? (if (false? truncate?)
+                    false
+                    true)
+        syntax-tree (fn [tree] (s/syntax-tree tree morphology))
         morph (fn [tree] (s/morph tree morphology))
         input-length (-> input-map keys count)]
     (log/debug (str "nlquiz.menard parses begin with input-map: " input-map
-                    " of length: " input-length))
+                    " of length: " input-length " and truncate? " truncate?))
     (if (seq (get input-map [0 input-length]))
       ;; supplied input-map has the whole parse, all the way from [0, input-length]:
       (do
@@ -97,12 +100,11 @@
       ;; else, input-map supplied less than the full parse (e.g. just the
       ;; tokenizations with all the lexemes looked up for the tokenizations),
       ;; so parse is not complete yet: we need to parse ourselves.
-      (do
-        (let [truncate? true]
-          (->
-           (parse/parse-in-stages input-map input-length 2 grammar syntax-tree morph truncate?)
-           (get [0 input-length])
-           remove-duplicates))))))
+      (->
+       (parse/parse-in-stages input-map input-length 2 grammar syntax-tree morph truncate?)
+       (get [0 input-length])
+       ;; not sure if this is necessary:
+       remove-duplicates))))
 
 (defn nl-sem [nl-parses]
   (->> nl-parses
