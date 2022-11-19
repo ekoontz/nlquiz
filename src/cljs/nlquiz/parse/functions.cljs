@@ -100,9 +100,13 @@
   (go
           
     ;; 1. Get the information necessary from the server about the NL expression to start parsing on the client side:
-    (let [nl-parse-response (-> (<! (http/get (str (language-server-endpoint-url)
-                                                   "/parse-start/nl?q=" input-value (when server-side-parsing? "&all"))))
-                                :body decode-parse)
+    (log/info (str "getting: /parse-start/nl?q=" input-value))
+    (let [nl-parse-response (->> (-> (<! (http/get (str (language-server-endpoint-url)
+                                                        "/parse-start/nl?q=" input-value (when server-side-parsing? "&all"))))
+                                     :body)
+                                 (map decode-parse))
+
+          debug (log/info (str "getting: /analyze/nl?q=" input-value))
           nl-lexemes (-> (<! (http/get (str (language-server-endpoint-url)
                                             "/analyze/nl?q=" input-value)))
                          :body decode-analyze)
@@ -122,8 +126,11 @@
                        :body decode-rules)]
       ;; 2. With this information ready,
       (let [;; 2 do the NL and EN parsing. (we specified "&all" above in the query so actually these (parses) calls doesn't do anything much):
-            nl-parses (->> (parses nl-parse-response @nl-grammar @nl-morphology
-                                   input-value))
+            nl-parses (->>
+                       nl-parse-response
+                       (mapcat (fn [each-parse-start]
+                                 (parses each-parse-start @nl-grammar @nl-morphology
+                                         input-value false))))
             en-parses (->> (parses en-parse-response @en-grammar @en-morphology
                                    input-value))]
         (display-linguistics-content
