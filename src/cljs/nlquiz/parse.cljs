@@ -121,7 +121,7 @@
                               ;; 5. attach the function that take all the components (UI and linguistic resources) and does things with them to the on-change attribute:
                               
                               :on-change (fn [input-element]
-                                           (log/info (str "** on-change is now a no-op.")))}]]
+                                           (log/debug (str "** on-change is a no-op: we are using a timer instead and syncing with user's input in that way.")))}]]
          (nl-widget nl-trees-atom nl-lexemes-atom nl-rules-atom)
          (en-widget en-trees-atom en-lexemes-atom en-rules-atom)]))))
 
