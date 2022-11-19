@@ -198,30 +198,27 @@
                          (<! (http/get (str (language-server-endpoint-url)
                                             "/parse-start/nl?q=" guess-string "&model=" (deref curriculum/model-name-atom))))
                          :body decode-parses)
-                        debug (if (seq parse-response)
-                                (log/debug (str "found one or more parses for: "
-                                                "'" guess-string "'"))
-                                (log/debug (str "no parses for '" guess-string "' found in response.")))
+
                         nl-parses
                         (->>
                          parse-response
                          (mapcat (fn [each-parse]
                                    (parses each-parse @grammar @morphology guess-string))))
-                        debug (log/debug (if (empty? nl-parses)
-                                           (str "no parses found.")
-                                           (str "at least one parse found.")))
+                        debug (log/info (if (empty? nl-parses)
+                                          (str "no parses found.")
+                                          (str "at least one parse found.")))
+
                         english-specs (->> nl-parses
                                            (map serialize)
                                            (map deserialize)
                                            (map tr/nl-to-en-spec)
                                            remove-duplicates)
 
-                        debug (log/debug (if (empty? english-specs)
+                        debug (log/info (if (empty? english-specs)
                                            (str "no english-specs found.")
                                            (str "at least one english-spec found.")))
-                        local-sem  (->> nl-parses
-                                        (map #(u/get-in % [:sem])))
-                        current-input-value (get-input-value)]
+                        user-guess-semantics  (->> nl-parses
+                                                   (map #(u/get-in % [:sem])))]
                     (when (empty? english-specs)
                       (do (log/debug (str "couldn't parse: '" guess-string "'"))
                           (reset! translation-of-guess (str "'" guess-string "'..?"))))
@@ -262,10 +259,10 @@
                                           (log/debug (str "update-guess-text: " update-guess-text " for dutch text: " guess-string))
                                           (reset! translation-of-guess update-guess-text)))
 
-                                      (log/debug (str "semantics: " local-sem "; possible correct-semantics: " @possible-correct-semantics))
+                                      (log/debug (str "user's semantics: " user-guess-semantics "; possible correct-semantics: " @possible-correct-semantics))
                                       (if @translation-of-guess
                                         (log/debug (str "non-empty english translation: " @translation-of-guess)))
-                                      (if (evaluate-guess local-sem
+                                      (if (evaluate-guess user-guess-semantics
                                                           @possible-correct-semantics)
                                         ;; got it right!
                                         (handle-correct-answer guess-string))))))))))))))))))
