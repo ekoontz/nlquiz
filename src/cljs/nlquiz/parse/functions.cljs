@@ -132,7 +132,7 @@
                                  (parses each-parse-start @nl-grammar @nl-morphology
                                          input-value false))))
             en-parses (->> (parses en-parse-response @en-grammar @en-morphology
-                                   input-value))]
+                                   input-value false))]
         (display-linguistics-content
          {:do-each-fn draw-tree
           :if-none-message (str "geen " nl-flag " boom")
