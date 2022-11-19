@@ -230,7 +230,7 @@
                         (doseq [en-spec english-specs]
                           (log/debug (str "going to try to generate english given Dutch: " guess-string))
                           (if (= (get-input-value) guess-string)
-                            (go (let [gen-response (<! (http/get (str (language-server-endpoint-url)
+                            (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                       "/generate/en?spec=" (-> en-spec
                                                                                                dag-to-string)
                                                                       "&model=" (deref curriculum/model-name-atom))))]
@@ -268,7 +268,7 @@
                                       (if (evaluate-guess local-sem
                                                           @possible-correct-semantics)
                                         ;; got it right!
-                                        (handle-correct-answer guess-string)))))))))))))))))))
+                                        (handle-correct-answer guess-string))))))))))))))))))
 
 (defn load-linguistics []
   (go
