@@ -1,7 +1,4 @@
-(ns nlquiz.log
-  (:refer-clojure :exclude [time])
-  (:require [goog.log :as glog])
-  (:import goog.debug.Console))
+(ns nlquiz.log)
 
 (defn fmt [msgs]
   (apply str (interpose " " (map pr-str msgs))))
