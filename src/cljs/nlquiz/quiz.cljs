@@ -41,7 +41,9 @@
 (def show-answer-display (r/atom "none"))
 (def show-praise-display (r/atom "none"))
 (def translation-of-guess (r/atom ""))
-(def translation-sync (r/atom ""))
+(def translation-timings (r/atom "start.."))
+(def translation-timings-vec (atom []))
+(def start-question-time (atom nil))
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
               "goed gedaan! 🚲"
@@ -150,19 +152,33 @@
 (defn set-input-value []
   (set! (-> (.getElementById js/document "input-guess") .-value) ""))
 
+(defn median
+  "find the middle element of input"
+  [input]
+  (if (seq input)
+    (nth input (int (/ (count input) 2)))
+    0))
+
 (defn handle-correct-answer [correct-answer]
-  (reset! got-it-right? true)
-  (reset! save-question @question-html)
-  (reset! question-html spinner)
-  (set-input-value)
-  (.focus (.getElementById js/document "other-input"))
-  (reset! translation-of-guess "")
-  (reset! show-answer correct-answer)
-  (if (.-requestSubmit (.getElementById js/document "quiz"))
-    (.requestSubmit (.getElementById js/document "quiz"))
-    (.dispatchEvent (.getElementById js/document "quiz")
-                    (new js/Event "submit" {:cancelable true})))
-  (.focus (.getElementById js/document "input-guess")))
+  (let [took-this-long (- (.now js/Date)
+                          @start-question-time)]
+    (log/info (str "took-this-long: " took-this-long))
+    (reset! translation-timings-vec (sort (cons took-this-long
+                                                @translation-timings-vec)))
+    (reset! translation-timings (median @translation-timings-vec))
+    (log/info (str "translation-timings: " @translation-timings-vec))
+    (reset! got-it-right? true)
+    (reset! save-question @question-html)
+    (reset! question-html spinner)
+    (set-input-value)
+    (.focus (.getElementById js/document "other-input"))
+    (reset! translation-of-guess "")
+    (reset! show-answer correct-answer)
+    (if (.-requestSubmit (.getElementById js/document "quiz"))
+      (.requestSubmit (.getElementById js/document "quiz"))
+      (.dispatchEvent (.getElementById js/document "quiz")
+                      (new js/Event "submit" {:cancelable true})))
+    (.focus (.getElementById js/document "input-guess"))))
 
 (defn get-semantics-and-english-specs [parse-start-response]
   (let [nl-parses (->> (-> parse-start-response :body decode-parses)
@@ -239,8 +255,6 @@
                                                                       "/generate/en?spec=" (-> en-spec
                                                                                                dag-to-string)
                                                                       "&model=" (deref curriculum/model-name-atom))))]
-                                  (reset! translation-sync (str {:input guess-string
-                                                                 :response (-> gen-response :body :sem serialize)}))
                                   ;; if user's already answered the question correctly, then
                                   ;; @got-it-right? will be true. If true, then don't re-evaluate.
                                   (if (false? @got-it-right?)
@@ -330,9 +344,6 @@
 
      [:div.english @translation-of-guess]
 
-     [:div.debug @translation-sync]
-     
-
      [:div.dontknow
       [:button {:class "weetniet" :title "Ik weet het niet"
                :disabled @ik-weet-niet-button-state} "⁉️"]
@@ -345,12 +356,13 @@
 
       ;; 'next' button
       [:button {:class "weetniet" :title "volgende"
-                :on-click #(volgende %)
-                } "⏩"]
+                :on-click #(volgende %)} "⏩"]
       
       ] ;; /div.dontknow
 
      ] ;; /form#quiz
+
+    [:div.timings @translation-timings]
 
     ] ;; /div.question-and-guess
 
@@ -439,7 +451,10 @@
                            (map deserialize)))
               (reset! input-state "")
               (reset-button)
-              (.focus (.getElementById js/document "input-guess"))))))))
+              (.focus (.getElementById js/document "input-guess"))
+              (log/info (str "setting question time..."))
+              (reset! start-question-time (.now js/Date))
+              (log/info (str "set question time to: " @start-question-time))))))))
 
 (defn quiz-component []
   (load-linguistics)
