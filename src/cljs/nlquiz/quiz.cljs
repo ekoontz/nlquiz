@@ -212,13 +212,16 @@
                          (<! (http/get (str (language-server-endpoint-url) "/parse-start/nl?q=" guess-string "&model=" (deref curriculum/model-name-atom)))))
                         user-guess-semantics (-> semantics-and-english-specs :user-guess-semantics)
                         english-specs (-> semantics-and-english-specs :english-specs)
-                        semantics-and-english-specs (if (seq english-specs) semantics-and-english-specs
-                                                        ;; retry with " _" concatenated to the end:
-                                                        (let [retry-guess-string (str guess-string " _")]
-                                                          (log/info (str "retrying with: " retry-guess-string))
-                                                          (get-semantics-and-english-specs
-                                                           (<! (http/get (str (language-server-endpoint-url) "/parse-start/nl?q=" retry-guess-string
-                                                                              "&model=" (deref curriculum/model-name-atom)))))))
+                        semantics-and-english-specs (if (seq english-specs)
+                                                      semantics-and-english-specs
+
+                                                      ;; Could not parse guess_string, so
+                                                      ;; retry with " _" concatenated to the end:
+                                                      (let [retry-guess-string (str guess-string " _")]
+                                                        (log/debug (str "retrying with: " retry-guess-string))
+                                                        (get-semantics-and-english-specs
+                                                         (<! (http/get (str (language-server-endpoint-url) "/parse-start/nl?q=" retry-guess-string
+                                                                            "&model=" (deref curriculum/model-name-atom)))))))
                         user-guess-semantics (-> semantics-and-english-specs :user-guess-semantics)
                         english-specs (-> semantics-and-english-specs :english-specs)
                         debug (log/debug (if (empty? english-specs)
