@@ -221,7 +221,7 @@
                                                                               "&model=" (deref curriculum/model-name-atom)))))))
                         user-guess-semantics (-> semantics-and-english-specs :user-guess-semantics)
                         english-specs (-> semantics-and-english-specs :english-specs)
-                        debug (log/info (if (empty? english-specs)
+                        debug (log/debug (if (empty? english-specs)
                                            (str "no english-specs found.")
                                            (str "at least one english-spec found.")))]
                     (when (empty? english-specs)
