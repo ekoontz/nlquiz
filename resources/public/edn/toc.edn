@@ -1,8 +1,19 @@
 [
  {:name "Woordenlijst"
- :child [{:name "Woordenlijst 1"
-          :href "woordenlijst/1"}]}
-
+ :child [{:name "Hoofdstuk 1"
+          :href "woordenlijst/1"}
+         {:name "Hoofdstuk 2"
+          :href "woordenlijst/2"}
+         {:name "Hoofdstuk 3"
+          :href "woordenlijst/3"}
+         {:name "Hoofdstuk 4"
+          :href "woordenlijst/4"}
+         {:name "Hoofdstuk 5"
+          :href "woordenlijst/5"}
+         {:name "Hoofdstuk 6"
+          :href "woordenlijst/6"}
+         {:name "Hoofdstuk 7"
+          :href "woordenlijst/7"}]}
 
  {:name "Adjectives"
   :child [{:name "Adjectives and Adverbs"

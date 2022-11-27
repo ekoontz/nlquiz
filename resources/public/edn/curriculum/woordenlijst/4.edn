@@ -3,7 +3,7 @@
  {:meta {:use-model "woordenlijst"
          :comment "example comment"}}
 
- [:p "Hoofdstuk 1"]
+ [:p "Hoofdstuk 4"]
 
  [:p "Some examples from this set:"]
 
@@ -15,7 +15,7 @@
     :phrasal? true
     :subcat []
     :sem {:quant :the}
-    :head {:curriculum {:hoofdstuk "1"}}}
+    :head {:curriculum {:hoofdstuk "4"}}}
     
    {:model "woordenlijst"
     :agr {:number :sing}
@@ -24,7 +24,7 @@
     :phrasal? true
     :subcat []
     :sem {:quant :some}
-    :head {:curriculum {:hoofdstuk "1"}}}
+    :head {:curriculum {:hoofdstuk "4"}}}
 
    {:model "woordenlijst"
     :agr {:number :sing}
@@ -33,7 +33,4 @@
     :phrasal? true
     :subcat []
     :sem {:quant :the}
-    :head {:curriculum {:hoofdstuk "1"}}}]]]
-
-
-
+    :head {:curriculum {:hoofdstuk "4"}}}]]]
