@@ -646,3 +646,7 @@ div.section {
 .outer {
   width:100%
 }
+
+div.timings {
+    display:none;
+}
