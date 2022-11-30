@@ -23,15 +23,6 @@
     :rule "np:2"
     :phrasal? true
     :subcat []
-    :sem {:quant :some}
-    :head {:curriculum {:hoofdstuk "1"}}}
-
-   {:model "woordenlijst"
-    :agr {:number :sing}
-    :cat :noun
-    :rule "np:2"
-    :phrasal? true
-    :subcat []
     :sem {:quant :the}
     :head {:curriculum {:hoofdstuk "1"}}}]]]
 
