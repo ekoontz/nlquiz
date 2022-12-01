@@ -137,6 +137,7 @@ div.question-and-guess {
     border-radius:10px;
     padding:0.25em;
     margin-left:2%;
+    width:40%;
 }
 
 div.question {
