@@ -249,7 +249,7 @@ div.dontknow {
     float:left;
     margin:0;
     display: grid;
-    grid-template-columns: 75px 75px 75px;
+    grid-template-columns: 75px 75px 75px 75px;
 }
 
 button.weetniet {

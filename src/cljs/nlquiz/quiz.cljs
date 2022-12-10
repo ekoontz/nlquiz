@@ -44,6 +44,8 @@
 (def translation-timings (r/atom "start.."))
 (def translation-timings-vec (atom []))
 (def start-question-time (atom nil))
+(def speaker-title (r/atom "speaker is on."))
+(def speaker-emoji (r/atom "🔊"))
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
               "goed gedaan! 🚲"
@@ -86,7 +88,8 @@
 (defn volgende [& [e]]
   (when e
     (.preventDefault e))
-  (speak/nederlands @show-answer)
+  (if (= @speaker-emoji "🔊")
+    (speak/nederlands @show-answer))
   (swap! answer-count inc)
   ;; Show only last 5 questions answered:
   (add-new-row [{:source @question-html :target @show-answer}])
@@ -100,7 +103,8 @@
 (defn on-submit [e]
   (log/debug (str "on-submit!"))
   (.preventDefault e)
-  (speak/nederlands @show-answer)
+  (if (= @speaker-emoji "🔊")  
+    (speak/nederlands @show-answer))
   (cond
     (= true @got-it-right?)
     (let [correct-answer @show-answer
@@ -310,6 +314,13 @@
   (set-input-value)  
   (.focus (.getElementById js/document "input-guess")))
 
+(defn speaker-toggle []
+  (if (= @speaker-emoji "🔊")
+    (do (reset! speaker-emoji "🔇")
+        (reset! speaker-title "speaker is off."))
+    (do (reset! speaker-emoji "🔊")
+        (reset! speaker-title "speaker is on."))))
+
 (defn quiz-layout []
   [:div.main
    [:div#answer {:style {:display @show-answer-display}} @show-answer]
@@ -355,7 +366,12 @@
       ;; 'next' button
       [:button {:class "weetniet" :title "volgende"
                 :on-click #(volgende %)} "⏩"]
-      
+
+      ;; 'speaker' button
+      [:button {:class "weetniet" :title @speaker-title
+                :on-click #(do
+                             (speaker-toggle %)
+                             (.preventDefault %))} @speaker-emoji]
       ] ;; /div.dontknow
 
      ] ;; /form#quiz
@@ -374,7 +390,8 @@
                    (let [nederlandse-texte (-> @question-table (nth i) :target)]                   
                      [:tr {:key i :class (if (= 0 (mod i 2)) "even" "odd")}
                       [:th (- @answer-count i)]
-                      [:th.speak [:button {:on-click #(speak/nederlands nederlandse-texte)} "🔊"]]
+                      [:th.speak [:button {:on-click #(if (= @speaker-emoji "🔊")
+                                                        (speak/nederlands nederlandse-texte))} "🔊"]]
                       [:td.target [:a {:href (str "http://google.com/search?q=\"" nederlandse-texte "\"")} nederlandse-texte]]
                       [:td.source (-> @question-table (nth i) :source)]])))))]]]
    ] ;; div.main
@@ -439,7 +456,9 @@
                 serialized-spec (-> spec serialize str)]
             (let [response (<! (http/get generate-http {:query-params {"model" model
                                                                        "q" serialized-spec}}))]
-              (log/debug (str "nlquiz.quiz: get-expression: got response: " (-> response :body)))
+              (log/info (str "nlquiz.quiz: get-expression: got response: " (-> response :body)))
+              (when (empty? (-> response :body :source-sem))
+                (log/error "aww crap, empty source-sem found in response: " (-> response :body)))
               (reset! question-html (-> response :body :source))
               (reset! got-it-right? false)
               (reset! show-answer (-> response :body :target))
