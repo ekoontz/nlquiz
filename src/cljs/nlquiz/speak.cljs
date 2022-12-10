@@ -2,20 +2,19 @@
   (:require
    [nlquiz.log :as log]))
 
+(def nl-languages (set ["nl" "nl-BE" "nl-NL"]))
+
 (defn nederlands [say-this-in-nederlands]
   (let [synth (. js/window -speechSynthesis)
         utterance (new js/SpeechSynthesisUtterance say-this-in-nederlands)
         nl-voice
         (->> (.getVoices synth)
-             (filter #(or (= "nl" (-> % .-lang))
-                          (= "nl-BE" (-> % .-lang))
-                          (= "nl-NL" (-> % .-lang))))
-
+             (filter #(let [lang (-> % .-lang)]
+                        (contains? nl-languages lang)))
              ;; remove duplicates, if any:
              set
-             vec
 
-             ;; pick one
+             ;; pick one:
              shuffle
              first)]
     (if nl-voice
