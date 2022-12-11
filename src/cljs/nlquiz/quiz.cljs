@@ -175,7 +175,6 @@
     (reset! save-question @question-html)
     (reset! question-html spinner)
     (set-input-value)
-    (.focus (.getElementById js/document "other-input"))
     (reset! translation-of-guess "")
     (reset! show-answer correct-answer)
     (if (.-requestSubmit (.getElementById js/document "quiz"))
@@ -307,9 +306,6 @@
                     (new js/Event "submit" {:cancelable true}))))
 
 (defn reset-button []
-  ;; this switching-around of focus is necessary
-  ;; for iOS Safari if I recall.
-  (.focus (.getElementById js/document "other-input"))
   (reset! translation-of-guess "")
   (set-input-value)  
   (.focus (.getElementById js/document "input-guess")))
@@ -330,13 +326,6 @@
      [:div.guess
       [:div.question @question-html]
       [:div
-
-       ;; this is a blank input that we use to try to fool the
-       ;; speech input into focusing on to get out of
-       ;; speech input mode:
-       [:input {:type "text" :size "1"
-                :input-mode "none"
-                :id "other-input"}]
 
        [:input {:type "text"
                 :size (* 1 (count placeholder))
