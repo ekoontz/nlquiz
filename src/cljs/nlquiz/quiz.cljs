@@ -460,7 +460,6 @@
               (reset! input-state "")
               (reset-button)
               (.focus (.getElementById js/document "input-guess"))
-              (log/info (str "setting question time..."))
               (reset! start-question-time (.now js/Date))
               (log/info (str "set question time to: " @start-question-time))))))))
 
