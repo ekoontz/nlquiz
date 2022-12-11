@@ -44,7 +44,9 @@
 (def translation-timings (r/atom "start.."))
 (def translation-timings-vec (atom []))
 (def start-question-time (atom nil))
-(def speaker-title (r/atom "speaker is on."))
+(def speaker-on-message "luidspreker is aan")
+(def speaker-off-message "luidspreker is af")
+(def speaker-title (r/atom speaker-on-message))
 (def speaker-emoji (r/atom "🔊"))
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
@@ -313,9 +315,9 @@
 (defn speaker-toggle []
   (if (= @speaker-emoji "🔊")
     (do (reset! speaker-emoji "🔇")
-        (reset! speaker-title "speaker is off."))
+        (reset! speaker-title speaker-off-message))
     (do (reset! speaker-emoji "🔊")
-        (reset! speaker-title "speaker is on."))))
+        (reset! speaker-title speaker-on-message))))
 
 (defn quiz-layout []
   [:div.main
