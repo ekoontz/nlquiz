@@ -204,7 +204,7 @@
   (if (empty? @possible-correct-semantics)
     (log/warn (str "There were no possible correct source semantics found for target: " @show-answer)))
   (let [guess-string (if guess-string (trim guess-string))]
-    (log/debug (str "submit-guess: checking guess-string: " guess-string))
+    (log/info (str "submit-guess: checking guess-string: " guess-string))
     (if (not (empty? guess-string))
       (do
         (if (= (clojure.string/lower-case guess-string) (clojure.string/lower-case (str @show-answer)))
@@ -215,6 +215,7 @@
           ;; case 2: user's answer was not the same as the server-derived correct answer, 
           ;; but still might be correct: we have to analyze it to find out.
           (do
+            (log/debug (str "ok, setting the big spinner and taking a look at the user's input: " guess-string))
             (reset! translation-of-guess spinner)
             (or (seq @curriculum/model-name-atom)
                 (do
@@ -242,17 +243,17 @@
                                                        (<! (http/get (str (language-server-endpoint-url) "/parse-start/nl?q=" retry-guess-string
                                                                           "&model=" (deref curriculum/model-name-atom)))))))
                       user-guess-semantics (-> semantics-and-english-specs :user-guess-semantics)
-                      english-specs (-> semantics-and-english-specs :english-specs)
-                      debug (log/debug (if (empty? english-specs)
-                                         (str "no english-specs found.")
-                                         (str "at least one english-spec found.")))]
+                      english-specs (-> semantics-and-english-specs :english-specs)]
+                  (log/info (if (empty? english-specs)
+                              (str "no english-specs found.")
+                              (str "at least one english-spec found: " (first english-specs))))
                   (when (empty? english-specs)
                     (do (log/info (str "couldn't parse: '" guess-string "'"))
                         (reset! translation-of-guess (str "'" guess-string "'..?"))))
                   (if (= (get-input-value) guess-string)
                     (do
                       (doseq [en-spec english-specs]
-                        (log/debug (str "going to try to generate english given Dutch: " guess-string))
+                        (log/info (str "going to try to generate english given Dutch: " guess-string))
                         (if (= (get-input-value) guess-string)
                           (let [gen-response (<! (http/get (str (language-server-endpoint-url)
                                                                 "/generate/en?spec=" (-> en-spec
@@ -263,8 +264,8 @@
                             (if (false? @got-it-right?)
                               ;; if false, then evaluate user's answer:
                               (do
-                                (when (and (not (nil? (-> gen-response :body :sem deserialize)))
-                                           (= (get-input-value) guess-string))
+                                (if (and (not (nil? (-> gen-response :body :sem deserialize)))
+                                         (= (get-input-value) guess-string))
                                   ;; we got a (or another) translation to English, so concatenate it to the
                                   ;; any existing translations:
                                   (let [new-guess-response (-> gen-response :body :surface)
@@ -282,7 +283,11 @@
                                             (str @translation-of-guess ", " new-guess-response)
                                             @translation-of-guess))]
                                     (log/debug (str "update-guess-text: " update-guess-text " for dutch text: " guess-string))
-                                    (reset! translation-of-guess update-guess-text)))
+                                    (reset! translation-of-guess update-guess-text))
+
+                                  (do
+                                    (log/info (str "gen-response found no English translation."))
+                                    (reset! translation-of-guess (str "'" guess-string "'..?"))))
                                 
                                 (log/debug (str "user's semantics: " user-guess-semantics "; possible correct-semantics: " @possible-correct-semantics))
                                 (if @translation-of-guess
