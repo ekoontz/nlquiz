@@ -236,7 +236,7 @@ div.dontknow {
     float:left;
     margin:0;
     display: grid;
-    grid-template-columns: 75px 75px 75px 75px;
+    grid-template-columns: 75px 75px 75px 75px 75px;
 }
 
 button.weetniet {
@@ -640,3 +640,14 @@ div.section {
 div.timings {
     display:none;
 }
+
+div.streak {
+    text-align:center;
+    font-size:large;
+    padding:0.5em;
+    margin:0.5em;
+    border-radius: 10px;
+    border:#ccc solid black;
+    background:#eee;
+}
+

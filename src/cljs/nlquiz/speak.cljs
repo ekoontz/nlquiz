@@ -19,6 +19,7 @@
              first)]
     (if nl-voice
       (do
+        (log/info (str "speaking with voice with lang: " (-> nl-voice .-lang)))
         ;; 1. set the voice for the utterance:
         (aset utterance "voice" nl-voice)
         ;; 2. speak the utterance using synth:

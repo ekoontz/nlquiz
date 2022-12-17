@@ -47,6 +47,7 @@
 (def speaker-on-message "luidspreker is aan")
 (def speaker-off-message "luidspreker is af")
 (def speaker-title (r/atom speaker-on-message))
+(def streak (r/atom 0))
 (def speaker-emoji (r/atom "🔊"))
 (def praises ["dat is leuk! 🚲"
               "geweldig!🇳🇱"
@@ -111,7 +112,7 @@
     (= true @got-it-right?)
     (let [correct-answer @show-answer
           question @question-html]
-
+      (swap! streak inc)
       ;; get the new expression now to save time, since this takes awhile..
       (get-next-expression)
       (show-praise)
@@ -121,6 +122,7 @@
       (add-new-row [{:source @save-question :target @show-answer}]))
     :else
     (do (set-input-value)
+        (swap! streak (fn [x] 0))
         (show-possible-answer)))
   (.focus (.getElementById js/document "input-guess"))
   (.click (.getElementById js/document "input-guess")))
@@ -368,6 +370,10 @@
                 :on-click #(do
                              (speaker-toggle %)
                              (.preventDefault %))} @speaker-emoji]
+
+      [:div.streak {:title "Your running streak of questions answered without help."} @streak]
+
+
       ] ;; /div.dontknow
 
      ] ;; /form#quiz
