@@ -644,6 +644,7 @@ div.timings {
 div.streak {
     text-align:center;
     font-size:large;
+    font-weight:bold;
     padding:0.5em;
     margin:0.5em;
     border-radius: 10px;
